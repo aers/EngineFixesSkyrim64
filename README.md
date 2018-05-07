@@ -5,13 +5,19 @@ WIP skse64 plugin. not release state.
 current:
 
 Tree LOD alpha update caching
+
 Form lookup caching
+
 Together these constitute the same fix SSE fixes provides
 
+
 Double perk apply bug fix
+
 Same as the individual one
 
+
 Waterflow timescale fix
+
 SE waterflow is tied to a global timer, this global timer updates with the in-game hour of day; timescale causes this to move slower or faster, which makes water flow slower or faster. Fix makes waterflow use a different timer.
 
 todo:
@@ -34,9 +40,9 @@ cant fix dont ask:
 
 thanks:
 
-meh321 - sse fixes research, skyrim LE bug fixes
-Nukem - form cache code, additional research for the tree LOD alpha stuff, pointing me at the waterflow timer, moral support :^)
-himika - scatter table implementation from libskyrim (LE), plus tons of research function/variable names
+- meh321 - sse fixes research, skyrim LE bug fixes
+- Nukem - form cache code, additional research for the tree LOD alpha stuff, pointing me at the waterflow timer, moral support :^)
+- himika - scatter table implementation from libskyrim (LE), plus tons of research function/variable names
 
 
 
