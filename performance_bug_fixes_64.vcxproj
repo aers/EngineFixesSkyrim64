@@ -136,6 +136,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bugs\DoublePerkApply.cpp" />
+    <ClCompile Include="bugs\SlowTimeCameraMove.cpp" />
+    <ClCompile Include="bugs\TreeReflections.cpp" />
     <ClCompile Include="bugs\WaterflowTimer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Patches.cpp" />
@@ -144,6 +146,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bugs\DoublePerkApply.h" />
+    <ClInclude Include="bugs\SlowTimeCameraMove.h" />
+    <ClInclude Include="bugs\TreeReflections.h" />
     <ClInclude Include="bugs\WaterflowTimer.h" />
     <ClInclude Include="Patches.h" />
     <ClInclude Include="performance\GlobalFormTableCache.h" />

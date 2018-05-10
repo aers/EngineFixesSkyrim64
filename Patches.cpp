@@ -1,11 +1,15 @@
 #include "bugs/DoublePerkApply.h"
 #include "bugs/WaterflowTimer.h"
+#include "bugs/TreeReflections.h"
 #include "performance/GlobalFormTableCache.h"
 #include "performance/DistantTreeCache.h"
+#include "bugs/SlowTimeCameraMove.h"
 
 bool PatchGame()
 {
 	gLog.SetSource("Patches");
+	PatchTreeReflections();
+	PatchSlowTimeCameraMove();
 	_MESSAGE("Patching engine bugs...");
 	PatchDoublePerkApply();
 	PatchWaterflowTimer();

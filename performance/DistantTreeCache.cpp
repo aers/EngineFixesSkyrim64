@@ -12,7 +12,6 @@
 
 RelocAddr<UpdateLODAlphaFade_> UpdateLODAlphaFade_orig(off_BGSDISTANTTREEFADE_UPDATELODALPHAFADE);
 
-// using this adds an incredibly minor speedup. i went from 164-165 fps to 166 fps in a riften test spot. will probably remove in cleanup.
 //alignas(64) LONG CacheBitmap[0xFFFFFF / 32] = {};
 
 tbb::concurrent_hash_map<uint32_t, TESObjectREFR *> InstanceFormCache;
