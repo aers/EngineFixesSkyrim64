@@ -138,6 +138,7 @@
     <ClCompile Include="bugs\DoublePerkApply.cpp" />
     <ClCompile Include="bugs\SlowTimeCameraMove.cpp" />
     <ClCompile Include="bugs\TreeReflections.cpp" />
+    <ClCompile Include="bugs\VerticalSens.cpp" />
     <ClCompile Include="bugs\WaterflowTimer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Patches.cpp" />
