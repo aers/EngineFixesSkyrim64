@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="patches\DoublePerkApply.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="patches\SlowTimeCameraMove.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="patches\VerticalSens.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="patches\WaterflowTimer.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="patches\TreeReflection.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="patches\FormCaching.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TES\CRC.h">
+      <Filter>tes</Filter>
+    </ClInclude>
+    <ClInclude Include="TES\BSTScatterTable.h">
+      <Filter>tes</Filter>
+    </ClInclude>
+    <ClInclude Include="TES\BSTArray.h">
+      <Filter>tes</Filter>
+    </ClInclude>
+    <ClInclude Include="TES\BSTHashMap.h">
+      <Filter>tes</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\DoublePerkApply.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\WaterflowTimer.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\INIReader.h">
+      <Filter>lib</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\SlowTimeCameraMove.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\TreeReflection.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="patches.h" />
+    <ClInclude Include="lib\cuckoo\cuckoohash_config.hh">
+      <Filter>lib\cuckoo</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\cuckoo\cuckoohash_map.hh">
+      <Filter>lib\cuckoo</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\cuckoo\cuckoohash_util.hh">
+      <Filter>lib\cuckoo</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\cuckoo\libcuckoo_bucket_container.hh">
+      <Filter>lib\cuckoo</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\FormCaching.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="exports.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="tes">
+      <UniqueIdentifier>{1402134e-be73-4943-a5c3-7ea85d5cfde9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="patches">
+      <UniqueIdentifier>{20efdf04-c36c-4ec8-b9ee-cab57d5f6fc6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib">
+      <UniqueIdentifier>{d6dcd680-5037-4939-98e3-1716f35c6f6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\cuckoo">
+      <UniqueIdentifier>{6fed7191-6239-4db7-b551-c3e6d8dffc70}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

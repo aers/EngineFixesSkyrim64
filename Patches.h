@@ -1,3 +1,7 @@
 #pragma once
 
-bool PatchGame();
+#include "patches/FormCaching.h"
+
+#include "patches/SlowTimeCameraMove.h"
+
+#include "patches/TreeReflection.h"

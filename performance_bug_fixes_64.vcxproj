@@ -66,6 +66,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>common/IPrefix.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalOptions>/D "NOMINMAX" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
@@ -103,6 +104,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>common/IPrefix.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <AdditionalOptions>/D "NOMINMAX" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
@@ -110,7 +112,7 @@
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>%(AdditionalDependencies);tbb.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -135,24 +137,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="bugs\DoublePerkApply.cpp" />
-    <ClCompile Include="bugs\SlowTimeCameraMove.cpp" />
-    <ClCompile Include="bugs\TreeReflections.cpp" />
-    <ClCompile Include="bugs\VerticalSens.cpp" />
-    <ClCompile Include="bugs\WaterflowTimer.cpp" />
+    <ClCompile Include="patches\DoublePerkApply.cpp" />
+    <ClCompile Include="patches\FormCaching.cpp" />
+    <ClCompile Include="patches\SlowTimeCameraMove.cpp" />
+    <ClCompile Include="patches\TreeReflection.cpp" />
+    <ClCompile Include="patches\VerticalSens.cpp" />
+    <ClCompile Include="patches\WaterflowTimer.cpp" />
+    <ClCompile Include="config.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Patches.cpp" />
-    <ClCompile Include="performance\DistantTreeCache.cpp" />
-    <ClCompile Include="performance\GlobalFormTableCache.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="bugs\DoublePerkApply.h" />
-    <ClInclude Include="bugs\SlowTimeCameraMove.h" />
-    <ClInclude Include="bugs\TreeReflections.h" />
-    <ClInclude Include="bugs\WaterflowTimer.h" />
-    <ClInclude Include="Patches.h" />
-    <ClInclude Include="performance\GlobalFormTableCache.h" />
-    <ClInclude Include="performance\DistantTreeCache.h" />
+    <ClInclude Include="lib\cuckoo\cuckoohash_config.hh" />
+    <ClInclude Include="lib\cuckoo\cuckoohash_map.hh" />
+    <ClInclude Include="lib\cuckoo\cuckoohash_util.hh" />
+    <ClInclude Include="lib\cuckoo\libcuckoo_bucket_container.hh" />
+    <ClInclude Include="patches\DoublePerkApply.h" />
+    <ClInclude Include="patches\FormCaching.h" />
+    <ClInclude Include="patches\SlowTimeCameraMove.h" />
+    <ClInclude Include="patches\TreeReflection.h" />
+    <ClInclude Include="patches\WaterflowTimer.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="lib\INIReader.h" />
+    <ClInclude Include="patches.h" />
     <ClInclude Include="TES\BSTArray.h" />
     <ClInclude Include="TES\BSTHashMap.h" />
     <ClInclude Include="TES\BSTScatterTable.h" />
