@@ -127,6 +127,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="exports.def" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\skse64\skse64.vcxproj">

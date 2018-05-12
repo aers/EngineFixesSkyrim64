@@ -3,7 +3,7 @@
 
 namespace SlowTimeCameraMove
 {
-	// 0F 28 C4 F3 0F 59 1D ? ? ? ?
+	// 40 53 48 83 EC 50 F3 0F 10 51 ? 48 8B D9 +0x2B, +0x92, +0x1F9
 	RelocAddr<uintptr_t> CameraMove_Timer1(0x00850A7F); // +0x4
 	RelocAddr<uintptr_t> CameraMove_Timer2(0x00850AE6); // +0x4
 	RelocAddr<uintptr_t> CameraMove_Timer3(0x00850C4D); // +0x4

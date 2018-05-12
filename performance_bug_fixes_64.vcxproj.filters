@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tes">

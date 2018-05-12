@@ -103,8 +103,14 @@ extern "C" {
 		if (config::patchFormCaching)
 			FormCaching::Patch();
 
+		if (config::patchDoublePerkApply)
+			DoublePerkApply::Patch();
+
 		if (config::patchSlowTimeCameraMovement)
 			SlowTimeCameraMove::Patch();
+
+		if (config::patchWaterflowTimer)
+			WaterflowTimer::Patch();
 
 		if (config::patchTreeReflections)
 			TreeReflection::Patch();
