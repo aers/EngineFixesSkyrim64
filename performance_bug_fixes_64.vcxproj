@@ -138,6 +138,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="patches\BSReadWriteLockCustom.cpp" />
     <ClCompile Include="patches\DoublePerkApply.cpp" />
     <ClCompile Include="patches\FormCaching.cpp" />
     <ClCompile Include="patches\SlowTimeCameraMove.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="lib\cuckoo\cuckoohash_map.hh" />
     <ClInclude Include="lib\cuckoo\cuckoohash_util.hh" />
     <ClInclude Include="lib\cuckoo\libcuckoo_bucket_container.hh" />
+    <ClInclude Include="patches\BSReadWriteLockCustom.h" />
     <ClInclude Include="patches\DoublePerkApply.h" />
     <ClInclude Include="patches\FormCaching.h" />
     <ClInclude Include="patches\SlowTimeCameraMove.h" />

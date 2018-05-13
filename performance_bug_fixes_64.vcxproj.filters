@@ -21,6 +21,9 @@
     <ClCompile Include="patches\VerticalLookSensitivity.cpp">
       <Filter>patches</Filter>
     </ClCompile>
+    <ClCompile Include="patches\BSReadWriteLockCustom.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -68,6 +71,9 @@
       <Filter>patches</Filter>
     </ClInclude>
     <ClInclude Include="patches\VerticalLookSensitivity.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\BSReadWriteLockCustom.h">
       <Filter>patches</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "patches/FormCaching.h"
+#include "patches/BSReadWriteLockCustom.h"
 
 #include "patches/DoublePerkApply.h"
 #include "patches/SlowTimeCameraMove.h"

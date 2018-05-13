@@ -93,7 +93,7 @@ extern "C" {
 
 		const std::string& runtimePath = GetRuntimeDirectory();
 
-		if (config::LoadConfig(runtimePath + R"(Data\SKSE\plugins\enginefixes.ini)"))
+		if (config::LoadConfig(runtimePath + R"(Data\SKSE\plugins\EngineFixes64.ini)"))
 			_MESSAGE("loaded configuration succesfully");
 		else
 			_MESSAGE("using default config");
@@ -102,6 +102,9 @@ extern "C" {
 
 		if (config::patchFormCaching)
 			FormCaching::Patch();
+
+		if (config::patchBSReadWriteLock)
+			BSReadWriteLockCustom::Patch();
 
 		if (config::patchDoublePerkApply)
 			DoublePerkApply::Patch();

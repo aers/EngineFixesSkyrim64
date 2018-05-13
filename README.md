@@ -38,6 +38,9 @@ WIP skse64 plugin
 
 	Tree LOD reflections don't properly use the alpha channel and show as large black boxes. While ENB fixes this as well, its included here for people who don't use ENB. I don't know the exact specifics on this fix, it was given to me by Nukem. Ideally this would be fixed in the shader itself, not the shader class.
 
+### Optional
+
+There's a replacement for the BSReadWriteLock mutex implementation included (disabled by default). I only really included it because SSE fixes has one, also disabled by default. It may or may not have performance impacts in some situations.
 ### Future Todo/Things to look into
 
 - large reference overwrite bug https://bethesda.net/community/topic/8825/editing-large-references-causes-lod-to-show-incorrectly-causing-texture-flicker
