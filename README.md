@@ -28,8 +28,6 @@ WIP skse64 plugin
 
 4. Stationary Vertical Sensitivity
 
-   NYI.
-
    Similar to above, camera movement is tied to a frame timer; the fix sets it to a constant instead.
 
 5. Waterflow Timer
@@ -38,7 +36,7 @@ WIP skse64 plugin
 
 6. Tree Reflections
 
-	Tree LOD reflections don't properly use the alpha channel and show as large black boxes. While ENB fixes this as well, its included here for people who don't use ENB. I don't know the exact specifics on this fix, it was given to me by Nukem.
+	Tree LOD reflections don't properly use the alpha channel and show as large black boxes. While ENB fixes this as well, its included here for people who don't use ENB. I don't know the exact specifics on this fix, it was given to me by Nukem. Ideally this would be fixed in the shader itself, not the shader class.
 
 ### Future Todo/Things to look into
 

@@ -142,7 +142,7 @@
     <ClCompile Include="patches\FormCaching.cpp" />
     <ClCompile Include="patches\SlowTimeCameraMove.cpp" />
     <ClCompile Include="patches\TreeReflection.cpp" />
-    <ClCompile Include="patches\VerticalSens.cpp" />
+    <ClCompile Include="patches\VerticalLookSensitivity.cpp" />
     <ClCompile Include="patches\WaterflowTimer.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="main.cpp" />
@@ -156,6 +156,7 @@
     <ClInclude Include="patches\FormCaching.h" />
     <ClInclude Include="patches\SlowTimeCameraMove.h" />
     <ClInclude Include="patches\TreeReflection.h" />
+    <ClInclude Include="patches\VerticalLookSensitivity.h" />
     <ClInclude Include="patches\WaterflowTimer.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="lib\INIReader.h" />

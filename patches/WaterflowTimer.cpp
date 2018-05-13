@@ -11,7 +11,7 @@ namespace WaterflowTimer
 	// the second always represents frametime
 	// other game timers are derived from these ones
 	// E8 ? ? ? ? 84 DB 74 24 -> +0x230
-	RelocPtr<float> FrameTimer_WithSlowTime(0x02F9294);
+	RelocPtr<float> FrameTimer_WithSlowTime(0x02F92948);
 
 	// +0x252
 	RelocAddr<uintptr_t> GameLoop_Hook(0x005B36F2);

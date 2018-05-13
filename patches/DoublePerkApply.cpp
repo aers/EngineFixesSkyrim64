@@ -1,5 +1,6 @@
 #include "../skse64_common/SafeWrite.h"
 #include "../skse64_common/BranchTrampoline.h"
+#include "../skse64_common/Relocation.h"
 
 #include "../xbyak/xbyak.h"
 
@@ -40,7 +41,7 @@ namespace DoublePerkApply
 
 		if (formid == next_formid)
 		{
-			_DMESSAGE("perk loop in formid %08X", formid);
+			//_DMESSAGE("perk loop in formid %08X", formid);
 			next_formid = 0;
 			if (formid != 0x14) // player formid = 0x14
 				val |= 0x100;

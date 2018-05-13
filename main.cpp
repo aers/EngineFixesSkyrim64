@@ -109,6 +109,9 @@ extern "C" {
 		if (config::patchSlowTimeCameraMovement)
 			SlowTimeCameraMove::Patch();
 
+		if (config::patchVerticalLookSensitivity)
+			VerticalLookSensitivity::Patch();
+
 		if (config::patchWaterflowTimer)
 			WaterflowTimer::Patch();
 

@@ -8,9 +8,6 @@
     <ClCompile Include="patches\SlowTimeCameraMove.cpp">
       <Filter>patches</Filter>
     </ClCompile>
-    <ClCompile Include="patches\VerticalSens.cpp">
-      <Filter>patches</Filter>
-    </ClCompile>
     <ClCompile Include="patches\WaterflowTimer.cpp">
       <Filter>patches</Filter>
     </ClCompile>
@@ -19,6 +16,9 @@
     </ClCompile>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="patches\FormCaching.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="patches\VerticalLookSensitivity.cpp">
       <Filter>patches</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,6 +65,9 @@
       <Filter>lib\cuckoo</Filter>
     </ClInclude>
     <ClInclude Include="patches\FormCaching.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\VerticalLookSensitivity.h">
       <Filter>patches</Filter>
     </ClInclude>
   </ItemGroup>
