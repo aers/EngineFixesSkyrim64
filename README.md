@@ -40,7 +40,17 @@ WIP skse64 plugin
 
 ### Optional
 
-There's a replacement for the BSReadWriteLock mutex implementation included (disabled by default). I only really included it because SSE fixes has one, also disabled by default. It may or may not have performance impacts in some situations.
+This stuff is marked optional because performance may vary on different hardware. If you're having stutter/freezing issues, try one or both. The memory manager fix requires the use of a skse64 preloader and I put the mutex one in there too Just Because.
+
+1. Memory Manager
+
+   This disables Skyrim's built-in memory manager for its two largest heaps. This is the commonly named "OS allocators" fix. Also replaces system memory calls with jenalloc.
+
+2. BSReadWriteLock
+
+   Replaces BSReadWriteLock mutex implementation with a custom one designed to be faster for reads.
+
+
 ### Future Todo/Things to look into
 
 - large reference overwrite bug https://bethesda.net/community/topic/8825/editing-large-references-causes-lod-to-show-incorrectly-causing-texture-flicker

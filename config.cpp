@@ -13,6 +13,9 @@ namespace config
 	// Replace BSReadWriteLock implementation
 	bool patchBSReadWriteLock = false;
 
+	// replace MemoryManager
+	bool patchMemoryManager = false;
+
 	// Ports from LE bug fixes mod
 	bool patchDoublePerkApply = true;
 	bool patchSlowTimeCameraMovement = true;
@@ -37,6 +40,7 @@ namespace config
 
 		patchFormCaching = reader.GetBoolean("FormCaching", "enabled", true);
 		patchBSReadWriteLock = reader.GetBoolean("BSReadWriteLock", "enabled", false);
+		patchMemoryManager = reader.GetBoolean("MemoryManager", "enabled", false);
 		patchDoublePerkApply = reader.GetBoolean("DoublePerkApply", "enabled", true);
 		patchSlowTimeCameraMovement = reader.GetBoolean("SlowTimeCamera", "enabled", true);
 		patchVerticalLookSensitivity = reader.GetBoolean("VerticalSensitivity", "enabled", true);

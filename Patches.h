@@ -2,6 +2,7 @@
 
 #include "patches/FormCaching.h"
 #include "patches/BSReadWriteLockCustom.h"
+#include "patches/MemoryManager.h"
 
 #include "patches/DoublePerkApply.h"
 #include "patches/SlowTimeCameraMove.h"

@@ -9,6 +9,9 @@ namespace config
 	// Replace BSReadWriteLock implementation
 	extern bool patchBSReadWriteLock;
 
+	// Replace Memory Manager
+	extern bool patchMemoryManager;
+
 	// Ports from LE bug fixes mod
 	extern bool patchDoublePerkApply;
 	extern bool patchSlowTimeCameraMovement;

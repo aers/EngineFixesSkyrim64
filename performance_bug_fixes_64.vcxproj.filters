@@ -24,6 +24,100 @@
     <ClCompile Include="patches\BSReadWriteLockCustom.cpp">
       <Filter>patches</Filter>
     </ClCompile>
+    <ClCompile Include="lib\jemalloc\arena.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\background_thread.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\base.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\bin.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\bitmap.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\ckh.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\ctl.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\div.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\extent.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\extent_dss.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\extent_mmap.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\hash.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\hooks.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\jemalloc.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\large.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\log.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\malloc_io.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\mutex.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\mutex_pool.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\nstime.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\pages.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\prng.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\prof.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\rtree.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\stats.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\sz.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\tcache.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\ticker.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\tsd.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\jemalloc\witness.c">
+      <Filter>lib\jemalloc</Filter>
+    </ClCompile>
+    <ClCompile Include="patches\MemoryManager.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -65,6 +159,9 @@
       <Filter>patches</Filter>
     </ClInclude>
     <ClInclude Include="util.h" />
+    <ClInclude Include="patches\MemoryManager.h">
+      <Filter>patches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -80,6 +177,9 @@
     </Filter>
     <Filter Include="lib">
       <UniqueIdentifier>{d6dcd680-5037-4939-98e3-1716f35c6f6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\jemalloc">
+      <UniqueIdentifier>{f2f514ff-e2da-4d54-921b-c151a91a1d4f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
