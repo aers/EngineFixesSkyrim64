@@ -46,9 +46,21 @@ namespace WaterflowTimer
 					Xbyak::Label unkDwordLabel;
 
 					// enter 5B36F2
+					// some people were crashing and while I'm pretty sure the registers dont need to be saved looking at the function in question, this was just a check to see if that was the problem
+					// (it wasnt)
+					/*
+					sub(rsp, 0x20);
+					vmovdqu(ptr[rsp], xmm0);
+					vmovdqu(ptr[rsp + 0x10], xmm1);
+					push(rax);*/
 					sub(rsp, 0x20);
 					call(ptr[rip + funcLabel]);
 					add(rsp, 0x20);
+					/*
+					pop(rax);
+					vmovdqu(xmm1, ptr[rsp + 0x10]);
+					vmovdqu(xmm0, ptr[rsp]);
+					add(rsp, 0x20);*/
 					// .text:00000001405B36F2                 mov     edx, cs : dword_142F92950
 					mov(rdx, ptr[rip + unkDwordLabel]);
 					mov(edx, dword[rdx]);

@@ -115,7 +115,8 @@ namespace FormCaching
 
 		BSReadWriteLock_UnlockRead(TESGlobalFormTableLock);
 
-		UpdateFormCache(FormId, formPointer, false);
+		if (formPointer)
+			UpdateFormCache(FormId, formPointer, false);
 
 		return formPointer;
 	}
@@ -283,6 +284,12 @@ namespace FormCaching
 	bool Patch()
 	{
 		_MESSAGE("- form caching -");
+
+		if (*(uint32_t *)LookupFormByID.GetUIntPtr() != 0x83485740)
+		{
+			_MESSAGE("sse fixes is installed and enabled. aborting patch.");
+			return false;
+		}
 
 		_MESSAGE("detouring GetFormById");
 		g_branchTrampoline.Write6Branch(LookupFormByID.GetUIntPtr(), uintptr_t(GetFormById_Hook));
