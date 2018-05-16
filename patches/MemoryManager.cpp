@@ -7,7 +7,7 @@
 namespace MemoryManager
 {
 	// E8 ? ? ? ? 89 38  ->
-	RelocAddr <uintptr_t> HeapAlloc(0x00C027700);
+	RelocAddr <uintptr_t> HeapAlloc(0x00C02770);
 	// E8 ? ? ? ? 89 77 0C ->
 	RelocAddr <uintptr_t> HeapFree(0x00C02A70);
 	// E8 ? ? ? ? 90 0F AE F0 +0x102
@@ -123,7 +123,7 @@ namespace MemoryManager
 
 		_MESSAGE("redirecting memory manager alloc and free");
 		g_branchTrampoline.Write6Branch(HeapAlloc.GetUIntPtr(), GetFnAddr(&MemoryManager::Alloc));
-		g_branchTrampoline.Write6Branch(HeapAlloc.GetUIntPtr(), GetFnAddr(&MemoryManager::Free));
+		g_branchTrampoline.Write6Branch(HeapFree.GetUIntPtr(), GetFnAddr(&MemoryManager::Free));
 
 		_MESSAGE("success");
 
