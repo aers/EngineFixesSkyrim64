@@ -305,7 +305,7 @@ namespace FormCaching
 		}
 
 		_MESSAGE("detouring GetFormById");
-		g_branchTrampoline.Write6Branch(LookupFormByID.GetUIntPtr(), uintptr_t(GetFormById_Hook));
+		g_branchTrampoline.Write6Branch(LookupFormByID.GetUIntPtr(), GetFnAddr(GetFormById_Hook));
 		_MESSAGE("done");
 
 		// TODO: write a generic detour instead
@@ -432,7 +432,7 @@ namespace FormCaching
 		_MESSAGE("done");
 		
 		_MESSAGE("detouring UpdateLODAlphaFade");
-		g_branchTrampoline.Write6Branch(UpdateLODAlphaFade_orig.GetUIntPtr(), uintptr_t(UpdateLODAlphaFade_Hook));
+		g_branchTrampoline.Write6Branch(UpdateLODAlphaFade_orig.GetUIntPtr(), GetFnAddr(UpdateLODAlphaFade_Hook));
 		_MESSAGE("done");
 
 		_MESSAGE("success");

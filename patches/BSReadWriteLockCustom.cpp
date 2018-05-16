@@ -3,6 +3,7 @@
 
 #include "BSReadWriteLockCustom.h"
 #include "engine_fixes_64/util.h"
+#include "skse64_common/Utilities.h"
 
 // thx Nukem9 https://github.com/Nukem9/SykrimSETest/blob/master/skyrim64_test/src/patches/TES/BSReadWriteLock.cpp
 namespace BSReadWriteLockCustom
@@ -129,16 +130,16 @@ namespace BSReadWriteLockCustom
 	{
 		_MESSAGE("- custom bsreadwritelock (mutex) -");
 		_MESSAGE("detouring functions");
-		ReplaceFunctionClass(BSReadWriteLock_Ctor.GetUIntPtr(), &BSReadWriteLock::__ctor__);
-		ReplaceFunctionClass(BSReadWriteLock_LockForRead.GetUIntPtr(), &BSReadWriteLock::LockForRead);
-		ReplaceFunctionClass(BSReadWriteLock_LockForWrite.GetUIntPtr(), &BSReadWriteLock::LockForWrite);
-		ReplaceFunctionClass(BSReadWriteLock_LockForReadAndWrite.GetUIntPtr(), &BSReadWriteLock::LockForReadAndWrite);
-		ReplaceFunctionClass(BSReadWriteLock_TryLockForWrite.GetUIntPtr(), &BSReadWriteLock::TryLockForWrite);		
-		ReplaceFunctionClass(BSReadWriteLock_UnlockRead.GetUIntPtr(), &BSReadWriteLock::UnlockRead);
-		ReplaceFunctionClass(BSReadWriteLock_UnlockWrite.GetUIntPtr(), &BSReadWriteLock::UnlockWrite);
-		ReplaceFunctionClass(BSReadWriteLock_IsWritingThread.GetUIntPtr(), &BSReadWriteLock::IsWritingThread);
-		ReplaceFunctionClass(BSAutoReadAndWriteLock_Initialize.GetUIntPtr(), &BSAutoReadAndWriteLock::Initialize);
-		ReplaceFunctionClass(BSAutoReadAndWriteLock_Deinitialize.GetUIntPtr(), &BSAutoReadAndWriteLock::Deinitialize);
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_Ctor.GetUIntPtr(), GetFnAddr(BSReadWriteLock::__ctor__));
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_LockForRead.GetUIntPtr(), GetFnAddr(&BSReadWriteLock::LockForRead));
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_LockForWrite.GetUIntPtr(), GetFnAddr(&BSReadWriteLock::LockForWrite));
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_LockForReadAndWrite.GetUIntPtr(), GetFnAddr(&BSReadWriteLock::LockForReadAndWrite));
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_TryLockForWrite.GetUIntPtr(), GetFnAddr(&BSReadWriteLock::TryLockForWrite));		
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_UnlockRead.GetUIntPtr(), GetFnAddr(&BSReadWriteLock::UnlockRead));
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_UnlockWrite.GetUIntPtr(), GetFnAddr(&BSReadWriteLock::UnlockWrite));
+		g_branchTrampoline.Write6Branch(BSReadWriteLock_IsWritingThread.GetUIntPtr(), GetFnAddr(&BSReadWriteLock::IsWritingThread));
+		g_branchTrampoline.Write6Branch(BSAutoReadAndWriteLock_Initialize.GetUIntPtr(), GetFnAddr(&BSAutoReadAndWriteLock::Initialize));
+		g_branchTrampoline.Write6Branch(BSAutoReadAndWriteLock_Deinitialize.GetUIntPtr(), GetFnAddr(&BSAutoReadAndWriteLock::Deinitialize));
 		_MESSAGE("success");
 		return true;
 	}

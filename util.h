@@ -82,9 +82,3 @@ static bool VersionStrToInt(const std::string & verStr, UInt64 * out)
 
 	return true;
 }
-
-template<typename T>
-void ReplaceFunctionClass(uintptr_t ptr, T Detour)
-{
-	g_branchTrampoline.Write6Branch(ptr, (uintptr_t) *(uint8_t **)&Detour);
-}
