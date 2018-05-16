@@ -128,6 +128,12 @@ namespace BSReadWriteLockCustom
 
 	bool Patch()
 	{
+		if (*(uint32_t *)BSReadWriteLock_LockForRead.GetUIntPtr() != 0x83485740)
+		{
+			_MESSAGE("sse fixes is installed and enabled. aborting mutex patch.");
+			return false;
+		}
+
 		_MESSAGE("- custom bsreadwritelock (mutex) -");
 		_MESSAGE("detouring functions");
 		g_branchTrampoline.Write6Branch(BSReadWriteLock_Ctor.GetUIntPtr(), GetFnAddr(BSReadWriteLock::__ctor__));

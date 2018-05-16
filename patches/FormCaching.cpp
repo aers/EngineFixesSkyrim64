@@ -300,7 +300,7 @@ namespace FormCaching
 
 		if (*(uint32_t *)LookupFormByID.GetUIntPtr() != 0x83485740)
 		{
-			_MESSAGE("sse fixes is installed and enabled. aborting patch.");
+			_MESSAGE("sse fixes is installed and enabled. aborting form cache patch.");
 			return false;
 		}
 

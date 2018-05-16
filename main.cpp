@@ -135,8 +135,6 @@ extern "C" {
 				return false;
 		}
 
-		_MESSAGE("patching game engine");
-
 		if (config::patchFormCaching)
 			FormCaching::Patch();
 
