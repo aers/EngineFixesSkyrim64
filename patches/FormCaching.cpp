@@ -8,7 +8,8 @@
 
 #include "../../xbyak/xbyak.h"
 
-#include "../lib/cuckoo/cuckoohash_map.hh"
+#include "tbb/concurrent_hash_map.h"
+
 #include "../tes/BSTHashMap.h"
 #include "FormCaching.h"
 
@@ -58,8 +59,8 @@ namespace FormCaching
 	RelocAddr<Float2Half_> Float2Half(0x00D42750);
 
 	// our maps
-	cuckoohash_map<uint32_t, TESForm *> globalFormCacheMap[TES_FORM_MASTER_COUNT];
-	cuckoohash_map<uint32_t, TESObjectREFR *> referencesFormCache;
+	tbb::concurrent_hash_map<uint32_t, TESForm *> globalFormCacheMap[TES_FORM_MASTER_COUNT];
+	tbb::concurrent_hash_map<uint32_t, TESObjectREFR *> referencesFormCache;
 
 	// no meaningful speedup
 	// #define BITMAP_TEST
@@ -85,7 +86,7 @@ namespace FormCaching
 		if (Invalidate)
 			globalFormCacheMap[masterId].erase(baseId);
 		else
-			globalFormCacheMap[masterId].insert(baseId, Value);
+			globalFormCacheMap[masterId].insert(std::make_pair(baseId, Value));
 
 		InvalidateCachedForm(FormId);
 	}
@@ -98,9 +99,11 @@ namespace FormCaching
 		const unsigned int baseId = (FormId & 0x00FFFFFF);
 
 		{
-			if (globalFormCacheMap[masterId].find(baseId, formPointer))
+			tbb::concurrent_hash_map<uint32_t, TESForm *>::accessor accessor;
+
+			if (globalFormCacheMap[masterId].find(accessor, baseId))
 			{
-				return formPointer;
+				formPointer = accessor->second;
 			}
 		}
 
@@ -148,16 +151,28 @@ namespace FormCaching
 				// Check if this instance was cached, otherwise search each plugin
 				if (!found)
 				{
-					if (referencesFormCache.find(maskedFormId, refrObject))
+					tbb::concurrent_hash_map<uint32_t, TESObjectREFR *>::accessor accessor;
+
+					if (referencesFormCache.find(accessor, maskedFormId))
+					{
+						refrObject = accessor->second;			
 						found = true;
+					}
 				}
 				if (!found)
-				{
 #endif
 #ifndef BITMAP_TEST
-				if (!referencesFormCache.find(maskedFormId, refrObject))
 				{
+					tbb::concurrent_hash_map<uint32_t, TESObjectREFR *>::accessor accessor;
+
+					if (referencesFormCache.find(accessor, maskedFormId))
+					{
+						refrObject = accessor->second;
+					}
+				}
+				if (!refrObject)
 #endif
+				{
 					// Find first valid tree object by ESP/ESM load order
 					for (int k = 0; k < DataHandler::GetSingleton()->modList.loadedMods.count; k++)
 					{
@@ -191,7 +206,7 @@ namespace FormCaching
 					else
 #endif
 						// Insert even if it's a null pointer
-						referencesFormCache.insert(maskedFormId, refrObject);
+						referencesFormCache.insert(std::make_pair(maskedFormId, refrObject));
 				}
 
 				bool fullyHidden = false;

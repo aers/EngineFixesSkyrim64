@@ -149,10 +149,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lib\cuckoo\cuckoohash_config.hh" />
-    <ClInclude Include="lib\cuckoo\cuckoohash_map.hh" />
-    <ClInclude Include="lib\cuckoo\cuckoohash_util.hh" />
-    <ClInclude Include="lib\cuckoo\libcuckoo_bucket_container.hh" />
     <ClInclude Include="patches\BSReadWriteLockCustom.h" />
     <ClInclude Include="patches\DoublePerkApply.h" />
     <ClInclude Include="patches\FormCaching.h" />

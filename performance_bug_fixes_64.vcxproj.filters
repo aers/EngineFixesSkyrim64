@@ -55,18 +55,6 @@
     </ClInclude>
     <ClInclude Include="config.h" />
     <ClInclude Include="patches.h" />
-    <ClInclude Include="lib\cuckoo\cuckoohash_config.hh">
-      <Filter>lib\cuckoo</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\cuckoo\cuckoohash_map.hh">
-      <Filter>lib\cuckoo</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\cuckoo\cuckoohash_util.hh">
-      <Filter>lib\cuckoo</Filter>
-    </ClInclude>
-    <ClInclude Include="lib\cuckoo\libcuckoo_bucket_container.hh">
-      <Filter>lib\cuckoo</Filter>
-    </ClInclude>
     <ClInclude Include="patches\FormCaching.h">
       <Filter>patches</Filter>
     </ClInclude>
@@ -91,9 +79,6 @@
     </Filter>
     <Filter Include="lib">
       <UniqueIdentifier>{d6dcd680-5037-4939-98e3-1716f35c6f6d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lib\cuckoo">
-      <UniqueIdentifier>{6fed7191-6239-4db7-b551-c3e6d8dffc70}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
