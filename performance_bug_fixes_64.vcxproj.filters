@@ -76,6 +76,7 @@
     <ClInclude Include="patches\BSReadWriteLockCustom.h">
       <Filter>patches</Filter>
     </ClInclude>
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
