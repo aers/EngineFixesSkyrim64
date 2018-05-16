@@ -6,8 +6,10 @@
 
 #include "config.h"
 #include "patches.h"
+#include <cinttypes>
 
 IDebugLog	gLog;
+bool		preloaded = false;
 
 // borrowed from expired https://github.com/expired6978/F4SEPlugins/blob/master/f4ee/main.cpp
 const std::string & GetRuntimeDirectory(void)
@@ -46,17 +48,43 @@ const std::string & GetRuntimeDirectory(void)
 	return s_runtimeDirectory;
 }
 
-extern "C" {
-	bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
-	{
-		gLog.OpenRelative(CSIDL_MYDOCUMENTS, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes64.log)");
+void SetupLog()
+{
+	gLog.OpenRelative(CSIDL_MYDOCUMENTS, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes64.log)");
 #ifdef _DEBUG
-		gLog.SetLogLevel(IDebugLog::kLevel_DebugMessage);
+	gLog.SetLogLevel(IDebugLog::kLevel_DebugMessage);
 #else
-		gLog.SetLogLevel(IDebugLog::kLevel_Message);
+	gLog.SetLogLevel(IDebugLog::kLevel_Message);
 #endif		
 
-		_MESSAGE("EngineFixes64");
+	_MESSAGE("EngineFixes64");
+}
+
+void LoadConfig()
+{
+	const std::string& runtimePath = GetRuntimeDirectory();
+
+	if (config::LoadConfig(runtimePath + R"(Data\SKSE\plugins\EngineFixes64.ini)"))
+		_MESSAGE("loaded configuration succesfully");
+	else
+		_MESSAGE("using default config");
+}
+
+extern "C" {
+	// preloader
+	void Initialize()
+	{
+		preloaded = true;
+		SetupLog();
+		LoadConfig();
+
+		_MESSAGE("plugin was preloaded, allowing preload-required features");
+	}
+
+	bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
+	{
+		if (!preloaded)
+			SetupLog();
 
 		// populate info structure
 		info->infoVersion = PluginInfo::kInfoVersion;
@@ -91,13 +119,9 @@ extern "C" {
 			return false;
 		}
 
-		const std::string& runtimePath = GetRuntimeDirectory();
+		if (!preloaded)
+			LoadConfig();
 
-		if (config::LoadConfig(runtimePath + R"(Data\SKSE\plugins\EngineFixes64.ini)"))
-			_MESSAGE("loaded configuration succesfully");
-		else
-			_MESSAGE("using default config");
-	
 		_MESSAGE("patching game engine");
 
 		if (config::patchFormCaching)
