@@ -2,13 +2,14 @@
 #include "../../skse64_common/BranchTrampoline.h"
 
 #include "BSReadWriteLockCustom.h"
+#include "engine_fixes_64/util.h"
 
 // thx Nukem9 https://github.com/Nukem9/SykrimSETest/blob/master/skyrim64_test/src/patches/TES/BSReadWriteLock.cpp
 namespace BSReadWriteLockCustom
 {
 	// all these functions are in order
 	// E8 ? ? ? ? 89 37  ->
-	// RelocAddr<uintptr_t> BSReadWriteLock_Ctor(0x00C077C0);
+	RelocAddr<uintptr_t> BSReadWriteLock_Ctor(0x00C077C0);
 	RelocAddr<uintptr_t> BSReadWriteLock_LockForRead(0x00C077E0);
 	RelocAddr<uintptr_t> BSReadWriteLock_LockForWrite(0x00C07860);
 	// unused function 0x00C078F0
@@ -21,118 +22,123 @@ namespace BSReadWriteLockCustom
 	RelocAddr<uintptr_t> BSAutoReadAndWriteLock_Initialize(0x00C07B00);
 	RelocAddr<uintptr_t> BSAutoReadAndWriteLock_Deinitialize(0x00C07B50);
 
-	bool IsWritingThread(BSReadWriteLock * thisPtr)
+	BSReadWriteLock::BSReadWriteLock()
 	{
-		return thisPtr->m_ThreadId == GetCurrentThreadId();
 	}
 
-	bool TryLockForRead(BSReadWriteLock * thisPtr)
+	BSReadWriteLock::~BSReadWriteLock()
 	{
-		if (IsWritingThread(thisPtr))
+	}
+
+	void BSReadWriteLock::LockForRead()
+	{
+		for (uint32_t count = 0; !TryLockForRead();)
+		{
+			if (++count > 1000)
+				YieldProcessor();
+		}
+	}
+
+	void BSReadWriteLock::UnlockRead()
+	{
+		if (IsWritingThread())
+			return;
+
+		m_Bits.fetch_add(-READER, std::memory_order_release);
+	}
+
+	bool BSReadWriteLock::TryLockForRead()
+	{
+		if (IsWritingThread())
 			return true;
 
 		// fetch_add is considerably (100%) faster than compare_exchange,
 		// so here we are optimizing for the common (lock success) case.
-		int16_t value = thisPtr->m_Bits.fetch_add(BSReadWriteLock::READER, std::memory_order_acquire);
+		int16_t value = m_Bits.fetch_add(READER, std::memory_order_acquire);
 
-		if (value & BSReadWriteLock::WRITER)
+		if (value & WRITER)
 		{
-			thisPtr->m_Bits.fetch_add(-BSReadWriteLock::READER, std::memory_order_release);
+			m_Bits.fetch_add(-READER, std::memory_order_release);
 			return false;
 		}
 
 		return true;
 	}
 
-	void LockForRead(BSReadWriteLock * thisPtr)
+	void BSReadWriteLock::LockForWrite()
 	{
-		for (uint32_t count = 0; !TryLockForRead(thisPtr);)
+		for (uint32_t count = 0; !TryLockForWrite();)
 		{
 			if (++count > 1000)
 				YieldProcessor();
 		}
 	}
 
-	void UnlockRead(BSReadWriteLock * thisPtr)
+	void BSReadWriteLock::UnlockWrite()
 	{
-		if (IsWritingThread(thisPtr))
+		if (--m_WriteCount > 0)
 			return;
 
-		thisPtr->m_Bits.fetch_add(-BSReadWriteLock::READER, std::memory_order_release);
+		m_ThreadId.store(0, std::memory_order_release);
+		m_Bits.fetch_and(~WRITER, std::memory_order_release);
 	}
 
-
-	bool TryLockForWrite(BSReadWriteLock * thisPtr)
+	bool BSReadWriteLock::TryLockForWrite()
 	{
-		if (IsWritingThread(thisPtr))
+		if (IsWritingThread())
 		{
-			thisPtr->m_WriteCount++;
+			m_WriteCount++;
 			return true;
 		}
 
 		int16_t expect = 0;
-		if (thisPtr->m_Bits.compare_exchange_strong(expect, BSReadWriteLock::WRITER, std::memory_order_acq_rel))
+		if (m_Bits.compare_exchange_strong(expect, WRITER, std::memory_order_acq_rel))
 		{
-			thisPtr->m_WriteCount = 1;
-			thisPtr->m_ThreadId.store(GetCurrentThreadId(), std::memory_order_release);
+			m_WriteCount = 1;
+			m_ThreadId.store(GetCurrentThreadId(), std::memory_order_release);
 			return true;
 		}
 
 		return false;
 	}
 
-	void LockForWrite(BSReadWriteLock * thisPtr)
-	{
-		for (uint32_t count = 0; !TryLockForWrite(thisPtr);)
-		{
-			if (++count > 1000)
-				YieldProcessor();
-		}
-	}
-
-	void UnlockWrite(BSReadWriteLock * thisPtr)
-	{
-		if (--thisPtr->m_WriteCount > 0)
-			return;
-
-		thisPtr->m_ThreadId.store(0, std::memory_order_release);
-		thisPtr->m_Bits.fetch_and(~BSReadWriteLock::WRITER, std::memory_order_release);
-	}
-
-
-
-	void LockForReadAndWrite(BSReadWriteLock * thisPtr)
+	void BSReadWriteLock::LockForReadAndWrite()
 	{
 		// This is only called from BSAutoReadAndWriteLock (no-op, it's always a write lock now)
 	}
 
+	bool BSReadWriteLock::IsWritingThread()
+	{
+		return m_ThreadId == GetCurrentThreadId();
+	}
 
-	 BSAutoReadAndWriteLock * Initialize(BSAutoReadAndWriteLock * thisPtr, BSReadWriteLock *Child)
-	 {
-	 	thisPtr->m_Lock = Child;
-	 	LockForWrite(thisPtr->m_Lock);
- 
-	 	return thisPtr;
-	 }
- 
-	 void Deinitialize(BSAutoReadAndWriteLock * thisPtr)
-	 {
-	 	UnlockWrite(thisPtr->m_Lock);
-	 }
+	BSAutoReadAndWriteLock *BSAutoReadAndWriteLock::Initialize(BSReadWriteLock *Child)
+	{
+		m_Lock = Child;
+		m_Lock->LockForWrite();
+
+		return this;
+	}
+
+	void BSAutoReadAndWriteLock::Deinitialize()
+	{
+		m_Lock->UnlockWrite();
+	}
 
 	bool Patch()
 	{
 		_MESSAGE("- custom bsreadwritelock (mutex) -");
 		_MESSAGE("detouring functions");
-		g_branchTrampoline.Write6Branch(BSReadWriteLock_LockForRead.GetUIntPtr(), uintptr_t(LockForRead));
-		g_branchTrampoline.Write6Branch(BSReadWriteLock_LockForWrite.GetUIntPtr(), uintptr_t(LockForWrite));
-		g_branchTrampoline.Write6Branch(BSReadWriteLock_LockForReadAndWrite.GetUIntPtr(), uintptr_t(LockForReadAndWrite));
-		g_branchTrampoline.Write6Branch(BSReadWriteLock_TryLockForWrite.GetUIntPtr(), uintptr_t(TryLockForWrite));
-		g_branchTrampoline.Write6Branch(BSReadWriteLock_UnlockRead.GetUIntPtr(), uintptr_t(UnlockRead));
-		g_branchTrampoline.Write6Branch(BSReadWriteLock_UnlockWrite.GetUIntPtr(), uintptr_t(UnlockWrite));
-		g_branchTrampoline.Write6Branch(BSReadWriteLock_IsWritingThread.GetUIntPtr(), uintptr_t(IsWritingThread));
-		g_branchTrampoline.Write6Branch(BSAutoReadAndWriteLock_Initialize.GetUIntPtr(), uintptr_t(Initialize));
-		g_branchTrampoline.Write6Branch(BSAutoReadAndWriteLock_Deinitialize.GetUIntPtr(), uintptr_t(Deinitialize));
+		ReplaceFunctionClass(BSReadWriteLock_Ctor.GetUIntPtr(), &BSReadWriteLock::__ctor__);
+		ReplaceFunctionClass(BSReadWriteLock_LockForRead.GetUIntPtr(), &BSReadWriteLock::LockForRead);
+		ReplaceFunctionClass(BSReadWriteLock_LockForWrite.GetUIntPtr(), &BSReadWriteLock::LockForWrite);
+		ReplaceFunctionClass(BSReadWriteLock_LockForReadAndWrite.GetUIntPtr(), &BSReadWriteLock::LockForReadAndWrite);
+		ReplaceFunctionClass(BSReadWriteLock_TryLockForWrite.GetUIntPtr(), &BSReadWriteLock::TryLockForWrite);		
+		ReplaceFunctionClass(BSReadWriteLock_UnlockRead.GetUIntPtr(), &BSReadWriteLock::UnlockRead);
+		ReplaceFunctionClass(BSReadWriteLock_UnlockWrite.GetUIntPtr(), &BSReadWriteLock::UnlockWrite);
+		ReplaceFunctionClass(BSReadWriteLock_IsWritingThread.GetUIntPtr(), &BSReadWriteLock::IsWritingThread);
+		ReplaceFunctionClass(BSAutoReadAndWriteLock_Initialize.GetUIntPtr(), &BSAutoReadAndWriteLock::Initialize);
+		ReplaceFunctionClass(BSAutoReadAndWriteLock_Deinitialize.GetUIntPtr(), &BSAutoReadAndWriteLock::Deinitialize);
 		_MESSAGE("success");
 		return true;
 	}
