@@ -104,6 +104,7 @@ namespace FormCaching
 			if (globalFormCacheMap[masterId].find(accessor, baseId))
 			{
 				formPointer = accessor->second;
+				return formPointer;
 			}
 		}
 
@@ -147,7 +148,6 @@ namespace FormCaching
 					found = true;
 				}
 
-
 				// Check if this instance was cached, otherwise search each plugin
 				if (!found)
 				{
@@ -162,15 +162,13 @@ namespace FormCaching
 				if (!found)
 #endif
 #ifndef BITMAP_TEST
-				{
-					tbb::concurrent_hash_map<uint32_t, TESObjectREFR *>::accessor accessor;
+				tbb::concurrent_hash_map<uint32_t, TESObjectREFR *>::accessor accessor;
 
-					if (referencesFormCache.find(accessor, maskedFormId))
-					{
-						refrObject = accessor->second;
-					}
+				if (referencesFormCache.find(accessor, maskedFormId))
+				{
+					refrObject = accessor->second;
 				}
-				if (!refrObject)
+				else
 #endif
 				{
 					// Find first valid tree object by ESP/ESM load order

@@ -67,7 +67,7 @@ void LoadConfig()
 	const std::string& runtimePath = GetRuntimeDirectory();
 
 	if (config::LoadConfig(runtimePath + R"(Data\SKSE\plugins\EngineFixes64.ini)"))
-		_MESSAGE("loaded configuration succesfully");
+		_MESSAGE("loaded configuration successfully");
 	else
 		_MESSAGE("using default config");
 }
