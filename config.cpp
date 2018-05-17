@@ -28,6 +28,9 @@ namespace config
 	// fix blocky reflections on tree LODs
 	bool patchTreeReflections = false;
 
+	// snow sparkle
+	bool patchSnowSparkle = true;
+
 	bool LoadConfig(const std::string& path)
 	{
 		INIReader reader(path);
@@ -47,6 +50,7 @@ namespace config
 		patchWaterflowTimer = reader.GetBoolean("Waterflow", "enabled", true);
 		waterflowTimescale = reader.GetReal("Waterflow", "timescale", 20.0);
 		patchTreeReflections = reader.GetBoolean("TreeReflection", "enabled", false);
+		patchSnowSparkle = reader.GetBoolean("SnowSparkle", "enabled", true);
 
 		return true;
 	}

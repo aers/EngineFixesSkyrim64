@@ -10,3 +10,4 @@
 
 #include "patches/WaterflowTimer.h"
 #include "patches/TreeReflection.h"
+#include "patches/SnowSparkle.h"

@@ -94,7 +94,12 @@ extern "C" {
 			return;
 
 		if (config::patchMemoryManager)
-			MemoryManager::Patch();
+		{
+			if (config::patchSnowSparkle)
+				MemoryManager::Patch();
+			else
+				_MESSAGE("memory manager patch enabled but snow sparkle patch is not, will not patch due to game crashes");
+		}
 
 		if (config::patchBSReadWriteLock)
 			BSReadWriteLockCustom::Patch();
@@ -152,6 +157,9 @@ extern "C" {
 
 		if (config::patchTreeReflections)
 			TreeReflection::Patch();
+
+		if (config::patchSnowSparkle)
+			SnowSparkle::Patch();
 
 		_MESSAGE("all patches applied");
 

@@ -326,6 +326,7 @@
     <ClCompile Include="patches\DoublePerkApply.cpp" />
     <ClCompile Include="patches\FormCaching.cpp" />
     <ClCompile Include="patches\SlowTimeCameraMove.cpp" />
+    <ClCompile Include="patches\SnowSparkle.cpp" />
     <ClCompile Include="patches\TreeReflection.cpp" />
     <ClCompile Include="patches\VerticalLookSensitivity.cpp" />
     <ClCompile Include="patches\WaterflowTimer.cpp" />
@@ -339,6 +340,7 @@
     <ClInclude Include="patches\DoublePerkApply.h" />
     <ClInclude Include="patches\FormCaching.h" />
     <ClInclude Include="patches\SlowTimeCameraMove.h" />
+    <ClInclude Include="patches\SnowSparkle.h" />
     <ClInclude Include="patches\TreeReflection.h" />
     <ClInclude Include="patches\VerticalLookSensitivity.h" />
     <ClInclude Include="patches\WaterflowTimer.h" />

@@ -22,6 +22,8 @@ namespace config
 	extern float waterflowTimescale;
 	// fix blocky reflections on tree LODs
 	extern bool patchTreeReflections;
+	// snow sparkle 
+	extern bool patchSnowSparkle;
 
 	bool LoadConfig(const std::string& path);
 }
