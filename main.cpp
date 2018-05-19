@@ -132,14 +132,13 @@ extern "C" {
 
 	bool SKSEPlugin_Load(const SKSEInterface * skse) 
 	{
-
 		if (!preloaded)
 		{
 			LoadConfig();
 			if (!SetupTrampolines())
 				return false;
 		}
-
+		
 		if (config::patchFormCaching)
 			FormCaching::Patch();
 
