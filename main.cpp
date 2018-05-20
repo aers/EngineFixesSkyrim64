@@ -160,6 +160,9 @@ extern "C" {
 		if (config::patchSnowSparkle)
 			SnowSparkle::Patch();
 
+		if (config::patchSaveAddedSoundCategories)
+			SaveAddedSoundCategories::Patch();
+
 		_MESSAGE("all patches applied");
 
 		return true;

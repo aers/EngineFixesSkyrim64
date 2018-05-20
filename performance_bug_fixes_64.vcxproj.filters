@@ -121,6 +121,9 @@
     <ClCompile Include="patches\SnowSparkle.cpp">
       <Filter>patches</Filter>
     </ClCompile>
+    <ClCompile Include="patches\SaveAddedSoundCategories.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -167,6 +170,12 @@
     </ClInclude>
     <ClInclude Include="patches\SnowSparkle.h">
       <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\SaveAddedSoundCategories.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="TES\BGSSoundCategory.h">
+      <Filter>tes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

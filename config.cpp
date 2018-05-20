@@ -31,6 +31,9 @@ namespace config
 	// snow sparkle
 	bool patchSnowSparkle = true;
 
+	// save sound categories that aren't in the base game to SKSE cosave
+	bool patchSaveAddedSoundCategories = true;
+
 	bool LoadConfig(const std::string& path)
 	{
 		INIReader reader(path);
@@ -51,6 +54,7 @@ namespace config
 		waterflowTimescale = reader.GetReal("Waterflow", "timescale", 20.0);
 		patchTreeReflections = reader.GetBoolean("TreeReflection", "enabled", false);
 		patchSnowSparkle = reader.GetBoolean("SnowSparkle", "enabled", true);
+		patchSaveAddedSoundCategories = reader.GetBoolean("SaveAddedSoundCategories", "enabled", true);
 
 		return true;
 	}

@@ -24,6 +24,8 @@ namespace config
 	extern bool patchTreeReflections;
 	// snow sparkle 
 	extern bool patchSnowSparkle;
+	// save sound categories that aren't in the base game to SKSE cosave
+	extern bool patchSaveAddedSoundCategories;
 
 	bool LoadConfig(const std::string& path);
 }
