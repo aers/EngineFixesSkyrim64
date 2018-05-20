@@ -7,60 +7,25 @@
 namespace MemoryManager
 {
 	// E8 ? ? ? ? 89 38  ->
-	RelocAddr <uintptr_t> HeapAlloc(0x00C02770);
+	RelocAddr <uintptr_t> MemoryManagerAlloc(0x00C02770);
 	// E8 ? ? ? ? 89 77 0C ->
-	RelocAddr <uintptr_t> HeapFree(0x00C02A70);
+	RelocAddr <uintptr_t> MemoryManagerFree(0x00C02A70);
+	// relative offsets to these are unlikely to change
+	RelocAddr <uintptr_t> ScrapHeapInit(0x00C03830);
+	RelocAddr <uintptr_t> ScrapHeapAlloc(0x00C039B0);
+	RelocAddr <uintptr_t> ScrapHeapFree(0x00C03FD0);
+	RelocAddr <uintptr_t> ScrapHeapDeInit(0x00C04190);
 	// E8 ? ? ? ? 90 0F AE F0 +0x102
 	RelocAddr <uintptr_t> InitMemoryManager(0x0059BAA0);
 	RelocAddr <uintptr_t> InitBSSmallBlockAllocator(0x0059B6D0);
-	//
-	// VS2015 CRT hijacked functions
-	//
-	MemoryManager fakeManager;
 
-	void *__fastcall hk_calloc(size_t Count, size_t Size)
+	void *Jemalloc(size_t Size, size_t Alignment = 0, bool Aligned = false, bool Zeroed = false)
 	{
-		// The allocated memory is always zeroed
-		return fakeManager.Alloc(Count * Size, 0, false);
-	}
-
-	void *__fastcall hk_malloc(size_t Size)
-	{
-		return fakeManager.Alloc(Size, 0, false);
-	}
-
-	void *__fastcall hk_aligned_malloc(size_t Size, size_t Alignment)
-	{
-		return fakeManager.Alloc(Size, (int)Alignment, true);
-	}
-
-	void __fastcall hk_free(void *Block)
-	{
-		return fakeManager.Free(Block, false);
-	}
-
-	void __fastcall hk_aligned_free(void *Block)
-	{
-		return fakeManager.Free(Block, true);
-	}
-
-	size_t __fastcall hk_msize(void *Block)
-	{
-		return je_malloc_usable_size(Block);
-	}
-
-	//
-	// Internal engine heap allocator backed by VirtualAlloc()
-	//
-	void *MemoryManager::Alloc(size_t Size, uint32_t Alignment, bool Aligned)
-	{
-
 		void *ptr = nullptr;
 
 		// Does this need to be on a certain boundary?
 		if (Aligned)
 		{
-
 			// Must be a power of 2, round it up if needed
 			if ((Alignment & (Alignment - 1)) != 0)
 			{
@@ -85,13 +50,13 @@ namespace MemoryManager
 			ptr = je_malloc(Size);
 		}
 
-		if (!ptr)
-			return nullptr;
+		if (ptr && Zeroed)
+			return memset(ptr, 0, Size);
 
-		return memset(ptr, 0, Size);
+		return ptr;
 	}
 
-	void MemoryManager::Free(void *Memory, bool Aligned)
+	void Jefree(void *Memory)
 	{
 		if (!Memory)
 			return;
@@ -99,12 +64,69 @@ namespace MemoryManager
 		je_free(Memory);
 	}
 
+	//
+	// VS2015 CRT hijacked functions
+	//
+	void *__fastcall hk_calloc(size_t Count, size_t Size)
+	{
+		// The allocated memory is always zeroed
+		return Jemalloc(Count * Size, 0, false, true);
+	}
+
+	void *__fastcall hk_malloc(size_t Size)
+	{
+		return Jemalloc(Size);
+	}
+
+	void *__fastcall hk_aligned_malloc(size_t Size, size_t Alignment)
+	{
+		return Jemalloc(Size, Alignment, true);
+	}
+
+	void __fastcall hk_free(void *Block)
+	{
+		Jefree(Block);
+	}
+
+	void __fastcall hk_aligned_free(void *Block)
+	{
+		Jefree(Block);
+	}
+
+	size_t __fastcall hk_msize(void *Block)
+	{
+		return je_malloc_usable_size(Block);
+	}
+
+	//
+	// Internal engine heap allocators backed by VirtualAlloc()
+	//
+	void *MemoryManager::Alloc(size_t Size, uint32_t Alignment, bool Aligned)
+	{
+		return Jemalloc(Size, Alignment, Aligned, true);
+	}
+
+	void MemoryManager::Free(void *Memory, bool Aligned)
+	{
+		Jefree(Memory);
+	}
+
+	void *ScrapHeap::Alloc(size_t Size, uint32_t Alignment)
+	{
+		if (Size > MAX_ALLOC_SIZE)
+			return nullptr;
+
+		return Jemalloc(Size, Alignment, Alignment != 0);
+	}
+
+	void ScrapHeap::Free(void *Memory)
+	{
+		Jefree(Memory);
+	}
+
 	bool Patch()
 	{
 		_MESSAGE("-- memory manager --");
-		bool option;
-		option = true;  je_mallctl("background_thread", nullptr, nullptr, &option, sizeof(bool));
-		option = false; je_mallctl("prof.active", nullptr, nullptr, &option, sizeof(bool));
 
 		_MESSAGE("patching CRT IAT memory functions");
 		PatchIAT(GetFnAddr(hk_calloc), "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
@@ -120,10 +142,14 @@ namespace MemoryManager
 		SafeWrite8(InitBSSmallBlockAllocator.GetUIntPtr(), 0xC3);	// [1GB] BSSmallBlockAllocator
 																	// [128MB] BSScaleformSysMemMapper is untouched due to complexity
 																	// [512MB] hkMemoryAllocator is untouched due to complexity
+		SafeWrite8(ScrapHeapInit.GetUIntPtr(), 0xC3);				// [64MB ] ScrapHeap init
+		SafeWrite8(ScrapHeapDeInit.GetUIntPtr(), 0xC3);				// [64MB ] ScrapHeap deinit
 
 		_MESSAGE("redirecting memory manager alloc and free");
-		g_branchTrampoline.Write6Branch(HeapAlloc.GetUIntPtr(), GetFnAddr(&MemoryManager::Alloc));
-		g_branchTrampoline.Write6Branch(HeapFree.GetUIntPtr(), GetFnAddr(&MemoryManager::Free));
+		g_branchTrampoline.Write6Branch(MemoryManagerAlloc.GetUIntPtr(), GetFnAddr(&MemoryManager::Alloc));
+		g_branchTrampoline.Write6Branch(MemoryManagerFree.GetUIntPtr(), GetFnAddr(&MemoryManager::Free));
+		g_branchTrampoline.Write6Branch(ScrapHeapAlloc.GetUIntPtr(), GetFnAddr(&ScrapHeap::Alloc));
+		g_branchTrampoline.Write6Branch(ScrapHeapFree.GetUIntPtr(), GetFnAddr(&ScrapHeap::Free));
 
 		_MESSAGE("success");
 

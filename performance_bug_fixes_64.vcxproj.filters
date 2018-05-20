@@ -118,7 +118,9 @@
       <Filter>patches</Filter>
     </ClCompile>
     <ClCompile Include="util.cpp" />
-    <ClCompile Include="patches\SnowSparkle.cpp" />
+    <ClCompile Include="patches\SnowSparkle.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -163,7 +165,9 @@
     <ClInclude Include="patches\MemoryManager.h">
       <Filter>patches</Filter>
     </ClInclude>
-    <ClInclude Include="patches\SnowSparkle.h" />
+    <ClInclude Include="patches\SnowSparkle.h">
+      <Filter>patches</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
