@@ -2,6 +2,9 @@
 #include "MemoryManager.h"
 #include "../util.h"
 #include <skse64_common/BranchTrampoline.h>
+#include "../../skse64/GameForms.h"
+#include "../../skse64/GameData.h"
+#include "../TES/BGSShaderParticleGeometryData.h"
 
 
 namespace MemoryManager
@@ -18,6 +21,25 @@ namespace MemoryManager
 	// E8 ? ? ? ? 90 0F AE F0 +0x102
 	RelocAddr <uintptr_t> InitMemoryManager(0x0059BAA0);
 	RelocAddr <uintptr_t> InitBSSmallBlockAllocator(0x0059B6D0);
+
+	// temporary particle fix
+	typedef bool(*BGSShaderParticleGeometryData_LoadForm_)(TES::BGSShaderParticleGeometryData * thisPtr, ModInfo * modInfo);
+	RelocAddr<BGSShaderParticleGeometryData_LoadForm_> BGSShaderParticleGeometryData_LoadForm(0x00248450);
+	RelocAddr<uintptr_t> vtbl_BGSShaderParticleGeometryData_LoadForm(0x01579FF0); // vtbl[6]
+
+	bool hk_BGSShaderParticleGeometryData_LoadForm(TES::BGSShaderParticleGeometryData * thisPtr, ModInfo * modInfo)
+	{
+		const bool retVal = BGSShaderParticleGeometryData_LoadForm(thisPtr, modInfo);
+
+		if (thisPtr->data.count >= 12)
+		{
+			const auto particleDensity = thisPtr->data[11];
+			if (particleDensity > 10.0)
+				thisPtr->data[11] = 10.0f;
+		}
+
+		return retVal;
+	}
 
 	void *Jemalloc(size_t Size, size_t Alignment = 0, bool Aligned = false, bool Zeroed = false)
 	{
@@ -151,6 +173,8 @@ namespace MemoryManager
 		g_branchTrampoline.Write6Branch(ScrapHeapAlloc.GetUIntPtr(), GetFnAddr(&ScrapHeap::Alloc));
 		g_branchTrampoline.Write6Branch(ScrapHeapFree.GetUIntPtr(), GetFnAddr(&ScrapHeap::Free));
 
+		// temp particle fix
+		SafeWrite64(vtbl_BGSShaderParticleGeometryData_LoadForm.GetUIntPtr(), GetFnAddr(hk_BGSShaderParticleGeometryData_LoadForm));
 		_MESSAGE("success");
 
 		return true;

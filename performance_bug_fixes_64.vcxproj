@@ -338,6 +338,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\Simpleini.h" />
+    <ClInclude Include="tes\BGSShaderParticleGeometryData.h" />
     <ClInclude Include="TES\BGSSoundCategory.h" />
     <ClInclude Include="patches\MemoryManager.h" />
     <ClInclude Include="patches\BSReadWriteLockCustom.h" />

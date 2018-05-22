@@ -54,7 +54,7 @@ This stuff is marked optional because performance may vary on different hardware
 
    This disables Skyrim's built-in memory manager for its two largest heaps. This is the commonly named "OS allocators" fix. Also replaces system memory calls with jenalloc. REQUIRES Snow Sparkle fix.
 
-   This will currently cause CTDs when entering Blackreach and potentially other areas due to an as-of-yet unresolved out of bounds memory read bug in Skyrim SE's renderer (BSParticleShader::SetupGeometry)
+   Currently temporarily clamps BGSShaderParticleGeometryData's ParticleDensity to 10.0 as values above that cause an out-of-bounds memory read error. Expanding the particle shader to accept higher particle density is possible but it may be intended for this value to clamp at 10 even though some weathers use values far exceeding it.
 
 2. BSReadWriteLock
 
