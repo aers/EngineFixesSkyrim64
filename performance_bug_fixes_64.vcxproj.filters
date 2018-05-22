@@ -182,6 +182,7 @@
     <None Include="exports.def" />
     <None Include="README.md" />
     <None Include="EngineFixes64.ini" />
+    <None Include="EngineFixes64_SNCT.ini" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="tes">

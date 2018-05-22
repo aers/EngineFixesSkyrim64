@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="EngineFixes64.ini" />
+    <None Include="EngineFixes64_SNCT.ini" />
     <None Include="exports.def" />
     <None Include="README.md" />
   </ItemGroup>

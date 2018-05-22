@@ -20,7 +20,7 @@ namespace SaveAddedSoundCategories
 	RelocAddr<_BGSSoundCategory_LoadForm> BGSSoundCategory_LoadForm(0x002CDB60);
 	RelocAddr<uintptr_t> vtbl_BGSSoundCategory_LoadForm(0x01591050); // ::LoadForm = vtable[6] in TESForm derived classes
 
-	typedef bool(*_BSISoundCategory_SetVolume)(uintptr_t * thisPtr, float volume);
+	typedef bool(*_BSISoundCategory_SetVolume)(BSISoundCategory * thisPtr, float volume);
 	RelocAddr<_BSISoundCategory_SetVolume> BSISoundCategory_SetVolume(0x002CE090); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
 
 	typedef bool(*_INIPrefSettingCollection_SaveFromMenu)(__int64 thisPtr, __int64 unk1, char * fileName, __int64 unk2);
@@ -59,7 +59,7 @@ namespace SaveAddedSoundCategories
 
 		if (result)
 		{
-			_MESSAGE("BGSSoundCategory_LoadForm(0x%016" PRIXPTR ", 0x%016" PRIXPTR ") - loaded sound category for formid %08X and name %s from plugin filename %s", soundCategory, modInfo, soundCategory->formID, soundCategory->fullName.GetName(), modInfo->name);
+			_MESSAGE("[%s] BGSSoundCategory_LoadForm(0x%016" PRIXPTR ", 0x%016" PRIXPTR ") - loaded sound category for formid %08X and name %s", modInfo->name, soundCategory, modInfo, soundCategory->formID, soundCategory->fullName.GetName());
 			if (soundCategory->flags & 0x2)
 			{
 				_MESSAGE("menu flag set, flagging for save");
@@ -71,6 +71,11 @@ namespace SaveAddedSoundCategories
 				}
 				SoundCategoryInfo snct(modInfo->name, localFormId, soundCategory);
 				soundCategories.insert(std::make_pair(soundCategory->formID, snct));
+			}
+			else
+			{
+				_MESSAGE("menu flag not set, unflagging for save if form was flagged for save in prior plugin");
+				soundCategories.erase(soundCategory->formID);
 			}
 		}
 		else
@@ -93,9 +98,9 @@ namespace SaveAddedSoundCategories
 			if (vol != -1.0)
 			{
 				_MESSAGE("setting volume for formid %08X", soundCategory.second.Category->formID);
-				uintptr_t * soundCatInterfacePtr = reinterpret_cast<uintptr_t*>(soundCategory.second.Category) + 0x6; // BSISoundCategory = 0x30 in BGSSoundCategory
+				BSISoundCategory * soundCatInterface = &soundCategory.second.Category->soundCategory;
 
-				BSISoundCategory_SetVolume(soundCatInterfacePtr, static_cast<float>(vol));
+				BSISoundCategory_SetVolume(soundCatInterface, static_cast<float>(vol));
 			}
 		}
 	}
