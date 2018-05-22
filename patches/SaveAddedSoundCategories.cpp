@@ -2,7 +2,6 @@
 #include "../../skse64/GameForms.h"
 #include "../../skse64/GameData.h"
 
-#include "../lib/INIReader.h"
 #include "../TES/BGSSoundCategory.h"
 #include <cinttypes>
 
@@ -18,7 +17,7 @@ namespace SaveAddedSoundCategories
 
 	bool hk_INIPrefSettingCollection_SaveFromMenu(__int64 thisPtr, __int64 unk1, char * fileName, __int64 unk2)
 	{
-		bool retVal = INIPrefSettingCollection_SaveFromMenu(thisPtr, unk1, fileName, unk2);
+		const bool retVal = INIPrefSettingCollection_SaveFromMenu(thisPtr, unk1, fileName, unk2);
 
 		_MESSAGE("SaveFromMenu called filename %s", fileName);
 

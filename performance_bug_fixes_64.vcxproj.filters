@@ -144,9 +144,6 @@
     <ClInclude Include="patches\WaterflowTimer.h">
       <Filter>patches</Filter>
     </ClInclude>
-    <ClInclude Include="lib\INIReader.h">
-      <Filter>lib</Filter>
-    </ClInclude>
     <ClInclude Include="patches\SlowTimeCameraMove.h">
       <Filter>patches</Filter>
     </ClInclude>
@@ -176,6 +173,9 @@
     </ClInclude>
     <ClInclude Include="TES\BGSSoundCategory.h">
       <Filter>tes</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\Simpleini.h">
+      <Filter>lib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

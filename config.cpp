@@ -1,6 +1,6 @@
 #include "../../common/IDebugLog.h"
 
-#include "lib/INIReader.h"
+#include "lib/Simpleini.h"
 
 #include "config.h"
 
@@ -36,26 +36,27 @@ namespace config
 
 	bool LoadConfig(const std::string& path)
 	{
-		INIReader reader(path);
+		CSimpleIniA ini;
+		SI_Error rc = ini.LoadFile(path.c_str());
 
-		if (reader.ParseError() < 0)
+		if (rc < 0)
 		{
 			_MESSAGE("unable to read ini file at path %s", path.c_str());
 			return false;
 		}
 
-		patchFormCaching = reader.GetBoolean("FormCaching", "enabled", true);
-		patchBSReadWriteLock = reader.GetBoolean("BSReadWriteLock", "enabled", false);
-		patchMemoryManager = reader.GetBoolean("MemoryManager", "enabled", false);
-		patchDoublePerkApply = reader.GetBoolean("DoublePerkApply", "enabled", true);
-		patchSlowTimeCameraMovement = reader.GetBoolean("SlowTimeCamera", "enabled", true);
-		patchVerticalLookSensitivity = reader.GetBoolean("VerticalSensitivity", "enabled", true);
-		patchWaterflowTimer = reader.GetBoolean("Waterflow", "enabled", true);
-		waterflowTimescale = reader.GetReal("Waterflow", "timescale", 20.0);
-		patchTreeReflections = reader.GetBoolean("TreeReflection", "enabled", false);
-		patchSnowSparkle = reader.GetBoolean("SnowSparkle", "enabled", true);
-		patchSaveAddedSoundCategories = reader.GetBoolean("SaveAddedSoundCategories", "enabled", true);
+		patchFormCaching = ini.GetBoolValue("FormCaching", "enabled", true);
+		patchBSReadWriteLock = ini.GetBoolValue("BSReadWriteLock", "enabled", false);
+		patchMemoryManager = ini.GetBoolValue("MemoryManager", "enabled", false);
+		patchDoublePerkApply = ini.GetBoolValue("DoublePerkApply", "enabled", true);
+		patchSlowTimeCameraMovement = ini.GetBoolValue("SlowTimeCamera", "enabled", true);
+		patchVerticalLookSensitivity = ini.GetBoolValue("VerticalSensitivity", "enabled", true);
+		patchWaterflowTimer = ini.GetBoolValue("Waterflow", "enabled", true);
+		waterflowTimescale = static_cast<float>(ini.GetDoubleValue("Waterflow", "timescale", 20.0));
+		patchTreeReflections = ini.GetBoolValue("TreeReflection", "enabled", false);
+		patchSnowSparkle = ini.GetBoolValue("SnowSparkle", "enabled", true);
+		patchSaveAddedSoundCategories = ini.GetBoolValue("SaveAddedSoundCategories", "enabled", true);
 
 		return true;
 	}
-}
+}	

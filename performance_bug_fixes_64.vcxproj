@@ -336,6 +336,7 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="lib\Simpleini.h" />
     <ClInclude Include="TES\BGSSoundCategory.h" />
     <ClInclude Include="patches\MemoryManager.h" />
     <ClInclude Include="patches\BSReadWriteLockCustom.h" />
@@ -348,7 +349,6 @@
     <ClInclude Include="patches\VerticalLookSensitivity.h" />
     <ClInclude Include="patches\WaterflowTimer.h" />
     <ClInclude Include="config.h" />
-    <ClInclude Include="lib\INIReader.h" />
     <ClInclude Include="patches.h" />
     <ClInclude Include="TES\BSTArray.h" />
     <ClInclude Include="TES\BSTHashMap.h" />
