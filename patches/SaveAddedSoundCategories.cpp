@@ -31,14 +31,14 @@ namespace SaveAddedSoundCategories
 	{
 		const bool retVal = INIPrefSettingCollection_SaveFromMenu(thisPtr, unk1, fileName, unk2);
 
-		_MESSAGE("SaveFromMenu called filename %s", fileName);
+		//_MESSAGE("SaveFromMenu called filename %s", fileName);
 
 		for (auto& soundCategory : soundCategories)
 		{
 			char localFormIdHex[9];
 			sprintf_s(localFormIdHex, sizeof(localFormIdHex), "%08X", soundCategory.second.LocalFormId);
 			snctIni.SetDoubleValue(soundCategory.second.PluginName.c_str(), localFormIdHex, static_cast<double>(soundCategory.second.Category->ingameVolume),
-			                       soundCategory.second.Category->GetFullName(), true);
+			                       soundCategory.second.Category->GetName(), true);
 		}
 
 		const std::string& runtimePath = GetRuntimeDirectory();
@@ -59,10 +59,10 @@ namespace SaveAddedSoundCategories
 
 		if (result)
 		{
-			_MESSAGE("[%s] BGSSoundCategory_LoadForm(0x%016" PRIXPTR ", 0x%016" PRIXPTR ") - loaded sound category for formid %08X and name %s", modInfo->name, soundCategory, modInfo, soundCategory->formID, soundCategory->fullName.GetName());
+			//_MESSAGE("[%s] BGSSoundCategory_LoadForm(0x%016" PRIXPTR ", 0x%016" PRIXPTR ") - loaded sound category for formid %08X and name %s", modInfo->name, soundCategory, modInfo, soundCategory->formID, soundCategory->fullName.GetName());
 			if (soundCategory->flags & 0x2)
 			{
-				_MESSAGE("menu flag set, flagging for save");
+				//_MESSAGE("menu flag set, flagging for save");
 				uint32_t localFormId = soundCategory->formID & 0x00FFFFFF;
 				// esl
 				if ((soundCategory->formID & 0xFF000000) == 0xFE000000)
@@ -74,7 +74,7 @@ namespace SaveAddedSoundCategories
 			}
 			else
 			{
-				_MESSAGE("menu flag not set, unflagging for save if form was flagged for save in prior plugin");
+				//_MESSAGE("menu flag not set, unflagging for save if form was flagged for save in prior plugin");
 				soundCategories.erase(soundCategory->formID);
 			}
 		}
@@ -88,7 +88,7 @@ namespace SaveAddedSoundCategories
 
 	void LoadVolumes()
 	{
-		_MESSAGE("game has loaded, setting volumes");
+		//_MESSAGE("game has loaded, setting volumes");
 		for (auto& soundCategory : soundCategories)
 		{
 			char localFormIdHex[9];
@@ -97,7 +97,7 @@ namespace SaveAddedSoundCategories
 
 			if (vol != -1.0)
 			{
-				_MESSAGE("setting volume for formid %08X", soundCategory.second.Category->formID);
+				//_MESSAGE("setting volume for formid %08X", soundCategory.second.Category->formID);
 				BSISoundCategory * soundCatInterface = &soundCategory.second.Category->soundCategory;
 
 				BSISoundCategory_SetVolume(soundCatInterface, static_cast<float>(vol));
