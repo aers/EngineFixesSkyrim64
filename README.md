@@ -2,7 +2,7 @@
 
 WIP skse64 plugin
 
-### Current Fixes
+### Current Patches
 
 1. Tree LOD Alpha & Generic Form Lookup Caching
 
@@ -42,6 +42,10 @@ WIP skse64 plugin
 
     There are objects whose material shaders are treated as snow shaders even though they aren't flagged as such in the appropriate .nifs. Either the loader or some other part of the game doesn't properly account for this (not fully researched), so you end up with BSLightingShaderMaterial objects where the game expects there to be BSLightingShaderMaterialSnow objects. This causes the BSLightingShader::SetupMaterial case for snow objects to read out of bounds memory. Due to vanilla Skyrim's memory allocation patterns, this won't usually cause a crash, but instead causes the sparkle parameters to be populated with invalid/unknown data. When using the memory manager patch, it can and will cause CTDs due to out of bounds memory reads instead. The fix checks the objects to verify they are the appropriate type; if they are incorrect, it sets the sparkle params to the default values that are present in the BSLightingShaderMaterialSnow constructor (1.0f for all four) instead of trying to read them.    
 
+8. Sound Category Volume Saving
+
+    The game only saves the volume for 8 non-Master sound categories that are displayed in the Settings Menu; patch will save all to a separate ini, allowing mods to add new sound categories.
+
 ### Optional
 
 This stuff is marked optional because performance may vary on different hardware. If you're having stutter/freezing issues, try one or both. The memory manager fix requires the use of a skse64 preloader and I put the mutex one in there too Just Because.
@@ -49,6 +53,8 @@ This stuff is marked optional because performance may vary on different hardware
 1. Memory Manager
 
    This disables Skyrim's built-in memory manager for its two largest heaps. This is the commonly named "OS allocators" fix. Also replaces system memory calls with jenalloc. REQUIRES Snow Sparkle fix.
+
+   This will currently cause CTDs when entering Blackreach and potentially other areas due to an as-of-yet unresolved out of bounds memory read bug in Skyrim SE's renderer (BSParticleShader::SetupGeometry)
 
 2. BSReadWriteLock
 
