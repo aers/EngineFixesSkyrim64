@@ -15,6 +15,24 @@
 IDebugLog	gLog;
 bool		preloaded = false;
 
+PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
+SKSEMessagingInterface			* g_messaging = nullptr;
+
+void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
+{
+	switch (message->type)
+	{
+	case SKSEMessagingInterface::kMessage_DataLoaded:
+		{
+		if (config::patchSaveAddedSoundCategories)
+			SaveAddedSoundCategories::LoadVolumes();
+		}
+		break;
+	default: 
+		break;
+	}
+}
+
 void SetupLog()
 {
 	gLog.OpenRelative(CSIDL_MYDOCUMENTS, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes64.log)");
@@ -116,6 +134,9 @@ extern "C" {
 		info->name = "EngineFixes64 plugin";
 		info->version = 1;
 
+		g_pluginHandle = skse->GetPluginHandle();
+
+
 		if (skse->isEditor)
 		{
 			_MESSAGE("loaded in editor, marking as incompatible");
@@ -125,6 +146,11 @@ extern "C" {
 		{
 			_FATALERROR("unsupported runtime version %08X", skse->runtimeVersion);
 			return false;
+		}
+
+		g_messaging = (SKSEMessagingInterface *)skse->QueryInterface(kInterface_Messaging);
+		if (!g_messaging) {
+			_ERROR("couldn't get messaging interface, disabling patches that require it");
 		}
 
 		return true;
@@ -138,6 +164,9 @@ extern "C" {
 			if (!SetupTrampolines())
 				return false;
 		}
+
+		if (g_messaging)
+			g_messaging->RegisterListener(g_pluginHandle, "SKSE", SKSEMessageHandler);
 		
 		if (config::patchFormCaching)
 			FormCaching::Patch();
@@ -160,7 +189,7 @@ extern "C" {
 		if (config::patchSnowSparkle)
 			SnowSparkle::Patch();
 
-		if (config::patchSaveAddedSoundCategories)
+		if (config::patchSaveAddedSoundCategories && g_messaging)
 			SaveAddedSoundCategories::Patch();
 
 		_MESSAGE("all patches applied");
