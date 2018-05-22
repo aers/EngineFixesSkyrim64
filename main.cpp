@@ -18,14 +18,33 @@ bool		preloaded = false;
 PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
 SKSEMessagingInterface			* g_messaging = nullptr;
 
+void TempFixSKEE()
+{
+	const auto skee = reinterpret_cast<uintptr_t>(GetModuleHandle("skee64"));
+	if (skee)
+	{
+		_MESSAGE("skee found, enabling temporary patch to fix XPMSSE 4.3 issue");
+		if (*(uint32_t *)(skee + 0x6C10) != 0x0FD28548)
+		{
+			_MESSAGE("unknown skee version, canceling");
+		}
+		else
+		{
+			SafeWrite8(skee + 0x6C10, 0xC3);
+			_MESSAGE("patched");
+		}
+	}
+}
+
 void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
 {
 	switch (message->type)
 	{
 	case SKSEMessagingInterface::kMessage_DataLoaded:
 		{
-		if (config::patchSaveAddedSoundCategories)
-			SaveAddedSoundCategories::LoadVolumes();
+			TempFixSKEE();
+			if (config::patchSaveAddedSoundCategories)
+				SaveAddedSoundCategories::LoadVolumes();
 		}
 		break;
 	default: 
