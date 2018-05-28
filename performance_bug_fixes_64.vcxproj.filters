@@ -124,6 +124,9 @@
     <ClCompile Include="patches\SaveAddedSoundCategories.cpp">
       <Filter>patches</Filter>
     </ClCompile>
+    <ClCompile Include="patches\MaxStdio.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -179,6 +182,9 @@
     </ClInclude>
     <ClInclude Include="tes\BGSShaderParticleGeometryData.h">
       <Filter>tes</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\MaxStdio.h">
+      <Filter>patches</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

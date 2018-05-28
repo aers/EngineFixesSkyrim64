@@ -16,6 +16,11 @@ namespace config
 	// replace MemoryManager
 	bool patchMemoryManager = false;
 
+	// patch maxstdio to 2048 (default 512)
+	// see https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio
+	// this fixes the false save corruption bug 
+	bool patchMaxStdio = true;
+
 	// Ports from LE bug fixes mod
 	bool patchDoublePerkApply = true;
 	bool patchSlowTimeCameraMovement = true;
@@ -48,6 +53,7 @@ namespace config
 		patchFormCaching = ini.GetBoolValue("FormCaching", "enabled", true);
 		patchBSReadWriteLock = ini.GetBoolValue("BSReadWriteLock", "enabled", false);
 		patchMemoryManager = ini.GetBoolValue("MemoryManager", "enabled", false);
+		patchMaxStdio = ini.GetBoolValue("MaxStdio", "enabled", true);
 		patchDoublePerkApply = ini.GetBoolValue("DoublePerkApply", "enabled", true);
 		patchSlowTimeCameraMovement = ini.GetBoolValue("SlowTimeCamera", "enabled", true);
 		patchVerticalLookSensitivity = ini.GetBoolValue("VerticalSensitivity", "enabled", true);

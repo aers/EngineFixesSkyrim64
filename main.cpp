@@ -20,7 +20,7 @@ SKSEMessagingInterface			* g_messaging = nullptr;
 
 void TempFixSKEE()
 {
-	const auto skee = reinterpret_cast<uintptr_t>(GetModuleHandle("skee64"));
+	const auto skee = reinterpret_cast<uintptr_t>(GetModuleHandleA("skee64"));
 	if (skee)
 	{
 		_MESSAGE("skee found, enabling temporary patch to fix XPMSSE 4.3 issue");
@@ -140,6 +140,9 @@ extern "C" {
 
 		if (config::patchBSReadWriteLock)
 			BSReadWriteLockCustom::Patch();
+
+		if (config::patchMaxStdio)
+			MaxStdio::Patch();
 
 	}
 

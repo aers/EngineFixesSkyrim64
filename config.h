@@ -12,6 +12,11 @@ namespace config
 	// Replace Memory Manager
 	extern bool patchMemoryManager;
 
+	// patch maxstdio to 2048 (default 512)
+	// see https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio
+	// this fixes the false save corruption bug 
+	extern bool patchMaxStdio;
+
 	// Ports from LE bug fixes mod
 	extern bool patchDoublePerkApply;
 	extern bool patchSlowTimeCameraMovement;
