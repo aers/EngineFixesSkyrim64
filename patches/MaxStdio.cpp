@@ -52,9 +52,9 @@ namespace MaxStdio
 		
 		int newMax = ((decltype(&_setmaxstdio))GetProcAddress(crtStdioModule, "_setmaxstdio"))(2048);
 
-		_MESSAGE("max stdio set to 2048");
+		_MESSAGE("max stdio set to %d", newMax);
 
-		*(void **)&VC140_fopen_s = (uintptr_t *) PatchIAT(GetFnAddr(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
+		*(void **)&VC140_fopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
 		*(void **)&VC140_wfopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
 		*(void **)&VC140_fopen = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
 
