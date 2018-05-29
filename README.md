@@ -50,6 +50,10 @@ WIP skse64 plugin
 
     Per https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio the max number of file handles the C stdio level can hold open by default is 512. Since SSE keeps an open file handle for all your plugins (including ones that aren't part of your load order) as well as some other important files, its possible to hit this limit on a heavy load order. Once you hit the limit all calls to fopen_s will start to fail, which means the game can no longer read new files. This causes, among other things, save game loads to report corrupted as the game is no longer capable of reading the save game files, a bug known as "false save corruption". The patch raises the limit to the system maximum (2048), which should be more than enough for 99.9% of use cases. Solving it any other way would require rewriting significant parts of SSE's file IO.
 
+10. RaceSex Menu Precache Disabler
+
+    Same as LE Racemenu Precache Killer. I'm not convinced this is necessary on SE but some people who must have thousands of hairs report crashes and its easy to include, so here it is. Patch just disables the cache populate/clear functions. Disabled by default.
+
 ### Optional
 
 This stuff is marked optional because performance may vary on different hardware. If you're having stutter/freezing issues, try one or both. The memory manager fix requires the use of a skse64 preloader and I put the mutex one in there too Just Because.

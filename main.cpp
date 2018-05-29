@@ -214,6 +214,9 @@ extern "C" {
 		if (config::patchSaveAddedSoundCategories && g_messaging)
 			SaveAddedSoundCategories::Patch();
 
+		if (config::patchPrecacheKiller)
+			PrecacheKiller::Patch();
+
 		_MESSAGE("all patches applied");
 
 		return true;

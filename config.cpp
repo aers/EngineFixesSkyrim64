@@ -39,6 +39,10 @@ namespace config
 	// save sound categories that aren't in the base game to SKSE cosave
 	bool patchSaveAddedSoundCategories = true;
 
+	// disable chargen precache
+	// disabled by default since most people should't need it
+	bool patchPrecacheKiller = false;
+	
 	bool LoadConfig(const std::string& path)
 	{
 		CSimpleIniA ini;
@@ -62,6 +66,7 @@ namespace config
 		patchTreeReflections = ini.GetBoolValue("TreeReflection", "enabled", false);
 		patchSnowSparkle = ini.GetBoolValue("SnowSparkle", "enabled", true);
 		patchSaveAddedSoundCategories = ini.GetBoolValue("SaveAddedSoundCategories", "enabled", true);
+		patchPrecacheKiller = ini.GetBoolValue("PrecacheKiller", "enabled", false);
 
 		return true;
 	}

@@ -13,3 +13,5 @@
 #include "patches/TreeReflection.h"
 #include "patches/SnowSparkle.h"
 #include "patches/SaveAddedSoundCategories.h"
+
+#include "patches/PrecacheKiller.h"

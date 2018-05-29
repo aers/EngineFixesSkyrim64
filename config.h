@@ -32,5 +32,8 @@ namespace config
 	// save sound categories that aren't in the base game to SKSE cosave
 	extern bool patchSaveAddedSoundCategories;
 
+	// chargen precache disable
+	extern bool patchPrecacheKiller;
+
 	bool LoadConfig(const std::string& path);
 }

@@ -327,6 +327,7 @@
     <ClCompile Include="patches\BSReadWriteLockCustom.cpp" />
     <ClCompile Include="patches\DoublePerkApply.cpp" />
     <ClCompile Include="patches\FormCaching.cpp" />
+    <ClCompile Include="patches\PrecacheKiller.cpp" />
     <ClCompile Include="patches\SaveAddedSoundCategories.cpp" />
     <ClCompile Include="patches\SlowTimeCameraMove.cpp" />
     <ClCompile Include="patches\SnowSparkle.cpp" />
@@ -340,6 +341,7 @@
   <ItemGroup>
     <ClInclude Include="lib\Simpleini.h" />
     <ClInclude Include="patches\MaxStdio.h" />
+    <ClInclude Include="patches\PrecacheKiller.h" />
     <ClInclude Include="tes\BGSShaderParticleGeometryData.h" />
     <ClInclude Include="TES\BGSSoundCategory.h" />
     <ClInclude Include="patches\MemoryManager.h" />
