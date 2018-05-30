@@ -79,11 +79,7 @@ This stuff is marked optional because performance may vary on different hardware
  
   have done some initial research into this and RNAM records seem to merge fine, there's something happening later on in TESObjectCELL functions that is breaking the reference table. ideally need to create a test worldspace to make this easier to track down.
 - terrain LOD breaks sometimes. don't have high hopes for tracking this one down because even though I've personally seen it happen its not possible to replicate it 100% of the time
-- disabling TAA causes glitchy save behavior. specifically, hitting quicksave will not actually save the game until a menu is opened (or some other event triggers the update; i've heard entering combat will work). also causes save games to not include a screenshot, and possibly also a bug where the save menu opens multiple times.
-- having a large number of plugins in the data folder makes save games appear corrupted. the number includes disabled plugins, and is something over 300 total. may be related to bugs that exist in other (skyrim LE, FO3/NV, etc) games where having excessive disabled plugins will break plugin loading -> https://www.nexusmods.com/skyrim/mods/19556/ presumably this bug also exists in SE and should be fixed
-- there's another false save corruption bug that I don't know much about at all, see here -> https://www.nexusmods.com/skyrimspecialedition/articles/342/
 - CTD when bethesda.net isn't accessible (or something like this? maybe DNS related instead? not entirely sure, since people fix it by disabling their internet), breaks game for people in eastern europe 
-- new sound categories dont save their settings to ini files; this is understandable behavior but they should probably save to your save file and dont. will patch by saving to cosave.
 - enchantment reload fix from LE. LE fix saves to cosave, maybe research exactly what is wrong with enchantment saving or just be lazy and copy LE version
 - there's probably more stuff. its skyrim
 
