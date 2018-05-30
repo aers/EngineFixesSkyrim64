@@ -130,6 +130,9 @@
     <ClCompile Include="patches\PrecacheKiller.cpp">
       <Filter>patches</Filter>
     </ClCompile>
+    <ClCompile Include="patches\SaveScreenshot.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -190,6 +193,9 @@
       <Filter>patches</Filter>
     </ClInclude>
     <ClInclude Include="patches\PrecacheKiller.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\SaveScreenshot.h">
       <Filter>patches</Filter>
     </ClInclude>
   </ItemGroup>

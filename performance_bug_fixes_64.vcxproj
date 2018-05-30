@@ -336,12 +336,14 @@
     <ClCompile Include="patches\WaterflowTimer.cpp" />
     <ClCompile Include="config.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="patches\SaveScreenshot.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\Simpleini.h" />
     <ClInclude Include="patches\MaxStdio.h" />
     <ClInclude Include="patches\PrecacheKiller.h" />
+    <ClInclude Include="patches\SaveScreenshot.h" />
     <ClInclude Include="tes\BGSShaderParticleGeometryData.h" />
     <ClInclude Include="TES\BGSSoundCategory.h" />
     <ClInclude Include="patches\MemoryManager.h" />

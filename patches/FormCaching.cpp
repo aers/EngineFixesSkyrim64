@@ -220,7 +220,7 @@ namespace FormCaching
 					if (node && !(*(BYTE *)((__int64)node + 0xF4) & 1) && *(uint8_t *)((__int64)cell + 0x44) == 7)
 					{
 
-						if (GetINISetting("bEnableStippleFade:Display")->data.u8)
+						if (GetINISetting("bEnableStippleFade:Display")->data.u8 >= 1)
 						{
 
 							void * fadeNode = node->Unk_05(); // BSFadeNode::GetAsFadeNode

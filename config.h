@@ -17,6 +17,9 @@ namespace config
 	// this fixes the false save corruption bug 
 	extern bool patchMaxStdio;
 
+	// fixes bug with taa + dof disabled breaking save game screenshots and quicksaves
+	extern bool patchSaveScreenshot;
+
 	// Ports from LE bug fixes mod
 	extern bool patchDoublePerkApply;
 	extern bool patchSlowTimeCameraMovement;

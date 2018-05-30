@@ -45,6 +45,10 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
 			TempFixSKEE();
 			if (config::patchSaveAddedSoundCategories)
 				SaveAddedSoundCategories::LoadVolumes();
+
+			// patch post load so ini settings are loaded
+			if (config::patchSaveScreenshot)
+				SaveScreenshot::Patch();
 		}
 		break;
 	default: 
@@ -143,7 +147,6 @@ extern "C" {
 
 		if (config::patchMaxStdio)
 			MaxStdio::Patch();
-
 	}
 
 	bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)

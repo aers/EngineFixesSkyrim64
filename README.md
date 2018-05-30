@@ -54,6 +54,10 @@ WIP skse64 plugin
 
     Same as LE Racemenu Precache Killer. I'm not convinced this is necessary on SE but some people who must have thousands of hairs report crashes and its easy to include, so here it is. Patch just disables the cache populate/clear functions. Disabled by default.
 
+11. Save Screenshot 
+
+    When you queue a save event the game will request a screenshot in order to bake it into the save. With TAA or DOF (or both) disabled, this request won't process until a menu is opened. In addition, with TAA disabled the render target the screenshot is copied from will be blank, so all saves end up with blank screenshots. This fixes both bugs. It does introduce a brief flicker during the pause when you quicksave, but otherwise works fine. Auto disables if TAA+game DOF are enabled. Credit to Nukem for researching the renderer part as always.
+
 ### Optional
 
 This stuff is marked optional because performance may vary on different hardware. If you're having stutter/freezing issues, try one or both. The memory manager fix requires the use of a skse64 preloader and I put the mutex one in there too Just Because.
@@ -90,7 +94,7 @@ This stuff is marked optional because performance may vary on different hardware
 thanks:
 
 - meh321 - sse fixes research, skyrim LE bug fixes (ported with permission)
-- Nukem - form cache code, additional research for the tree LOD alpha stuff, pointing me at the waterflow timer, tree reflection fix, moral support :^)
+- Nukem - form cache code, additional research for the tree LOD alpha stuff, pointing me at the waterflow timer, tree reflection fix, actually just every fix, moral support :^)
 - himika - scatter table implementation from libskyrim (LE), plus tons of research function/variable names
 
 
