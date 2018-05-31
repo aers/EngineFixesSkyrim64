@@ -130,7 +130,7 @@
     <ClCompile Include="patches\PrecacheKiller.cpp">
       <Filter>patches</Filter>
     </ClCompile>
-    <ClCompile Include="patches\SaveScreenshot.cpp">
+    <ClCompile Include="patches\Saves.cpp">
       <Filter>patches</Filter>
     </ClCompile>
   </ItemGroup>
@@ -195,7 +195,7 @@
     <ClInclude Include="patches\PrecacheKiller.h">
       <Filter>patches</Filter>
     </ClInclude>
-    <ClInclude Include="patches\SaveScreenshot.h">
+    <ClInclude Include="patches\Saves.h">
       <Filter>patches</Filter>
     </ClInclude>
   </ItemGroup>

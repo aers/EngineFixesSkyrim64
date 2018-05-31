@@ -5,7 +5,7 @@
 #include "patches/MemoryManager.h"
 
 #include "patches/MaxStdio.h"
-#include "patches/SaveScreenshot.h"
+#include "patches/Saves.h"
 
 #include "patches/DoublePerkApply.h"
 #include "patches/SlowTimeCameraMove.h"

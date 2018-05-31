@@ -17,8 +17,12 @@ namespace config
 	// this fixes the false save corruption bug 
 	extern bool patchMaxStdio;
 
-	// fixes bug with taa + dof disabled breaking save game screenshots and quicksaves
-	extern bool patchSaveScreenshot;
+	// various save game related patches
+	extern bool patchSaves;
+	extern bool quickSaveDelay;
+	extern bool blankScreenshotsMenu;
+	extern bool blankScreenshotsFlicker;
+	extern bool regularQuicksaves;
 
 	// Ports from LE bug fixes mod
 	extern bool patchDoublePerkApply;

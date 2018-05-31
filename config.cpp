@@ -21,8 +21,12 @@ namespace config
 	// this fixes the false save corruption bug 
 	bool patchMaxStdio = true;
 
-	// fixes bug with taa + dof disabled breaking save game screenshots and quicksaves
-	bool patchSaveScreenshot = true;
+	// various save game related patches
+	bool patchSaves = true;
+	bool quickSaveDelay = true;
+	bool blankScreenshotsMenu = true;
+	bool blankScreenshotsFlicker = false;
+	bool regularQuicksaves = false;
 
 	// Ports from LE bug fixes mod
 	bool patchDoublePerkApply = true;
@@ -61,6 +65,11 @@ namespace config
 		patchBSReadWriteLock = ini.GetBoolValue("BSReadWriteLock", "enabled", false);
 		patchMemoryManager = ini.GetBoolValue("MemoryManager", "enabled", false);
 		patchMaxStdio = ini.GetBoolValue("MaxStdio", "enabled", true);
+		patchSaves = ini.GetBoolValue("Saves", "enbabled", true);
+		quickSaveDelay = ini.GetBoolValue("Saves", "quicksavedelay", true);
+		blankScreenshotsMenu = ini.GetBoolValue("Saves", "blankscreenshotsmenu", true);
+		blankScreenshotsFlicker = ini.GetBoolValue("Saves", "blankscreenshotsflicker", false);
+		regularQuicksaves = ini.GetBoolValue("Saves", "regularquicksaves", false);
 		patchDoublePerkApply = ini.GetBoolValue("DoublePerkApply", "enabled", true);
 		patchSlowTimeCameraMovement = ini.GetBoolValue("SlowTimeCamera", "enabled", true);
 		patchVerticalLookSensitivity = ini.GetBoolValue("VerticalSensitivity", "enabled", true);

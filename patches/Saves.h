@@ -1,6 +1,6 @@
 #pragma once
 
-namespace SaveScreenshot
+namespace Saves
 {
 	bool Patch();
 }

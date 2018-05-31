@@ -47,8 +47,8 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
 				SaveAddedSoundCategories::LoadVolumes();
 
 			// patch post load so ini settings are loaded
-			if (config::patchSaveScreenshot)
-				SaveScreenshot::Patch();
+			if (config::patchSaves)
+				Saves::Patch();
 		}
 		break;
 	default: 

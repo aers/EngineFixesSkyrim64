@@ -54,9 +54,11 @@ WIP skse64 plugin
 
     Same as LE Racemenu Precache Killer. I'm not convinced this is necessary on SE but some people who must have thousands of hairs report crashes and its easy to include, so here it is. Patch just disables the cache populate/clear functions. Disabled by default.
 
-11. Save Screenshot 
+11. Saves
 
-    When you queue a save event the game will request a screenshot in order to bake it into the save. With TAA or DOF (or both) disabled, this request won't process until a menu is opened. In addition, with TAA disabled the render target the screenshot is copied from will be blank, so all saves end up with blank screenshots. This fixes both bugs. It does introduce a brief flicker during the pause when you quicksave, but otherwise works fine. Auto disables if TAA+game DOF are enabled. Credit to Nukem for researching the renderer part as always.
+    When you queue a save event the game will request a screenshot in order to bake it into the save. With TAA or DOF (or both) disabled, this request won't process until a menu is opened. In addition, with TAA disabled the render target the screenshot is copied from will be blank, so all saves end up with blank screenshots. This fixes both bugs. Has two methods with differnt side effects, see ini for details. Auto disables if TAA+game DOF are enabled. Credit to Nukem for researching the renderer part as always.
+
+    Also includes a patch that turns quicksaves into regular saves, like https://www.nexusmods.com/skyrim/mods/82951
 
 ### Optional
 
