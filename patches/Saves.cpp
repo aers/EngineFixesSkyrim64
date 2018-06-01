@@ -32,8 +32,8 @@ namespace Saves
 	RelocAddr<uintptr_t> BGSSaveLoadManager_ProcessEvents_ScreenshotCheck(0x0058A06C);
 
 	// 41 89 5d 00 40 84 ff 0f 85 + 0x8
-	RelocAddr<uintptr_t> ScreenshotJnz(0x012AEDAD);
-	RelocAddr<uintptr_t> BlankMenuHook(0x012AEDB8);
+	RelocAddr<uintptr_t> ScreenshotJnz(0x012AEDAA);
+
 	// + 0x128 from ^^
 	RelocAddr<uintptr_t> RenderTargetHook_1(0x012AEED5);
 	// + 0x85
@@ -42,6 +42,10 @@ namespace Saves
 	// QuickSaveLoadHandler::HandleEvent (vtbl 5)
 	RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(0x008AAE58);
 	RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(0x008AAE8B);
+
+	RelocAddr<uintptr_t> SaveScreenshotRequested(0x02F5F968);
+
+	RelocAddr<uintptr_t> loc_1412AF045(0x012AF045);
 
 
 	bool Patch()
@@ -64,22 +68,63 @@ namespace Saves
 		if (config::blankScreenshotsMenu)
 		{
 			_MESSAGE("patching in-game save delay");
-			unsigned char nops[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
-			SafeWriteBuf(ScreenshotJnz.GetUIntPtr(), nops, sizeof nops);
+			_MESSAGE("patching screenshot render (mode: temporary black journal menu)");
+			{
+				struct ScreenshotRender_Code : Xbyak::CodeGenerator
+				{
+					ScreenshotRender_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+					{
+						Xbyak::Label screenRequested;
 
-			_MESSAGE("patching screenshot render (mode: black journal menu)");
-			// cmp byte ptr [rbp+211h], 0
-			// nop * 4
-			unsigned char patch[] = { 0x80, 0xBD, 0x11, 0x02, 0x00, 0x00, 0x00, 0x90, 0x90, 0x90, 0x90 };
-			SafeWriteBuf(BlankMenuHook.GetUIntPtr(), patch, sizeof patch);
+						// .text:00000001412AEDAA                 test    dil, dil
+						// .text:00000001412AEDAD                 jnz     loc_1412AF045
+						// .text:00000001412AEDB3                 mov     edi, 2Ah
+						// .text:00000001412AEDB8                 mov     rax, [rbp + 1F0h]
+						// .text:00000001412AEDBF                 cmp     byte ptr[rax + 18h], 0
+
+						push(rax);
+						mov(rax, ptr[rip + screenRequested]);
+						cmp(dword[rax], 1);
+						pop(rax);
+						jne("ORIG");
+						mov(edi, 0x2A);
+						cmp(byte[rbp + 0x211], 0);
+						jmp("JMP_OUT");
+
+						L("ORIG");
+						test(dil, dil);
+						jnz("ORIG_JNZ");
+						mov(edi, 0x2A);
+						mov(rax, ptr[rbp + 0x1F0]);
+						cmp(byte[rax + 0x18], 0);
+
+						L("JMP_OUT");
+						jmp(ptr[rip]);
+						dq(ScreenshotJnz.GetUIntPtr() + 0x19);
+
+						L("ORIG_JNZ");
+						jmp(ptr[rip]);
+						dq(loc_1412AF045.GetUIntPtr());
+
+						L(screenRequested);
+						dq(SaveScreenshotRequested.GetUIntPtr());
+					}
+				};
+
+				void *codeBuf = g_localTrampoline.StartAlloc();
+				ScreenshotRender_Code code(codeBuf);
+				g_localTrampoline.EndAlloc(code.getCurr());
+
+				g_branchTrampoline.Write6Branch(ScreenshotJnz.GetUIntPtr(), uintptr_t(code.getCode()));
+			}
 		}
 		else if (config::blankScreenshotsFlicker)
 		{
 			_MESSAGE("patching in-game save delay");
+			_MESSAGE("patching screenshot render (mode: flickering quicksaves)");
 			unsigned char nops[] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 			SafeWriteBuf(ScreenshotJnz.GetUIntPtr(), nops, sizeof nops);
 
-			_MESSAGE("patching screenshot render (mode: flickering quicksaves)");
 			{
 				struct RenderTargetHook_1_Code : Xbyak::CodeGenerator
 				{
@@ -138,6 +183,9 @@ namespace Saves
 			_MESSAGE("patching in-game save delay");
 			SafeWrite8(BGSSaveLoadManager_ProcessEvents_ScreenshotCheck.GetUIntPtr(), 0xEB); // replace jnz with jmp
 		}
+
+		_MESSAGE("patching screenshot render (mode: flickering quicksaves)");
+
 
 		_MESSAGE("success");
 		return true;
