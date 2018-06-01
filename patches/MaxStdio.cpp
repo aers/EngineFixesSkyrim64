@@ -1,10 +1,29 @@
 #include "../util.h"
+#include "../config.h"
 
 // see https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio
 // fopen hooks just for logging purposes
 
 namespace MaxStdio
 {
+	int maxStdio = 512;
+
+	bool setmaxstdio(int max)
+	{
+		const HMODULE crtStdioModule = GetModuleHandleA("API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
+
+		if (!crtStdioModule)
+		{
+			_MESSAGE("crt stdio module not found, failed");
+			return false;
+		}
+
+		maxStdio = ((decltype(&_setmaxstdio))GetProcAddress(crtStdioModule, "_setmaxstdio"))(max);
+
+		_MESSAGE("max stdio set to %d", maxStdio);
+		return true;
+	}
+
 	decltype(&fopen_s) VC140_fopen_s;
 	errno_t hk_fopen_s(FILE **File, const char *Filename, const char *Mode)
 	{
@@ -12,6 +31,20 @@ namespace MaxStdio
 
 		if (err != 0)
 			_MESSAGE("WARNING: Error occurred trying to open file: fopen_s(%s, %s), errno %d", Filename, Mode, err);
+
+		if (err == 24 && config::stdioDebugMode)
+		{
+			_MESSAGE("STDIO DEBUG: hit max stdio while set to %d", maxStdio);
+			if (maxStdio == 2048)
+			{
+				_MESSAGE("already maxed out stdio, erroring out");
+				return err;
+			}
+			setmaxstdio(2048);
+			_MESSAGE("trying again");
+			return hk_fopen_s(File, Filename, Mode);
+		}
+
 
 		return err;
 	}
@@ -23,6 +56,19 @@ namespace MaxStdio
 
 		if (err != 0)
 			_MESSAGE("WARNING: Error occurred trying to open file: _wfopen_s(%p, %p), errno %d", Filename, Mode, err);
+
+		if (err == 24 && config::stdioDebugMode)
+		{
+			_MESSAGE("STDIO DEBUG: hit max stdio while set to %d", maxStdio);
+			if (maxStdio == 2048)
+			{
+				_MESSAGE("already maxed out stdio, erroring out");
+				return err;
+			}
+			setmaxstdio(2048);
+			_MESSAGE("trying again");
+			return hk_wfopen_s(File, Filename, Mode);
+		}
 
 		return err;
 	}
@@ -42,23 +88,22 @@ namespace MaxStdio
 	{
 		_MESSAGE("- max stdio -");
 
-		const HMODULE crtStdioModule = GetModuleHandleA("API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
-
-		if (!crtStdioModule)
+		if (config::stdioDebugMode)
 		{
-			_MESSAGE("crt stdio module not found, failed");
-			return false;
+			_MESSAGE("debug mode");
+
+			*(void **)&VC140_fopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
+			*(void **)&VC140_wfopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
+			*(void **)&VC140_fopen = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
+
+			_MESSAGE("hooked stdio fopen for debug mode");
 		}
-		
-		int newMax = ((decltype(&_setmaxstdio))GetProcAddress(crtStdioModule, "_setmaxstdio"))(2048);
+		else
+		{
+			if (!setmaxstdio(2048))
+				return false;
+		}
 
-		_MESSAGE("max stdio set to %d", newMax);
-
-		*(void **)&VC140_fopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
-		*(void **)&VC140_wfopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
-		*(void **)&VC140_fopen = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
-
-		_MESSAGE("hooked stdio fopen for logging purposes");
 		_MESSAGE("success");
 
 		return true;
