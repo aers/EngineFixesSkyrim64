@@ -20,9 +20,7 @@ namespace config
 
 	// various save game related patches
 	extern bool patchSaves;
-	extern bool quickSaveDelay;
-	extern bool blankScreenshotsMenu;
-	extern bool blankScreenshotsFlicker;
+	extern bool fixTaaSaveBugs;
 	extern bool regularQuicksaves;
 
 	// Ports from LE bug fixes mod
