@@ -11,12 +11,91 @@
 #include "patches.h"
 #include "util.h"
 #include <cinttypes>
+#include <vector>
+#include <string>
+#include <iostream>
+#include <stdio>
 
 IDebugLog	gLog;
 bool		preloaded = false;
 
 PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
 SKSEMessagingInterface			* g_messaging = nullptr;
+
+
+void killOrphanedCosave() 
+{
+	_MESSAGE("searching for orphans");
+	std::vector<std::string> sksecosaveVector;
+	std::vector<std::string> skyrimsaveVector;
+	WIN32_FIND_DATA FindFileData;
+	// assuming nobody has messed things up too badly, saves should be in this directory
+	HANDLE hFind = FindFirstFile((CSIDL_MYDOCUMENTS + "\\My Games\\Skyrim Special Edition\\Saves\\*/"), &FindFileData);
+	// if the handle is invalid, something has gone wrong - save folder may not exist, etc.
+	// we can't recover from this, so bail
+	if (hFind == INVALID_HANDLE_VALUE)
+	{
+		_MESSAGE("something went wrong while searching for orphans - handle invalid, bailing");
+		return;
+	}
+	else
+	{
+		// here we're filling our filename vectors with filenames from the save directory
+		do
+		{
+			// check to see if the selected "file" is a directory
+			if (FindFileData.dwFileAttributes != FILE_ATTRIBUTE_DIRECTORY) 
+			{
+				std::string tempString = FindFileData.cFileName;
+				// check extension of filename
+				if (tempString.find_last_of(".ess", tempString.end() - 4) != std::string::npos)
+				{
+					// remove extension
+					tempString.erase(tempString.end() - 4, tempString.end())
+					skyrimsaveVector.push_back(tempString);
+				}
+				else if (tempString.find_last_of(".skse", tempString.end() - 5) != std::string::npos)
+				{
+					tempString.erase(tempString.end() - 5, tempString.end())
+					sksecosaveVector.push_back(tempString);
+				}
+			}
+		} while (FindNextFile(hFind, &FindFileData));
+
+		FindClose(hFind);
+		DWORD dwError = GetLastError();
+		if (dwError != ERROR_NO_MORE_FILES)
+		{
+			// log the failure and bail - list of filenames is a live wire, so let's not touch it
+			_MESSAGE("something went wrong while searching for orphans, error code: " + dwError + ", bailing");
+			return;
+		}
+		// sort the vectors by filename
+		std::sort(sksecosaveVector.begin(), sksecosaveVector.end());
+		std::sort(skyrimsaveVector.begin(), skyrimsaveVector.end());
+		
+		// horriffic one-liner std::garbage, formatted for your pleasure
+		// this (hopefully) removes all instances of cosaves in the cosave vector that have a matching filename in the normal save vector
+		sksecosaveVector.erase(
+			std::remove_if(
+				sksecosaveVector.begin(), sksecosaveVector.end(), []const auto &x
+				) 
+				{ return std::find(
+					skyrimsaveVector.begin(), skyrimsaveVector.end(), x
+					) != skyrimsaveVector.end; 
+				}
+			), sksecosaveVector.end()
+		);
+		for (auto &value : sksecosaveVector) {
+			if (remove(a=value) != 0)
+				_MESSAGE("something went wrong while removing orphans, bailing");
+			else
+				_MESSAGE("orhpan file \"" + value + "\" killed");
+		}
+	}
+	CloseHandle(hFind);
+	return;
+}
 
 void TempFixSKEE()
 {
@@ -219,6 +298,9 @@ extern "C" {
 
 		if (config::patchPrecacheKiller)
 			PrecacheKiller::Patch();
+
+		if (config::killOrphanedCosave)
+			killOrphanedCosave();
 
 		_MESSAGE("all patches applied");
 

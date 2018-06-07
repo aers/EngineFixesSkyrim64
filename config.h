@@ -41,5 +41,8 @@ namespace config
 	// chargen precache disable
 	extern bool patchPrecacheKiller;
 
+	// likely buggy code to kill orphaned SKSE64 cosaves
+	extern bool killOrphanedCosave;
+
 	bool LoadConfig(const std::string& path);
 }
