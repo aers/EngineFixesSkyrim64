@@ -60,6 +60,10 @@ WIP skse64 plugin
 
     Also includes a patch that turns quicksaves into regular saves, like https://www.nexusmods.com/skyrim/mods/82951
 
+12. SKSE64 Cosave Cleaner
+
+    SKSE64 cosaves aren't deleted for quicksaves; this is just a tool that runs on launch and cleans them. This is mostly relevant due to a SkyUI(?) bug that causes some glitches in the save/load menu if you have a lot of files in your save folder. Thx Kole6738 for contrib.
+
 ### Optional
 
 This stuff is marked optional because performance may vary on different hardware. If you're having stutter/freezing issues, try one or both. The memory manager fix requires the use of a skse64 preloader and I put the mutex one in there too Just Because.
@@ -92,9 +96,9 @@ This stuff is marked optional because performance may vary on different hardware
 thanks:
 
 - meh321 - sse fixes research, skyrim LE bug fixes (ported with permission)
-- Nukem - form cache code, additional research for the tree LOD alpha stuff, pointing me at the waterflow timer, tree reflection fix, actually just every fix, moral support :^)
+- Nukem9 - form cache code, additional research for the tree LOD alpha stuff, pointing me at the waterflow timer, tree reflection fix, actually just every fix, moral support :^)
 - himika - scatter table implementation from libskyrim (LE), plus tons of research function/variable names
-
+- Kole6738 - cosave cleaner 
 
 
 
