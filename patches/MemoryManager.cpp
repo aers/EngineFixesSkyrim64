@@ -24,12 +24,12 @@ namespace MemoryManager
 
 	// temporary particle fix
 	typedef bool(*BGSShaderParticleGeometryData_LoadForm_)(TES::BGSShaderParticleGeometryData * thisPtr, ModInfo * modInfo);
-	RelocAddr<BGSShaderParticleGeometryData_LoadForm_> BGSShaderParticleGeometryData_LoadForm(0x00248450);
-	RelocAddr<uintptr_t> vtbl_BGSShaderParticleGeometryData_LoadForm(0x01579FF0); // vtbl[6]
+	BGSShaderParticleGeometryData_LoadForm_ orig_BGSShaderParticleGeometryData_LoadForm;
+	RelocPtr<BGSShaderParticleGeometryData_LoadForm_> vtbl_BGSShaderParticleGeometryData_LoadForm(0x01579FF0); // vtbl[6]
 
 	bool hk_BGSShaderParticleGeometryData_LoadForm(TES::BGSShaderParticleGeometryData * thisPtr, ModInfo * modInfo)
 	{
-		const bool retVal = BGSShaderParticleGeometryData_LoadForm(thisPtr, modInfo);
+		const bool retVal = orig_BGSShaderParticleGeometryData_LoadForm(thisPtr, modInfo);
 
 		if (thisPtr->data.count >= 12)
 		{
@@ -174,6 +174,7 @@ namespace MemoryManager
 		g_branchTrampoline.Write6Branch(ScrapHeapFree.GetUIntPtr(), GetFnAddr(&ScrapHeap::Free));
 
 		// temp particle fix
+		orig_BGSShaderParticleGeometryData_LoadForm = *vtbl_BGSShaderParticleGeometryData_LoadForm;
 		SafeWrite64(vtbl_BGSShaderParticleGeometryData_LoadForm.GetUIntPtr(), GetFnAddr(hk_BGSShaderParticleGeometryData_LoadForm));
 		_MESSAGE("success");
 

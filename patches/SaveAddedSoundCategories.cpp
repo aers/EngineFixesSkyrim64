@@ -17,19 +17,19 @@ namespace SaveAddedSoundCategories
 	std::map<uint32_t, SoundCategoryInfo> soundCategories;
 
 	typedef bool(*_BGSSoundCategory_LoadForm)(TES::BGSSoundCategory * soundCategory, ModInfo * modInfo);
-	RelocAddr<_BGSSoundCategory_LoadForm> BGSSoundCategory_LoadForm(0x002CDB60);
-	RelocAddr<uintptr_t> vtbl_BGSSoundCategory_LoadForm(0x01591050); // ::LoadForm = vtable[6] in TESForm derived classes
+	RelocPtr<_BGSSoundCategory_LoadForm> vtbl_BGSSoundCategory_LoadForm(0x01591050); // ::LoadForm = vtable[6] in TESForm derived classes
+	_BGSSoundCategory_LoadForm orig_BGSSoundCategory_LoadForm;
 
 	typedef bool(*_BSISoundCategory_SetVolume)(BSISoundCategory * thisPtr, float volume);
-	RelocAddr<_BSISoundCategory_SetVolume> BSISoundCategory_SetVolume(0x002CE090); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
+	RelocPtr<_BSISoundCategory_SetVolume> vtbl_BSISoundCategory_SetVolume(0x01591250); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
 
 	typedef bool(*_INIPrefSettingCollection_SaveFromMenu)(__int64 thisPtr, __int64 unk1, char * fileName, __int64 unk2);
-	RelocAddr<_INIPrefSettingCollection_SaveFromMenu> INIPrefSettingCollection_SaveFromMenu(0x00C10880);
-	RelocAddr<uintptr_t> vtbl_INIPrefSettingCollection_SaveFromMenu(0x0154FB18); // ::SaveFromMenu??? = vtable[8]
+	RelocPtr<_INIPrefSettingCollection_SaveFromMenu> vtbl_INIPrefSettingCollection_SaveFromMenu(0x0154FB18); // ::SaveFromMenu??? = vtable[8]
+	_INIPrefSettingCollection_SaveFromMenu orig_INIPrefSettingCollection_SaveFromMenu;
 
 	bool hk_INIPrefSettingCollection_SaveFromMenu(__int64 thisPtr, __int64 unk1, char * fileName, __int64 unk2)
 	{
-		const bool retVal = INIPrefSettingCollection_SaveFromMenu(thisPtr, unk1, fileName, unk2);
+		const bool retVal = orig_INIPrefSettingCollection_SaveFromMenu(thisPtr, unk1, fileName, unk2);
 
 		//_MESSAGE("SaveFromMenu called filename %s", fileName);
 
@@ -38,7 +38,7 @@ namespace SaveAddedSoundCategories
 			char localFormIdHex[9];
 			sprintf_s(localFormIdHex, sizeof(localFormIdHex), "%08X", soundCategory.second.LocalFormId);
 			snctIni.SetDoubleValue(soundCategory.second.PluginName.c_str(), localFormIdHex, static_cast<double>(soundCategory.second.Category->ingameVolume),
-			                       soundCategory.second.Category->GetName(), true);
+				soundCategory.second.Category->GetName(), true);
 		}
 
 		const std::string& runtimePath = GetRuntimeDirectory();
@@ -55,7 +55,7 @@ namespace SaveAddedSoundCategories
 
 	bool hk_BGSSoundCategory_LoadForm(TES::BGSSoundCategory * soundCategory, ModInfo * modInfo)
 	{
-		const bool result = BGSSoundCategory_LoadForm(soundCategory, modInfo);
+		const bool result = orig_BGSSoundCategory_LoadForm(soundCategory, modInfo);
 
 		if (result)
 		{
@@ -100,7 +100,7 @@ namespace SaveAddedSoundCategories
 				//_MESSAGE("setting volume for formid %08X", soundCategory.second.Category->formID);
 				BSISoundCategory * soundCatInterface = &soundCategory.second.Category->soundCategory;
 
-				BSISoundCategory_SetVolume(soundCatInterface, static_cast<float>(vol));
+				(*vtbl_BSISoundCategory_SetVolume)(soundCatInterface, static_cast<float>(vol));
 			}
 		}
 	}
@@ -120,7 +120,9 @@ namespace SaveAddedSoundCategories
 		}
 
 		_MESSAGE("hooking vtbls");
+		orig_INIPrefSettingCollection_SaveFromMenu = *vtbl_INIPrefSettingCollection_SaveFromMenu;
 		SafeWrite64(vtbl_INIPrefSettingCollection_SaveFromMenu.GetUIntPtr(), GetFnAddr(hk_INIPrefSettingCollection_SaveFromMenu));
+		orig_BGSSoundCategory_LoadForm = *vtbl_BGSSoundCategory_LoadForm;
 		SafeWrite64(vtbl_BGSSoundCategory_LoadForm.GetUIntPtr(), GetFnAddr(hk_BGSSoundCategory_LoadForm));
 		_MESSAGE("success");
 		return true;

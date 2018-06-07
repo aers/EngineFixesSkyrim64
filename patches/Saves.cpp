@@ -258,9 +258,9 @@ namespace Saves
 
 				g_branchTrampoline.Write6Branch(RenderTargetHook_2.GetUIntPtr(), uintptr_t(code.getCode()));
 			}
-
-			_MESSAGE("success");
-			return true;
 		}
+
+		_MESSAGE("success");
+		return true;
 	}
 }
