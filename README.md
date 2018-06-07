@@ -87,6 +87,8 @@ This stuff is marked optional because performance may vary on different hardware
 - terrain LOD breaks sometimes. don't have high hopes for tracking this one down because even though I've personally seen it happen its not possible to replicate it 100% of the time
 - CTD when bethesda.net isn't accessible (or something like this? maybe DNS related instead? not entirely sure, since people fix it by disabling their internet), breaks game for people in eastern europe 
 - enchantment reload fix from LE. LE fix saves to cosave, maybe research exactly what is wrong with enchantment saving or just be lazy and copy LE version
+- add crash handler
+- training costs too high cause training to fail
 - there's probably more stuff. its skyrim
 
 ### Outside the scope of this fix
