@@ -49,6 +49,11 @@ namespace config
 	// disabled by default since most people should't need it
 	bool patchPrecacheKiller = false;
 	
+	// terrible code that likely needs to be rewritten
+	// deletes leftover SKSE64 cosaves that are not removed when the matching save is removed
+	// disabled by default because it's likely really buggy - enable if you want to live on the edge
+	bool killOrphanedCosave = false
+
 	bool LoadConfig(const std::string& path)
 	{
 		CSimpleIniA ini;
@@ -77,7 +82,7 @@ namespace config
 		patchSnowSparkle = ini.GetBoolValue("SnowSparkle", "enabled", true);
 		patchSaveAddedSoundCategories = ini.GetBoolValue("SaveAddedSoundCategories", "enabled", true);
 		patchPrecacheKiller = ini.GetBoolValue("PrecacheKiller", "enabled", false);
-
+		killOrphanedCosave = ini.GetBoolValue("killOrphanedCosave", "enabled", false);
 		return true;
 	}
 }	
