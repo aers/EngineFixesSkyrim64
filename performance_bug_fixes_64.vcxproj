@@ -337,6 +337,7 @@
     <ClCompile Include="config.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="patches\Saves.cpp" />
+    <ClCompile Include="tools\SkseCosaveCleaner.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -362,6 +363,8 @@
     <ClInclude Include="TES\BSTHashMap.h" />
     <ClInclude Include="TES\BSTScatterTable.h" />
     <ClInclude Include="TES\CRC.h" />
+    <ClInclude Include="tools.h" />
+    <ClInclude Include="tools\SkseCosaveCleaner.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

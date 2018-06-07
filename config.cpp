@@ -48,6 +48,8 @@ namespace config
 	// disable chargen precache
 	// disabled by default since most people should't need it
 	bool patchPrecacheKiller = false;
+
+	bool cleanSkseCosaves = true;
 	
 	bool LoadConfig(const std::string& path)
 	{
@@ -77,6 +79,7 @@ namespace config
 		patchSnowSparkle = ini.GetBoolValue("SnowSparkle", "enabled", true);
 		patchSaveAddedSoundCategories = ini.GetBoolValue("SaveAddedSoundCategories", "enabled", true);
 		patchPrecacheKiller = ini.GetBoolValue("PrecacheKiller", "enabled", false);
+		cleanSkseCosaves = ini.GetBoolValue("CleanSkseCosaves", "enabled", true);
 
 		return true;
 	}

@@ -41,5 +41,8 @@ namespace config
 	// chargen precache disable
 	extern bool patchPrecacheKiller;
 
+	// skse cosave cleaner
+	extern bool cleanSkseCosaves;
+
 	bool LoadConfig(const std::string& path);
 }

@@ -133,6 +133,9 @@
     <ClCompile Include="patches\Saves.cpp">
       <Filter>patches</Filter>
     </ClCompile>
+    <ClCompile Include="tools\SkseCosaveCleaner.cpp">
+      <Filter>tools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -198,6 +201,10 @@
     <ClInclude Include="patches\Saves.h">
       <Filter>patches</Filter>
     </ClInclude>
+    <ClInclude Include="tools\SkseCosaveCleaner.h">
+      <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
@@ -217,6 +224,9 @@
     </Filter>
     <Filter Include="lib\jemalloc">
       <UniqueIdentifier>{f2f514ff-e2da-4d54-921b-c151a91a1d4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tools">
+      <UniqueIdentifier>{d7bbb89a-5a0c-4243-84d3-45f9f28f6a2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@
 
 #include "config.h"
 #include "patches.h"
+#include "tools.h"
 #include "util.h"
 #include <cinttypes>
 
@@ -133,6 +134,10 @@ extern "C" {
 
 		if (!SetupTrampolines())
 			return;
+
+		// doing this as early as possible just in case
+		if (config::cleanSkseCosaves)
+			SkseCosaveCleaner::Clean();
 
 		if (config::patchMemoryManager)
 		{
