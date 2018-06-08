@@ -71,10 +71,23 @@ namespace Temporary
 					CustomMenuCode code(codeBuf, skse);
 					g_localTrampoline.EndAlloc(code.getCurr());
 
-					_MESSAGE("write branch");
 					skseTrampoline.Write6Branch(skse + 0x351D, uintptr_t(code.getCode()));
 				}
+				_MESSAGE("done");
 			}
+		}
+	}
+
+	RelocAddr<uintptr_t> ExtraEnchantmentVtbl(0x015464D0);
+
+	void TempFixSKSEExtraEnchantmentVtbl()
+	{
+		// check version 2.0.7
+		if (*(uint32_t *)(skse + 0x400D) == 0xD41D8B48)
+		{
+			_MESSAGE("patching extra enchantment vtbl");
+			SafeWrite64(skse + 0x0011DBE8, ExtraEnchantmentVtbl.GetUIntPtr());
+			_MESSAGE("done");
 		}
 	}
 
@@ -83,9 +96,15 @@ namespace Temporary
 		_MESSAGE("- temporary fixes -");
 		TempFixSKEE();
 		skse = reinterpret_cast<uintptr_t>(GetModuleHandleA("skse64_1_5_39"));
+		if (!skse)
+		{
+			_MESSAGE("couldn't get skse module address. skipping skse patches");
+			return true;
+		}
+		TempFixSKSEExtraEnchantmentVtbl();
 		if (!skseTrampoline.Create(1024 * 64, (void*)skse))
 		{
-			_MESSAGE("couldn't create trampoline for skse dll. skipping skse patches");
+			_MESSAGE("couldn't create trampoline for skse dll. skipping custom menu fix");
 			return true;
 		}
 		TempFixSKSECustomMenu();
