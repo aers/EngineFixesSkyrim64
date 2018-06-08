@@ -50,6 +50,8 @@ namespace config
 	bool patchPrecacheKiller = false;
 
 	bool cleanSkseCosaves = true;
+
+	bool patchTemporary = true;
 	
 	bool LoadConfig(const std::string& path)
 	{
@@ -80,6 +82,7 @@ namespace config
 		patchSaveAddedSoundCategories = ini.GetBoolValue("SaveAddedSoundCategories", "enabled", true);
 		patchPrecacheKiller = ini.GetBoolValue("PrecacheKiller", "enabled", false);
 		cleanSkseCosaves = ini.GetBoolValue("CleanSkseCosaves", "enabled", true);
+		patchTemporary = ini.GetBoolValue("Temporary", "enabled", true);
 
 		return true;
 	}

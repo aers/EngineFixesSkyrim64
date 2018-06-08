@@ -331,6 +331,7 @@
     <ClCompile Include="patches\SaveAddedSoundCategories.cpp" />
     <ClCompile Include="patches\SlowTimeCameraMove.cpp" />
     <ClCompile Include="patches\SnowSparkle.cpp" />
+    <ClCompile Include="patches\Temporary.cpp" />
     <ClCompile Include="patches\TreeReflection.cpp" />
     <ClCompile Include="patches\VerticalLookSensitivity.cpp" />
     <ClCompile Include="patches\WaterflowTimer.cpp" />
@@ -345,6 +346,7 @@
     <ClInclude Include="patches\MaxStdio.h" />
     <ClInclude Include="patches\PrecacheKiller.h" />
     <ClInclude Include="patches\Saves.h" />
+    <ClInclude Include="patches\Temporary.h" />
     <ClInclude Include="tes\BGSShaderParticleGeometryData.h" />
     <ClInclude Include="TES\BGSSoundCategory.h" />
     <ClInclude Include="patches\MemoryManager.h" />

@@ -17,3 +17,4 @@
 #include "patches/SaveAddedSoundCategories.h"
 
 #include "patches/PrecacheKiller.h"
+#include "patches/Temporary.h"

@@ -136,6 +136,7 @@
     <ClCompile Include="tools\SkseCosaveCleaner.cpp">
       <Filter>tools</Filter>
     </ClCompile>
+    <ClCompile Include="patches\Temporary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -205,6 +206,7 @@
       <Filter>tools</Filter>
     </ClInclude>
     <ClInclude Include="tools.h" />
+    <ClInclude Include="patches\Temporary.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

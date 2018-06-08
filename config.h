@@ -44,5 +44,7 @@ namespace config
 	// skse cosave cleaner
 	extern bool cleanSkseCosaves;
 
+	extern bool patchTemporary;
+
 	bool LoadConfig(const std::string& path);
 }
