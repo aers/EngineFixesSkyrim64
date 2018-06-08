@@ -71,12 +71,45 @@ namespace Saves
 			return true;
 		}
 
-		if (config::fixTaaSaveBugs)
+		if (config::fixDofTaaSaveBugs)
 		{
 			// lol so we have one fix that causes flicker during quicksave and one fix that causes blank journal menus
 			// so just combine both, duh
 			_MESSAGE("patching in-game save delay & blank screenshot bugs");
+
+			// with DoF enabled just use the "flicker" fix even for ingame requests
+			if (GetINISetting("bDoDepthOfField:Imagespace")->data.u8 >= 1)
 			{
+				_MESSAGE("dof is enabled and i'm judging you");
+				struct IsSaveRequest_Code : Xbyak::CodeGenerator
+				{
+					IsSaveRequest_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+					{
+						push(rax);
+						// from BGSSaveLoadManager::ProcessEvent
+						// this applies to all saves except saves done from the journal menu
+						// since menu saves do not use the event processor; the game screenshot is actually saved
+						// when you first open the menu
+						mov(rax, (uintptr_t)&screenshot_requested_location);
+						mov(byte[rax], 2);
+						pop(rax);
+						// we're replacing some nops here so we dont need to worry about original code...
+						jmp(ptr[rip]);
+						dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr() + 0xD);
+					}
+				};
+
+				void *codeBuf = g_localTrampoline.StartAlloc();
+				IsSaveRequest_Code code(codeBuf);
+				g_localTrampoline.EndAlloc(code.getCurr());
+
+				g_branchTrampoline.Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
+
+			}
+			// use menu fix for DoF+TAA Disabled ingame requests
+			else
+			{
+				_MESSAGE("no dof");
 				struct IsSaveRequest_Code : Xbyak::CodeGenerator
 				{
 					IsSaveRequest_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
@@ -103,6 +136,7 @@ namespace Saves
 
 			}
 
+			// flicker fix for open menu screenshot requests
 			{
 				struct MenuSave_Code : Xbyak::CodeGenerator
 				{

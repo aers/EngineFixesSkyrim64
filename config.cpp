@@ -24,7 +24,7 @@ namespace config
 
 	// various save game related patches
 	bool patchSaves = true;
-	bool fixTaaSaveBugs = true;
+	bool fixDofTaaSaveBugs = true;
 	bool regularQuicksaves = false;
 
 	// Ports from LE bug fixes mod
@@ -68,7 +68,7 @@ namespace config
 		patchMaxStdio = ini.GetBoolValue("MaxStdio", "enabled", true);
 		stdioDebugMode = ini.GetBoolValue("MaxStdio", "debugmode", false);
 		patchSaves = ini.GetBoolValue("Saves", "enbabled", true);
-		fixTaaSaveBugs = ini.GetBoolValue("Saves", "fixtaasavebugs", true);
+		fixDofTaaSaveBugs = ini.GetBoolValue("Saves", "fixdoftaasavebugs", true);
 		regularQuicksaves = ini.GetBoolValue("Saves", "regularquicksaves", false);
 		patchDoublePerkApply = ini.GetBoolValue("DoublePerkApply", "enabled", true);
 		patchSlowTimeCameraMovement = ini.GetBoolValue("SlowTimeCamera", "enabled", true);

@@ -20,7 +20,7 @@ namespace config
 
 	// various save game related patches
 	extern bool patchSaves;
-	extern bool fixTaaSaveBugs;
+	extern bool fixDofTaaSaveBugs;
 	extern bool regularQuicksaves;
 
 	// Ports from LE bug fixes mod
