@@ -48,7 +48,7 @@ WIP skse64 plugin
 
 9. Max Stdio
 
-    Per https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio the max number of file handles the C stdio level can hold open by default is 512. Since SSE keeps an open file handle for all your plugins (including ones that aren't part of your load order) as well as some other important files, its possible to hit this limit on a heavy load order. Once you hit the limit all calls to fopen_s will start to fail, which means the game can no longer read new files. This causes, among other things, save game loads to report corrupted as the game is no longer capable of reading the save game files, a bug known as "false save corruption". The patch raises the limit to the system maximum (2048), which should be more than enough for 99.9% of use cases. Solving it any other way would require rewriting significant parts of SSE's file IO.
+    Per https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio the max number of file handles the C stdio level can hold open by default is 512. Since SSE keeps an open file handle for all your plugins (including ones that aren't part of your load order) as well as some other important files, its possible to hit this limit on a heavy load order. Once you hit the limit all calls to fopen_s will start to fail, which means the game can no longer read new files. This causes, among other things, save game loads to report corrupted as the game is no longer capable of reading the save game files, a bug known as "false save corruption". The patch replaces calls to crt stdio with a custom implementation that calls Win32 IO directly, raising the handle limit to that of those APIs.
 
 10. RaceSex Menu Precache Disabler
 

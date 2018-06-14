@@ -12,11 +12,10 @@ namespace config
 	// Replace Memory Manager
 	extern bool patchMemoryManager;
 
-	// patch maxstdio to 2048 (default 512)
+	// patch maxstdio
 	// see https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio
 	// this fixes the false save corruption bug 
 	extern bool patchMaxStdio;
-	extern bool stdioDebugMode;
 
 	// various save game related patches
 	extern bool patchSaves;
