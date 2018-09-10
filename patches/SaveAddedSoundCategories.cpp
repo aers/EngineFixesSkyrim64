@@ -17,14 +17,14 @@ namespace SaveAddedSoundCategories
 	std::map<uint32_t, SoundCategoryInfo> soundCategories;
 
 	typedef bool(*_BGSSoundCategory_LoadForm)(TES::BGSSoundCategory * soundCategory, ModInfo * modInfo);
-	RelocPtr<_BGSSoundCategory_LoadForm> vtbl_BGSSoundCategory_LoadForm(0x01591050); // ::LoadForm = vtable[6] in TESForm derived classes
+	RelocPtr<_BGSSoundCategory_LoadForm> vtbl_BGSSoundCategory_LoadForm(0x01591060); // ::LoadForm = vtable[6] in TESForm derived classes
 	_BGSSoundCategory_LoadForm orig_BGSSoundCategory_LoadForm;
 
 	typedef bool(*_BSISoundCategory_SetVolume)(BSISoundCategory * thisPtr, float volume);
-	RelocPtr<_BSISoundCategory_SetVolume> vtbl_BSISoundCategory_SetVolume(0x01591250); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
+	RelocPtr<_BSISoundCategory_SetVolume> vtbl_BSISoundCategory_SetVolume(0x01591260); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
 
 	typedef bool(*_INIPrefSettingCollection_SaveFromMenu)(__int64 thisPtr, __int64 unk1, char * fileName, __int64 unk2);
-	RelocPtr<_INIPrefSettingCollection_SaveFromMenu> vtbl_INIPrefSettingCollection_SaveFromMenu(0x0154FB18); // ::SaveFromMenu??? = vtable[8]
+	RelocPtr<_INIPrefSettingCollection_SaveFromMenu> vtbl_INIPrefSettingCollection_SaveFromMenu(0x0154FB28); // ::SaveFromMenu??? = vtable[8]
 	_INIPrefSettingCollection_SaveFromMenu orig_INIPrefSettingCollection_SaveFromMenu;
 
 	bool hk_INIPrefSettingCollection_SaveFromMenu(__int64 thisPtr, __int64 unk1, char * fileName, __int64 unk2)

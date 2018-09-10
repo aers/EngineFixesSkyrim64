@@ -12,26 +12,26 @@ namespace DoublePerkApply
 
 	typedef void(*_UnknownAddFunc)(int64_t taskPool, int64_t actorPtr, int64_t perkPtr, uint32_t val, int32_t unk1);
 	// 48 85 D2 74 7C 48 89 5C 24 ? 
-	RelocAddr<_UnknownAddFunc> UnknownAddFunc(0x005C6C50);
+	RelocAddr<_UnknownAddFunc> UnknownAddFunc(0x005C6990);
 	// can be found in the functions that call above ^
 	RelocAddr<uintptr_t *> TaskPool(0x02F5F978);
 
 	// E8 ? ? ? ? B2 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 48 8B 0D ? ? ? ? -> +0xA
 	typedef void(*_HandleAddRf)(int64_t apm);
-	RelocAddr<_HandleAddRf> HandleAddRf(0x006824D0);
+	RelocAddr<_HandleAddRf> HandleAddRf(0x00682210);
 
 	// 44 0F B6 47 ? 48 8B D3 E8 ? ? ? ? 
-	RelocAddr<uintptr_t> SwitchFunctionMovzx(0x005C8FDE);
+	RelocAddr<uintptr_t> SwitchFunctionMovzx(0x005C8D1E);
 	// 41 0F B6 F9 48 8B C2 
-	RelocAddr<uintptr_t> UnknownAddFuncMovzx1(0x005C6C6A);
+	RelocAddr<uintptr_t> UnknownAddFuncMovzx1(0x005C69AA);
 	// +0x2C
-	RelocAddr<uintptr_t> UnknownAddFuncMovzx2(0x005C6C96);
+	RelocAddr<uintptr_t> UnknownAddFuncMovzx2(0x005C69D6);
 	// E8 ? ? ? ? 48 8D 35 ? ? ? ? 48 89 5C 24 ? -> +0x12 -> +0x1B
-	RelocAddr<uintptr_t> NextFormIdGetHook(0x0068249B);
+	RelocAddr<uintptr_t> NextFormIdGetHook(0x006821DB);
 	// called just after switch function movzx above, +0x1B
-	RelocAddr<uintptr_t> DoHandleHook(0x0033891B);
+	RelocAddr<uintptr_t> DoHandleHook(0x003388AB);
 	// 74 1B 0F B6 42 08 
-	RelocAddr<uintptr_t> DoAddHook(0x00338CC1);
+	RelocAddr<uintptr_t> DoAddHook(0x00338C51);
 
 	void do_add(int64_t actorPtr, int64_t perkPtr, int32_t unk1)
 	{

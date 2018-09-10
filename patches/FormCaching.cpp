@@ -25,38 +25,38 @@ namespace FormCaching
 	// using originals since skse64 BSReadWriteLock implementation is broken
 	// read lock/unlock are called from GetFormByID
 	typedef void(*_MutexLockRead)(BSReadWriteLock * lock);
-	RelocAddr<_MutexLockRead> BSReadWriteLock_LockRead(0x00C077E0);
+	RelocAddr<_MutexLockRead> BSReadWriteLock_LockRead(0x00C074C0);
 	typedef void(*_MutexUnlockRead)(BSReadWriteLock * lock);
-	RelocAddr<_MutexUnlockRead> BSReadWriteLock_UnlockRead(0x00C07AA0);
+	RelocAddr<_MutexUnlockRead> BSReadWriteLock_UnlockRead(0x00C07780);
 
 	// E8 ? ? ? ? 90 83 05 ? ? ? ? ? ->
 	typedef void(*UnknownFormFunction0_)(__int64 form, bool a2);
-	RelocAddr<UnknownFormFunction0_> origFunc0HookAddr(0x00194970);
+	RelocAddr<UnknownFormFunction0_> origFunc0HookAddr(0x001949E0);
 	UnknownFormFunction0_ origFunc0;
 
 	// E8 ? ? ? ? 84 C0 75 36 48 8B CD ->
 	typedef __int64(*UnknownFormFunction1_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 *a5);
-	RelocAddr <UnknownFormFunction1_> origFunc1HookAddr(0x00196070);
+	RelocAddr <UnknownFormFunction1_> origFunc1HookAddr(0x001960E0);
 	UnknownFormFunction1_ origFunc1;
 
 	// E8 ? ? ? ? 40 B5 01 49 8B CD ->
 	typedef __int64(*UnknownFormFunction2_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 **a5);
-	RelocAddr <UnknownFormFunction2_> origFunc2HookAddr(0x00195DA0);
+	RelocAddr <UnknownFormFunction2_> origFunc2HookAddr(0x00195E10);
 	UnknownFormFunction2_ origFunc2;
 
 	// E8 ? ? ? ? 48 8D 84 24 ? ? ? ? 48 89 44 24 ? 48 8D 44 24 ? 48 89 44 24 ? 4C 8D 4F 14 -> +0xC4 ->
 	typedef __int64(*UnknownFormFunction3_)(__int64 a1, __int64 a2, int a3, __int64 a4);
-	RelocAddr <UnknownFormFunction3_> origFunc3HookAddr(0x00196960);
+	RelocAddr <UnknownFormFunction3_> origFunc3HookAddr(0x001969D0);
 	UnknownFormFunction3_ origFunc3;
 
 	// distant tree alpha lod fade
 	// E8 ? ? ? ? EB 0F 48 8B 43 18 ->
 	typedef void(*UpdateLODAlphaFade_)(ResourceData * data);
-	RelocAddr<UpdateLODAlphaFade_> UpdateLODAlphaFade_orig(0x004A8440);
+	RelocAddr<UpdateLODAlphaFade_> UpdateLODAlphaFade_orig(0x004A8280);
 
 	// E8 ? ? ? ? 66 89 47 04 ->
 	typedef uint16_t(*Float2Half_)(float f);
-	RelocAddr<Float2Half_> Float2Half(0x00D42750);
+	RelocAddr<Float2Half_> Float2Half(0x00D42430);
 
 	// our maps
 	tbb::concurrent_hash_map<uint32_t, TESForm *> globalFormCacheMap[TES_FORM_MASTER_COUNT];

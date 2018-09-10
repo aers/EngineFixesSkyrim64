@@ -10,18 +10,18 @@ namespace BSReadWriteLockCustom
 {
 	// all these functions are in order
 	// E8 ? ? ? ? 89 37  ->
-	RelocAddr<uintptr_t> BSReadWriteLock_Ctor(0x00C077C0);
-	RelocAddr<uintptr_t> BSReadWriteLock_LockForRead(0x00C077E0);
-	RelocAddr<uintptr_t> BSReadWriteLock_LockForWrite(0x00C07860);
-	// unused function 0x00C078F0
-	RelocAddr<uintptr_t> BSReadWriteLock_LockForReadAndWrite(0x00C07960);
-	// unused function 0x00C079E0
-	RelocAddr<uintptr_t> BSReadWriteLock_TryLockForWrite(0x00C07A50);
-	RelocAddr<uintptr_t> BSReadWriteLock_UnlockRead(0x00C07AA0);
-	RelocAddr<uintptr_t> BSReadWriteLock_UnlockWrite(0x00C07AB0);
-	RelocAddr<uintptr_t> BSReadWriteLock_IsWritingThread(0x00C07AE0);
-	RelocAddr<uintptr_t> BSAutoReadAndWriteLock_Initialize(0x00C07B00);
-	RelocAddr<uintptr_t> BSAutoReadAndWriteLock_Deinitialize(0x00C07B50);
+	RelocAddr<uintptr_t> BSReadWriteLock_Ctor(0x00C074A0);
+	RelocAddr<uintptr_t> BSReadWriteLock_LockForRead(0x00C074C0);
+	RelocAddr<uintptr_t> BSReadWriteLock_LockForWrite(0x00C07540);
+	// unused function 0x00C075D0
+	RelocAddr<uintptr_t> BSReadWriteLock_LockForReadAndWrite(0x00C07640);
+	// unused function 0x00C076C0
+	RelocAddr<uintptr_t> BSReadWriteLock_TryLockForWrite(0x00C07730);
+	RelocAddr<uintptr_t> BSReadWriteLock_UnlockRead(0x00C07780);
+	RelocAddr<uintptr_t> BSReadWriteLock_UnlockWrite(0x00C07790);
+	RelocAddr<uintptr_t> BSReadWriteLock_IsWritingThread(0x00C077C0);
+	RelocAddr<uintptr_t> BSAutoReadAndWriteLock_Initialize(0x00C077E0);
+	RelocAddr<uintptr_t> BSAutoReadAndWriteLock_Deinitialize(0x00C07830);
 
 	BSReadWriteLock::BSReadWriteLock()
 	{
