@@ -4,9 +4,9 @@
 namespace PrecacheKiller
 {
 	// E8 ? ? ? ? E8 ? ? ? ? 48 8D 57 30  ->
-	RelocAddr<uintptr_t> PrecacheChargen(0x008B3090);
+	RelocAddr<uintptr_t> PrecacheChargen(0x008B2DD0);
 	// 90 E8 ? ? ? ? 90 48 8B 15 ? ? ? ?  ->
-	RelocAddr<uintptr_t> PrecacheChargenClear(0x008B3210);
+	RelocAddr<uintptr_t> PrecacheChargenClear(0x008B2F50);
 
 	bool Patch()
 	{

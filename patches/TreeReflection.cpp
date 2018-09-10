@@ -9,7 +9,7 @@ namespace TreeReflection
 	// ??_7BSDistantTreeShader@@6B@
 	// vfunc 3 -> +0x37
 	// jz      short loc_141318C5D
-	RelocAddr<uintptr_t> BSDistantTreeShader_VFunc3_Hook(0x01318C57);
+	RelocAddr<uintptr_t> BSDistantTreeShader_VFunc3_Hook(0x013188C7);
 
 	bool Patch()
 	{

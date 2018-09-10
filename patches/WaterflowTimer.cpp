@@ -14,13 +14,13 @@ namespace WaterflowTimer
 	RelocPtr<float> FrameTimer_WithSlowTime(0x02F92948);
 
 	// +0x252
-	RelocAddr<uintptr_t> GameLoop_Hook(0x005B36F2);
+	RelocAddr<uintptr_t> GameLoop_Hook(0x005B3432);
 	RelocPtr<uint32_t> UnkGameLoopDword(0x02F92950);
 
 	// 5th function in??_7BSWaterShader@@6B@ vtbl
 	// F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
 	// loads TIMER_DEFAULT which is a timer representing the GameHour in seconds
-	RelocAddr<uintptr_t> WaterShader_ReadTimer_Hook(0x0130DFD9);
+	RelocAddr<uintptr_t> WaterShader_ReadTimer_Hook(0x0130DC49);
 
 	float timer = 8 * 3600; // Game timer inits to 8 AM
 

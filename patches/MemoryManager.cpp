@@ -10,22 +10,22 @@
 namespace MemoryManager
 {
 	// E8 ? ? ? ? 89 38  ->
-	RelocAddr <uintptr_t> MemoryManagerAlloc(0x00C02770);
+	RelocAddr <uintptr_t> MemoryManagerAlloc(0x00C02450);
 	// E8 ? ? ? ? 89 77 0C ->
-	RelocAddr <uintptr_t> MemoryManagerFree(0x00C02A70);
+	RelocAddr <uintptr_t> MemoryManagerFree(0x00C02750);
 	// relative offsets to these are unlikely to change
-	RelocAddr <uintptr_t> ScrapHeapInit(0x00C03830);
-	RelocAddr <uintptr_t> ScrapHeapAlloc(0x00C039B0);
-	RelocAddr <uintptr_t> ScrapHeapFree(0x00C03FD0);
-	RelocAddr <uintptr_t> ScrapHeapDeInit(0x00C04190);
+	RelocAddr <uintptr_t> ScrapHeapInit(0x00C03510);
+	RelocAddr <uintptr_t> ScrapHeapAlloc(0x00C03690);
+	RelocAddr <uintptr_t> ScrapHeapFree(0x00C03CB0);
+	RelocAddr <uintptr_t> ScrapHeapDeInit(0x00C03E70);
 	// E8 ? ? ? ? 90 0F AE F0 +0x102
-	RelocAddr <uintptr_t> InitMemoryManager(0x0059BAA0);
-	RelocAddr <uintptr_t> InitBSSmallBlockAllocator(0x0059B6D0);
+	RelocAddr <uintptr_t> InitMemoryManager(0x0059B7E0);
+	RelocAddr <uintptr_t> InitBSSmallBlockAllocator(0x0059B410);
 
 	// temporary particle fix
 	typedef bool(*BGSShaderParticleGeometryData_LoadForm_)(TES::BGSShaderParticleGeometryData * thisPtr, ModInfo * modInfo);
 	BGSShaderParticleGeometryData_LoadForm_ orig_BGSShaderParticleGeometryData_LoadForm;
-	RelocPtr<BGSShaderParticleGeometryData_LoadForm_> vtbl_BGSShaderParticleGeometryData_LoadForm(0x01579FF0); // vtbl[6]
+	RelocPtr<BGSShaderParticleGeometryData_LoadForm_> vtbl_BGSShaderParticleGeometryData_LoadForm(0x0157A000); // vtbl[6]
 
 	bool hk_BGSShaderParticleGeometryData_LoadForm(TES::BGSShaderParticleGeometryData * thisPtr, ModInfo * modInfo)
 	{

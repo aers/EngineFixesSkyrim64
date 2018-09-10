@@ -27,9 +27,6 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
 	{
 	case SKSEMessagingInterface::kMessage_DataLoaded:
 		{
-			if (config::patchTemporary)
-				Temporary::Patch();
-
 			if (config::patchSaveAddedSoundCategories)
 				SaveAddedSoundCategories::LoadVolumes();
 

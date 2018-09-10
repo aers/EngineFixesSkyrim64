@@ -18,9 +18,9 @@
 
 namespace SnowSparkle
 {
-	RelocAddr<uintptr_t> BSLightingShaderMaterialSnow_vtbl(0x0187A140);
-	RelocAddr<uintptr_t> BSLightingShader_SetupMaterial_Snow_Hook(0x01309C60);
-	RelocAddr<uintptr_t> BSLightingShader_SetupMaterial_Snow_Exit(0x01309D36);
+	RelocAddr<uintptr_t> BSLightingShaderMaterialSnow_vtbl(0x0187A1C0);
+	RelocAddr<uintptr_t> BSLightingShader_SetupMaterial_Snow_Hook(0x013098D0);
+	RelocAddr<uintptr_t> BSLightingShader_SetupMaterial_Snow_Exit(0x013099A6);
 
 	bool Patch()
 	{

@@ -11,11 +11,11 @@ namespace VerticalLookSensitivity
 	RelocPtr<float> FrameTimer_WithoutSlowTime(0x02F9294C);
 
 	// ??_7ThirdPersonState@@6B@ vtbl last function + 0x71
-	RelocAddr<uintptr_t> ThirdPersonState_Vfunc_Hook(0x00850D81);
+	RelocAddr<uintptr_t> ThirdPersonState_Vfunc_Hook(0x00850AC1);
 	// ??_7DragonCameraState@@6B@ vtbl last function + 0x5F
-	RelocAddr<uintptr_t> DragonCameraState_Vfunc_Hook(0x004F9BAF);
+	RelocAddr<uintptr_t> DragonCameraState_Vfunc_Hook(0x004F990F);
 	// ??_7HorseCameraState@@6B@ vtbl last function + 0x5F
-	RelocAddr<uintptr_t> HorseCameraState_Vfunc_Hook(0x00849E3F);
+	RelocAddr<uintptr_t> HorseCameraState_Vfunc_Hook(0x00849B7F);
 
 	bool Patch()
 	{
