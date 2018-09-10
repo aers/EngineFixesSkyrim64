@@ -32,27 +32,27 @@ namespace Saves
 	byte screenshot_requested_location = 0;
 
 	// 84 C0 75 26 E8 ? ? ? ?  + 0x9
-	RelocAddr<uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot(0x0058A073);
+	RelocAddr<uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot(0x00589DB3);
 
-	RelocAddr<uintptr_t> MenuSave_RequestScreenshot(0x005B1A3A);
+	RelocAddr<uintptr_t> MenuSave_RequestScreenshot(0x005B177A);
 
 	// 41 89 5d 00 40 84 ff 0f 85 + 0x8
-	RelocAddr<uintptr_t> ScreenshotJnz(0x012AEDAA);
+	RelocAddr<uintptr_t> ScreenshotJnz(0x012AEA1A);
 
 	// + 0x128 from ^^
-	RelocAddr<uintptr_t> RenderTargetHook_1(0x012AEED5);
+	RelocAddr<uintptr_t> RenderTargetHook_1(0x012AEB45);
 	// + 0x85
-	RelocAddr<uintptr_t> RenderTargetHook_2(0x012AEF5A);
+	RelocAddr<uintptr_t> RenderTargetHook_2(0x012AEBCA);
 
 	RelocAddr<uintptr_t> SaveScreenshotRequestedDword(0x02F5F968);
 
-	RelocAddr<uintptr_t> loc_1412AF045(0x012AF045);
+	RelocAddr<uintptr_t> loc_1412AF045(0x012AECB5);
 
 
 
 	// QuickSaveLoadHandler::HandleEvent (vtbl 5)
-	RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(0x008AAE58);
-	RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(0x008AAE8B);
+	RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(0x008AAB98);
+	RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(0x008AABCB);
 
 	bool Patch()
 	{
