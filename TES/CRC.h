@@ -19,7 +19,7 @@ protected:
 	template <std::size_t SIZE = sizeof(Ty)>
 	inline CRC32Calculator & operator=(const Ty &val) {
 		typedef void(*Fn)(UInt32 *, const void *, UInt32);
-		RelocAddr<Fn> fn(0x00C069A0); // CalculateCRC32_Size
+		RelocAddr<Fn> fn(0x00C06680); // CalculateCRC32_Size
 
 		fn(&m_checksum, &val, SIZE);
 		return *this;
@@ -28,7 +28,7 @@ protected:
 	template <>
 	inline CRC32Calculator & operator=<4>(const Ty &val) {
 		typedef void(*Fn)(UInt32 *, Ty);
-		RelocAddr<Fn> fn(0x00C06A00); // CalculateCRC32_32
+		RelocAddr<Fn> fn(0x00C066E0); // CalculateCRC32_32
 
 		fn(&m_checksum, val);
 		return *this;
@@ -37,7 +37,7 @@ protected:
 	template <>
 	inline CRC32Calculator & operator=<8>(const Ty &val) {
 		typedef void(*Fn)(UInt32 *, Ty);
-		RelocAddr<Fn> fn(0x00C06A80); // CalculateCRC32_64
+		RelocAddr<Fn> fn(0x00C06760); // CalculateCRC32_64
 
 		fn(&m_checksum, val);
 		return *this;
