@@ -20,6 +20,8 @@ namespace config
 	// see https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio
 	// this fixes the false save corruption bug 
 	bool patchMaxStdio = true;
+	bool stdioDebugMode = false;
+	bool stdioExperimental = false;
 
 	// various save game related patches
 	bool patchSaves = true;
@@ -67,6 +69,8 @@ namespace config
 		patchBSReadWriteLock = ini.GetBoolValue("BSReadWriteLock", "enabled", false);
 		patchMemoryManager = ini.GetBoolValue("MemoryManager", "enabled", false);
 		patchMaxStdio = ini.GetBoolValue("MaxStdio", "enabled", true);
+		stdioDebugMode = ini.GetBoolValue("MaxStdio", "debug", false);
+		stdioExperimental = ini.GetBoolValue("MaxStdio", "experimental", false);
 		patchSaves = ini.GetBoolValue("Saves", "enbabled", true);
 		fixDofTaaSaveBugs = ini.GetBoolValue("Saves", "fixdoftaasavebugs", true);
 		regularQuicksaves = ini.GetBoolValue("Saves", "regularquicksaves", false);

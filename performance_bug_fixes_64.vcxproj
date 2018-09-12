@@ -322,6 +322,7 @@
       <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ForcedIncludeFiles>
     </ClCompile>
+    <ClCompile Include="patches\ExperimentalMaxStdio.cpp" />
     <ClCompile Include="patches\MaxStdio.cpp" />
     <ClCompile Include="patches\MemoryManager.cpp" />
     <ClCompile Include="patches\BSReadWriteLockCustom.cpp" />
@@ -342,6 +343,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\Simpleini.h" />
+    <ClInclude Include="patches\ExperimentalMaxStdio.h" />
     <ClInclude Include="patches\MaxStdio.h" />
     <ClInclude Include="patches\PrecacheKiller.h" />
     <ClInclude Include="patches\Saves.h" />

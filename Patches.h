@@ -5,6 +5,7 @@
 #include "patches/MemoryManager.h"
 
 #include "patches/MaxStdio.h"
+#include "patches/ExperimentalMaxStdio.h"
 #include "patches/Saves.h"
 
 #include "patches/DoublePerkApply.h"

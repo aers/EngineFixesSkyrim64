@@ -124,9 +124,6 @@
     <ClCompile Include="patches\SaveAddedSoundCategories.cpp">
       <Filter>patches</Filter>
     </ClCompile>
-    <ClCompile Include="patches\MaxStdio.cpp">
-      <Filter>patches</Filter>
-    </ClCompile>
     <ClCompile Include="patches\PrecacheKiller.cpp">
       <Filter>patches</Filter>
     </ClCompile>
@@ -136,6 +133,10 @@
     <ClCompile Include="tools\SkseCosaveCleaner.cpp">
       <Filter>tools</Filter>
     </ClCompile>
+    <ClCompile Include="patches\ExperimentalMaxStdio.cpp">
+      <Filter>patches</Filter>
+    </ClCompile>
+    <ClCompile Include="patches\MaxStdio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TES\CRC.h">
@@ -192,9 +193,6 @@
     <ClInclude Include="tes\BGSShaderParticleGeometryData.h">
       <Filter>tes</Filter>
     </ClInclude>
-    <ClInclude Include="patches\MaxStdio.h">
-      <Filter>patches</Filter>
-    </ClInclude>
     <ClInclude Include="patches\PrecacheKiller.h">
       <Filter>patches</Filter>
     </ClInclude>
@@ -205,6 +203,10 @@
       <Filter>tools</Filter>
     </ClInclude>
     <ClInclude Include="tools.h" />
+    <ClInclude Include="patches\ExperimentalMaxStdio.h">
+      <Filter>patches</Filter>
+    </ClInclude>
+    <ClInclude Include="patches\MaxStdio.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

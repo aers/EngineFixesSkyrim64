@@ -134,7 +134,12 @@ extern "C" {
 			BSReadWriteLockCustom::Patch();
 
 		if (config::patchMaxStdio)
-			MaxStdio::Patch();
+		{
+			if (config::stdioExperimental)
+				ExperimentalMaxStdio::Patch();
+			else
+				MaxStdio::Patch();
+		}
 	}
 
 	bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
