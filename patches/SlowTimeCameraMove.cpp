@@ -17,11 +17,11 @@ namespace SlowTimeCameraMove
 		_MESSAGE("- slow time camera movement -");
 		_MESSAGE("patching camera movement to use frame timer that ignores slow time");
 		// patch (+0x4)
-		SafeWrite8(CameraMove_Timer1.GetUIntPtr(), 0xC9);
-		SafeWrite8(CameraMove_Timer2.GetUIntPtr(), 0x62);
-		SafeWrite8(CameraMove_Timer3.GetUIntPtr(), 0xFB);
-		SafeWrite8(CameraMove_Timer4.GetUIntPtr(), 0x5E);
-		SafeWrite8(CameraMove_Timer5.GetUIntPtr(), 0x91);
+		SafeWrite8(CameraMove_Timer1.GetUIntPtr(), 0x89);
+		SafeWrite8(CameraMove_Timer2.GetUIntPtr(), 0x22);
+		SafeWrite8(CameraMove_Timer3.GetUIntPtr(), 0xBB);
+		SafeWrite8(CameraMove_Timer4.GetUIntPtr(), 0x1E);
+		SafeWrite8(CameraMove_Timer5.GetUIntPtr(), 0x51);
 		_MESSAGE("success");
 
 		return true;
