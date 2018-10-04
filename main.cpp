@@ -102,7 +102,7 @@ extern "C" {
 
 				const uint32_t skse_internal_version = MAKE_EXE_VERSION(version >> 48, version >> 32, version >> 16);
 
-				if (skse_internal_version != RUNTIME_VERSION_1_5_50)
+				if (skse_internal_version != RUNTIME_VERSION_1_5_53)
 				{
 					_FATALERROR("unsupported runtime version %08X", version);
 					return;
@@ -160,7 +160,7 @@ extern "C" {
 			_MESSAGE("loaded in editor, marking as incompatible");
 			return false;
 		}
-		else if (skse->runtimeVersion != RUNTIME_VERSION_1_5_50)
+		else if (skse->runtimeVersion != RUNTIME_VERSION_1_5_53)
 		{
 			_FATALERROR("unsupported runtime version %08X", skse->runtimeVersion);
 			return false;
