@@ -5,8 +5,6 @@
 
 #include <ShlObj.h>
 
-#include <jemalloc/jemalloc.h>
-
 #include "config.h"
 #include "patches.h"
 #include "tools.h"
