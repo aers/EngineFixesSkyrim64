@@ -16,6 +16,8 @@ namespace SaveAddedSoundCategories
 	CSimpleIniA snctIni;
 	std::map<uint32_t, SoundCategoryInfo> soundCategories;
 
+	RelocPtr<uintptr_t> vtbl_BGSSoundCategory(0x01591030);
+
 	typedef bool(*_BGSSoundCategory_LoadForm)(TES::BGSSoundCategory * soundCategory, ModInfo * modInfo);
 	RelocPtr<_BGSSoundCategory_LoadForm> vtbl_BGSSoundCategory_LoadForm(0x01591060); // ::LoadForm = vtable[6] in TESForm derived classes
 	_BGSSoundCategory_LoadForm orig_BGSSoundCategory_LoadForm;
@@ -31,14 +33,22 @@ namespace SaveAddedSoundCategories
 	{
 		const bool retVal = orig_INIPrefSettingCollection_SaveFromMenu(thisPtr, unk1, fileName, unk2);
 
-		//_MESSAGE("SaveFromMenu called filename %s", fileName);
+		// _MESSAGE("SaveFromMenu called filename %s", fileName);
 
 		for (auto& soundCategory : soundCategories)
 		{
 			char localFormIdHex[9];
 			sprintf_s(localFormIdHex, sizeof(localFormIdHex), "%08X", soundCategory.second.LocalFormId);
-			snctIni.SetDoubleValue(soundCategory.second.PluginName.c_str(), localFormIdHex, static_cast<double>(soundCategory.second.Category->ingameVolume),
-				soundCategory.second.Category->GetName(), true);
+			
+			if (*(uintptr_t *) soundCategory.second.Category != vtbl_BGSSoundCategory.GetUIntPtr())
+			{
+				// game's probably shutting down here
+				_MESSAGE("SNCT save: skipping save due to game closing");
+				return retVal;
+			}
+
+			auto name = soundCategory.second.Category->GetName();
+			snctIni.SetDoubleValue(soundCategory.second.PluginName.c_str(), localFormIdHex, static_cast<double>(soundCategory.second.Category->ingameVolume));
 		}
 
 		const std::string& runtimePath = GetRuntimeDirectory();
@@ -49,6 +59,8 @@ namespace SaveAddedSoundCategories
 		{
 			_MESSAGE("warning: unable to save snct ini");
 		}
+
+		_MESSAGE("SNCT save: saved sound categories");
 
 		return retVal;
 	}

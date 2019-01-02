@@ -40,7 +40,7 @@ namespace SnowSparkle
 					je("IS_SNOW");
 
 					// not snow, fill with 1.0f
-					mov(eax, 0x3f800000); // 1.0f
+					mov(eax, 0x00000000); // 1.0f
 					mov(dword[rcx + rdx * 4 + 0xC], eax);
 					mov(dword[rcx + rdx * 4 + 0x8], eax);
 					mov(dword[rcx + rdx * 4 + 0x4], eax);
