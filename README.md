@@ -93,7 +93,7 @@ This stuff is marked optional because performance may vary on different hardware
 
 ### Outside the scope of this fix
 
-- broken specular skin shader
+- ~~broken specular skin shader~~ **Coming Soon™**
 
 thanks:
 
