@@ -2,6 +2,8 @@
 
 WIP skse64 plugin
 
+see specular_fix folder for shaders that fix SSE skin lighting
+
 ### Current Patches
 
 1. Tree LOD Alpha & Generic Form Lookup Caching
@@ -90,10 +92,6 @@ This stuff is marked optional because performance may vary on different hardware
 - add crash handler
 - training costs too high cause training to fail
 - there's probably more stuff. its skyrim
-
-### Outside the scope of this fix
-
-- ~~broken specular skin shader~~ **Coming Soon™**
 
 thanks:
 
