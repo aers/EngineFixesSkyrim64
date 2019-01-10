@@ -81,3 +81,5 @@ etc
 
 Since we're looking at compiled shaders, that was 378 total. Obviously with access to the shader source this is far easier to fix :)
 
+PS: There's actually a few other bugs in the shaders (LOD reflections in water are broken and display only as black boxes, for example) but its too difficult for us to track those down without the shader source. We got really lucky on this bug. I don't really know if its feasible but having access to the shader source would be a modder's dream.
+
