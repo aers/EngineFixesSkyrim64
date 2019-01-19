@@ -1,0 +1,37 @@
+#pragma once
+
+namespace config
+{
+    extern bool verboseLogging;
+
+    // Patches
+    extern bool patchFormCaching;
+    extern bool patchMaxStdio;
+    extern bool patchRegularQuicksaves;
+    extern bool patchSaveAddedSoundCategories;
+    extern bool patchTreeLODReferenceCaching;
+    extern bool patchWaterflowAnimation;
+    extern float waterflowSpeed;
+
+    // Fixes
+    extern bool fixDoublePerkApply;
+    extern bool fixMemoryAccessErrors;
+    extern bool fixMO5STypo;
+    extern bool fixPerkFragmentIsRunning;
+    extern bool fixRemovedSpellBook;
+    extern bool fixSaveScreenshots;
+    extern bool fixSlowTimeCameraMovement;
+    extern bool fixTreeReflections;
+
+    // Warnings
+    extern bool warnDupeAddonNodes;
+    extern bool warnRefHandleLimit;
+    extern uint32_t warnRefrMainMenuLimit;
+    extern uint32_t warnRefrLoadedGameLimit;
+
+    // Experimental
+    extern bool experimentalMemoryManager;
+    extern bool experimentalUseTBBMalloc;
+
+    bool LoadConfig(const std::string& path);
+}

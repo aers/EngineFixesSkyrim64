@@ -1,0 +1,24 @@
+#pragma once
+
+#include "skse64_common/BranchTrampoline.h"
+#include "skse64_common/Relocation.h"
+#include "skse64_common/SafeWrite.h"
+
+#include "xbyak/xbyak.h"
+
+#include "config.h"
+#include "offsets.h"
+
+namespace fixes
+{
+    bool PatchDoublePerkApply();
+    bool PatchMemoryAccessErrors();
+    bool PatchMO5STypo();
+    bool PatchPerkFragmentIsRunning();
+    bool PatchRemovedSpellBook();
+    bool PatchSaveScreenshots();
+    bool PatchSlowTimeCameraMovement();
+    bool PatchTreeReflections();
+
+    bool PatchAll();
+}
