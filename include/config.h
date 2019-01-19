@@ -3,8 +3,11 @@
 namespace config
 {
     extern bool verboseLogging;
+    extern bool cleanSKSECosaves;
 
     // Patches
+    extern bool patchDisableChargenPrecache;
+    extern bool patchEnableAchievementsWithMods;
     extern bool patchFormCaching;
     extern bool patchMaxStdio;
     extern bool patchRegularQuicksaves;
@@ -32,6 +35,7 @@ namespace config
     // Experimental
     extern bool experimentalMemoryManager;
     extern bool experimentalUseTBBMalloc;
+    extern bool experimentalTreatAllModsAsMasters;
 
     bool LoadConfig(const std::string& path);
 }

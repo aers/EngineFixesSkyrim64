@@ -4,6 +4,12 @@ namespace patches
 {
     bool PatchAll()
     {
+        if (config::patchEnableAchievementsWithMods)
+            PatchDisableChargenPrecache();
+
+        if (config::patchEnableAchievementsWithMods)
+            PatchEnableAchievementsWithMods();
+
         if (config::patchFormCaching)
             PatchFormCaching();
 
@@ -24,6 +30,9 @@ namespace patches
 
         if (config::experimentalMemoryManager)
             PatchMemoryManager();
+
+        if (config::experimentalTreatAllModsAsMasters)
+            PatchTreatAllModsAsMasters();
 
         return true;
     }

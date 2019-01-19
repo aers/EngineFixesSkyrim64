@@ -1,4 +1,10 @@
+#include "RE/TESDataHandler.h"
+#include "RE/TESFile.h"
+
+#include <intrin.h>
+
 #include "patches.h"
+
 
 namespace patches
 {
@@ -112,8 +118,7 @@ namespace patches
         _VMESSAGE("success");
 
         return true;
-    }
-    
+    }    
 
     bool PatchMaxStdio()
     {
@@ -146,6 +151,83 @@ namespace patches
         SafeWrite32(QuickSaveLoadHandler_HandleEvent_SaveType.GetUIntPtr(), regular_save);
         SafeWrite32(QuickSaveLoadHandler_HandleEvent_LoadType.GetUIntPtr(), load_last_save);
         _VMESSAGE("success");
+        return true;
+    }
+
+    RelocAddr<uintptr_t> AchievementModsEnabledFunction(AchievementModsEnabledFunction_offset);
+
+    bool PatchEnableAchievementsWithMods()
+    {
+        _VMESSAGE("- enable achievements with mods -");
+        // Xbyak is used here to generate the ASM to use instead of just doing it by hand
+        struct Patch : Xbyak::CodeGenerator
+        {
+            Patch(void* buf) : CodeGenerator(1024, buf)
+            {
+                mov(al, 0);
+                ret();
+            }
+        };
+
+        void* patchBuf = g_localTrampoline.StartAlloc();
+        Patch patch(patchBuf);
+        g_localTrampoline.EndAlloc(patch.getCurr());
+
+        for (UInt32 i = 0; i < patch.getSize(); ++i)
+        {
+            SafeWrite8(AchievementModsEnabledFunction.GetUIntPtr() + i, *(patch.getCode() + i));
+        }
+
+        _VMESSAGE("success");
+        return true;
+    }
+
+    RelocAddr<uintptr_t> ChargenCacheFunction(ChargenCacheFunction_offset);
+    RelocAddr<uintptr_t> ChargenCacheClearFunction(ChargenCacheClearFunction_offset);
+
+    bool PatchDisableChargenPrecache()
+    {
+
+        _VMESSAGE("- disable chargen precache -");
+        SafeWrite8(ChargenCacheClearFunction.GetUIntPtr(), 0xC3);
+        SafeWrite8(ChargenCacheClearFunction.GetUIntPtr(), 0xC3);
+        _VMESSAGE("success");
+        return true;
+    }
+
+    bool loadSet = false;
+
+    char hk_TESFile_IsMaster(RE::TESFile * modInfo)
+    {
+        if (loadSet)
+            return true;
+
+        uintptr_t returnAddr = (uintptr_t)(_ReturnAddress()) - RelocationManager::s_baseAddr;
+
+        if (returnAddr == 0x16E11E)
+        {
+            loadSet = true;
+            _MESSAGE("load order finished");
+            auto dhnl = RE::TESDataHandler::GetSingleton();
+            for (auto mod : dhnl->modList.loadOrder)
+            {
+                mod->unk438 |= 1;
+            }
+            return true;
+        }
+
+        return modInfo->unk438 & 1;
+    }
+
+    RelocAddr<uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
+
+    bool PatchTreatAllModsAsMasters()
+    {
+        _VMESSAGE("- treat all mods as masters -");
+        MessageBox(nullptr, TEXT("WARNING: You have the treat all mods as masters patch enabled. I hope you know what you're doing!"), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
+        g_branchTrampoline.Write6Branch(TESFile_IsMaster.GetUIntPtr(), GetFnAddr(hk_TESFile_IsMaster));
+        _VMESSAGE("success");
+
         return true;
     }
 }

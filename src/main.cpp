@@ -103,6 +103,9 @@ extern "C" {
 #endif
 
         _MESSAGE("patching game");
+        if (config::cleanSKSECosaves)
+            CleanSKSECosaves();
+
         patches::PatchAll();
         fixes::PatchAll();
         warnings::PatchAll();

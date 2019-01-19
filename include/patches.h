@@ -11,6 +11,8 @@
 
 namespace patches
 {
+    bool PatchDisableChargenPrecache();
+    bool PatchEnableAchievementsWithMods();
     bool PatchFormCaching();
     bool PatchMaxStdio();
     bool PatchRegularQuicksaves();
@@ -19,6 +21,7 @@ namespace patches
     bool PatchWaterflowAnimation();
 
     bool PatchMemoryManager();
+    bool PatchTreatAllModsAsMasters();
 
     bool PatchAll();
 }

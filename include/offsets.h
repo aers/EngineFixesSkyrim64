@@ -7,6 +7,14 @@
 constexpr uintptr_t g_FrameTimer_SlowTime_offset = 0x02F92948;
 constexpr uintptr_t g_FrameTimer_NoSlowTime_offset = 0x02F9294C;
 
+// Disable Chargen Precache
+// E8 ? ? ? ? E8 ? ? ? ? 48 8D 57 30  ->
+constexpr uintptr_t ChargenCacheFunction_offset = 0x008B2DD0;
+// 90 E8 ? ? ? ? 90 48 8B 15 ? ? ? ?  ->
+constexpr uintptr_t ChargenCacheClearFunction_offset = 0x008B2F50;
+
+// Enable Achievements With Mods
+constexpr uintptr_t AchievementModsEnabledFunction_offset = 0x0016F4D0;
 
 // Form Caching
 constexpr uintptr_t LookupFormByID_offset = 0x00194420;
@@ -139,3 +147,6 @@ constexpr uintptr_t ScrapHeapDeInit_offset = 0x00C03E70;
 // E8 ? ? ? ? 90 0F AE F0 +0x102
 constexpr uintptr_t InitMemoryManager_offset = 0x0059B7E0;
 constexpr uintptr_t InitBSSmallBlockAllocator_offset = 0x0059B410;
+
+//
+constexpr uintptr_t TESFile_IsMaster_offset = 0x0017E320;

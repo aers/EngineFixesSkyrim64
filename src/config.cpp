@@ -5,8 +5,11 @@
 namespace config
 {
     bool verboseLogging = false;
+    bool cleanSKSECosaves = false;
 
     // Patches
+    bool patchDisableChargenPrecache = false;
+    bool patchEnableAchievementsWithMods = true;
     bool patchFormCaching = true;
     bool patchMaxStdio = true;
     bool patchRegularQuicksaves = false;
@@ -34,6 +37,7 @@ namespace config
     // Experimental
     bool experimentalMemoryManager = false;
     bool experimentalUseTBBMalloc = true;
+    bool experimentalTreatAllModsAsMasters = false;
 
     bool LoadConfig(const std::string& path)
     {
@@ -47,8 +51,11 @@ namespace config
         }
 
         verboseLogging = ini.GetBoolValue("EngineFixes", "VerboseLogging", false);
+        cleanSKSECosaves = ini.GetBoolValue("EngineFixes", "CleanSKSECosaves", true);
 
         // Patches
+        patchDisableChargenPrecache = ini.GetBoolValue("Patches", "DisableChargenPrecache", false);
+        patchEnableAchievementsWithMods = ini.GetBoolValue("Patches", "EnableAchievementsWithMods", true);
         patchFormCaching = ini.GetBoolValue("Patches", "FormCaching", true);
         patchMaxStdio = ini.GetBoolValue("Patches", "MaxStdio", true);
         patchRegularQuicksaves = ini.GetBoolValue("Patches", "RegularQuicksaves", false);
@@ -76,6 +83,7 @@ namespace config
         // Experimental
         experimentalMemoryManager = ini.GetBoolValue("Experimental", "MemoryManager", false);
         experimentalUseTBBMalloc = ini.GetBoolValue("Experimental", "UseTBBMalloc", true);
+        experimentalTreatAllModsAsMasters = ini.GetBoolValue("Experimental", "TreatAllModsAsMasters", false);
 
         return true;
     }
