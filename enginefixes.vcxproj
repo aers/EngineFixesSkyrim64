@@ -190,6 +190,7 @@
     <ClInclude Include="include\utils.h" />
     <ClInclude Include="include\version.h" />
     <ClInclude Include="include\warnings.h" />
+    <ClInclude Include="lib\INIReader.h" />
     <ClInclude Include="lib\Simpleini.h" />
   </ItemGroup>
   <ItemGroup>

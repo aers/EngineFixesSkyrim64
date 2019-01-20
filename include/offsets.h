@@ -41,6 +41,16 @@ constexpr uintptr_t vtbl_BGSSoundCategory_LoadForm_offset = 0x01591060;
 constexpr uintptr_t vtbl_BSISoundCategory_SetVolume_offset = 0x01591260;
 constexpr uintptr_t vtbl_INIPrefSettingCollection_SaveFromMenu_offset = 0x0154FB28;
 
+// Scrolling Doesn't Switch POV
+// FirstPersonState::PlayerInputHandler::sub_4
+constexpr uintptr_t FirstPersonState_DontSwitchPOV_offset = 0x00848013;
+// TPS
+constexpr uintptr_t ThirdPersonState_DontSwitchPOV_offset = 0x0084FFB8;
+
+// Sleep Wait Time
+// "getSliderValue" comiss
+constexpr uintptr_t SleepWaitTime_Compare_offset = 0x008BDC7E;
+
 // Tree LOD Reference Caching
 // E8 ? ? ? ? EB 0F 48 8B 43 18 ->
 constexpr uintptr_t UpdateBlockVisibility_orig_offset = 0x004A8280;

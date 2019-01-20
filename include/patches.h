@@ -17,6 +17,8 @@ namespace patches
     bool PatchMaxStdio();
     bool PatchRegularQuicksaves();
     bool PatchSaveAddedSoundCategories();
+    bool PatchScrollingDoesntSwitchPOV();
+    bool PatchSleepWaitTime();
     bool PatchTreeLODReferenceCaching();
     bool PatchWaterflowAnimation();
 

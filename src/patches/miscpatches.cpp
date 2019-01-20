@@ -230,4 +230,45 @@ namespace patches
 
         return true;
     }
+
+    RelocAddr<uintptr_t> FirstPersonState_DontSwitchPOV(FirstPersonState_DontSwitchPOV_offset);
+    RelocAddr<uintptr_t> ThirdPersonState_DontSwitchPOV(ThirdPersonState_DontSwitchPOV_offset);
+
+    bool PatchScrollingDoesntSwitchPOV()
+    {
+        _VMESSAGE("- scrolling doesnt switch POV -");
+        SafeWrite8(FirstPersonState_DontSwitchPOV.GetUIntPtr(), 0xEB);
+        SafeWrite8(ThirdPersonState_DontSwitchPOV.GetUIntPtr(), 0xEB);
+        _VMESSAGE("- success -");
+        return true;
+    }
+
+    RelocAddr<uintptr_t> SleepWaitTime_Compare(SleepWaitTime_Compare_offset);
+
+    bool PatchSleepWaitTime()
+    {
+        _VMESSAGE("- sleep wait time -");
+        {
+            struct SleepWaitTime_Code : Xbyak::CodeGenerator
+            {
+                SleepWaitTime_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                {
+                    push(rax);
+                    mov(rax, (size_t)&config::sleepWaitTimeModifier);
+                    comiss(xmm0, ptr[rax]);
+                    pop(rax);
+                    jmp(ptr[rip]);
+                    dq(SleepWaitTime_Compare.GetUIntPtr() + 0x7);
+                }
+            };
+
+            void *codeBuf = g_localTrampoline.StartAlloc();
+            SleepWaitTime_Code code(codeBuf);
+            g_localTrampoline.EndAlloc(code.getCurr());
+
+            g_branchTrampoline.Write6Branch(SleepWaitTime_Compare.GetUIntPtr(), uintptr_t(code.getCode()));
+        }
+        _VMESSAGE("success");
+        return true;
+    }
 }

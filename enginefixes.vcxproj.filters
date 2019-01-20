@@ -99,6 +99,9 @@
     <ClInclude Include="include\warnings.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="lib\INIReader.h">
+      <Filter>lib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="version.rc" />

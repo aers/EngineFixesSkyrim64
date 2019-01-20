@@ -12,6 +12,9 @@ namespace config
     extern bool patchMaxStdio;
     extern bool patchRegularQuicksaves;
     extern bool patchSaveAddedSoundCategories;
+    extern bool patchScrollingDoesntSwitchPOV;
+    extern bool patchSleepWaitTime;
+    extern float sleepWaitTimeModifier;
     extern bool patchTreeLODReferenceCaching;
     extern bool patchWaterflowAnimation;
     extern float waterflowSpeed;

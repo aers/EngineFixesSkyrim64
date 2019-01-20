@@ -27,10 +27,14 @@ namespace warnings
             if (!res.second)
             {
                 const auto current = (*res.first).second;
-                _MESSAGE("WARNING: duplicate addon node index found, formID %08x in plugin %s and formID %08x in plugin %s share node index %d", current->formID, (*current->sourceFiles->files)->name, addonNode->formID, modInfo->name, addonNode->nodeIndex);
-                _MESSAGE("WARNING: for info on resolving this problem, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");
-                _MESSAGE("WARNING: you can disable this warning in the ini file");
-                MessageBox(nullptr, TEXT("WARNING: You have a duplicate Addon Node index. Please check the Engine Fixes log for more details."), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
+
+                if (current != addonNode)
+                {
+                    _MESSAGE("WARNING: duplicate addon node index found, formID %08x in plugin %s and formID %08x in plugin %s share node index %d", current->formID, (*current->sourceFiles->files)->name, addonNode->formID, modInfo->name, addonNode->nodeIndex);
+                    _MESSAGE("WARNING: for info on resolving this problem, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");
+                    _MESSAGE("WARNING: you can disable this warning in the ini file");
+                    MessageBox(nullptr, TEXT("WARNING: You have a duplicate Addon Node index. Please check the Engine Fixes log for more details."), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
+                }
             }
         }
 

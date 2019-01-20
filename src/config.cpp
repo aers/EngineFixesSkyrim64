@@ -1,4 +1,4 @@
-#include "Simpleini.h"
+#include "INIReader.h"
 
 #include "config.h"
 
@@ -14,6 +14,9 @@ namespace config
     bool patchMaxStdio = true;
     bool patchRegularQuicksaves = false;
     bool patchSaveAddedSoundCategories = true;
+    bool patchScrollingDoesntSwitchPOV = false;
+    bool patchSleepWaitTime = false;
+    float sleepWaitTimeModifier = 0.3;
     bool patchWaterflowAnimation = true;
     bool patchTreeLODReferenceCaching = true;
     float waterflowSpeed = 20.0;
@@ -41,49 +44,51 @@ namespace config
 
     bool LoadConfig(const std::string& path)
     {
-        CSimpleIniA ini;
-        SI_Error rc = ini.LoadFile(path.c_str());
+        INIReader ini(path);
 
-        if (rc < 0)
+        if (ini.ParseError() < 0)
         {
             _MESSAGE("unable to read ini file at path %s", path.c_str());
             return false;
         }
 
-        verboseLogging = ini.GetBoolValue("EngineFixes", "VerboseLogging", false);
-        cleanSKSECosaves = ini.GetBoolValue("EngineFixes", "CleanSKSECosaves", true);
+        verboseLogging = ini.GetBoolean("EngineFixes", "VerboseLogging", false);
+        cleanSKSECosaves = ini.GetBoolean("EngineFixes", "CleanSKSECosaves", true);
 
         // Patches
-        patchDisableChargenPrecache = ini.GetBoolValue("Patches", "DisableChargenPrecache", false);
-        patchEnableAchievementsWithMods = ini.GetBoolValue("Patches", "EnableAchievementsWithMods", true);
-        patchFormCaching = ini.GetBoolValue("Patches", "FormCaching", true);
-        patchMaxStdio = ini.GetBoolValue("Patches", "MaxStdio", true);
-        patchRegularQuicksaves = ini.GetBoolValue("Patches", "RegularQuicksaves", false);
-        patchSaveAddedSoundCategories = ini.GetBoolValue("Patches", "SaveAddedSoundCategories", true);
-        patchTreeLODReferenceCaching = ini.GetBoolValue("Patches", "TreeLODReferenceCaching", true);
-        patchWaterflowAnimation = ini.GetBoolValue("Patches", "WaterflowAnimation", true);
-        waterflowSpeed = static_cast<float>(ini.GetDoubleValue("Patches", "WaterflowSpeed", 20.0));
+        patchDisableChargenPrecache = ini.GetBoolean("Patches", "DisableChargenPrecache", false);
+        patchEnableAchievementsWithMods = ini.GetBoolean("Patches", "EnableAchievementsWithMods", true);
+        patchFormCaching = ini.GetBoolean("Patches", "FormCaching", true);
+        patchMaxStdio = ini.GetBoolean("Patches", "MaxStdio", true);
+        patchRegularQuicksaves = ini.GetBoolean("Patches", "RegularQuicksaves", false);
+        patchSaveAddedSoundCategories = ini.GetBoolean("Patches", "SaveAddedSoundCategories", true);
+        patchScrollingDoesntSwitchPOV = ini.GetBoolean("Patches", "ScrollingDoesntSwitchPOV", false);
+        patchSleepWaitTime = ini.GetBoolean("Patches", "SleepWaitTime", false);
+        sleepWaitTimeModifier = static_cast<float>(ini.GetReal("Patches", "SleepWaitTimeModifier", 0.3));
+        patchTreeLODReferenceCaching = ini.GetBoolean("Patches", "TreeLODReferenceCaching", true);
+        patchWaterflowAnimation = ini.GetBoolean("Patches", "WaterflowAnimation", true);
+        waterflowSpeed = static_cast<float>(ini.GetReal("Patches", "WaterflowSpeed", 20.0));
 
         // Fixes
-        fixDoublePerkApply = ini.GetBoolValue("Fixes", "DoublePerkApply", true);
-        fixMemoryAccessErrors = ini.GetBoolValue("Fixes", "MemoryAccessErrors", true);
-        fixMO5STypo = ini.GetBoolValue("Fixes", "MO5STypo", true);
-        fixPerkFragmentIsRunning = ini.GetBoolValue("Fixes", "PerkFragmentIsRunning", true);
-        fixRemovedSpellBook = ini.GetBoolValue("Fixes", "RemovedSpellBook", true);
-        fixSaveScreenshots = ini.GetBoolValue("Fixes", "SaveScreenshots", true);
-        fixSlowTimeCameraMovement = ini.GetBoolValue("Fixes", "SlowTimeCameraMovement", true);
-        fixTreeReflections = ini.GetBoolValue("Fixes", "TreeReflections", true);
+        fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
+        fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
+        fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);
+        fixPerkFragmentIsRunning = ini.GetBoolean("Fixes", "PerkFragmentIsRunning", true);
+        fixRemovedSpellBook = ini.GetBoolean("Fixes", "RemovedSpellBook", true);
+        fixSaveScreenshots = ini.GetBoolean("Fixes", "SaveScreenshots", true);
+        fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
+        fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
 
         // Warnings
-        warnDupeAddonNodes = ini.GetBoolValue("Warnings", "DupeAddonNodes", true);
-        warnRefHandleLimit = ini.GetBoolValue("Warnings", "RefHandleLimit", true);
-        warnRefrMainMenuLimit = ini.GetLongValue("Warnings", "RefrMainMenuLimit", 800000);
-        warnRefrLoadedGameLimit = ini.GetLongValue("Warnings", "RefrLoadedGameLimit", 1000000);
+        warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);
+        warnRefHandleLimit = ini.GetBoolean("Warnings", "RefHandleLimit", true);
+        warnRefrMainMenuLimit = ini.GetInteger("Warnings", "RefrMainMenuLimit", 800000);
+        warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
-        experimentalMemoryManager = ini.GetBoolValue("Experimental", "MemoryManager", false);
-        experimentalUseTBBMalloc = ini.GetBoolValue("Experimental", "UseTBBMalloc", true);
-        experimentalTreatAllModsAsMasters = ini.GetBoolValue("Experimental", "TreatAllModsAsMasters", false);
+        experimentalMemoryManager = ini.GetBoolean("Experimental", "MemoryManager", false);
+        experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
+        experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 
         return true;
     }

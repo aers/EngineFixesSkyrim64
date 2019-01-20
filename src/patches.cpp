@@ -22,6 +22,12 @@ namespace patches
         if (config::patchSaveAddedSoundCategories)
             PatchSaveAddedSoundCategories();
 
+        if (config::patchScrollingDoesntSwitchPOV)
+            PatchScrollingDoesntSwitchPOV();
+
+        if (config::patchSleepWaitTime)
+            PatchSleepWaitTime();
+
         if (config::patchTreeLODReferenceCaching && config::patchFormCaching)
             PatchTreeLODReferenceCaching();
 
