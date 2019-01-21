@@ -101,7 +101,7 @@ namespace patches
                         }
                     }
 
-                    if (refrObject->flags.disabled && refrObject->flags.markedForDeletion)
+                    if (refrObject->flags.disabled || refrObject->flags.markedForDeletion)
                         fullyHidden = true;
                 }
 
