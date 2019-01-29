@@ -20,6 +20,7 @@ namespace config
     extern float waterflowSpeed;
 
     // Fixes
+    extern bool fixBethesdaNetCrash;
     extern bool fixDoublePerkApply;
     extern bool fixMemoryAccessErrors;
     extern bool fixMO5STypo;

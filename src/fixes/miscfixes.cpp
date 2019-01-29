@@ -249,5 +249,44 @@ namespace fixes
         _VMESSAGE("success");
 
         return true;
-    }   
+    }
+
+    errno_t hk_wcsrtombs_s(std::size_t* a_retval, char* a_dst, rsize_t a_dstsz, const wchar_t** a_src, rsize_t a_len, std::mbstate_t* a_ps)
+    {
+        int numChars = WideCharToMultiByte(CP_UTF8, 0, *a_src, a_len, NULL, 0, NULL, NULL);
+        bool err;
+        std::string str;
+        if (a_src && numChars != 0 && numChars <= str.max_size()) {
+            str.resize(numChars);
+            char* dst = a_dst ? a_dst : str.data();
+            err = WideCharToMultiByte(CP_UTF8, 0, *a_src, a_len, dst, numChars, NULL, NULL) ? false : true;
+        }
+        else {
+            err = true;
+        }
+
+        if (err) {
+            if (a_retval) {
+                *a_retval = static_cast<std::size_t>(-1);
+            }
+            if (a_dst && a_dstsz != 0 && a_dstsz <= (std::numeric_limits<rsize_t>::max)()) {
+                a_dst[0] = '\0';
+            }
+            return GetLastError();
+        }
+
+        if (a_retval) {
+            *a_retval = static_cast<std::size_t>(numChars);
+        }
+        return 0;
+    }
+
+
+    bool PatchBethesdaNetCrash()
+    {
+        _VMESSAGE("- bethesda.net crash -");
+        PatchIAT(GetFnAddr(hk_wcsrtombs_s), "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
+        _VMESSAGE("success");
+        return true;
+    }
 }

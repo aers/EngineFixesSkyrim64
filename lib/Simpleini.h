@@ -2103,6 +2103,7 @@ CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetDoubleValue(
 
     // convert to UTF-8/MBCS which for a numeric value will be the same as ASCII
     char szValue[64] = { 0 };
+
     SI_CONVERTER c(m_bStoreIsUtf8);
     if (!c.ConvertToStore(pszValue, szValue, sizeof(szValue))) {
         return a_nDefault;
@@ -2112,9 +2113,9 @@ CSimpleIniTempl<SI_CHAR, SI_STRLESS, SI_CONVERTER>::GetDoubleValue(
     double nValue = strtod(szValue, &pszSuffix);
 
     // any invalid strings will return the default value
-    if (!pszSuffix || *pszSuffix) {
-        return a_nDefault;
-    }
+    //if (!pszSuffix || *pszSuffix) {
+    //    return a_nDefault;
+    //}
 
     return nValue;
 }

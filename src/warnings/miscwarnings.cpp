@@ -28,7 +28,7 @@ namespace warnings
             {
                 const auto current = (*res.first).second;
 
-                if (current != addonNode)
+                if (current != addonNode && current->formID != addonNode->formID)
                 {
                     _MESSAGE("WARNING: duplicate addon node index found, formID %08x in plugin %s and formID %08x in plugin %s share node index %d", current->formID, (*current->sourceFiles->files)->name, addonNode->formID, modInfo->name, addonNode->nodeIndex);
                     _MESSAGE("WARNING: for info on resolving this problem, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");

@@ -22,6 +22,7 @@ namespace config
     float waterflowSpeed = 20.0;
 
     // Fixes
+    bool fixBethesdaNetCrash = true;
     bool fixDoublePerkApply = true;
     bool fixMemoryAccessErrors = true;
     bool fixMO5STypo = true;
@@ -70,6 +71,7 @@ namespace config
         waterflowSpeed = static_cast<float>(ini.GetReal("Patches", "WaterflowSpeed", 20.0));
 
         // Fixes
+        fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
         fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);

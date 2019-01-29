@@ -11,6 +11,7 @@
 
 namespace fixes
 {
+    bool PatchBethesdaNetCrash();
     bool PatchDoublePerkApply();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();

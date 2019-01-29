@@ -5,7 +5,6 @@
 
 #include "patches.h"
 
-
 namespace patches
 {
     RelocPtr<float> FrameTimer_WithSlowTime(g_FrameTimer_SlowTime_offset);

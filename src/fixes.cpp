@@ -5,6 +5,9 @@ namespace fixes
 {
     bool PatchAll()
     {
+        if (config::fixBethesdaNetCrash)
+            PatchBethesdaNetCrash();
+
         if (config::fixDoublePerkApply)
             PatchDoublePerkApply();
 
