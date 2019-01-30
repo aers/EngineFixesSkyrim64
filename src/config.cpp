@@ -24,6 +24,7 @@ namespace config
     // Fixes
     bool fixBethesdaNetCrash = true;
     bool fixDoublePerkApply = true;
+    bool fixEquipShoutEventSpam = true;
     bool fixMemoryAccessErrors = true;
     bool fixMO5STypo = true;
     bool fixPerkFragmentIsRunning = true;
@@ -73,6 +74,7 @@ namespace config
         // Fixes
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
+        fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
         fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);
         fixPerkFragmentIsRunning = ini.GetBoolean("Fixes", "PerkFragmentIsRunning", true);

@@ -20,11 +20,10 @@ namespace fixes
     void hk_TESObjectBook_LoadBuffer(RE::TESObjectBOOK * thisPtr, RE::BGSLoadFormBuffer* a_buf)
     {
         using Flag = RE::TESObjectBOOK::Data::Flag;
-        using Skill = RE::TESObjectBOOK::Data::Skill;
 
         orig_LoadBuffer(thisPtr, a_buf);
 
-        if (thisPtr->data.teaches.skill == Skill::kNone) {
+        if (thisPtr->data.teaches.skill == RE::ActorValue::kNone) {
             if (thisPtr->TeachesSkill()) {
                 thisPtr->data.flags &= ~Flag::kTeachesSkill;
             }
@@ -79,11 +78,11 @@ namespace fixes
         const bool retVal = orig_BGSShaderParticleGeometryData_LoadForm(thisPtr, file);
 
         // the game doesn't allow more than 10 here
-        if (thisPtr->data.count >= 12)
+        if (thisPtr->data.GetSize() >= 12)
         {
             const auto particleDensity = thisPtr->data[11];
-            if (particleDensity > 10.0)
-                thisPtr->data[11] = 10.0f;
+            if (particleDensity.f > 10.0)
+                thisPtr->data[11].f = 10.0f;
         }
 
         return retVal;
@@ -292,12 +291,71 @@ namespace fixes
         return 0;
     }
 
-
     bool PatchBethesdaNetCrash()
     {
         _VMESSAGE("- bethesda.net crash -");
         PatchIAT(GetFnAddr(hk_wcsrtombs_s), "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
         _VMESSAGE("success");
+        return true;
+    }
+
+    bool PatchEquipShoutEventSpam()
+    {
+        _VMESSAGE("- equip shout event spam - ");
+
+        constexpr std::uintptr_t BRANCH_OFF = 0x17A;
+        constexpr std::uintptr_t SEND_EVENT_BEGIN = 0x18A;
+        constexpr std::uintptr_t SEND_EVENT_END = 0x236;
+        constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, equippedShout);
+        constexpr UInt32 BRANCH_SIZE = 5;
+        constexpr UInt32 CODE_CAVE_SIZE = 16;
+        constexpr UInt32 DIFF = CODE_CAVE_SIZE - BRANCH_SIZE;
+        constexpr UInt8 NOP = 0x90;
+
+        RelocAddr<std::uintptr_t> funcBase(Equip_Shout_Procedure_Function_offset);
+
+        struct Patch : Xbyak::CodeGenerator
+        {
+            Patch(void* a_buf, UInt64 a_funcBase) : Xbyak::CodeGenerator(1024, a_buf)
+            {
+                Xbyak::Label exitLbl;
+                Xbyak::Label exitIP;
+                Xbyak::Label sendEvent;
+
+                // r14 = Actor*
+                // rdi = TESShout*
+
+                cmp(ptr[r14 + EQUIPPED_SHOUT], rdi);	// if (actor->equippedShout != shout)
+                je(exitLbl);
+                mov(ptr[r14 + EQUIPPED_SHOUT], rdi);	// actor->equippedShout = shout;
+                test(rdi, rdi);							// if (shout)
+                jz(exitLbl);
+                jmp(ptr[rip + sendEvent]);
+
+
+                L(exitLbl);
+                jmp(ptr[rip + exitIP]);
+
+                L(exitIP);
+                dq(a_funcBase + SEND_EVENT_END);
+
+                L(sendEvent);
+                dq(a_funcBase + SEND_EVENT_BEGIN);
+            }
+        };
+
+        void* patchBuf = g_localTrampoline.StartAlloc();
+        Patch patch(patchBuf, funcBase.GetUIntPtr());
+        g_localTrampoline.EndAlloc(patch.getCurr());
+
+        g_branchTrampoline.Write5Branch(funcBase.GetUIntPtr() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
+
+        for (UInt32 i = 0; i < DIFF; ++i) {
+            SafeWrite8(funcBase.GetUIntPtr() + BRANCH_OFF + BRANCH_SIZE + i, NOP);
+        }
+
+        _VMESSAGE("installed patch for equip event spam (size == %zu)", patch.getSize());
+
         return true;
     }
 }

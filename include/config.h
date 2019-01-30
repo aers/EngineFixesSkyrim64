@@ -22,6 +22,7 @@ namespace config
     // Fixes
     extern bool fixBethesdaNetCrash;
     extern bool fixDoublePerkApply;
+    extern bool fixEquipShoutEventSpam;
     extern bool fixMemoryAccessErrors;
     extern bool fixMO5STypo;
     extern bool fixPerkFragmentIsRunning;

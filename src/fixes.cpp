@@ -11,6 +11,9 @@ namespace fixes
         if (config::fixDoublePerkApply)
             PatchDoublePerkApply();
 
+        if (config::fixEquipShoutEventSpam)
+            PatchEquipShoutEventSpam();
+
         if (config::fixMemoryAccessErrors)
             PatchMemoryAccessErrors();
 

@@ -1,7 +1,9 @@
 #include "tbb/concurrent_hash_map.h"
 
 #include "RE/BSTHashMap.h"
-#include "RE/TESform.h"
+#include "RE/TESForm.h"
+
+#include "skse64/GameForms.h"
 
 #include "patches.h"
 

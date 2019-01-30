@@ -13,6 +13,7 @@ namespace fixes
 {
     bool PatchBethesdaNetCrash();
     bool PatchDoublePerkApply();
+    bool PatchEquipShoutEventSpam();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
     bool PatchPerkFragmentIsRunning();

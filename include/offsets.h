@@ -87,6 +87,9 @@ constexpr uintptr_t do_handle_hook = 0x003388AB;
 // 74 1B 0F B6 42 08 
 constexpr uintptr_t do_add_hook = 0x00338C51;
 
+// Equip Shout Event Spam
+constexpr uintptr_t Equip_Shout_Procedure_Function_offset = 0x006325B0;
+
 // Memory Access Errors
 constexpr uintptr_t BSLightingShaderMaterialSnow_vtbl_offset = 0x0187A1C0;
 constexpr uintptr_t BSLightingShader_SetupMaterial_Snow_Hook_offset = 0x013098D0;

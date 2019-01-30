@@ -7,7 +7,7 @@
 #include "tbb/concurrent_hash_map.h"
 
 #include "patches.h"
-
+#include "RE/TESDataHandler.h"
 
 
 namespace patches
@@ -30,14 +30,14 @@ namespace patches
 
     void hk_UpdateBlockVisibility(RE::BGSDistantTreeBlock::ResourceData *data)
     {
-        for (uint32_t i = 0; i < data->m_LODGroups.GetSize(); i++)
+        for (uint32_t i = 0; i < data->lodGroups.GetSize(); i++)
         {
-            auto *group = data->m_LODGroups[i];
+            auto *group = data->lodGroups[i];
 
-            for (uint32_t j = 0; j < group->m_LODInstances.GetSize(); j++)
+            for (uint32_t j = 0; j < group->lodInstances.GetSize(); j++)
             {
-                RE::BGSDistantTreeBlock::LODGroupInstance *instance = &group->m_LODInstances[j];
-                const uint32_t maskedFormId = instance->FormId & 0x00FFFFFF;
+                RE::BGSDistantTreeBlock::LODGroupInstance *instance = &group->lodInstances[j];
+                const uint32_t maskedFormId = instance->formId & 0x00FFFFFF;
 
                 RE::TESObjectREFR *refrObject = nullptr;
 
@@ -50,7 +50,7 @@ namespace patches
                 else
                 {
                     // Find first valid tree object by ESP/ESM load order
-                    for (int k = 0; k < DataHandler::GetSingleton()->modList.loadedMods.count; k++)
+                    for (int k = 0; k < RE::TESDataHandler::GetSingleton()->modList.loadedMods.GetSize(); k++)
                     {
                         RE::TESForm *form = LookupFormByID((k << 24) | maskedFormId);
                         if (form)
@@ -107,20 +107,20 @@ namespace patches
 
                 const uint16_t halfFloat = Float2Half(alpha);
 
-                if (instance->Alpha != halfFloat)
+                if (instance->alpha != halfFloat)
                 {
-                    instance->Alpha = halfFloat;
-                    group->m_UnkByte24 = false;
+                    instance->alpha = halfFloat;
+                    group->unk24 = false;
                 }
 
-                if (instance->Hidden != fullyHidden)
+                if (instance->hidden != fullyHidden)
                 {
-                    instance->Hidden = fullyHidden;
-                    group->m_UnkByte24 = false;
+                    instance->hidden = fullyHidden;
+                    group->unk24 = false;
                 }
 
                 if (fullyHidden)
-                    data->m_UnkByte82 = false;
+                    data->unk82 = false;
             }
         }
     }
