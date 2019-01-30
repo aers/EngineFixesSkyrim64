@@ -254,11 +254,22 @@ namespace fixes
     errno_t hk_wcsrtombs_s(std::size_t* a_retval, char* a_dst, rsize_t a_dstsz, const wchar_t** a_src, rsize_t a_len, std::mbstate_t* a_ps)
     {
         int numChars = WideCharToMultiByte(CP_UTF8, 0, *a_src, a_len, NULL, 0, NULL, NULL);
-        bool err;
+
         std::string str;
-        if (a_src && numChars != 0 && numChars <= str.max_size()) {
+        char* dst = 0;
+        rsize_t dstsz = 0;
+        if (a_dst) {
+            dst = a_dst;
+            dstsz = a_dstsz;
+        }
+        else {
             str.resize(numChars);
-            char* dst = a_dst ? a_dst : str.data();
+            dst = str.data();
+            dstsz = str.max_size();
+        }
+
+        bool err;
+        if (a_src && numChars != 0 && numChars <= dstsz) {
             err = WideCharToMultiByte(CP_UTF8, 0, *a_src, a_len, dst, numChars, NULL, NULL) ? false : true;
         }
         else {
