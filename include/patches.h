@@ -25,5 +25,7 @@ namespace patches
     bool PatchMemoryManager();
     bool PatchTreatAllModsAsMasters();
 
+    void LoadVolumes();
+
     bool PatchAll();
 }

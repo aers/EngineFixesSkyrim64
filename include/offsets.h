@@ -37,9 +37,8 @@ constexpr uintptr_t quicksaveloadhandler_handleevent_loadtype = 0x008AABCB;
 
 // Save Added Sound Categories
 constexpr uintptr_t vtbl_BGSSoundCategory_offset = 0x01591030;
-constexpr uintptr_t vtbl_BGSSoundCategory_LoadForm_offset = 0x01591060;
 constexpr uintptr_t vtbl_BSISoundCategory_SetVolume_offset = 0x01591260;
-constexpr uintptr_t vtbl_INIPrefSettingCollection_SaveFromMenu_offset = 0x0154FB28;
+constexpr uintptr_t vtbl_INIPrefSettingCollection_Unlock_offset = 0x0154FB18;
 
 // Scrolling Doesn't Switch POV
 // FirstPersonState::PlayerInputHandler::sub_4

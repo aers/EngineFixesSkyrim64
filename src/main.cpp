@@ -33,6 +33,9 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
         {
             warnings::WarnActiveRefrHandleCount(config::warnRefrMainMenuLimit);
         }
+
+        if (config::patchSaveAddedSoundCategories)
+            patches::LoadVolumes();
     }
     case SKSEMessagingInterface::kMessage_PostLoadGame:
         {
