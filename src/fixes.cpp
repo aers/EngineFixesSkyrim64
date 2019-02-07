@@ -8,6 +8,9 @@ namespace fixes
         if (config::fixBethesdaNetCrash)
             PatchBethesdaNetCrash();
 
+        if (config::fixBSLightingAmbientSpecular)
+            PatchBSLightingAmbientSpecular();
+
         if (config::fixDoublePerkApply)
             PatchDoublePerkApply();
 

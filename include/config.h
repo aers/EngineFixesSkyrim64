@@ -21,6 +21,7 @@ namespace config
 
     // Fixes
     extern bool fixBethesdaNetCrash;
+    extern bool fixBSLightingAmbientSpecular;
     extern bool fixDoublePerkApply;
     extern bool fixEquipShoutEventSpam;
     extern bool fixMemoryAccessErrors;

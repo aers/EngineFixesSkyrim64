@@ -358,4 +358,65 @@ namespace fixes
 
         return true;
     }
+
+    RelocAddr<uintptr_t> AddAmbientSpecularToSetupGeometry(0x0130AB2D);
+    RelocAddr<uintptr_t> g_AmbientSpecularAndFresnel(0x01E3403C);
+
+    bool PatchBSLightingAmbientSpecular()
+    {
+        _VMESSAGE("BSLightingAmbientSpecular fix");
+        _VMESSAGE("nopping SetupMaterial case");
+        constexpr byte nop = 0x90;
+
+        RelocAddr<uintptr_t> DisableSetupMaterialAmbientSpecular(0x01309B03);
+        constexpr uint8_t length = 0x20;
+
+        for (int i = 0; i < length; ++i)
+        {
+            SafeWrite8(DisableSetupMaterialAmbientSpecular.GetUIntPtr() + i, nop);
+        }            
+
+        _VMESSAGE("Adding SetupGeometry case");
+
+        struct Patch : Xbyak::CodeGenerator
+        {
+            Patch(void *a_buf) : Xbyak::CodeGenerator(1024, a_buf)
+            {
+                Xbyak::Label jmpOut;
+                // hook: 0x130AB2D (in middle of SetupGeometry, right before if (rawTechnique & RAW_FLAG_SPECULAR), just picked a random place tbh
+                // test
+                test(dword[r13 + 0x94], 0x20000); // RawTechnique & RAW_FLAG_AMBIENT_SPECULAR
+                jz(jmpOut);
+                // ambient specular
+                push(rcx);
+                push(rax);
+                push(rdx);
+                mov(rax, qword[rsp + 0x170 - 0x120 + 0x18]); // PixelShader
+                movzx(edx, byte[rax + 0x46]); // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
+                mov(rcx, ptr[r15 + 8]);  // m_PerGeometry buffer (copied from SetupGeometry)
+                mov(rax, g_AmbientSpecularAndFresnel.GetUIntPtr()); // xmmword_1E3403C
+                movups(xmm0, ptr[rax]); 
+                movups(ptr[rcx + rdx * 4], xmm0); // m_PerGeometry buffer offset 0x6
+                pop(rdx);
+                pop(rax);
+                pop(rcx);
+
+                // original code
+                L(jmpOut);
+                test(dword[r13 + 0x94], 0x200);
+                jmp(ptr[rip]);
+                dq(AddAmbientSpecularToSetupGeometry.GetUIntPtr() + 11);
+            }
+        };
+
+        void* patchBuf = g_localTrampoline.StartAlloc();
+        Patch patch(patchBuf);
+        g_localTrampoline.EndAlloc(patch.getCurr());
+
+        g_branchTrampoline.Write5Branch(AddAmbientSpecularToSetupGeometry.GetUIntPtr(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
+
+        _VMESSAGE("success");
+
+        return true;
+    }
 }

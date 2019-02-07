@@ -12,6 +12,7 @@
 namespace fixes
 {
     bool PatchBethesdaNetCrash();
+    bool PatchBSLightingAmbientSpecular();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
     bool PatchMemoryAccessErrors();

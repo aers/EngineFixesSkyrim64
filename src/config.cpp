@@ -23,6 +23,7 @@ namespace config
 
     // Fixes
     bool fixBethesdaNetCrash = true;
+    bool fixBSLightingAmbientSpecular = true;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
     bool fixMemoryAccessErrors = true;
@@ -73,6 +74,7 @@ namespace config
 
         // Fixes
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
+        fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
