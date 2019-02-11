@@ -359,8 +359,9 @@ namespace fixes
         return true;
     }
 
-    RelocAddr<uintptr_t> AddAmbientSpecularToSetupGeometry(0x0130AB2D);
-    RelocAddr<uintptr_t> g_AmbientSpecularAndFresnel(0x01E3403C);
+    RelocAddr<uintptr_t> AddAmbientSpecularToSetupGeometry(AddAmbientSpecularToSetupGeometry_offset);
+    RelocAddr<uintptr_t> g_AmbientSpecularAndFresnel(g_AmbientSpecularAndFresnel_offset);
+    RelocAddr<uintptr_t> DisableSetupMaterialAmbientSpecular(DisableSetupMaterialAmbientSpecular_offset);
 
     bool PatchBSLightingAmbientSpecular()
     {
@@ -368,7 +369,6 @@ namespace fixes
         _VMESSAGE("nopping SetupMaterial case");
         constexpr byte nop = 0x90;
 
-        RelocAddr<uintptr_t> DisableSetupMaterialAmbientSpecular(0x01309B03);
         constexpr uint8_t length = 0x20;
 
         for (int i = 0; i < length; ++i)
@@ -388,19 +388,16 @@ namespace fixes
                 test(dword[r13 + 0x94], 0x20000); // RawTechnique & RAW_FLAG_AMBIENT_SPECULAR
                 jz(jmpOut);
                 // ambient specular
-                push(rcx);
                 push(rax);
                 push(rdx);
-                mov(rax, qword[rsp + 0x170 - 0x120 + 0x18]); // PixelShader
-                movzx(edx, byte[rax + 0x46]); // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
-                mov(rcx, ptr[r15 + 8]);  // m_PerGeometry buffer (copied from SetupGeometry)
                 mov(rax, g_AmbientSpecularAndFresnel.GetUIntPtr()); // xmmword_1E3403C
-                movups(xmm0, ptr[rax]); 
-                movups(ptr[rcx + rdx * 4], xmm0); // m_PerGeometry buffer offset 0x6
+                movups(xmm0, ptr[rax]);
+                mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]); // PixelShader
+                movzx(edx, byte[rax + 0x46]); // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
+                mov(rax, ptr[r15 + 8]);  // m_PerGeometry buffer (copied from SetupGeometry)
+                movups(ptr[rax + rdx * 4], xmm0); // m_PerGeometry buffer offset 0x6
                 pop(rdx);
                 pop(rax);
-                pop(rcx);
-
                 // original code
                 L(jmpOut);
                 test(dword[r13 + 0x94], 0x200);

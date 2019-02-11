@@ -90,8 +90,10 @@
       </Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>xcopy "$(ProjectDir)EngineFixes.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(ProjectDir)EngineFixes_SNCT.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(ProjectDir)EngineFixes_Preload.txt" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>
@@ -138,8 +140,10 @@
     <PostBuildEvent>
       <Message>
       </Message>
-      <Command>
-      </Command>
+      <Command>xcopy "$(ProjectDir)EngineFixes.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(ProjectDir)EngineFixes_SNCT.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(ProjectDir)EngineFixes_Preload.txt" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

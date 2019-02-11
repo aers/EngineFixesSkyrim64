@@ -7,6 +7,11 @@
 constexpr uintptr_t g_FrameTimer_SlowTime_offset = 0x02F92948;
 constexpr uintptr_t g_FrameTimer_NoSlowTime_offset = 0x02F9294C;
 
+// BSLightingAmbientSpecular
+constexpr uintptr_t AddAmbientSpecularToSetupGeometry_offset = 0x0130AB2D;
+constexpr uintptr_t g_AmbientSpecularAndFresnel_offset = 0x1E3403C;
+constexpr uintptr_t DisableSetupMaterialAmbientSpecular_offset = 0x1309B03;
+
 // Disable Chargen Precache
 // E8 ? ? ? ? E8 ? ? ? ? 48 8D 57 30  ->
 constexpr uintptr_t ChargenCacheFunction_offset = 0x008B2DD0;
