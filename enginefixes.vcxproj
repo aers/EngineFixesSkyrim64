@@ -181,6 +181,7 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\Engine
     <ClCompile Include="src\patches\memorymanager.cpp" />
     <ClCompile Include="src\patches\miscpatches.cpp" />
     <ClCompile Include="src\patches\saveaddedsoundcategories.cpp" />
+    <ClCompile Include="src\patches\shaderpatches.cpp" />
     <ClCompile Include="src\patches\treelodreferencecaching.cpp" />
     <ClCompile Include="src\utils.cpp" />
     <ClCompile Include="src\warnings.cpp" />

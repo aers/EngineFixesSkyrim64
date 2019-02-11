@@ -44,6 +44,7 @@ namespace config
     bool experimentalMemoryManager = false;
     bool experimentalUseTBBMalloc = true;
     bool experimentalTreatAllModsAsMasters = false;
+    bool experimentalBSLightingShaderForceAlphaTest = false;
 
     bool LoadConfig(const std::string& path)
     {
@@ -95,6 +96,7 @@ namespace config
         experimentalMemoryManager = ini.GetBoolean("Experimental", "MemoryManager", false);
         experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
+        experimentalBSLightingShaderForceAlphaTest = ini.GetBoolean("Experimental", "BSLightingShaderForceAlphaTest", false);
 
         return true;
     }

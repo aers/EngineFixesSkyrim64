@@ -42,6 +42,7 @@ namespace config
     extern bool experimentalMemoryManager;
     extern bool experimentalUseTBBMalloc;
     extern bool experimentalTreatAllModsAsMasters;
+    extern bool experimentalBSLightingShaderForceAlphaTest;
 
     bool LoadConfig(const std::string& path);
 }

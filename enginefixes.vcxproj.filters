@@ -73,6 +73,9 @@
       <Filter>src\warnings</Filter>
     </ClCompile>
     <ClCompile Include="src\patches\memorymanager.cpp" />
+    <ClCompile Include="src\patches\shaderpatches.cpp">
+      <Filter>src\patches</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\version.h">
