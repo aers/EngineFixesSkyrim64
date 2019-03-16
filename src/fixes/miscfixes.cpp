@@ -440,11 +440,11 @@ namespace fixes
     RelocPtr<float> FrameTimer_WithoutSlowTime(g_FrameTimer_NoSlowTime_offset);
 
     // ??_7ThirdPersonState@@6B@ vtbl last function + 0x71
-    RelocAddr<uintptr_t> ThirdPersonState_Vfunc_Hook(0x00850AC1);
+    RelocAddr<uintptr_t> ThirdPersonState_Vfunc_Hook(ThirdPersonState_Vfunc_Hook_offset);
     // ??_7DragonCameraState@@6B@ vtbl last function + 0x5F
-    RelocAddr<uintptr_t> DragonCameraState_Vfunc_Hook(0x004F990F);
+    RelocAddr<uintptr_t> DragonCameraState_Vfunc_Hook(DragonCameraState_Vfunc_Hook_offset);
     // ??_7HorseCameraState@@6B@ vtbl last function + 0x5F
-    RelocAddr<uintptr_t> HorseCameraState_Vfunc_Hook(0x00849B7F);
+    RelocAddr<uintptr_t> HorseCameraState_Vfunc_Hook(HorseCameraState_Vfunc_Hook_offset);
 
     bool PatchVerticalLookSensitivity()
     {
