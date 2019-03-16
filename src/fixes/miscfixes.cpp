@@ -217,22 +217,22 @@ namespace fixes
         return true;
     }
 
-    RelocAddr<uintptr_t> CameraMove_Timer1(CameraMove_Timer1_offset); 
-    RelocAddr<uintptr_t> CameraMove_Timer2(CameraMove_Timer2_offset);
-    RelocAddr<uintptr_t> CameraMove_Timer3(CameraMove_Timer3_offset); 
-    RelocAddr<uintptr_t> CameraMove_Timer4(CameraMove_Timer4_offset); 
-    RelocAddr<uintptr_t> CameraMove_Timer5(CameraMove_Timer5_offset); 
+    RelocAddr<int16_t> CameraMove_Timer1(CameraMove_Timer1_offset); 
+    RelocAddr<int16_t> CameraMove_Timer2(CameraMove_Timer2_offset);
+    RelocAddr<int16_t> CameraMove_Timer3(CameraMove_Timer3_offset);
+    RelocAddr<int16_t> CameraMove_Timer4(CameraMove_Timer4_offset);
+    RelocAddr<int16_t> CameraMove_Timer5(CameraMove_Timer5_offset);
 
     bool PatchSlowTimeCameraMovement()
     {
         _VMESSAGE("- slow time camera movement -");
         _VMESSAGE("patching camera movement to use frame timer that ignores slow time");
         // patch (+0x4)
-        SafeWrite8(CameraMove_Timer1.GetUIntPtr(), 0x89);
-        SafeWrite8(CameraMove_Timer2.GetUIntPtr(), 0x22);
-        SafeWrite8(CameraMove_Timer3.GetUIntPtr(), 0xBB);
-        SafeWrite8(CameraMove_Timer4.GetUIntPtr(), 0x1E);
-        SafeWrite8(CameraMove_Timer5.GetUIntPtr(), 0x51);
+        SafeWrite16(CameraMove_Timer1.GetUIntPtr(), *(int16_t *)CameraMove_Timer1.GetUIntPtr() + 0x4);
+        SafeWrite16(CameraMove_Timer2.GetUIntPtr(), *(int16_t *)CameraMove_Timer2.GetUIntPtr() + 0x4);
+        SafeWrite16(CameraMove_Timer3.GetUIntPtr(), *(int16_t *)CameraMove_Timer3.GetUIntPtr() + 0x4);
+        SafeWrite16(CameraMove_Timer4.GetUIntPtr(), *(int16_t *)CameraMove_Timer4.GetUIntPtr() + 0x4);
+        SafeWrite16(CameraMove_Timer5.GetUIntPtr(), *(int16_t *)CameraMove_Timer5.GetUIntPtr() + 0x4);
         _VMESSAGE("success");
 
         return true;

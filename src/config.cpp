@@ -102,6 +102,7 @@ namespace config
         experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 
+        warnDupeAddonNodes = false;
 
         return true;
     }
