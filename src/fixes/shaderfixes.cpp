@@ -1,10 +1,10 @@
 #include "skse64_common/Utilities.h"
 
 #include "patches.h"
-#include "utils.h"
-#include <cinttypes>
 
-namespace patches
+#include "offsets.h"
+
+namespace fixes
 {
     struct BSRenderPass
     {
@@ -30,10 +30,10 @@ namespace patches
     };
 
     typedef void(*_BSBatchRenderer_SetupAndDrawPass)(BSRenderPass * pass, uint32_t technique, bool alphaTest, uint32_t renderFlags);
-    RelocPtr<_BSBatchRenderer_SetupAndDrawPass> BSBatchRenderer_SetupAndDrawPass_origLoc(0x131F810);
+    RelocPtr<_BSBatchRenderer_SetupAndDrawPass> BSBatchRenderer_SetupAndDrawPass_origLoc(BSBatchRenderer_SetupAndDrawPass_offset);
     _BSBatchRenderer_SetupAndDrawPass BSBatchRenderer_SetupAndDrawPass_Orig;
 
-    RelocAddr<uintptr_t> BSLightingShader_vtbl(0x1880EB8);
+    RelocAddr<uintptr_t> BSLightingShader_vtbl(BSLightingShader_vtbl_offset);
 
     uint32_t RAW_FLAG_DO_ALPHA_TEST = 1 << 20;
     uint32_t RAW_TECHNIQUE_EYE = 16;
@@ -43,7 +43,10 @@ namespace patches
         if (*(uintptr_t *)pass->m_Shader == BSLightingShader_vtbl.GetUIntPtr() && alphaTest)
         {
             if ((((technique - 0x4800002D) >> 24) & 0x3F) != RAW_TECHNIQUE_EYE)
+            {
                 technique = technique | RAW_FLAG_DO_ALPHA_TEST;
+                pass->m_TechniqueID = technique;
+            }
         }
 
         BSBatchRenderer_SetupAndDrawPass_Orig(pass, technique, alphaTest, renderFlags);

@@ -7,15 +7,15 @@ namespace fixes
     uint32_t next_formid;
 
     typedef void(*_UnknownAddFunc)(BSTaskPool * taskPool, int64_t actorPtr, int64_t perkPtr, uint32_t val, int32_t unk1);
-    RelocAddr<_UnknownAddFunc> UnknownAddFunc(unknown_add_func);
+    RelocAddr<_UnknownAddFunc> UnknownAddFunc(Unknown_Add_Func_offset);
     typedef void(*_HandleAddRf)(int64_t apm);
-    RelocAddr<_HandleAddRf> HandleAddRf(handle_add_rf);
-    RelocAddr<uintptr_t> SwitchFunctionMovzx(switch_function_movzx);
-    RelocAddr<uintptr_t> UnknownAddFuncMovzx1(unknown_add_function_movzx);
-    RelocAddr<uintptr_t> UnknownAddFuncMovzx2(unknown_add_function_movzx2);
-    RelocAddr<uintptr_t> NextFormIdGetHook(next_formid_get_hook);
-    RelocAddr<uintptr_t> DoHandleHook(do_handle_hook);
-    RelocAddr<uintptr_t> DoAddHook(do_add_hook);
+    RelocAddr<_HandleAddRf> HandleAddRf(Handle_Add_Rf_offset);
+    RelocAddr<uintptr_t> SwitchFunctionMovzx(Switch_Function_movzx_offset);
+    RelocAddr<uintptr_t> UnknownAddFuncMovzx1(Unknown_Add_Function_movzx_offset);
+    RelocAddr<uintptr_t> UnknownAddFuncMovzx2(Unknown_Add_Function_movzx2_offset);
+    RelocAddr<uintptr_t> NextFormIdGetHook(Next_Formid_Get_Hook_offset);
+    RelocAddr<uintptr_t> DoHandleHook(Do_Handle_Hook_offset);
+    RelocAddr<uintptr_t> DoAddHook(Do_Add_Hook_offset);
 
     void do_add(int64_t actorPtr, int64_t perkPtr, int32_t unk1)
     {

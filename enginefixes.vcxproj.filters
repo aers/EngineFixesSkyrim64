@@ -72,11 +72,11 @@
     <ClCompile Include="src\warnings\miscwarnings.cpp">
       <Filter>src\warnings</Filter>
     </ClCompile>
-    <ClCompile Include="src\patches\shaderpatches.cpp">
-      <Filter>src\patches</Filter>
-    </ClCompile>
     <ClCompile Include="src\patches\memorymanager.cpp">
       <Filter>src\patches</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fixes\shaderfixes.cpp">
+      <Filter>src\fixes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

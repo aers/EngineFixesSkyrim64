@@ -12,13 +12,13 @@ namespace fixes
     // 0 = none, 1 = BGSSaveManager::ProcessEvents, 2 = open menu
     byte screenshot_requested_location = 0;
 
-    RelocAddr<uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot(bgssaveloadmanager_processevents_requestscreenshot_hook);
-    RelocAddr<uintptr_t> MenuSave_RequestScreenshot(menusave_requestscreenshot_hook);
-    RelocAddr<uintptr_t> ScreenshotJnz(screenshot_jnz_hook);
-    RelocAddr<uintptr_t> RenderTargetHook_1(render_target_hook_1);
-    RelocAddr<uintptr_t> RenderTargetHook_2(render_target_hook_2);
-    RelocAddr<uintptr_t> SaveScreenshotRequestedDword(g_requestSaveScreenshot);
-    RelocAddr<uintptr_t> ScreenshotRenderOrigJnz(screenshot_render_orig_jnz);
+    RelocAddr<uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot(BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset);
+    RelocAddr<uintptr_t> MenuSave_RequestScreenshot(MenuSave_RequestScreenshot_hook_offset);
+    RelocAddr<uintptr_t> ScreenshotJnz(Screenshot_Jnz_hook_offset);
+    RelocAddr<uintptr_t> RenderTargetHook_1(Render_Target_Hook_1_offset);
+    RelocAddr<uintptr_t> RenderTargetHook_2(Render_Target_Hook_2_offset);
+    RelocAddr<uintptr_t> SaveScreenshotRequestedDword(g_RequestSaveScreenshot_offset);
+    RelocAddr<uintptr_t> ScreenshotRenderOrigJnz(Screenshot_Render_Orig_jnz_offset);
 
 
     bool PatchSaveScreenshots()

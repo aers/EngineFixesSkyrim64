@@ -24,8 +24,10 @@ namespace config
     // Fixes
     bool fixBethesdaNetCrash = true;
     bool fixBSLightingAmbientSpecular = true;
+    bool fixBSLightingShaderForceAlphaTest = false;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
+    bool fixGHeapLeakDetectionCrash = true;
     bool fixMemoryAccessErrors = true;
     bool fixMO5STypo = true;
     bool fixPerkFragmentIsRunning = true;
@@ -44,7 +46,6 @@ namespace config
     bool experimentalMemoryManager = false;
     bool experimentalUseTBBMalloc = true;
     bool experimentalTreatAllModsAsMasters = false;
-    bool experimentalBSLightingShaderForceAlphaTest = false;
 
     bool LoadConfig(const std::string& path)
     {
@@ -76,8 +77,10 @@ namespace config
         // Fixes
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
+        fixBSLightingShaderForceAlphaTest = ini.GetBoolean("Fixes", "BSLightingShaderForceAlphaTest", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
+        fixGHeapLeakDetectionCrash = ini.GetBoolean("Fixes", "GHeapLeakDetectionCrash", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
         fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);
         fixPerkFragmentIsRunning = ini.GetBoolean("Fixes", "PerkFragmentIsRunning", true);
@@ -96,7 +99,7 @@ namespace config
         experimentalMemoryManager = ini.GetBoolean("Experimental", "MemoryManager", false);
         experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
-        experimentalBSLightingShaderForceAlphaTest = ini.GetBoolean("Experimental", "BSLightingShaderForceAlphaTest", false);
+
 
         return true;
     }

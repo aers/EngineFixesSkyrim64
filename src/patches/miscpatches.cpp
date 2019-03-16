@@ -176,8 +176,8 @@ namespace patches
         return true;
     }
 
-    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(quicksaveloadhandler_handleevent_savetype);
-    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(quicksaveloadhandler_handleevent_loadtype);
+    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(QuickSaveLoadHandler_HandleEvent_SaveType_offset);
+    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHanadler_HandleEvent_LoadType_offset);
 
     bool PatchRegularQuicksaves()
     {

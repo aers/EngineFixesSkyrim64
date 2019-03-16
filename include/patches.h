@@ -24,7 +24,6 @@ namespace patches
 
     bool PatchMemoryManager();
     bool PatchTreatAllModsAsMasters();
-    bool PatchBSLightingShaderForceAlphaTest();
 
     void LoadVolumes();
 

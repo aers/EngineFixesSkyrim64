@@ -13,8 +13,10 @@ namespace fixes
 {
     bool PatchBethesdaNetCrash();
     bool PatchBSLightingAmbientSpecular();
+    bool PatchBSLightingShaderForceAlphaTest();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
+    bool PatchGHeapLeakDetectionCrash();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
     bool PatchPerkFragmentIsRunning();

@@ -40,9 +40,6 @@ namespace patches
         if (config::experimentalTreatAllModsAsMasters)
             PatchTreatAllModsAsMasters();
 
-        if (config::experimentalBSLightingShaderForceAlphaTest)
-            PatchBSLightingShaderForceAlphaTest();
-
         return true;
     }
 }

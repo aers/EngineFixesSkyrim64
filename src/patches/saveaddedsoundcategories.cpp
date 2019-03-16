@@ -13,7 +13,7 @@ namespace patches
     RelocPtr<uintptr_t> vtbl_BGSSoundCategory(vtbl_BGSSoundCategory_offset);
 
     typedef bool(*_BSISoundCategory_SetVolume)(RE::BSISoundCategory * thisPtr, float volume);
-    RelocPtr<_BSISoundCategory_SetVolume> vtbl_BSISoundCategory_SetVolume(vtbl_BSISoundCategory_SetVolume_offset); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
+    RelocPtr<_BSISoundCategory_SetVolume> vtbl_BSISoundCategory_SetVolume(vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
 
     typedef bool(*_INIPrefSettingCollection_Unlock)(__int64 thisPtr);
     RelocPtr<_INIPrefSettingCollection_Unlock> vtbl_INIPrefSettingCollection_Unlock(vtbl_INIPrefSettingCollection_Unlock_offset);

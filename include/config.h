@@ -22,8 +22,10 @@ namespace config
     // Fixes
     extern bool fixBethesdaNetCrash;
     extern bool fixBSLightingAmbientSpecular;
+    extern bool fixBSLightingShaderForceAlphaTest;
     extern bool fixDoublePerkApply;
     extern bool fixEquipShoutEventSpam;
+    extern bool fixGHeapLeakDetectionCrash;
     extern bool fixMemoryAccessErrors;
     extern bool fixMO5STypo;
     extern bool fixPerkFragmentIsRunning;
@@ -42,7 +44,6 @@ namespace config
     extern bool experimentalMemoryManager;
     extern bool experimentalUseTBBMalloc;
     extern bool experimentalTreatAllModsAsMasters;
-    extern bool experimentalBSLightingShaderForceAlphaTest;
-
+    
     bool LoadConfig(const std::string& path);
 }

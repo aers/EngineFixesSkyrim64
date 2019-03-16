@@ -171,7 +171,7 @@ namespace fixes
     }
 
 
-    RelocAddr<uintptr_t> BSDistantTreeShader_VFunc3_Hook(bsdistanttreeshader_hook);
+    RelocAddr<uintptr_t> BSDistantTreeShader_VFunc3_Hook(BSDistantTreeShader_hook_offset);
 
     bool PatchTreeReflections()
     {
@@ -412,6 +412,24 @@ namespace fixes
 
         g_branchTrampoline.Write5Branch(AddAmbientSpecularToSetupGeometry.GetUIntPtr(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
+        _VMESSAGE("success");
+
+        return true;
+    }
+
+    bool PatchGHeapLeakDetectionCrash()
+    {
+        _VMESSAGE("- GHeap leak detection crash fix -");
+
+        constexpr std::uintptr_t START = 0x4B;
+        constexpr std::uintptr_t END = 0x5C;
+        constexpr UInt8 NOP = 0x90;
+        RelocAddr<std::uintptr_t> funcBase(GHeap_Leak_Detection_Crash_offset);
+
+        for (std::uintptr_t i = START; i < END; ++i) {
+            SafeWrite8(funcBase.GetUIntPtr() + i, NOP);
+        }
+        
         _VMESSAGE("success");
 
         return true;
