@@ -36,6 +36,26 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
 
         if (config::patchSaveAddedSoundCategories)
             patches::LoadVolumes();
+
+        // temporary fix for SKSE crosshair ref event dispatch
+
+        _VMESSAGE("temporary fix for SKSE crosshair ref event dispatch");
+
+        const auto handle = (uintptr_t) GetModuleHandleA("skse64_1_5_73");
+
+        if (handle && *(uint8_t *)(handle+0xD658) == 0x4D)
+        {
+            _MESSAGE("skse 2.0.15 found");
+            constexpr std::uintptr_t START = 0xD658;
+            constexpr std::uintptr_t END = 0xD661;
+            constexpr UInt8 NOP = 0x90;
+
+            for (std::uintptr_t i = START; i < END; ++i) {
+                SafeWrite8(handle + i, NOP);
+            }
+        }
+
+        _VMESSAGE("done");
     }
     break;
     case SKSEMessagingInterface::kMessage_PostLoadGame:
@@ -68,7 +88,7 @@ extern "C" {
 
         const auto version = GetGameVersion();
 
-        if (version != RUNTIME_VERSION_1_5_62)
+        if (version != RUNTIME_VERSION_1_5_73)
         {
             _FATALERROR("unsupported runtime version %08X", version);
             return;
@@ -142,7 +162,7 @@ extern "C" {
             return false;
         }
         
-        if (skse->runtimeVersion != RUNTIME_VERSION_1_5_62)
+        if (skse->runtimeVersion != RUNTIME_VERSION_1_5_73)
         {
             _FATALERROR("unsupported runtime version %08X", skse->runtimeVersion);
             return false;

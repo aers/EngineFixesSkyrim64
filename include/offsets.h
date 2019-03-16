@@ -97,7 +97,7 @@ constexpr uintptr_t Unknown_Add_Function_movzx2_offset = 0x005C67E6;
 // E8 ? ? ? ? 48 8D 35 ? ? ? ? 48 89 5C 24 ? -> +0x12 -> +0x1B
 constexpr uintptr_t Next_Formid_Get_Hook_offset = 0x00681FEB;
 // called just after switch function movzx above, +0x1B
-constexpr uintptr_t Do_Handle_Hook_offset = 0x003386A0;
+constexpr uintptr_t Do_Handle_Hook_offset = 0x003386BB;
 // 74 1B 0F B6 42 08 
 constexpr uintptr_t Do_Add_Hook_offset = 0x00338A61;
 
