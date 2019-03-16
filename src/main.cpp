@@ -37,6 +37,7 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
         if (config::patchSaveAddedSoundCategories)
             patches::LoadVolumes();
     }
+    break;
     case SKSEMessagingInterface::kMessage_PostLoadGame:
         {
         if (config::warnRefHandleLimit)

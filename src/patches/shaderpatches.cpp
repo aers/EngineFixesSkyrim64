@@ -42,12 +42,8 @@ namespace patches
     {
         if (*(uintptr_t *)pass->m_Shader == BSLightingShader_vtbl.GetUIntPtr() && alphaTest)
         {
-            const auto outputTech = technique - 0x4800002D;
-            const auto subIndex = (outputTech >> 24) & 0x3F;
-
-            if (subIndex != RAW_TECHNIQUE_EYE)
+            if ((((technique - 0x4800002D) >> 24) & 0x3F) != RAW_TECHNIQUE_EYE)
                 technique = technique | RAW_FLAG_DO_ALPHA_TEST;
-            //_VMESSAGE("%08x", technique);
         }
 
         BSBatchRenderer_SetupAndDrawPass_Orig(pass, technique, alphaTest, renderFlags);

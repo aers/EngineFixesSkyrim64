@@ -25,7 +25,7 @@ namespace patches
 
         if (dataHandler)
         {
-            for (auto& soundCategory : dataHandler->soundCategories)
+            for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
                 if (soundCategory->flags & 0x2)
                 {
@@ -72,7 +72,7 @@ namespace patches
         const auto dataHandler = RE::TESDataHandler::GetSingleton();
         if (dataHandler)
         {
-            for (auto& soundCategory : dataHandler->soundCategories)
+            for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
                 auto localFormId = soundCategory->formID & 0x00FFFFFF;
                 // esl

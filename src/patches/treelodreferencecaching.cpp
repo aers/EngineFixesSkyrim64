@@ -8,6 +8,7 @@
 
 #include "patches.h"
 #include "RE/TESDataHandler.h"
+#include "RE/TESObjectSTAT.h"
 
 
 namespace patches
@@ -60,8 +61,8 @@ namespace patches
                             RE::TESForm * baseForm = refrObject->baseForm;
                             if (baseForm)
                             {
-                                // Checks if the form type is TREE (TESObjectTREE) and some other flag 0x40 which means something other than playerKnows here lol
-                                if (baseForm->flags.playerKnows || baseForm->formType == RE::FormType::Tree)
+                                // Checks if the form type is TREE (TESObjectTREE) or if it has the kHasTreeLOD flag (TESObjectSTAT)
+                                if (baseForm->flags & RE::TESObjectSTAT::RecordFlags::kHasTreeLOD || baseForm->formType == RE::FormType::Tree)
                                     break;
                             }
                         }
@@ -101,7 +102,7 @@ namespace patches
                         }
                     }
 
-                    if (refrObject->flags.disabled || refrObject->flags.markedForDeletion)
+                    if (refrObject->flags & RE::TESObjectREFR::RecordFlags::kInitiallyDisabled || refrObject->flags & RE::TESObjectREFR::RecordFlags::kDeleted)
                         fullyHidden = true;
                 }
 
