@@ -24,6 +24,7 @@ namespace fixes
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
     bool PatchTreeReflections();
+    bool PatchVerticalLookSensitivity();
 
     bool PatchAll();
 }

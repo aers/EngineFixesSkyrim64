@@ -33,6 +33,7 @@ namespace config
     extern bool fixSaveScreenshots;
     extern bool fixSlowTimeCameraMovement;
     extern bool fixTreeReflections;
+    extern bool fixVerticalLookSensitivity;
 
     // Warnings
     extern bool warnDupeAddonNodes;

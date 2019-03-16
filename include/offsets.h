@@ -159,10 +159,26 @@ constexpr uintptr_t CameraMove_Timer5_offset = 0x00850C07; // +0x4
 // vfunc 3 -> +0x37
 constexpr uintptr_t BSDistantTreeShader_hook_offset = 0x01301047;
 
+// Vertical Look Sensitivity
+// ??_7ThirdPersonState@@6B@ vtbl last function + 0x71
+constexpr uintptr_t ThirdPersonState_Vfunc_Hook_offset = 0x008508D1;
+// ??_7DragonCameraState@@6B@ vtbl last function + 0x5F
+constexpr uintptr_t DragonCameraState_Vfunc_Hook_offset = 0x004F971F;
+// ??_7HorseCameraState@@6B@ vtbl last function + 0x5F
+constexpr uintptr_t HorseCameraState_Vfunc_Hook_offset = 0x0084998F;
+
 // Warnings
 
 // Dupe Addon Node index
 constexpr uintptr_t vtbl_BGSAddonNode_LoadForm_offset = 0x0154D160;
+
+// E8 ? ? ? ? E9 ? ? ? ? 4C 8D 9C 24 80 00 00 00
+constexpr uintptr_t Unk_DataReload_Func_offset = 0x005B5490;    // 1_5_73
+
+constexpr uintptr_t Call1_Unk_DataReload_func_offset = 0x005AF3D0;    // 1_5_73
+
+// E8 ? ? ? ? 33 C9 E8 ? ? ? ? 84 C0
+constexpr uintptr_t Call2_Unk_DataReload_func_offset = 0x005B5280;    // 1_5_73
 
 // Refr Handle Limit
 // LookupRefrPtrByHandle uses this

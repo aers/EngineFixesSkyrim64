@@ -41,13 +41,38 @@ namespace warnings
         return retVal;
     }
 
+    void ClearNodeMap()
+    {
+        nodeMap.clear();
+    }
+
+    // from Ryan
+    // Seems to be called when *(Main::Singleton + 0x11) != 0, which is set in ModsChanged_ConfirmResetCallback()
+    // I'm not sure if this is the reload data function, but it gets me what I want, which is when the data handler invalidates and reloads all forms
+    void Hook_Main_Unk(void* a_this)
+    {
+        typedef void _Main_Unk_t(void* a_this);
+        static RelocAddr<_Main_Unk_t*> orig_Fn(Unk_DataReload_Func_offset);
+
+        orig_Fn(a_this);
+
+        _VMESSAGE("data reload, clearing node map");
+        nodeMap.clear();
+    }
+    
     bool PatchDupeAddonNodes()
     {
         _VMESSAGE("- warn dupe addon nodes -");
         orig_BGSAddonNode_LoadForm = *vtbl_BGSAddonNode_LoadForm;
         SafeWrite64(vtbl_BGSAddonNode_LoadForm.GetUIntPtr(), GetFnAddr(hk_BGSAddonNode_LoadForm));
-        _VMESSAGE("- hooked -");
 
+        RelocAddr<uintptr_t> call1_Main_Unk(Call1_Unk_DataReload_func_offset + 0x163);
+        g_branchTrampoline.Write5Call(call1_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
+
+        RelocAddr<uintptr_t> call2_Main_Unk(Call2_Unk_DataReload_func_offset + 0xD);
+        g_branchTrampoline.Write5Call(call2_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
+
+        _VMESSAGE("- hooked -");
         return true;
     }
 

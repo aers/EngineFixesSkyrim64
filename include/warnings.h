@@ -12,6 +12,7 @@
 namespace warnings
 {
     bool PatchDupeAddonNodes();
+    void ClearNodeMap();
     void WarnActiveRefrHandleCount(uint32_t warnCount);
 
     bool PatchAll();

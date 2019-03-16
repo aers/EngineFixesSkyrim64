@@ -46,16 +46,20 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
         if (handle && *(uint8_t *)(handle+0xD658) == 0x4D)
         {
             _MESSAGE("skse 2.0.15 found");
-            constexpr std::uintptr_t START = 0xD658;
-            constexpr std::uintptr_t END = 0xD661;
+            constexpr uintptr_t START = 0xD658;
+            constexpr uintptr_t END = 0xD661;
             constexpr UInt8 NOP = 0x90;
 
-            for (std::uintptr_t i = START; i < END; ++i) {
+            // .text:000000018000D658                 test    r8, r8
+            // .text:000000018000D65B                 jz      loc_18000D704
+
+            for (uintptr_t i = START; i < END; ++i) {
                 SafeWrite8(handle + i, NOP);
             }
         }
 
-        _VMESSAGE("done");
+        _VMESSAGE("clearing node map");
+        warnings::ClearNodeMap();
     }
     break;
     case SKSEMessagingInterface::kMessage_PostLoadGame:

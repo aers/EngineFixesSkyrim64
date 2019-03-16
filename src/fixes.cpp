@@ -41,6 +41,9 @@ namespace fixes
         if (config::fixTreeReflections)
             PatchTreeReflections();
 
+        if (config::fixVerticalLookSensitivity)
+            PatchVerticalLookSensitivity();
+
         return true;
     }
 }
