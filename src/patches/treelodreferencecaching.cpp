@@ -1,4 +1,5 @@
 #include "RE/BGSDistantTreeBlock.h"
+#include "RE/BSFadeNode.h"
 #include "RE/NiNode.h"
 #include "RE/TESObjectREFR.h"
 
@@ -86,10 +87,10 @@ namespace patches
                     {
                         if (GetINISetting("bEnableStippleFade:Display")->data.u8 >= 1)
                         {
-                            auto fadeNode = node->Unk_05();
+                            const auto fadeNode = node->GetAsBSFadeNode();
                             if (fadeNode)
                             {
-                                alpha = 1.0f - *reinterpret_cast<float *>(reinterpret_cast<__int64>(fadeNode) + 0x130);// BSFadeNode::fCurrentFade
+                                alpha = 1.0f - fadeNode->currentFade;
                                 if (alpha <= 0.0f)
                                     fullyHidden = true;
                             }
