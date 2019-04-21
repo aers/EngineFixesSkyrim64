@@ -1,7 +1,4 @@
-#include "RE/Actor.h"
-#include "RE/BGSShaderParticleGeometryData.h"
-#include "RE/TESFile.h"
-#include "RE/TESObjectBOOK.h"  
+#include "RE/Skyrim.h"
 
 #include <future>
 
@@ -581,4 +578,42 @@ namespace fixes
 
         return true;
     }
+
+	class EnchantmentItemEx : public RE::EnchantmentItem
+	{
+	public:
+		using func_t = function_type_t<decltype(&RE::EnchantmentItem::DisallowsAbsorbReflection)>;
+		inline static func_t* func = 0;
+
+
+		bool Hook_DisallowsAbsorbReflection()
+		{
+			using Archetype = RE::EffectSetting::Data::Archetype;
+			for (auto& effect : effects) {
+				if (effect->baseEffect->HasArchetype(Archetype::kSummonCreature)) {
+					return true;
+				}
+			}
+			return func(this);
+		}
+
+
+		static void InstallHooks()
+		{
+			// ??_7EnchantmentItem@@6B@
+			REL::Offset<func_t**> vFunc(offset_vtbl_EnchantmentItem + (0x8 * 0x5E));    // 1_5_73
+			func = *vFunc;
+			SafeWrite64(vFunc.GetAddress(), unrestricted_cast<std::uintptr_t>(&Hook_DisallowsAbsorbReflection));
+			_DMESSAGE("[DEBUG] Installed hook for (%s)", typeid(EnchantmentItemEx).name());
+		}
+	};
+
+	bool PatchConjurationEnchantAbsorbs()
+	{
+		_VMESSAGE("- Enchantment Absorption on Staff Summons -");
+		EnchantmentItemEx::InstallHooks();
+		_VMESSAGE("success");
+
+		return true;
+	}
 }

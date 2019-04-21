@@ -112,7 +112,7 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\Engine
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>common/IPrefix.h;Logging.h;Util.h</ForcedIncludeFiles>
+      <ForcedIncludeFiles>common/IPrefix.h;Logging.h;ForceInclude.h</ForcedIncludeFiles>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <OmitFramePointers>
       </OmitFramePointers>

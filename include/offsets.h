@@ -167,6 +167,9 @@ constexpr uintptr_t DragonCameraState_Vfunc_Hook_offset = 0x004F971F;
 // ??_7HorseCameraState@@6B@ vtbl last function + 0x5F
 constexpr uintptr_t HorseCameraState_Vfunc_Hook_offset = 0x0084998F;
 
+// ??_7EnchantmentItem@@6B@
+constexpr uintptr_t offset_vtbl_EnchantmentItem = 0x015217F0;  
+
 // Warnings
 
 // Dupe Addon Node index

@@ -14,6 +14,9 @@ namespace fixes
         if (config::fixBSLightingShaderForceAlphaTest)
             PatchBSLightingShaderForceAlphaTest();
 
+		if (config::fixConjurationEnchantAbsorbs)
+			PatchConjurationEnchantAbsorbs();
+
         if (config::fixDoublePerkApply)
             PatchDoublePerkApply();
 

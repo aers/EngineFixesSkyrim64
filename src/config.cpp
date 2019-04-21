@@ -5,7 +5,7 @@
 namespace config
 {
     bool verboseLogging = false;
-    bool cleanSKSECosaves = false;
+	bool cleanSKSECosaves = true;
 
     // Patches
     bool patchDisableChargenPrecache = false;
@@ -24,7 +24,8 @@ namespace config
     // Fixes
     bool fixBethesdaNetCrash = true;
     bool fixBSLightingAmbientSpecular = true;
-    bool fixBSLightingShaderForceAlphaTest = false;
+    bool fixBSLightingShaderForceAlphaTest = true;
+	bool fixConjurationEnchantAbsorbs = true;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
     bool fixGHeapLeakDetectionCrash = true;
@@ -79,6 +80,7 @@ namespace config
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
         fixBSLightingShaderForceAlphaTest = ini.GetBoolean("Fixes", "BSLightingShaderForceAlphaTest", true);
+		fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
         fixGHeapLeakDetectionCrash = ini.GetBoolean("Fixes", "GHeapLeakDetectionCrash", true);
