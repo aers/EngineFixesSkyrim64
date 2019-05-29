@@ -5,6 +5,9 @@ namespace fixes
 {
     bool PatchAll()
     {
+		if (config::fixArcheryDownwardAiming)
+			PatchArcheryDownwardAiming();
+
         if (config::fixBethesdaNetCrash)
             PatchBethesdaNetCrash();
 

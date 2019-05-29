@@ -11,6 +11,7 @@
 
 namespace fixes
 {
+	bool PatchArcheryDownwardAiming();
     bool PatchBethesdaNetCrash();
     bool PatchBSLightingAmbientSpecular();
     bool PatchBSLightingShaderForceAlphaTest();

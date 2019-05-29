@@ -22,6 +22,7 @@ namespace config
     float waterflowSpeed = 20.0;
 
     // Fixes
+	bool fixArcheryDownwardAiming = true;
     bool fixBethesdaNetCrash = true;
     bool fixBSLightingAmbientSpecular = true;
     bool fixBSLightingShaderForceAlphaTest = true;
@@ -77,6 +78,7 @@ namespace config
         waterflowSpeed = static_cast<float>(ini.GetReal("Patches", "WaterflowSpeed", 20.0));
 
         // Fixes
+		fixArcheryDownwardAiming = ini.GetBoolean("Fixes", "ArcheryDownwardAiming", true);
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
         fixBSLightingShaderForceAlphaTest = ini.GetBoolean("Fixes", "BSLightingShaderForceAlphaTest", true);

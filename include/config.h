@@ -20,6 +20,7 @@ namespace config
     extern float waterflowSpeed;
 
     // Fixes
+	extern bool fixArcheryDownwardAiming;
     extern bool fixBethesdaNetCrash;
     extern bool fixBSLightingAmbientSpecular;
     extern bool fixBSLightingShaderForceAlphaTest;

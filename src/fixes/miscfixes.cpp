@@ -616,4 +616,53 @@ namespace fixes
 
 		return true;
 	}
+
+	class ArrowProjectileEx : public RE::ArrowProjectile
+	{
+	public:
+		void Hook_CalculateCollision(RE::NiPoint3& a_shooterPos, RE::NiPoint3& a_projectilePos)
+		{
+			RE::TESObjectREFRPtr shooterPtr;
+			RE::TESObjectREFR::LookupByHandle(shooterHandle, shooterPtr);
+			auto shooter = static_cast<RE::Actor*>(shooterPtr.get());
+			float height = shooter->GetHeight();
+			if (height > 0.0) {
+				height *= 0.6;
+				if (shooter->IsSneaking()) {
+					height *= 0.57;
+				}
+			}
+			else {
+				height = 96.0;
+			}
+			a_shooterPos.z += height;
+			func(this, a_shooterPos, a_projectilePos);
+		}
+
+
+		static void InstallHooks()
+		{
+			REL::Offset<std::uintptr_t> funcBase(CalculateCollisionCall_offset); 
+			std::uintptr_t hookPoint = funcBase.GetAddress() + 0x3E9;
+
+			auto offset = reinterpret_cast<std::int32_t*>(hookPoint + 1);
+			auto nextOp = hookPoint + 5;
+			func = unrestricted_cast<func_t*>(nextOp + *offset);
+
+			g_branchTrampoline.Write5Call(hookPoint, unrestricted_cast<std::uintptr_t>(&Hook_CalculateCollision));
+			_DMESSAGE("[DEBUG] Installed archery downward aim fix");
+		}
+
+		using func_t = function_type_t<decltype(&Hook_CalculateCollision)>;
+		inline static func_t* func = 0;
+	};
+
+	bool PatchArcheryDownwardAiming()
+	{
+		_VMESSAGE("- archery downward aiming -");
+		ArrowProjectileEx::InstallHooks();
+		_VMESSAGE("- success -");
+
+		return true;
+	}
 }

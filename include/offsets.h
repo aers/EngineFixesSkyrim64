@@ -83,6 +83,10 @@ constexpr uintptr_t WaterShader_ReadTimer_Hook_offset = 0x012F63C9;
 
 // Fixes
 
+// Archery Downward Aiming
+			// E8 ? ? ? ? 8B 83 CC 01 00 00 C1 E8 12
+constexpr uintptr_t CalculateCollisionCall_offset = 0x00744DD0;    // 1_5_73
+
 // Double Perk Apply
 // 48 85 D2 74 7C 48 89 5C 24 ? 
 constexpr uintptr_t Unknown_Add_Func_offset = 0x005C67A0;

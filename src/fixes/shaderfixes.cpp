@@ -35,14 +35,18 @@ namespace fixes
 
     RelocAddr<uintptr_t> BSLightingShader_vtbl(BSLightingShader_vtbl_offset);
 
+	uint32_t RAW_FLAG_RIM_LIGHTING = 1 << 11;
     uint32_t RAW_FLAG_DO_ALPHA_TEST = 1 << 20;
     uint32_t RAW_TECHNIQUE_EYE = 16;
+	uint32_t RAW_TECHNIQUE_ENVMAP = 1;
 
     void hk_BSBatchRenderer_SetupAndDrawPass(BSRenderPass * pass, uint32_t technique, bool alphaTest, uint32_t renderFlags)
     {
         if (*(uintptr_t *)pass->m_Shader == BSLightingShader_vtbl.GetUIntPtr() && alphaTest)
         {
-            if ((((technique - 0x4800002D) >> 24) & 0x3F) != RAW_TECHNIQUE_EYE)
+			auto rawTechnique = technique - 0x4800002D;
+			auto subIndex = (rawTechnique >> 24) & 0x3F;
+            if (subIndex != RAW_TECHNIQUE_EYE && subIndex != RAW_TECHNIQUE_ENVMAP)
             {
                 technique = technique | RAW_FLAG_DO_ALPHA_TEST;
                 pass->m_TechniqueID = technique;
