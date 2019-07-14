@@ -665,4 +665,17 @@ namespace fixes
 
 		return true;
 	}
+	
+	
+	RelocAddr<uintptr_t> AnimationCrash(offset_AnimationLoadSign);
+
+	bool PatchAnimationLoadSignCrash()
+	{
+		_VMESSAGE("- animation load crash -");
+		// Change "BF" to "B7"
+		SafeWrite8(AnimationCrash.GetUIntPtr(), 0xB7);
+		_VMESSAGE("success");
+
+		return true;
+	}
 }

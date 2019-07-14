@@ -27,6 +27,7 @@ namespace fixes
     bool PatchSlowTimeCameraMovement();
     bool PatchTreeReflections();
     bool PatchVerticalLookSensitivity();
+    bool PatchAnimationLoadSignCrash();
 
     bool PatchAll();
 }
