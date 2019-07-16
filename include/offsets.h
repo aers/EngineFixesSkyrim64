@@ -175,9 +175,9 @@ constexpr uintptr_t HorseCameraState_Vfunc_Hook_offset = 0x0084998F;
 constexpr uintptr_t offset_vtbl_EnchantmentItem = 0x015217F0;  
 
 // Animation Load Sign
-// 00007FF6A4DD69C0    | 0FBF83 28010000          | movsx   eax, word ptr ds:[rbx + 0x128]            |
-//-> 00007FF6A4DD69C0  | 0FB783 28010000          | movzx   eax, word ptr ds:[rbx + 0x128]            |
-constexpr uintptr_t offset_AnimationLoadSign = 0x00B669C1;
+// SkyrimSE.exe+0x00B669C0    | 0FBF83 28010000          | movsx   eax, word ptr ds:[rbx + 0x128]            |
+//-> SkyrimSE.exe+0x00B669C0  | 0FB783 28010000          | movzx   eax, word ptr ds:[rbx + 0x128]            |
+constexpr uintptr_t offset_AnimationLoadSigned = 0x00B669C1;
 
 // Warnings
 

@@ -38,7 +38,7 @@ namespace config
     bool fixSlowTimeCameraMovement = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
-	bool fixAnimationLoadSignCrash = true;
+	bool fixAnimationLoadSignedCrash = true;
 
     // Warnings
     bool warnDupeAddonNodes = true;
@@ -95,7 +95,7 @@ namespace config
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
-        fixAnimationLoadSignCrash = ini.GetBoolean("Fixes", "AnimationLoadSignCrash", true);
+        fixAnimationLoadSignedCrash = ini.GetBoolean("Fixes", "AnimationLoadSignedCrash", true);
 
         // Warnings
         warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);
