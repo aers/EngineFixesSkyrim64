@@ -50,8 +50,8 @@ namespace fixes
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
 
-		if (config::fixAnimationLoadSignedCrash)
-			PatchAnimationLoadSignedCrash();
+        if (config::fixAnimationLoadSignedCrash)
+            PatchAnimationLoadSignedCrash();
 
         return true;
     }

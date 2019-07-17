@@ -36,7 +36,7 @@ namespace config
     extern bool fixSlowTimeCameraMovement;
     extern bool fixTreeReflections;
     extern bool fixVerticalLookSensitivity;
-	extern bool fixAnimationLoadSignedCrash;
+    extern bool fixAnimationLoadSignedCrash;
 
     // Warnings
     extern bool warnDupeAddonNodes;

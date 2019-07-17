@@ -667,15 +667,15 @@ namespace fixes
 	}
 	
 	
-	RelocAddr<uintptr_t> AnimationSignedCrash(offset_AnimationLoadSigned);
+    RelocAddr<uintptr_t> AnimationSignedCrash(offset_AnimationLoadSigned);
 
-	bool PatchAnimationLoadSignedCrash()
-	{
-		_VMESSAGE("- animation load crash -");
-		// Change "BF" to "B7"
-		SafeWrite8(AnimationSignedCrash.GetUIntPtr(), 0xB7);
-		_VMESSAGE("success");
+    bool PatchAnimationLoadSignedCrash()
+    {
+        _VMESSAGE("- animation load crash -");
+        // Change "BF" to "B7"
+        SafeWrite8(AnimationSignedCrash.GetUIntPtr(), 0xB7);
+        _VMESSAGE("success");
 
-		return true;
-	}
+        return true;
+    }
 }

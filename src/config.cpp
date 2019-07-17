@@ -38,7 +38,7 @@ namespace config
     bool fixSlowTimeCameraMovement = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
-	bool fixAnimationLoadSignedCrash = true;
+    bool fixAnimationLoadSignedCrash = true;
 
     // Warnings
     bool warnDupeAddonNodes = true;
