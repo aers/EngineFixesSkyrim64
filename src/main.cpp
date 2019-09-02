@@ -41,11 +41,11 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
 
         _VMESSAGE("temporary fix for SKSE crosshair ref event dispatch");
 
-        const auto handle = (uintptr_t) GetModuleHandleA("skse64_1_5_73");
+        const auto handle = (uintptr_t) GetModuleHandleA("skse64_1_5_80");
 
         if (handle && *(uint8_t *)(handle+0xD658) == 0x4D)
         {
-            _MESSAGE("skse 2.0.15 found");
+            _MESSAGE("skse 2.0.16 found");
             constexpr uintptr_t START = 0xD658;
             constexpr uintptr_t END = 0xD661;
             constexpr UInt8 NOP = 0x90;
@@ -92,7 +92,7 @@ extern "C" {
 
         const auto version = GetGameVersion();
 
-        if (version != RUNTIME_VERSION_1_5_73)
+        if (version != RUNTIME_VERSION_1_5_80)
         {
             _FATALERROR("unsupported runtime version %08X", version);
             return;
@@ -166,7 +166,7 @@ extern "C" {
             return false;
         }
         
-        if (skse->runtimeVersion != RUNTIME_VERSION_1_5_73)
+        if (skse->runtimeVersion != RUNTIME_VERSION_1_5_80)
         {
             _FATALERROR("unsupported runtime version %08X", skse->runtimeVersion);
             return false;
