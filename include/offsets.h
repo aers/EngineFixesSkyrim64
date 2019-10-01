@@ -46,7 +46,7 @@ constexpr uintptr_t UnkFormFunc4_offset = 0x001967E0;
 // Regular Quicksaves
 // QuickSaveLoadHandler::HandleEvent  = vtbl 5
 constexpr uintptr_t QuickSaveLoadHandler_HandleEvent_SaveType_offset = 0x008AA9A8; // F0000200
-constexpr uintptr_t QuickSaveLoadHanadler_HandleEvent_LoadType_offset = 0x008AA9DB; // D0000400
+constexpr uintptr_t QuickSaveLoadHandler_HandleEvent_LoadType_offset = 0x008AA9DB; // D0000400
 
 // Save Added Sound Categories
 constexpr uintptr_t vtbl_BGSSoundCategory_offset = 0x01576FE0;
@@ -111,7 +111,11 @@ constexpr uintptr_t Equip_Shout_Procedure_Function_offset = 0x006323C0;
 
 // GHeap Leak Detection Crash
 // E8 ? ? ? ? 48 8B 07 33 D2 48 8B CF FF 10
-constexpr uintptr_t GHeap_Leak_Detection_Crash_offset = 0x00FFFA00;    
+constexpr uintptr_t GHeap_Leak_Detection_Crash_offset = 0x00FFFA00;
+
+// Lip Sync Fix
+// E8 ? ? ? ? 48 8D 8F 20 01 00 00 0F 28 CE
+constexpr uintptr_t LipSync_FUNC_ADDR = 0x001F12A0;    // 1_5_80
 
 // Memory Access Errors
 constexpr uintptr_t BSLightingShaderMaterialSnow_vtbl_offset = 0x0185E180;
@@ -199,12 +203,19 @@ constexpr uintptr_t MemoryManagerAlloc_offset = 0x00C02260;
 constexpr uintptr_t MemoryManagerFree_offset = 0x00C02560;
 // relative offsets to these are unlikely to change
 constexpr uintptr_t ScrapHeapInit_offset = 0x00C03320;
-constexpr uintptr_t ScrapHeapAlloc_offset = 0x00C03460;
+constexpr uintptr_t ScrapHeapAlloc_offset = 0x00C034A0;
 constexpr uintptr_t ScrapHeapFree_offset = 0x00C03AC0;
 constexpr uintptr_t ScrapHeapDeInit_offset = 0x00C03C80;
 // E8 ? ? ? ? 90 0F AE F0 +0x102
 constexpr uintptr_t InitMemoryManager_offset = 0x0059B5F0;
 constexpr uintptr_t InitBSSmallBlockAllocator_offset = 0x0059B220;
+
+// BB ? ? ? ? 4C 8B FA 
+constexpr uintptr_t Win32FileType_CopyToBuffer_offset = 0x1341C24;
+// C6 83 ? ? ? ? ? BA ? ? ? ? ->
+constexpr uintptr_t Win32FileType_ctor_offset = 0x1340C8E;
+// E8 ? ? ? ? 8B D0 4C 8B CB ->
+constexpr uintptr_t ScrapHeap_GetMaxSize_offset = 0x59B9A4;
 
 // E8 ? ? ? ? 0F B6 D0 EB 02 
 constexpr uintptr_t TESFile_IsMaster_offset = 0x0017E130;

@@ -29,6 +29,9 @@ namespace fixes
         if (config::fixGHeapLeakDetectionCrash)
             PatchGHeapLeakDetectionCrash();
 
+		if (config::fixLipSync)
+			PatchLipSync();
+
         if (config::fixMemoryAccessErrors)
             PatchMemoryAccessErrors();
 

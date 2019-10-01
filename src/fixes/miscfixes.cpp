@@ -665,4 +665,25 @@ namespace fixes
 
 		return true;
 	}
+
+	bool PatchLipSync()
+	{			   
+		_VMESSAGE("- lip sync bug -");
+		constexpr UInt8 OFFSETS[] = {
+			0x1E,
+			0x3A,
+			0x9A,
+			0xD8
+		};
+
+		constexpr std::size_t NUM_OFFSETS = std::extent<decltype(OFFSETS)>::value;
+
+		REL::Offset<std::uintptr_t> funcBase(LipSync_FUNC_ADDR);
+		for (std::size_t i = 0; i < NUM_OFFSETS; ++i) {
+			SafeWrite8(funcBase.GetAddress() + OFFSETS[i], 0xEB);    // jns -> jmp
+		}
+		_VMESSAGE("- success -");
+
+		return true;
+	}
 }

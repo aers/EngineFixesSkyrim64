@@ -37,6 +37,9 @@ namespace patches
         if (config::experimentalMemoryManager)
             PatchMemoryManager();
 
+		if (config::experimentalSaveGameMaxSize)
+			PatchSaveGameMaxSize();
+
         if (config::experimentalTreatAllModsAsMasters)
             PatchTreatAllModsAsMasters();
 

@@ -30,6 +30,7 @@ namespace config
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
     bool fixGHeapLeakDetectionCrash = true;
+	bool fixLipSync = true;
     bool fixMemoryAccessErrors = true;
     bool fixMO5STypo = true;
     bool fixPerkFragmentIsRunning = true;
@@ -48,6 +49,7 @@ namespace config
     // Experimental
     bool experimentalMemoryManager = false;
     bool experimentalUseTBBMalloc = true;
+	bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
     bool LoadConfig(const std::string& path)
@@ -86,6 +88,7 @@ namespace config
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
         fixGHeapLeakDetectionCrash = ini.GetBoolean("Fixes", "GHeapLeakDetectionCrash", true);
+		fixLipSync = ini.GetBoolean("Fixes", "LipSync", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
         fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);
         fixPerkFragmentIsRunning = ini.GetBoolean("Fixes", "PerkFragmentIsRunning", true);
@@ -104,6 +107,7 @@ namespace config
         // Experimental
         experimentalMemoryManager = ini.GetBoolean("Experimental", "MemoryManager", false);
         experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
+		experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 
         warnDupeAddonNodes = false;

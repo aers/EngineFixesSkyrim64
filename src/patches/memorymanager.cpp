@@ -141,8 +141,10 @@ namespace patches
 
     void *ScrapHeap::Alloc(size_t Size, uint32_t Alignment)
     {
-        if (Size > MAX_ALLOC_SIZE)
-            return nullptr;
+		if (Size > MAX_ALLOC_SIZE || Size < 0)
+		{
+			_MESSAGE("warning: scrapheap alloc size %d out of default bounds detected", Size);
+		}
 
         return proxy_tbbmalloc(Size, Alignment, Alignment != 0);
     }

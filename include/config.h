@@ -28,6 +28,7 @@ namespace config
     extern bool fixDoublePerkApply;
     extern bool fixEquipShoutEventSpam;
     extern bool fixGHeapLeakDetectionCrash;
+	extern bool fixLipSync;
     extern bool fixMemoryAccessErrors;
     extern bool fixMO5STypo;
     extern bool fixPerkFragmentIsRunning;
@@ -46,6 +47,7 @@ namespace config
     // Experimental
     extern bool experimentalMemoryManager;
     extern bool experimentalUseTBBMalloc;
+	extern bool experimentalSaveGameMaxSize;
     extern bool experimentalTreatAllModsAsMasters;
     
     bool LoadConfig(const std::string& path);

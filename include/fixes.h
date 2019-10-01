@@ -19,6 +19,7 @@ namespace fixes
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
     bool PatchGHeapLeakDetectionCrash();
+	bool PatchLipSync();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
     bool PatchPerkFragmentIsRunning();
