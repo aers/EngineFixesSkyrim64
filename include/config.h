@@ -35,6 +35,7 @@ namespace config
     extern bool fixRemovedSpellBook;
     extern bool fixSaveScreenshots;
     extern bool fixSlowTimeCameraMovement;
+	extern bool fixTimeManagerSkipping;
     extern bool fixTreeReflections;
     extern bool fixVerticalLookSensitivity;
 
@@ -45,8 +46,6 @@ namespace config
     extern uint32_t warnRefrLoadedGameLimit;
 
     // Experimental
-    extern bool experimentalMemoryManager;
-    extern bool experimentalUseTBBMalloc;
 	extern bool experimentalSaveGameMaxSize;
     extern bool experimentalTreatAllModsAsMasters;
     

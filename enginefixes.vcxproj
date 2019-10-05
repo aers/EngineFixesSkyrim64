@@ -15,19 +15,19 @@
     <ProjectGuid>{E831D5DE-B2CE-42F3-B0BC-32DCDFD3ACD4}</ProjectGuid>
     <RootNamespace>EngineFixes</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -64,7 +64,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>common/IPrefix.h;Logging.h;Util.h</ForcedIncludeFiles>
+      <ForcedIncludeFiles>ForceInclude.h;SKSE\Logger.h</ForcedIncludeFiles>
       <ExceptionHandling>Sync</ExceptionHandling>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -90,10 +90,9 @@
       </Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy "$(ProjectDir)EngineFixes.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
-xcopy "$(ProjectDir)EngineFixes_SNCT.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
-xcopy "$(ProjectDir)EngineFixes_Preload.txt" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
-xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I</Command>
+      <Command>xcopy "$(ProjectDir)EngineFixes.ini" "D:\LOTD\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(ProjectDir)EngineFixes_SNCT.ini" "D:\LOTD\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse\plugins\" /Y /I</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>
@@ -112,7 +111,7 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\Engine
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>common/IPrefix.h;Logging.h;ForceInclude.h</ForcedIncludeFiles>
+      <ForcedIncludeFiles>ForceInclude.h;SKSE/Logger.h</ForcedIncludeFiles>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <OmitFramePointers>
       </OmitFramePointers>
@@ -140,10 +139,9 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\Engine
     <PostBuildEvent>
       <Message>
       </Message>
-      <Command>xcopy "$(ProjectDir)EngineFixes.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
-xcopy "$(ProjectDir)EngineFixes_SNCT.ini" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
-xcopy "$(ProjectDir)EngineFixes_Preload.txt" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I
-xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\EngineFixes-dev\skse\plugins\" /Y /I</Command>
+      <Command>xcopy "$(ProjectDir)EngineFixes.ini" "D:\LOTD\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(ProjectDir)EngineFixes_SNCT.ini" "D:\LOTD\mods\EngineFixes-dev\skse\plugins\" /Y /I
+xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse\plugins\" /Y /I</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -178,7 +176,6 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\Skyrim Modding\MO2\mods\Engine
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\patches.cpp" />
     <ClCompile Include="src\patches\formcaching.cpp" />
-    <ClCompile Include="src\patches\memorymanager.cpp" />
     <ClCompile Include="src\patches\miscpatches.cpp" />
     <ClCompile Include="src\patches\saveaddedsoundcategories.cpp" />
     <ClCompile Include="src\fixes\shaderfixes.cpp" />

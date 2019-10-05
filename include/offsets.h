@@ -162,6 +162,10 @@ constexpr uintptr_t CameraMove_Timer4_offset = 0x00850B3A; // +0x4
 // E8 ? ? ? ? 48 8D 4B 4C -> +0x13
 constexpr uintptr_t CameraMove_Timer5_offset = 0x00850C07; // +0x4
 
+// Time Manager Skipping
+// E8 ? ? ? ? F6 87 DC 0B 00 00 01
+constexpr uintptr_t TimeManager_AdvanceTime_call_offset = 0x005A6230; 
+
 // Tree Reflections
 // ??_7BSDistantTreeShader@@6B@
 // vfunc 3 -> +0x37
@@ -196,19 +200,6 @@ constexpr uintptr_t Call2_Unk_DataReload_func_offset = 0x005B5280;    // 1_5_73
 constexpr uintptr_t g_RefrHandleArray_offset = 0x01EC47C0;
 
 // Experimental
-
-// E8 ? ? ? ? 89 38  ->
-constexpr uintptr_t MemoryManagerAlloc_offset = 0x00C02260;
-// E8 ? ? ? ? 89 77 0C ->
-constexpr uintptr_t MemoryManagerFree_offset = 0x00C02560;
-// relative offsets to these are unlikely to change
-constexpr uintptr_t ScrapHeapInit_offset = 0x00C03320;
-constexpr uintptr_t ScrapHeapAlloc_offset = 0x00C034A0;
-constexpr uintptr_t ScrapHeapFree_offset = 0x00C03AC0;
-constexpr uintptr_t ScrapHeapDeInit_offset = 0x00C03C80;
-// E8 ? ? ? ? 90 0F AE F0 +0x102
-constexpr uintptr_t InitMemoryManager_offset = 0x0059B5F0;
-constexpr uintptr_t InitBSSmallBlockAllocator_offset = 0x0059B220;
 
 // BB ? ? ? ? 4C 8B FA 
 constexpr uintptr_t Win32FileType_CopyToBuffer_offset = 0x1341C24;

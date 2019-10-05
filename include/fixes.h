@@ -26,6 +26,7 @@ namespace fixes
     bool PatchRemovedSpellBook();
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
+	bool PatchTimeManagerSkipping();
     bool PatchTreeReflections();
     bool PatchVerticalLookSensitivity();
 

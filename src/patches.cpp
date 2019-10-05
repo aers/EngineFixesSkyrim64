@@ -34,9 +34,6 @@ namespace patches
         if (config::patchWaterflowAnimation)
             PatchWaterflowAnimation();
 
-        if (config::experimentalMemoryManager)
-            PatchMemoryManager();
-
 		if (config::experimentalSaveGameMaxSize)
 			PatchSaveGameMaxSize();
 

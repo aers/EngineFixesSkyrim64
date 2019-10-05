@@ -5,6 +5,8 @@
 #include "Simpleini.h"
 #include "RE/TESDataHandler.h"
 
+#include "utils.h"
+
 
 namespace patches
 {
@@ -27,7 +29,7 @@ namespace patches
         {
             for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
-                if (soundCategory->flags & 0x2)
+                if ((soundCategory->flags & RE::BGSSoundCategory::Flag::kShouldAppearOnMenu) != RE::BGSSoundCategory::Flag::kNone)
                 {
                     _VMESSAGE("processing %s", dynamic_cast<RE::TESFullName *>(soundCategory)->GetName());
                     _VMESSAGE("menu flag set, saving");

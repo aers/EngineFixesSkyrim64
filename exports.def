@@ -1,5 +1,4 @@
 LIBRARY	"EngineFixes"
 EXPORTS
-Initialize
 SKSEPlugin_Query
 SKSEPlugin_Load

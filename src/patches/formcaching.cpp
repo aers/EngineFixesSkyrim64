@@ -70,7 +70,7 @@ namespace patches
         if (*GlobalFormTable)
         {
             auto iter = (*GlobalFormTable)->find(FormId);
-            formPointer = (iter != (*GlobalFormTable)->end()) ? iter->GetValue() : nullptr;
+            formPointer = (iter != (*GlobalFormTable)->end()) ? iter->second : nullptr;
         }
 
         CALL_MEMBER_FN(GlobalFormTableLock, UnlockRead)();

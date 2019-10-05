@@ -47,6 +47,9 @@ namespace fixes
         if (config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
 
+		if (config::fixTimeManagerSkipping)
+			PatchTimeManagerSkipping();
+
         if (config::fixTreeReflections)
             PatchTreeReflections();
 

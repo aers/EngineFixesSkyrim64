@@ -37,6 +37,7 @@ namespace config
     bool fixRemovedSpellBook = true;
     bool fixSaveScreenshots = true;
     bool fixSlowTimeCameraMovement = true;
+	bool fixTimeManagerSkipping = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
 
@@ -47,8 +48,6 @@ namespace config
     uint32_t warnRefrLoadedGameLimit = 1000000;
 
     // Experimental
-    bool experimentalMemoryManager = false;
-    bool experimentalUseTBBMalloc = true;
 	bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
@@ -95,6 +94,7 @@ namespace config
         fixRemovedSpellBook = ini.GetBoolean("Fixes", "RemovedSpellBook", true);
         fixSaveScreenshots = ini.GetBoolean("Fixes", "SaveScreenshots", true);
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
+		fixTimeManagerSkipping = ini.GetBoolean("Fixes", "TimeManagerSkipping", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
 
@@ -105,8 +105,6 @@ namespace config
         warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
-        experimentalMemoryManager = ini.GetBoolean("Experimental", "MemoryManager", false);
-        experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
 		experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 

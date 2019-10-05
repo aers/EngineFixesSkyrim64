@@ -234,7 +234,7 @@ namespace patches
 
     bool loadSet = false;
 
-    char hk_TESFile_IsMaster(RE::TESFile * modInfo)
+    bool hk_TESFile_IsMaster(RE::TESFile * modInfo)
     {
         if (loadSet)
             return true;
@@ -248,12 +248,12 @@ namespace patches
             auto dhnl = RE::TESDataHandler::GetSingleton();
             for (auto mod : dhnl->modList.loadOrder)
             {
-                mod->unk438 |= 1;
+                mod->recordFlags |= RE::TESFile::RecordFlag::kESM;
             }
             return true;
         }
 
-        return modInfo->unk438 & 1;
+		return (modInfo->recordFlags & RE::TESFile::RecordFlag::kESM) != RE::TESFile::RecordFlag::kNone;
     }
 
     RelocAddr<uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
