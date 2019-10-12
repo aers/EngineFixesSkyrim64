@@ -173,6 +173,15 @@ namespace fixes
     bool PatchTreeReflections()
     {
         _VMESSAGE("- blocky tree reflections -");
+
+		const auto handle = GetModuleHandleA("d3dcompiler_46e.dll");
+
+		if (handle)
+		{
+			_VMESSAGE("enb detected - disabling fix, please use ENB's tree reflection fix instead");
+			return true;
+		}
+
         _VMESSAGE("patching BSDistantTreeShader vfunc 3");
         struct PatchTreeReflection_Code : Xbyak::CodeGenerator
         {

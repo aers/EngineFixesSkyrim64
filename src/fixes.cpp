@@ -50,9 +50,6 @@ namespace fixes
 		if (config::fixTimeManagerSkipping)
 			PatchTimeManagerSkipping();
 
-        if (config::fixTreeReflections)
-            PatchTreeReflections();
-
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
 

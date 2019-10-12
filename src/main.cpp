@@ -35,28 +35,10 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
         if (config::patchSaveAddedSoundCategories)
             patches::LoadVolumes();
 
-        // temporary fix for SKSE crosshair ref event dispatch
+		if (config::fixTreeReflections)
+			fixes::PatchTreeReflections();
 
-        _VMESSAGE("temporary fix for SKSE crosshair ref event dispatch");
-
-        const auto handle = (uintptr_t) GetModuleHandleA("skse64_1_5_80");
-
-        if (handle && *(uint8_t *)(handle+0xD658) == 0x4D)
-        {
-            _VMESSAGE("skse 2.0.16 found");
-            constexpr uintptr_t START = 0xD658;
-            constexpr uintptr_t END = 0xD661;
-            constexpr UInt8 NOP = 0x90;
-
-            // .text:000000018000D658                 test    r8, r8
-            // .text:000000018000D65B                 jz      loc_18000D704
-
-            for (uintptr_t i = START; i < END; ++i) {
-                SafeWrite8(handle + i, NOP);
-            }
-        }
-
-        _VMESSAGE("clearing node map");
+		_VMESSAGE("clearing node map");
         warnings::ClearNodeMap();
 
 		_MESSAGE("post-load patches complete");
@@ -120,7 +102,7 @@ extern "C" {
 		}
 
 
-		if (!SKSE::AllocLocalTrampoline(1024 * 32) || !SKSE::AllocBranchTrampoline(1024 * 32)) {
+		if (!SKSE::AllocLocalTrampoline(1024 * 2) || !SKSE::AllocBranchTrampoline(1024 * 2)) {
 			return false;
 		}
 
@@ -142,6 +124,13 @@ extern "C" {
 		else
 		{
 			_MESSAGE("config load failed, using default config");
+		}
+
+		if (config::verboseLogging)
+		{
+			_MESSAGE("enabling verbose logging");
+			SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kVerboseMessage);
+			SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kVerboseMessage);
 		}
 
 		_MESSAGE("beginning pre-load patches");
