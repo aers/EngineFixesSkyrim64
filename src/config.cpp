@@ -22,6 +22,7 @@ namespace config
     float waterflowSpeed = 20.0;
 
     // Fixes
+	bool fixAnimationLoadSignedCrash = true;
 	bool fixArcheryDownwardAiming = true;
     bool fixBethesdaNetCrash = true;
     bool fixBSLightingAmbientSpecular = true;
@@ -40,7 +41,7 @@ namespace config
 	bool fixTimeManagerSkipping = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
-    bool fixAnimationLoadSignedCrash = true;
+
 
     // Warnings
     bool warnDupeAddonNodes = true;
@@ -80,6 +81,7 @@ namespace config
         waterflowSpeed = static_cast<float>(ini.GetReal("Patches", "WaterflowSpeed", 20.0));
 
         // Fixes
+		fixAnimationLoadSignedCrash = ini.GetBoolean("Fixes", "AnimationLoadSignedCrash", true);
 		fixArcheryDownwardAiming = ini.GetBoolean("Fixes", "ArcheryDownwardAiming", true);
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
@@ -98,7 +100,6 @@ namespace config
 		fixTimeManagerSkipping = ini.GetBoolean("Fixes", "TimeManagerSkipping", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
-        fixAnimationLoadSignedCrash = ini.GetBoolean("Fixes", "AnimationLoadSignedCrash", true);
 
         // Warnings
         warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);
