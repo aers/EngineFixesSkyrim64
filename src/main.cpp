@@ -4,27 +4,25 @@
 #include "skse64_common/skse_version.h"
 #include "skse64_common/Utilities.h"
 
+#include "SKSE/API.h"
+
 #include <sstream>
 #include <ShlObj.h>
 
+#include "version.h"
 #include "config.h"
 #include "fixes.h"
 #include "patches.h"
 #include "utils.h"
 #include "warnings.h"
 
-
-bool		preloaded = false;
-
-PluginHandle					g_pluginHandle = kPluginHandle_Invalid;
-SKSEMessagingInterface			* g_messaging = nullptr;
-
-void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
+void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
-    switch (message->type)
+    switch (a_msg->type)
     {
-    case SKSEMessagingInterface::kMessage_DataLoaded:
+	case SKSE::MessagingInterface::kDataLoaded:
     {
+		_MESSAGE("beginning post-load patches");
         // patch post load so ini settings are loaded
         if (config::fixSaveScreenshots)
             fixes::PatchSaveScreenshots();
@@ -37,32 +35,16 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
         if (config::patchSaveAddedSoundCategories)
             patches::LoadVolumes();
 
-        // temporary fix for SKSE crosshair ref event dispatch
+		if (config::fixTreeReflections)
+			fixes::PatchTreeReflections();
 
-        _VMESSAGE("temporary fix for SKSE crosshair ref event dispatch");
-
-        const auto handle = (uintptr_t) GetModuleHandleA("skse64_1_5_73");
-
-        if (handle && *(uint8_t *)(handle+0xD658) == 0x4D)
-        {
-            _MESSAGE("skse 2.0.15 found");
-            constexpr uintptr_t START = 0xD658;
-            constexpr uintptr_t END = 0xD661;
-            constexpr UInt8 NOP = 0x90;
-
-            // .text:000000018000D658                 test    r8, r8
-            // .text:000000018000D65B                 jz      loc_18000D704
-
-            for (uintptr_t i = START; i < END; ++i) {
-                SafeWrite8(handle + i, NOP);
-            }
-        }
-
-        _VMESSAGE("clearing node map");
+		_VMESSAGE("clearing node map");
         warnings::ClearNodeMap();
+
+		_MESSAGE("post-load patches complete");
     }
     break;
-    case SKSEMessagingInterface::kMessage_PostLoadGame:
+	case SKSE::MessagingInterface::kPostLoadGame:
         {
         if (config::warnRefHandleLimit)
         {
@@ -76,118 +58,91 @@ void SKSEMessageHandler(SKSEMessagingInterface::Message * message)
 }
 
 extern "C" {
-    void Initialize()
+	bool SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
     {
-
-        IDebugLog::OpenRelative(CSIDL_MYDOCUMENTS, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes.log)");
+		SKSE::Logger::OpenRelative(FOLDERID_Documents, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes.log)");
 #ifdef _DEBUG
-        IDebugLog::SetLogLevel(IDebugLog::kLevel_DebugMessage);
+		SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kDebugMessage);
+		SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kDebugMessage);
 #else
-        IDebugLog::SetLogLevel(IDebugLog::kLevel_Message);
-#endif		
+		SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kMessage);
+		SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kMessage);
+#endif	
+		SKSE::Logger::UseLogStamp(true);
 
-        _MESSAGE("EngineFixes for Skyrim Special Edition");
+		_MESSAGE("Engine Fixes v%s", EF_VERSION_VERSTRING);
 
-        // check version
-
-        const auto version = GetGameVersion();
-
-        if (version != RUNTIME_VERSION_1_5_73)
-        {
-            _FATALERROR("unsupported runtime version %08X", version);
-            return;
-        }
-
-        if (!g_branchTrampoline.Create(1024 * 64))
-        {
-            _FATALERROR("couldn't create branch trampoline. this is fatal. skipping remainder of init process.");
-            return;
-        }
-
-        if (!g_localTrampoline.Create(1024 * 64, nullptr))
-        {
-            _FATALERROR("couldn't create codegen buffer. this is fatal. skipping remainder of init process.");
-            return;
-        }
-
-
-        _MESSAGE("plugin preloaded successfully");
-        preloaded = true;
-
-        const auto runtimePath = GetRuntimeDirectory();
-
-        if (config::LoadConfig(runtimePath + R"(Data\SKSE\plugins\EngineFixes.ini)"))
-        {
-            _MESSAGE("loaded config successfully");
-        }
-        else
-        {
-            _MESSAGE("config load failed, using default config");
-        }
-
-#ifndef _DEBUG
-        if (config::verboseLogging)
-            IDebugLog::SetLogLevel(IDebugLog::kLevel_VerboseMessage);
-#endif
-
-        _MESSAGE("patching game");
-        if (config::cleanSKSECosaves)
-            CleanSKSECosaves();
-
-        patches::PatchAll();
-        fixes::PatchAll();
-        warnings::PatchAll();
-    }
-
-    bool SKSEPlugin_Query(const SKSEInterface * skse, PluginInfo * info)
-    {
         // populate info structure
-        info->infoVersion = PluginInfo::kInfoVersion;
-        info->name = "EngineFixes plugin";
-        info->version = 3;
+        a_info->infoVersion = SKSE::PluginInfo::kVersion;
+        a_info->name = "EngineFixes plugin";
+		a_info->version = EF_VERSION_MAJOR;
 
-        g_pluginHandle = skse->GetPluginHandle();
-
-        if (!preloaded)
+        if (a_skse->IsEditor())
         {
-            IDebugLog::OpenRelative(CSIDL_MYDOCUMENTS, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes.log)");
-#ifdef _DEBUG
-            IDebugLog::SetLogLevel(IDebugLog::kLevel_DebugMessage);
-#else
-            IDebugLog::SetLogLevel(IDebugLog::kLevel_Message);
-#endif		
-            _FATALERROR("plugin was not preloaded, please read the installation instructions carefully");
+            _FATALERROR("loaded in editor, marking as incompatible");
             return false;
         }
 
-        if (skse->isEditor)
-        {
-            _MESSAGE("loaded in editor, marking as incompatible");
-            return false;
-        }
-        
-        if (skse->runtimeVersion != RUNTIME_VERSION_1_5_73)
-        {
-            _FATALERROR("unsupported runtime version %08X", skse->runtimeVersion);
-            return false;
-        }
-
-
-
-        g_messaging = static_cast<SKSEMessagingInterface *>(skse->QueryInterface(kInterface_Messaging));
-        if (!g_messaging) {
-            _ERROR("couldn't get messaging interface, disabling patches that require it");
-        }
+		switch (a_skse->RuntimeVersion()) {
+		case RUNTIME_VERSION_1_5_73:
+		case RUNTIME_VERSION_1_5_80:
+			break;
+		default:
+			_FATALERROR("Unsupported runtime version %08X!\n", a_skse->RuntimeVersion());
+			return false;
+		}
 
         return true;
-
     }
 
-    bool SKSEPlugin_Load(const SKSEInterface * skse)
+	bool SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
     {
-        if (g_messaging)
-            g_messaging->RegisterListener(g_pluginHandle, "SKSE", SKSEMessageHandler);
+		if (!SKSE::Init(a_skse)) {
+			return false;
+		}
 
+
+		if (!SKSE::AllocLocalTrampoline(1024 * 2) || !SKSE::AllocBranchTrampoline(1024 * 2)) {
+			return false;
+		}
+
+		auto messaging = SKSE::GetMessagingInterface();
+		if (messaging->RegisterListener("SKSE", MessageHandler)) {
+			_MESSAGE("Messaging interface registration successful");
+		}
+		else {
+			_FATALERROR("Messaging interface registration failed!\n");
+			return false;
+		}
+
+		const auto runtimePath = GetRuntimeDirectory();
+
+		if (config::LoadConfig(runtimePath + R"(Data\SKSE\plugins\EngineFixes.ini)"))
+		{
+			_MESSAGE("loaded config successfully");
+		}
+		else
+		{
+			_MESSAGE("config load failed, using default config");
+		}
+
+		if (config::verboseLogging)
+		{
+			_MESSAGE("enabling verbose logging");
+			SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kVerboseMessage);
+			SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kVerboseMessage);
+		}
+
+		_MESSAGE("beginning pre-load patches");
+
+		if (config::cleanSKSECosaves)
+			CleanSKSECosaves();
+
+		patches::PatchAll();
+		fixes::PatchAll();
+		warnings::PatchAll();
+		
+		_MESSAGE("pre-load patches complete");
         return true;
     }
 }

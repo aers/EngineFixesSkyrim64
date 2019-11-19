@@ -19,12 +19,14 @@ namespace fixes
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
     bool PatchGHeapLeakDetectionCrash();
+	bool PatchLipSync();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
     bool PatchPerkFragmentIsRunning();
     bool PatchRemovedSpellBook();
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
+	bool PatchTimeManagerSkipping();
     bool PatchTreeReflections();
     bool PatchVerticalLookSensitivity();
     bool PatchAnimationLoadSignedCrash();

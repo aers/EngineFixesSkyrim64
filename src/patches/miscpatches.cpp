@@ -177,7 +177,7 @@ namespace patches
     }
 
     RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(QuickSaveLoadHandler_HandleEvent_SaveType_offset);
-    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHanadler_HandleEvent_LoadType_offset);
+    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHandler_HandleEvent_LoadType_offset);
 
     bool PatchRegularQuicksaves()
     {
@@ -234,7 +234,7 @@ namespace patches
 
     bool loadSet = false;
 
-    char hk_TESFile_IsMaster(RE::TESFile * modInfo)
+    bool hk_TESFile_IsMaster(RE::TESFile * modInfo)
     {
         if (loadSet)
             return true;
@@ -248,12 +248,12 @@ namespace patches
             auto dhnl = RE::TESDataHandler::GetSingleton();
             for (auto mod : dhnl->modList.loadOrder)
             {
-                mod->unk438 |= 1;
+                mod->recordFlags |= RE::TESFile::RecordFlag::kESM;
             }
             return true;
         }
 
-        return modInfo->unk438 & 1;
+		return (modInfo->recordFlags & RE::TESFile::RecordFlag::kESM) != RE::TESFile::RecordFlag::kNone;
     }
 
     RelocAddr<uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
@@ -308,4 +308,18 @@ namespace patches
         _VMESSAGE("success");
         return true;
     }
+
+	RelocAddr<uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset);
+	RelocAddr<uintptr_t> Win32FileType_ctor(Win32FileType_ctor_offset);
+	RelocAddr<uintptr_t> ScrapHeap_GetMaxSize(ScrapHeap_GetMaxSize_offset);
+
+	bool PatchSaveGameMaxSize()
+	{
+		_VMESSAGE("- save game max size -");
+		SafeWrite8(Win32FileType_CopyToBuffer.GetUIntPtr(), 0x08);
+		SafeWrite8(Win32FileType_ctor.GetUIntPtr(), 0x08);
+		SafeWrite8(ScrapHeap_GetMaxSize.GetUIntPtr(), 0x08);
+		_VMESSAGE("success");
+		return true;
+	}
 }

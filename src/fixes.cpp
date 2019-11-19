@@ -29,6 +29,9 @@ namespace fixes
         if (config::fixGHeapLeakDetectionCrash)
             PatchGHeapLeakDetectionCrash();
 
+		if (config::fixLipSync)
+			PatchLipSync();
+
         if (config::fixMemoryAccessErrors)
             PatchMemoryAccessErrors();
 
@@ -44,8 +47,8 @@ namespace fixes
         if (config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
 
-        if (config::fixTreeReflections)
-            PatchTreeReflections();
+		if (config::fixTimeManagerSkipping)
+			PatchTimeManagerSkipping();
 
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();

@@ -30,12 +30,14 @@ namespace config
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
     bool fixGHeapLeakDetectionCrash = true;
+	bool fixLipSync = true;
     bool fixMemoryAccessErrors = true;
     bool fixMO5STypo = true;
     bool fixPerkFragmentIsRunning = true;
     bool fixRemovedSpellBook = true;
     bool fixSaveScreenshots = true;
     bool fixSlowTimeCameraMovement = true;
+	bool fixTimeManagerSkipping = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
     bool fixAnimationLoadSignedCrash = true;
@@ -47,8 +49,7 @@ namespace config
     uint32_t warnRefrLoadedGameLimit = 1000000;
 
     // Experimental
-    bool experimentalMemoryManager = false;
-    bool experimentalUseTBBMalloc = true;
+	bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
     bool LoadConfig(const std::string& path)
@@ -87,12 +88,14 @@ namespace config
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
         fixGHeapLeakDetectionCrash = ini.GetBoolean("Fixes", "GHeapLeakDetectionCrash", true);
+		fixLipSync = ini.GetBoolean("Fixes", "LipSync", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
         fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);
         fixPerkFragmentIsRunning = ini.GetBoolean("Fixes", "PerkFragmentIsRunning", true);
         fixRemovedSpellBook = ini.GetBoolean("Fixes", "RemovedSpellBook", true);
         fixSaveScreenshots = ini.GetBoolean("Fixes", "SaveScreenshots", true);
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
+		fixTimeManagerSkipping = ini.GetBoolean("Fixes", "TimeManagerSkipping", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
         fixAnimationLoadSignedCrash = ini.GetBoolean("Fixes", "AnimationLoadSignedCrash", true);
@@ -104,8 +107,7 @@ namespace config
         warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
-        experimentalMemoryManager = ini.GetBoolean("Experimental", "MemoryManager", false);
-        experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
+		experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 
         warnDupeAddonNodes = false;

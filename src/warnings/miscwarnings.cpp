@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "warnings.h"
+#include "utils.h"
 
 
 namespace warnings

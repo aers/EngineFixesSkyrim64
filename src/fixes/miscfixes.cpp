@@ -75,7 +75,7 @@ namespace fixes
         const bool retVal = orig_BGSShaderParticleGeometryData_LoadForm(thisPtr, file);
 
         // the game doesn't allow more than 10 here
-        if (thisPtr->data.GetSize() >= 12)
+        if (thisPtr->data.size() >= 12)
         {
             const auto particleDensity = thisPtr->data[11];
             if (particleDensity.f > 10.0)
@@ -173,6 +173,15 @@ namespace fixes
     bool PatchTreeReflections()
     {
         _VMESSAGE("- blocky tree reflections -");
+
+		const auto handle = GetModuleHandleA("d3dcompiler_46e.dll");
+
+		if (handle)
+		{
+			_VMESSAGE("enb detected - disabling fix, please use ENB's tree reflection fix instead");
+			return true;
+		}
+
         _VMESSAGE("patching BSDistantTreeShader vfunc 3");
         struct PatchTreeReflection_Code : Xbyak::CodeGenerator
         {
@@ -665,17 +674,97 @@ namespace fixes
 
 		return true;
 	}
-	
-	
-    RelocAddr<uintptr_t> AnimationSignedCrash(offset_AnimationLoadSigned);
 
-    bool PatchAnimationLoadSignedCrash()
-    {
-        _VMESSAGE("- animation load crash -");
-        // Change "BF" to "B7"
-        SafeWrite8(AnimationSignedCrash.GetUIntPtr(), 0xB7);
-        _VMESSAGE("success");
+  RelocAddr<uintptr_t> AnimationSignedCrash(offset_AnimationLoadSigned);
 
-        return true;
-    }
+  bool PatchAnimationLoadSignedCrash()
+  {
+      _VMESSAGE("- animation load crash -");
+      // Change "BF" to "B7"
+      SafeWrite8(AnimationSignedCrash.GetUIntPtr(), 0xB7);
+      _VMESSAGE("success");
+
+    return true;
+  }
+
+	bool PatchLipSync()
+	{			   
+		_VMESSAGE("- lip sync bug -");
+		constexpr UInt8 OFFSETS[] = {
+			0x1E,
+			0x3A,
+			0x9A,
+			0xD8
+		};
+
+		constexpr std::size_t NUM_OFFSETS = std::extent<decltype(OFFSETS)>::value;
+
+		REL::Offset<std::uintptr_t> funcBase(LipSync_FUNC_ADDR);
+		for (std::size_t i = 0; i < NUM_OFFSETS; ++i) {
+			SafeWrite8(funcBase.GetAddress() + OFFSETS[i], 0xEB);    // jns -> jmp
+		}
+		_VMESSAGE("- success -");
+
+		return true;
+	}
+
+	class BSTimeManagerEx
+	{
+	public:
+		static void AdvanceTime(float a_secondsPassed)
+		{
+			auto time = RE::BSTimeManager::GetSingleton();
+			float hoursPassed = (a_secondsPassed * time->timeScale->value / (60.0 * 60.0)) + time->hour->value - 24.0;
+			if (hoursPassed > 24.0) {
+				do {
+					time->uDaysPassed += 1;
+					time->fDaysPassed += 1.0;
+					hoursPassed -= 24.0;
+				} while (hoursPassed > 24.0);
+				time->daysPassed->value = (hoursPassed / 24.0) + time->fDaysPassed;
+			}
+		}
+
+
+		static void InstallHooks()
+		{
+			constexpr std::size_t CAVE_START = 0x17A;
+			constexpr std::size_t CAVE_SIZE = 0x15;
+
+			REL::Offset<std::uintptr_t> funcBase(TimeManager_AdvanceTime_call_offset);
+
+			struct Patch : Xbyak::CodeGenerator
+			{
+				Patch(void* a_buf, std::uintptr_t a_addr) : Xbyak::CodeGenerator(1024, a_buf)
+				{
+					Xbyak::Label jmpLbl;
+
+					movaps(xmm0, xmm1);
+					jmp(ptr[rip + jmpLbl]);
+
+					L(jmpLbl);
+					dq(a_addr);
+				}
+			};
+
+			void* patchBuf = g_localTrampoline.StartAlloc();
+			Patch patch(patchBuf, unrestricted_cast<std::uintptr_t>(&BSTimeManagerEx::AdvanceTime));
+			g_localTrampoline.EndAlloc(patch.getCurr());
+
+			assert(patch.getSize() <= CAVE_SIZE);
+
+			for (std::size_t i = 0; i < patch.getSize(); ++i) {
+				SafeWrite8(funcBase.GetAddress() + CAVE_START + i, patch.getCode()[i]);
+			}
+		}
+	};
+
+	bool PatchTimeManagerSkipping()
+	{
+		_VMESSAGE("-time manager skipping-");
+		BSTimeManagerEx::InstallHooks();
+		_VMESSAGE("success");
+
+		return true;
+	}
 }

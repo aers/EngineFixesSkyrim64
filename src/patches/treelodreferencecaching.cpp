@@ -32,11 +32,11 @@ namespace patches
 
     void hk_UpdateBlockVisibility(RE::BGSDistantTreeBlock::ResourceData *data)
     {
-        for (uint32_t i = 0; i < data->lodGroups.GetSize(); i++)
+        for (uint32_t i = 0; i < data->lodGroups.size(); i++)
         {
             auto *group = data->lodGroups[i];
 
-            for (uint32_t j = 0; j < group->lodInstances.GetSize(); j++)
+            for (uint32_t j = 0; j < group->lodInstances.size(); j++)
             {
                 RE::BGSDistantTreeBlock::LODGroupInstance *instance = &group->lodInstances[j];
                 const uint32_t maskedFormId = instance->formId & 0x00FFFFFF;
@@ -52,7 +52,7 @@ namespace patches
                 else
                 {
                     // Find first valid tree object by ESP/ESM load order
-                    for (int k = 0; k < RE::TESDataHandler::GetSingleton()->modList.loadedMods.GetSize(); k++)
+                    for (int k = 0; k < RE::TESDataHandler::GetSingleton()->modList.loadedMods.size(); k++)
                     {
                         RE::TESForm *form = LookupFormByID((k << 24) | maskedFormId);
                         if (form)
