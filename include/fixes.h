@@ -29,6 +29,7 @@ namespace fixes
 	bool PatchTimeManagerSkipping();
     bool PatchTreeReflections();
     bool PatchVerticalLookSensitivity();
+    bool PatchAnimationLoadSignedCrash();
 
     bool PatchAll();
 }

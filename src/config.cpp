@@ -40,6 +40,7 @@ namespace config
 	bool fixTimeManagerSkipping = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
+    bool fixAnimationLoadSignedCrash = true;
 
     // Warnings
     bool warnDupeAddonNodes = true;
@@ -97,6 +98,7 @@ namespace config
 		fixTimeManagerSkipping = ini.GetBoolean("Fixes", "TimeManagerSkipping", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
+        fixAnimationLoadSignedCrash = ini.GetBoolean("Fixes", "AnimationLoadSignedCrash", true);
 
         // Warnings
         warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);

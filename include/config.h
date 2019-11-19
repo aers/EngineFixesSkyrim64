@@ -38,6 +38,7 @@ namespace config
 	extern bool fixTimeManagerSkipping;
     extern bool fixTreeReflections;
     extern bool fixVerticalLookSensitivity;
+    extern bool fixAnimationLoadSignedCrash;
 
     // Warnings
     extern bool warnDupeAddonNodes;
