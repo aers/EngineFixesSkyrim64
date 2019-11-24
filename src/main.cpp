@@ -84,8 +84,7 @@ extern "C" {
         }
 
 		switch (a_skse->RuntimeVersion()) {
-		case RUNTIME_VERSION_1_5_73:
-		case RUNTIME_VERSION_1_5_80:
+		case RUNTIME_VERSION_1_5_97:
 			break;
 		default:
 			_FATALERROR("Unsupported runtime version %08X!\n", a_skse->RuntimeVersion());

@@ -9,15 +9,15 @@ constexpr uintptr_t g_FrameTimer_NoSlowTime_offset = 0x02F6B94C;
 
 // BSLightingAmbientSpecular
 // 41 F7 85 ? ? ? ? ? ? ? ? 74 0A 
-constexpr uintptr_t AddAmbientSpecularToSetupGeometry_offset = 0x012F32AD;
+constexpr uintptr_t AddAmbientSpecularToSetupGeometry_offset = 0x012F375D;
 // 49 8B 47 28 0F 10 05 ? ? ? ? 
 constexpr uintptr_t g_AmbientSpecularAndFresnel_offset = 0x1E0DFCC;
-constexpr uintptr_t DisableSetupMaterialAmbientSpecular_offset = 0x12F2283;
+constexpr uintptr_t DisableSetupMaterialAmbientSpecular_offset = 0x12F2733;
 
 // BSLightingShader Alpha
 // E8 ? ? ? ? 49 8B 96 ? ? ? ? 40 B6 01 
-constexpr uintptr_t BSBatchRenderer_SetupAndDrawPass_offset = 0x01307F90;
-constexpr uintptr_t BSLightingShader_vtbl_offset = 0x01864E78;
+constexpr uintptr_t BSBatchRenderer_SetupAndDrawPass_offset = 0x01308440;
+constexpr uintptr_t BSLightingShader_vtbl_offset = 0x01864DE8;
 
 // Disable Chargen Precache
 // E8 ? ? ? ? E8 ? ? ? ? 48 8D 57 30  ->
@@ -49,9 +49,9 @@ constexpr uintptr_t QuickSaveLoadHandler_HandleEvent_SaveType_offset = 0x008AA9A
 constexpr uintptr_t QuickSaveLoadHandler_HandleEvent_LoadType_offset = 0x008AA9DB; // D0000400
 
 // Save Added Sound Categories
-constexpr uintptr_t vtbl_BGSSoundCategory_offset = 0x01576FE0;
-constexpr uintptr_t vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset = 0x01577210; // vtbl 3
-constexpr uintptr_t vtbl_INIPrefSettingCollection_Unlock_offset = 0x01535AC8; // vtbl 6
+constexpr uintptr_t vtbl_BGSSoundCategory_offset = 0x01576FD0;
+constexpr uintptr_t vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset = 0x01577200; // vtbl 3
+constexpr uintptr_t vtbl_INIPrefSettingCollection_Unlock_offset = 0x01535AB8; // vtbl 6
 
 // Scrolling Doesn't Switch POV
 // FirstPersonState::PlayerInputHandler::sub_4
@@ -69,7 +69,7 @@ constexpr uintptr_t SleepWaitTime_Compare_offset = 0x008BDA8E;
 // E8 ? ? ? ? EB 0F 48 8B 43 18 ->
 constexpr uintptr_t UpdateBlockVisibility_orig_offset = 0x004A8090;
 // E8 ? ? ? ? 66 89 47 04 ->
-constexpr uintptr_t Float2Half_offset = 0x00D42240;
+constexpr uintptr_t Float2Half_offset = 0x00D426F0;
 
 
 // Waterflow 
@@ -78,7 +78,7 @@ constexpr uintptr_t GameLoop_Hook_offset = 0x005B3242;
 constexpr uintptr_t UnkGameLoopDword_offset = 0x02F6B950;
 // 5th function in ??_7BSWaterShader@@6B@ vtbl
 // F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
-constexpr uintptr_t WaterShader_ReadTimer_Hook_offset = 0x012F63C9;
+constexpr uintptr_t WaterShader_ReadTimer_Hook_offset = 0x012F6879;
 
 
 // Fixes
@@ -111,22 +111,22 @@ constexpr uintptr_t Equip_Shout_Procedure_Function_offset = 0x006323C0;
 
 // GHeap Leak Detection Crash
 // E8 ? ? ? ? 48 8B 07 33 D2 48 8B CF FF 10
-constexpr uintptr_t GHeap_Leak_Detection_Crash_offset = 0x00FFFA00;
+constexpr uintptr_t GHeap_Leak_Detection_Crash_offset = 0x00FFFEB0;
 
 // Lip Sync Fix
 // E8 ? ? ? ? 48 8D 8F 20 01 00 00 0F 28 CE
 constexpr uintptr_t LipSync_FUNC_ADDR = 0x001F12A0;    // 1_5_80
 
 // Memory Access Errors
-constexpr uintptr_t BSLightingShaderMaterialSnow_vtbl_offset = 0x0185E180;
+constexpr uintptr_t BSLightingShaderMaterialSnow_vtbl_offset = 0x0185E0F0;
 // 49 8B 4F 28 F3 0F 10 93 ? ? ? ? F3 0F 10 8B ? ? ? ? F3 0F 10 83 ? ? ? ? 
-constexpr uintptr_t BSLightingShader_SetupMaterial_Snow_Hook_offset = 0x012F2050;
-constexpr uintptr_t BSLightingShader_SetupMaterial_Snow_Exit_offset = 0x012F2126;
+constexpr uintptr_t BSLightingShader_SetupMaterial_Snow_Hook_offset = 0x012F2500;
+constexpr uintptr_t BSLightingShader_SetupMaterial_Snow_Exit_offset = 0x012F25D6;
 
-constexpr uintptr_t vtbl_BGSShaderParticleGeometryData_LoadForm_offset = 0x0155FFB0; // vtbl[6]
+constexpr uintptr_t vtbl_BGSShaderParticleGeometryData_LoadForm_offset = 0x0155FFA0; // vtbl[6]
 
 // 48 8B C4 48 89 50 10 55  53 56 57 41 54 41 55 41  56 41 57 48 8D A8 38 FB
-constexpr uintptr_t BadUseFuncBase_offset = 0x01324D10;
+constexpr uintptr_t BadUseFuncBase_offset = 0x013251C0;
 
 // MO5S Typo
 // 3D ? ? ? ? 74 18 8B C8 
@@ -137,19 +137,19 @@ constexpr uintptr_t MO5STypo_offset = 0x0019B313;
 constexpr uintptr_t GameFunc_Native_IsRunning_offset = 0x002DB610;
 
 // RemovedSpellBook
-constexpr uintptr_t TESObjectBook_vtbl_offset = 0x015592C8;
+constexpr uintptr_t TESObjectBook_vtbl_offset = 0x015592B8;
 
 // Save Screenshots
 // 84 C0 75 26 E8 ? ? ? ?  + 0x9
 constexpr uintptr_t BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset = 0x00589BC3;
 constexpr uintptr_t MenuSave_RequestScreenshot_hook_offset = 0x005B158A;
 // 41 89 5d 00 40 84 ff 0f 85 + 0x8
-constexpr uintptr_t Screenshot_Jnz_hook_offset = 0x0129719A;
-constexpr uintptr_t Screenshot_Render_Orig_jnz_offset = 0x01297435;
+constexpr uintptr_t Screenshot_Jnz_hook_offset = 0x0129764A;
+constexpr uintptr_t Screenshot_Render_Orig_jnz_offset = 0x012978E5;
 // + 0x128 from screenshot_jnz
-constexpr uintptr_t Render_Target_Hook_1_offset = 0x012972C5;
+constexpr uintptr_t Render_Target_Hook_1_offset = 0x01297775;
 // + 0x85
-constexpr uintptr_t Render_Target_Hook_2_offset = 0x0129734A;
+constexpr uintptr_t Render_Target_Hook_2_offset = 0x012977FA;
 constexpr uintptr_t g_RequestSaveScreenshot_offset = 0x02F38968;
 
 // Slow Time Camera Movement
@@ -169,7 +169,7 @@ constexpr uintptr_t TimeManager_AdvanceTime_call_offset = 0x005A6230;
 // Tree Reflections
 // ??_7BSDistantTreeShader@@6B@
 // vfunc 3 -> +0x37
-constexpr uintptr_t BSDistantTreeShader_hook_offset = 0x01301047;
+constexpr uintptr_t BSDistantTreeShader_hook_offset = 0x013014F7;
 
 // Vertical Look Sensitivity
 // ??_7ThirdPersonState@@6B@ vtbl last function + 0x71
@@ -180,7 +180,7 @@ constexpr uintptr_t DragonCameraState_Vfunc_Hook_offset = 0x004F971F;
 constexpr uintptr_t HorseCameraState_Vfunc_Hook_offset = 0x0084998F;
 
 // ??_7EnchantmentItem@@6B@
-constexpr uintptr_t offset_vtbl_EnchantmentItem = 0x015217F0;  
+constexpr uintptr_t offset_vtbl_EnchantmentItem = 0x015217E00;  
 
 // Animation Load Sign
 // SkyrimSE.exe+0x00B669C0    | 0FBF83 28010000          | movsx   eax, word ptr ds:[rbx + 0x128]            |
@@ -190,7 +190,7 @@ constexpr uintptr_t offset_AnimationLoadSigned = 0x00B669C1;
 // Warnings
 
 // Dupe Addon Node index
-constexpr uintptr_t vtbl_BGSAddonNode_LoadForm_offset = 0x0154D160;
+constexpr uintptr_t vtbl_BGSAddonNode_LoadForm_offset = 0x0154D150;
 
 // E8 ? ? ? ? E9 ? ? ? ? 4C 8D 9C 24 80 00 00 00
 constexpr uintptr_t Unk_DataReload_Func_offset = 0x005B5490;    // 1_5_73
@@ -207,11 +207,11 @@ constexpr uintptr_t g_RefrHandleArray_offset = 0x01EC47C0;
 // Experimental
 
 // BB ? ? ? ? 4C 8B FA 
-constexpr uintptr_t Win32FileType_CopyToBuffer_offset = 0x1341C24;
+constexpr uintptr_t Win32FileType_CopyToBuffer_offset = 0x13420D4;
 // C6 83 ? ? ? ? ? BA ? ? ? ? ->
-constexpr uintptr_t Win32FileType_ctor_offset = 0x1340C8E;
+constexpr uintptr_t Win32FileType_ctor_offset = 0x134113E;
 // E8 ? ? ? ? 8B D0 4C 8B CB ->
-constexpr uintptr_t ScrapHeap_GetMaxSize_offset = 0x59B9A4;
+constexpr uintptr_t ScrapHeap_GetMaxSize_offset = 0x0059B9A4;
 
 // E8 ? ? ? ? 0F B6 D0 EB 02 
 constexpr uintptr_t TESFile_IsMaster_offset = 0x0017E130;

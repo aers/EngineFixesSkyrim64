@@ -31,7 +31,7 @@ namespace patches
             {
                 if ((soundCategory->flags & RE::BGSSoundCategory::Flag::kShouldAppearOnMenu) != RE::BGSSoundCategory::Flag::kNone)
                 {
-                    _VMESSAGE("processing %s", dynamic_cast<RE::TESFullName *>(soundCategory)->GetName());
+                    _VMESSAGE("processing %s", dynamic_cast<RE::TESFullName *>(soundCategory)->GetFullName());
                     _VMESSAGE("menu flag set, saving");
                     auto localFormId = soundCategory->formID & 0x00FFFFFF;
                     // esl
