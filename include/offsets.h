@@ -180,7 +180,7 @@ constexpr uintptr_t DragonCameraState_Vfunc_Hook_offset = 0x004F971F;
 constexpr uintptr_t HorseCameraState_Vfunc_Hook_offset = 0x0084998F;
 
 // ??_7EnchantmentItem@@6B@
-constexpr uintptr_t offset_vtbl_EnchantmentItem = 0x015217E00;  
+constexpr uintptr_t offset_vtbl_EnchantmentItem = 0x015217E0;  
 
 // Animation Load Sign
 // SkyrimSE.exe+0x00B669C0    | 0FBF83 28010000          | movsx   eax, word ptr ds:[rbx + 0x128]            |
