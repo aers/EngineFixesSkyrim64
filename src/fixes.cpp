@@ -29,6 +29,9 @@ namespace fixes
         if (config::fixEquipShoutEventSpam)
             PatchEquipShoutEventSpam();
 
+        if (config::fixGetKeywordItemCount)
+            PatchGetKeywordItemCount();
+
         if (config::fixGHeapLeakDetectionCrash)
             PatchGHeapLeakDetectionCrash();
 

@@ -767,4 +767,78 @@ namespace fixes
 
 		return true;
 	}
+
+    class GetKeywordItemCount
+    {
+    public:
+        static bool Execute(const RE::SCRIPT_PARAMETER* a_paramInfo, RE::CommandInfo::ScriptData* a_scriptData, RE::TESObjectREFR* a_thisObj, RE::TESObjectREFR* a_containingObj, RE::Script* a_scriptObj, RE::ScriptLocals* a_locals, double& a_result, UInt32& a_opcodeOffsetPtr)
+        {
+            if (a_scriptObj->paramData.empty()) {
+                return false;
+            }
+
+            auto param = a_scriptObj->paramData.front();
+            if (!param->form || param->form->IsNot(RE::FormType::Keyword)) {
+                return false;
+            }
+
+            return Eval(a_thisObj, param->form, 0, a_result);
+        }
+
+
+        static bool Eval(RE::TESObjectREFR* a_thisObj, void* a_param1, void* a_param2, double& a_result)
+        {
+            a_result = 0.0;
+            if (!a_thisObj || !a_param1) {
+                return true;
+            }
+
+            auto log = RE::ConsoleLog::GetSingleton();
+            if (!a_thisObj->GetContainer()) {
+                if (log->IsConsoleMode()) {
+                    log->Print("Calling Reference is not a Container Object");
+                }
+                return true;
+            }
+
+            auto keyword = static_cast<RE::BGSKeyword*>(a_param1);
+            auto inv = a_thisObj->GetInventory([&](RE::TESBoundObject* a_object) -> bool
+                {
+                    auto keywordForm = a_object->As<RE::BGSKeywordForm*>();
+                    return keywordForm && keywordForm->HasKeyword(keyword);
+                });
+
+            for (auto& elem : inv) {
+                a_result += elem.second.first;
+            }
+
+            if (log->IsConsoleMode()) {
+                log->Print("GetKeywordItemCount >> %0.2f", a_result);
+            }
+
+            return true;
+        }
+
+
+        static void Register()
+        {
+            auto command = RE::CommandInfo::LocateScriptCommand(LONG_NAME);
+            if (command) {
+                command->execute = Execute;
+                command->eval = Eval;
+            }
+        }
+
+
+        static constexpr char LONG_NAME[] = "GetKeywordItemCount";
+    };
+
+	bool PatchGetKeywordItemCount()
+	{
+        _VMESSAGE("-broken GetKeywordItemCount condition function-");
+        GetKeywordItemCount::Register();
+        _VMESSAGE("success");
+
+        return true;
+	}
 }

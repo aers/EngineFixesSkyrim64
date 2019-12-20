@@ -24,9 +24,11 @@ namespace config
     extern bool fixBethesdaNetCrash;
     extern bool fixBSLightingAmbientSpecular;
     extern bool fixBSLightingShaderForceAlphaTest;
+    extern bool fixCalendarSkipping;
 	extern bool fixConjurationEnchantAbsorbs;
     extern bool fixDoublePerkApply;
     extern bool fixEquipShoutEventSpam;
+    extern bool fixGetKeywordItemCount;
     extern bool fixGHeapLeakDetectionCrash;
 	extern bool fixLipSync;
     extern bool fixMemoryAccessErrors;
@@ -35,7 +37,6 @@ namespace config
     extern bool fixRemovedSpellBook;
     extern bool fixSaveScreenshots;
     extern bool fixSlowTimeCameraMovement;
-	extern bool fixCalendarSkipping;
     extern bool fixTreeReflections;
     extern bool fixVerticalLookSensitivity;
     extern bool fixAnimationLoadSignedCrash;

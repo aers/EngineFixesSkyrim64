@@ -31,6 +31,7 @@ namespace config
 	bool fixConjurationEnchantAbsorbs = true;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
+    bool fixGetKeywordItemCount = true;
     bool fixGHeapLeakDetectionCrash = true;
 	bool fixLipSync = true;
     bool fixMemoryAccessErrors = true;
@@ -90,6 +91,7 @@ namespace config
 		fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
+        fixGetKeywordItemCount = ini.GetBoolean("Fixes", "GetKeywordItemCount", true);
         fixGHeapLeakDetectionCrash = ini.GetBoolean("Fixes", "GHeapLeakDetectionCrash", true);
 		fixLipSync = ini.GetBoolean("Fixes", "LipSync", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);

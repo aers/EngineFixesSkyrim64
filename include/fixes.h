@@ -19,6 +19,7 @@ namespace fixes
 	bool PatchConjurationEnchantAbsorbs();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
+    bool PatchGetKeywordItemCount();
     bool PatchGHeapLeakDetectionCrash();
 	bool PatchLipSync();
     bool PatchMemoryAccessErrors();
