@@ -15,6 +15,7 @@ namespace fixes
     bool PatchBethesdaNetCrash();
     bool PatchBSLightingAmbientSpecular();
     bool PatchBSLightingShaderForceAlphaTest();
+    bool PatchCalendarSkipping();
 	bool PatchConjurationEnchantAbsorbs();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
@@ -26,7 +27,6 @@ namespace fixes
     bool PatchRemovedSpellBook();
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
-	bool PatchTimeManagerSkipping();
     bool PatchTreeReflections();
     bool PatchVerticalLookSensitivity();
     bool PatchAnimationLoadSignedCrash();

@@ -708,12 +708,12 @@ namespace fixes
 		return true;
 	}
 
-	class BSTimeManagerEx
+	class CalendarEx
 	{
 	public:
 		static void AdvanceTime(float a_secondsPassed)
 		{
-			auto time = RE::BSTimeManager::GetSingleton();
+			auto time = RE::Calendar::GetSingleton();
 			float hoursPassed = (a_secondsPassed * time->timeScale->value / (60.0 * 60.0)) + time->hour->value - 24.0;
 			if (hoursPassed > 24.0) {
 				do {
@@ -731,7 +731,7 @@ namespace fixes
 			constexpr std::size_t CAVE_START = 0x17A;
 			constexpr std::size_t CAVE_SIZE = 0x15;
 
-			REL::Offset<std::uintptr_t> funcBase(TimeManager_AdvanceTime_call_offset);
+			REL::Offset<std::uintptr_t> funcBase(Calendar_AdvanceTime_call_offset);
 
 			struct Patch : Xbyak::CodeGenerator
 			{
@@ -748,7 +748,7 @@ namespace fixes
 			};
 
 			void* patchBuf = g_localTrampoline.StartAlloc();
-			Patch patch(patchBuf, unrestricted_cast<std::uintptr_t>(&BSTimeManagerEx::AdvanceTime));
+			Patch patch(patchBuf, unrestricted_cast<std::uintptr_t>(&CalendarEx::AdvanceTime));
 			g_localTrampoline.EndAlloc(patch.getCurr());
 
 			assert(patch.getSize() <= CAVE_SIZE);
@@ -759,10 +759,10 @@ namespace fixes
 		}
 	};
 
-	bool PatchTimeManagerSkipping()
+	bool PatchCalendarSkipping()
 	{
-		_VMESSAGE("-time manager skipping-");
-		BSTimeManagerEx::InstallHooks();
+		_VMESSAGE("-calendar skipping-");
+		CalendarEx::InstallHooks();
 		_VMESSAGE("success");
 
 		return true;

@@ -162,9 +162,9 @@ constexpr uintptr_t CameraMove_Timer4_offset = 0x00850B3A; // +0x4
 // E8 ? ? ? ? 48 8D 4B 4C -> +0x13
 constexpr uintptr_t CameraMove_Timer5_offset = 0x00850C07; // +0x4
 
-// Time Manager Skipping
+// Calendar Skipping
 // E8 ? ? ? ? F6 87 DC 0B 00 00 01
-constexpr uintptr_t TimeManager_AdvanceTime_call_offset = 0x005A6230; 
+constexpr uintptr_t Calendar_AdvanceTime_call_offset = 0x005A6230; 
 
 // Tree Reflections
 // ??_7BSDistantTreeShader@@6B@

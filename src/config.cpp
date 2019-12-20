@@ -27,6 +27,7 @@ namespace config
     bool fixBethesdaNetCrash = true;
     bool fixBSLightingAmbientSpecular = true;
     bool fixBSLightingShaderForceAlphaTest = true;
+    bool fixCalendarSkipping = true;
 	bool fixConjurationEnchantAbsorbs = true;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
@@ -38,7 +39,6 @@ namespace config
     bool fixRemovedSpellBook = true;
     bool fixSaveScreenshots = true;
     bool fixSlowTimeCameraMovement = true;
-	bool fixTimeManagerSkipping = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
 
@@ -86,6 +86,7 @@ namespace config
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
         fixBSLightingShaderForceAlphaTest = ini.GetBoolean("Fixes", "BSLightingShaderForceAlphaTest", true);
+        fixCalendarSkipping = ini.GetBoolean("Fixes", "CalendarSkipping", true);
 		fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
@@ -97,7 +98,6 @@ namespace config
         fixRemovedSpellBook = ini.GetBoolean("Fixes", "RemovedSpellBook", true);
         fixSaveScreenshots = ini.GetBoolean("Fixes", "SaveScreenshots", true);
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
-		fixTimeManagerSkipping = ini.GetBoolean("Fixes", "TimeManagerSkipping", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
 

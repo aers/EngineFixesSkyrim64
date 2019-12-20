@@ -17,6 +17,9 @@ namespace fixes
         if (config::fixBSLightingShaderForceAlphaTest)
             PatchBSLightingShaderForceAlphaTest();
 
+        if (config::fixCalendarSkipping)
+            PatchCalendarSkipping();
+
 		if (config::fixConjurationEnchantAbsorbs)
 			PatchConjurationEnchantAbsorbs();
 
@@ -46,10 +49,7 @@ namespace fixes
 
         if (config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
-
-		if (config::fixTimeManagerSkipping)
-			PatchTimeManagerSkipping();
-
+               
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
 

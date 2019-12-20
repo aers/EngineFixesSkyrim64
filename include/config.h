@@ -35,7 +35,7 @@ namespace config
     extern bool fixRemovedSpellBook;
     extern bool fixSaveScreenshots;
     extern bool fixSlowTimeCameraMovement;
-	extern bool fixTimeManagerSkipping;
+	extern bool fixCalendarSkipping;
     extern bool fixTreeReflections;
     extern bool fixVerticalLookSensitivity;
     extern bool fixAnimationLoadSignedCrash;
