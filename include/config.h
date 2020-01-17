@@ -24,6 +24,7 @@ namespace config
     extern bool fixBethesdaNetCrash;
     extern bool fixBSLightingAmbientSpecular;
     extern bool fixBSLightingShaderForceAlphaTest;
+    extern bool fixBSLightingShaderGeometryParallaxBug;
     extern bool fixCalendarSkipping;
 	extern bool fixConjurationEnchantAbsorbs;
     extern bool fixDoublePerkApply;

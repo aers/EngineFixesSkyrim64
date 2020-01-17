@@ -187,6 +187,10 @@ constexpr uintptr_t offset_vtbl_EnchantmentItem = 0x015217E0;
 //-> SkyrimSE.exe+0x00B669C0  | 0FB783 28010000          | movzx   eax, word ptr ds:[rbx + 0x128]            |
 constexpr uintptr_t offset_AnimationLoadSigned = 0x00B669C1;
 
+// BSLightingShader::SetupGeometry Parallax Technique fix
+// 8B C1 25 ? ? ? ? 41 0F 45 D0 
+constexpr uintptr_t offset_BSLightingShader_SetupGeometry_ParallaxTechniqueFix = 0x012F3127;
+
 // Warnings
 
 // Dupe Addon Node index

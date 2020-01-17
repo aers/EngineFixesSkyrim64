@@ -15,6 +15,7 @@ namespace fixes
     bool PatchBethesdaNetCrash();
     bool PatchBSLightingAmbientSpecular();
     bool PatchBSLightingShaderForceAlphaTest();
+    bool PatchBSLightingShaderSetupGeometryParallax();
     bool PatchCalendarSkipping();
 	bool PatchConjurationEnchantAbsorbs();
     bool PatchDoublePerkApply();

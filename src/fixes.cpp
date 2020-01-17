@@ -17,6 +17,9 @@ namespace fixes
         if (config::fixBSLightingShaderForceAlphaTest)
             PatchBSLightingShaderForceAlphaTest();
 
+        if (config::fixBSLightingShaderGeometryParallaxBug)
+            PatchBSLightingShaderSetupGeometryParallax();
+
         if (config::fixCalendarSkipping)
             PatchCalendarSkipping();
 

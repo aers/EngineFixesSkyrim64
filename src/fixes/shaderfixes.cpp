@@ -34,11 +34,13 @@ namespace fixes
     _BSBatchRenderer_SetupAndDrawPass BSBatchRenderer_SetupAndDrawPass_Orig;
 
     RelocAddr<uintptr_t> BSLightingShader_vtbl(BSLightingShader_vtbl_offset);
-
+	
 	uint32_t RAW_FLAG_RIM_LIGHTING = 1 << 11;
     uint32_t RAW_FLAG_DO_ALPHA_TEST = 1 << 20;
     uint32_t RAW_TECHNIQUE_EYE = 16;
+    uint32_t RAW_TECHNIQUE_MULTILAYERPARALLAX = 11;
 	uint32_t RAW_TECHNIQUE_ENVMAP = 1;
+    uint32_t RAW_TECHNIQUE_PARALLAX = 3;
 
     void hk_BSBatchRenderer_SetupAndDrawPass(BSRenderPass * pass, uint32_t technique, bool alphaTest, uint32_t renderFlags)
     {
@@ -46,7 +48,7 @@ namespace fixes
         {
 			auto rawTechnique = technique - 0x4800002D;
 			auto subIndex = (rawTechnique >> 24) & 0x3F;
-            if (subIndex != RAW_TECHNIQUE_EYE && subIndex != RAW_TECHNIQUE_ENVMAP)
+            if (subIndex != RAW_TECHNIQUE_EYE && subIndex != RAW_TECHNIQUE_ENVMAP && subIndex != RAW_TECHNIQUE_MULTILAYERPARALLAX && subIndex != RAW_TECHNIQUE_PARALLAX)
             {
                 technique = technique | RAW_FLAG_DO_ALPHA_TEST;
                 pass->m_TechniqueID = technique;
@@ -81,6 +83,40 @@ namespace fixes
 
             BSBatchRenderer_SetupAndDrawPass_Orig = _BSBatchRenderer_SetupAndDrawPass(code.getCode());
             g_branchTrampoline.Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.GetUIntPtr(), GetFnAddr(hk_BSBatchRenderer_SetupAndDrawPass));
+        }
+        _VMESSAGE("patched");
+        return true;
+    }
+
+    RelocAddr<uintptr_t> BSLightingShader_SetupGeometry_ParallaxFixHookLoc(offset_BSLightingShader_SetupGeometry_ParallaxTechniqueFix);
+	
+	bool PatchBSLightingShaderSetupGeometryParallax()
+    {
+        _VMESSAGE("- BSLightingShader SetupGeometry - Parallax Bug -");
+        {
+	        struct BSLightingShader_SetupGeometry_Parallax_Code : Xbyak::CodeGenerator
+	        {
+                BSLightingShader_SetupGeometry_Parallax_Code(void* buf) : Xbyak::CodeGenerator(4096, buf)
+                {
+                	// orig code
+                    and (eax, 0x21C00);
+                    cmovnz(edx, r8d);
+
+                	// new code
+                    cmp(ebx, 0x3); // technique ID = PARALLAX
+                    cmovz(edx, r8d); // set eye update true
+
+                	// jmp out
+                    jmp(ptr[rip]);
+                    dq(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetUIntPtr() + 0x9);
+                };
+	        };
+
+            void* codeBuf = g_localTrampoline.StartAlloc();
+            BSLightingShader_SetupGeometry_Parallax_Code code(codeBuf);
+            g_localTrampoline.EndAlloc(code.getCurr());
+
+            g_branchTrampoline.Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patched");
         return true;

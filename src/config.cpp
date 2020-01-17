@@ -27,11 +27,12 @@ namespace config
     bool fixBethesdaNetCrash = true;
     bool fixBSLightingAmbientSpecular = true;
     bool fixBSLightingShaderForceAlphaTest = true;
+    bool fixBSLightingShaderGeometryParallaxBug = true;
     bool fixCalendarSkipping = true;
 	bool fixConjurationEnchantAbsorbs = true;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
-    bool fixGetKeywordItemCount = true;
+    bool fixGetKeywordItemCount = false;
     bool fixGHeapLeakDetectionCrash = true;
 	bool fixLipSync = true;
     bool fixMemoryAccessErrors = true;
@@ -87,11 +88,12 @@ namespace config
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
         fixBSLightingShaderForceAlphaTest = ini.GetBoolean("Fixes", "BSLightingShaderForceAlphaTest", true);
+        fixBSLightingShaderGeometryParallaxBug = ini.GetBoolean("Fixes", "BSLightingShaderParallaxBug", true);
         fixCalendarSkipping = ini.GetBoolean("Fixes", "CalendarSkipping", true);
 		fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
-        fixGetKeywordItemCount = ini.GetBoolean("Fixes", "GetKeywordItemCount", true);
+        fixGetKeywordItemCount = ini.GetBoolean("Fixes", "GetKeywordItemCount", false);
         fixGHeapLeakDetectionCrash = ini.GetBoolean("Fixes", "GHeapLeakDetectionCrash", true);
 		fixLipSync = ini.GetBoolean("Fixes", "LipSync", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
