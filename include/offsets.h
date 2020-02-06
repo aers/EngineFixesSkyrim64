@@ -85,7 +85,7 @@ constexpr uintptr_t WaterShader_ReadTimer_Hook_offset = 0x012F6879;
 
 // Archery Downward Aiming
 			// E8 ? ? ? ? 8B 83 CC 01 00 00 C1 E8 12
-constexpr uintptr_t CalculateCollisionCall_offset = 0x00744DD0;    // 1_5_73
+constexpr uintptr_t CalculateCollisionCall_offset = 0x00744DD0;    // 1_5_97
 
 // Double Perk Apply
 // 48 85 D2 74 7C 48 89 5C 24 ? 

@@ -1,7 +1,5 @@
 ﻿#include "skse64/PluginAPI.h" 
 
-#include "skse64_common/BranchTrampoline.h"
-#include "skse64_common/skse_version.h"
 #include "skse64_common/Utilities.h"
 
 #include "SKSE/API.h"
@@ -64,10 +62,11 @@ extern "C" {
 #ifdef _DEBUG
 		SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kDebugMessage);
 		SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kDebugMessage);
+		SKSE::Logger::TrackTrampolineStats(true);
 #else
 		SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kMessage);
 		SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kMessage);
-#endif	
+#endif
 		SKSE::Logger::UseLogStamp(true);
 
 		_MESSAGE("Engine Fixes v%s", EF_VERSION_VERSTRING);
@@ -87,7 +86,7 @@ extern "C" {
 		case RUNTIME_VERSION_1_5_97:
 			break;
 		default:
-			_FATALERROR("Unsupported runtime version %08X!\n", a_skse->RuntimeVersion());
+			_FATALERROR("Unsupported runtime version %s!\n", a_skse->UnmangledRuntimeVersion().c_str());
 			return false;
 		}
 
@@ -100,8 +99,7 @@ extern "C" {
 			return false;
 		}
 
-
-		if (!SKSE::AllocLocalTrampoline(1024 * 2) || !SKSE::AllocBranchTrampoline(1024 * 2)) {
+		if (!SKSE::AllocTrampoline(1 << 10)) {
 			return false;
 		}
 

@@ -1,5 +1,6 @@
-#include "RE/BGSAddonNode.h"
-#include "RE/TESFile.h"
+#include "RE/Skyrim.h"
+#include "SKSE/API.h"
+#include "SKSE/Trampoline.h"
 
 #include <sstream>
 
@@ -24,14 +25,15 @@ namespace warnings
         if (retVal)
         {
             //_MESSAGE("form %08x node index %d mod name %s", addonNode->formID, addonNode->nodeIndex, modInfo->name);
-            const auto res = nodeMap.insert(std::make_pair(addonNode->nodeIndex, addonNode));
+            const auto res = nodeMap.insert(std::make_pair(addonNode->index, addonNode));
             if (!res.second)
             {
                 const auto current = (*res.first).second;
 
                 if (current != addonNode && current->formID != addonNode->formID)
                 {
-                    _MESSAGE("WARNING: duplicate addon node index found, formID %08x in plugin %s and formID %08x in plugin %s share node index %d", current->formID, (*current->sourceFiles->files)->name, addonNode->formID, modInfo->name, addonNode->nodeIndex);
+                    auto srcFile = current->GetDescriptionOwnerFile();
+                    _MESSAGE("WARNING: duplicate addon node index found, formID %08x in plugin %s and formID %08x in plugin %s share node index %d", current->formID, srcFile->fileName, addonNode->formID, modInfo->fileName, addonNode->index);
                     _MESSAGE("WARNING: for info on resolving this problem, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");
                     _MESSAGE("WARNING: you can disable this warning in the ini file");
                     MessageBox(nullptr, TEXT("WARNING: You have a duplicate Addon Node index. Please check the Engine Fixes log for more details."), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
@@ -64,14 +66,16 @@ namespace warnings
     bool PatchDupeAddonNodes()
     {
         _VMESSAGE("- warn dupe addon nodes -");
+        auto trampoline = SKSE::GetTrampoline();
+
         orig_BGSAddonNode_LoadForm = *vtbl_BGSAddonNode_LoadForm;
         SafeWrite64(vtbl_BGSAddonNode_LoadForm.GetUIntPtr(), GetFnAddr(hk_BGSAddonNode_LoadForm));
 
         RelocAddr<uintptr_t> call1_Main_Unk(Call1_Unk_DataReload_func_offset + 0x163);
-        g_branchTrampoline.Write5Call(call1_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
+        trampoline->Write5Call(call1_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
 
         RelocAddr<uintptr_t> call2_Main_Unk(Call2_Unk_DataReload_func_offset + 0xD);
-        g_branchTrampoline.Write5Call(call2_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
+        trampoline->Write5Call(call2_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
 
         _VMESSAGE("- hooked -");
         return true;

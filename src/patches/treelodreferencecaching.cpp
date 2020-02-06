@@ -1,20 +1,17 @@
-#include "RE/BGSDistantTreeBlock.h"
-#include "RE/BSFadeNode.h"
-#include "RE/NiNode.h"
-#include "RE/TESObjectREFR.h"
-
 #include "skse64/GameSettings.h"
+
+#include "RE/Skyrim.h"
+#include "SKSE/API.h"
+#include "SKSE/Trampoline.h"
 
 #include "tbb/concurrent_hash_map.h"
 
 #include "patches.h"
-#include "RE/TESDataHandler.h"
-#include "RE/TESObjectSTAT.h"
 
 
 namespace patches
 {
-    typedef void(*UpdateBlockVisibility_)(RE::BGSDistantTreeBlock::ResourceData * data);
+    typedef void(*UpdateBlockVisibility_)(RE::BGSDistantTreeBlock * data);
     RelocAddr<UpdateBlockVisibility_> UpdateBlockVisibility_orig(UpdateBlockVisibility_orig_offset);
 
     typedef uint16_t(*Float2Half_)(float f);
@@ -30,20 +27,17 @@ namespace patches
         referencesFormCache.erase(FormId & 0x00FFFFFF);
     }
 
-    void hk_UpdateBlockVisibility(RE::BGSDistantTreeBlock::ResourceData *data)
+    void hk_UpdateBlockVisibility(RE::BGSDistantTreeBlock *data)
     {
-        for (uint32_t i = 0; i < data->lodGroups.size(); i++)
+        for (auto& group : data->treeGroups)
         {
-            auto *group = data->lodGroups[i];
-
-            for (uint32_t j = 0; j < group->lodInstances.size(); j++)
+            for (auto& instance : group->instances)
             {
-                RE::BGSDistantTreeBlock::LODGroupInstance *instance = &group->lodInstances[j];
-                const uint32_t maskedFormId = instance->formId & 0x00FFFFFF;
+                const uint32_t maskedFormId = instance.id & 0x00FFFFFF;
 
                 RE::TESObjectREFR *refrObject = nullptr;
 
-                tbb::concurrent_hash_map<uint32_t, RE::TESObjectREFR *>::accessor accessor;
+                decltype(referencesFormCache)::accessor accessor;
 
                 if (referencesFormCache.find(accessor, maskedFormId))
                 {
@@ -52,18 +46,20 @@ namespace patches
                 else
                 {
                     // Find first valid tree object by ESP/ESM load order
-                    for (int k = 0; k < RE::TESDataHandler::GetSingleton()->modList.loadedMods.size(); k++)
+                    auto dataHandler = RE::TESDataHandler::GetSingleton();
+                    for (uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
                     {
-                        RE::TESForm *form = LookupFormByID((k << 24) | maskedFormId);
+                        RE::TESForm *form = LookupFormByID((i << 24) | maskedFormId);
                         if (form)
-                            refrObject = form->GetReference();
+                            refrObject = form->AsReference();
                         if (refrObject)
                         {
-                            RE::TESForm * baseForm = refrObject->baseForm;
-                            if (baseForm)
+                            auto baseObj = refrObject->GetBaseObject();
+                            if (baseObj)
                             {
+                                using STATFlags = RE::TESObjectSTAT::RecordFlags;
                                 // Checks if the form type is TREE (TESObjectTREE) or if it has the kHasTreeLOD flag (TESObjectSTAT)
-                                if (baseForm->flags & RE::TESObjectSTAT::RecordFlags::kHasTreeLOD || baseForm->formType == RE::FormType::Tree)
+                                if (baseObj->formFlags & STATFlags::kHasTreeLOD || baseObj->Is(RE::FormType::Tree))
                                     break;
                             }
                         }
@@ -80,14 +76,14 @@ namespace patches
 
                 if (refrObject)
                 {
-                    RE::NiNode * node = refrObject->GetNiNode();
-                    RE::TESObjectCELL * cell = refrObject->GetParentCell();
-                    // NiNode::GetAppCulled, TESObjectCELL::IsAttached
-                    if (node && !(*(BYTE *)((__int64)node + 0xF4) & 1) && *(uint8_t *)((__int64)cell + 0x44) == 7)
+                    auto obj3D = refrObject->Get3D();
+                    auto cell = refrObject->GetParentCell();
+                    if (obj3D && !obj3D->GetAppCulled() && cell->IsAttached())
                     {
-                        if (GetINISetting("bEnableStippleFade:Display")->data.u8 >= 1)
+                        static auto bEnableStippleFade = RE::GetINISetting("bEnableStippleFade:Display");   // ini settings are kept in a linked list, so we'll cache it
+                        if (bEnableStippleFade->GetBool())
                         {
-                            const auto fadeNode = node->GetAsBSFadeNode();
+                            const auto fadeNode = obj3D->AsFadeNode();
                             if (fadeNode)
                             {
                                 alpha = 1.0f - fadeNode->currentFade;
@@ -103,26 +99,26 @@ namespace patches
                         }
                     }
 
-                    if (refrObject->flags & RE::TESObjectREFR::RecordFlags::kInitiallyDisabled || refrObject->flags & RE::TESObjectREFR::RecordFlags::kDeleted)
+                    if (refrObject->IsInitiallyDisabled() || refrObject->IsDeleted())
                         fullyHidden = true;
                 }
 
                 const uint16_t halfFloat = Float2Half(alpha);
 
-                if (instance->alpha != halfFloat)
+                if (instance.alpha != halfFloat)
                 {
-                    instance->alpha = halfFloat;
-                    group->unk24 = false;
+                    instance.alpha = halfFloat;
+                    group->shaderPropertyUpToDate = false;
                 }
 
-                if (instance->hidden != fullyHidden)
+                if (instance.hidden != fullyHidden)
                 {
-                    instance->hidden = fullyHidden;
-                    group->unk24 = false;
+                    instance.hidden = fullyHidden;
+                    group->shaderPropertyUpToDate = false;
                 }
 
                 if (fullyHidden)
-                    data->unk82 = false;
+                    data->allVisible = false;
             }
         }
     }
@@ -132,7 +128,8 @@ namespace patches
         _VMESSAGE("- Tree LOD Reference Caching -");
 
         _VMESSAGE("detouring UpdateLODAlphaFade");
-        g_branchTrampoline.Write6Branch(UpdateBlockVisibility_orig.GetUIntPtr(), GetFnAddr(hk_UpdateBlockVisibility));
+        auto trampoline = SKSE::GetTrampoline();
+        trampoline->Write6Branch(UpdateBlockVisibility_orig.GetUIntPtr(), GetFnAddr(hk_UpdateBlockVisibility));
         _VMESSAGE("success");
 
         return true;

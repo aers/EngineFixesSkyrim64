@@ -1,7 +1,10 @@
+#include <type_traits>
+
 #include "tbb/concurrent_hash_map.h"
 
-#include "RE/BSTHashMap.h"
-#include "RE/TESForm.h"
+#include "RE/Skyrim.h"
+#include "SKSE/API.h"
+#include "SKSE/Trampoline.h"
 
 #include "skse64/GameForms.h"
 
@@ -55,7 +58,7 @@ namespace patches
         const unsigned int baseId = (FormId & 0x00FFFFFF);
 
         {
-            tbb::concurrent_hash_map<uint32_t, RE::TESForm *>::accessor accessor;
+            std::remove_extent_t<decltype(globalFormCacheMap)>::accessor accessor;
 
             if (globalFormCacheMap[masterId].find(accessor, baseId))
             {
@@ -123,7 +126,7 @@ namespace patches
         }
 
         _VMESSAGE("detouring GetFormById");
-        g_branchTrampoline.Write6Branch(LookupFormByID.GetUIntPtr(), GetFnAddr(hk_GetFormByID));
+        SKSE::GetTrampoline()->Write6Branch(LookupFormByID.GetUIntPtr(), GetFnAddr(hk_GetFormByID));
         _VMESSAGE("done");
 
         // TODO: write a generic detour instead
@@ -131,7 +134,7 @@ namespace patches
         {
             struct UnknownFormFunction0_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction0_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                UnknownFormFunction0_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
 
@@ -151,18 +154,19 @@ namespace patches
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            UnknownFormFunction0_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            UnknownFormFunction0_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
             origFunc0 = UnknownFormFunction0_(code.getCode());
-            g_branchTrampoline.Write6Branch(origFunc0HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction0));
+            trampoline->Write6Branch(origFunc0HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction0));
         }
 
         {
             struct UnknownFormFunction1_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction1_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                UnknownFormFunction1_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
 
@@ -181,18 +185,19 @@ namespace patches
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            UnknownFormFunction1_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            UnknownFormFunction1_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
             origFunc1 = UnknownFormFunction1_(code.getCode());
-            g_branchTrampoline.Write6Branch(origFunc1HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction1));
+            trampoline->Write6Branch(origFunc1HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction1));
         }
 
         {
             struct UnknownFormFunction2_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction2_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                UnknownFormFunction2_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
 
@@ -210,18 +215,19 @@ namespace patches
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            UnknownFormFunction2_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            UnknownFormFunction2_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
             origFunc2 = UnknownFormFunction2_(code.getCode());
-            g_branchTrampoline.Write6Branch(origFunc2HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction2));
+            trampoline->Write6Branch(origFunc2HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction2));
         }
 
         {
             struct UnknownFormFunction3_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction3_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                UnknownFormFunction3_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
 
@@ -240,12 +246,13 @@ namespace patches
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            UnknownFormFunction3_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            UnknownFormFunction3_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
             origFunc3 = UnknownFormFunction3_(code.getCode());
-            g_branchTrampoline.Write6Branch(origFunc3HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction3));
+            trampoline->Write6Branch(origFunc3HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction3));
         }
         _VMESSAGE("done");
 

@@ -1,6 +1,11 @@
 #include "RE/Skyrim.h"
 
+#include <array>
 #include <future>
+
+#include "REL/Relocation.h"
+#include "SKSE/API.h"
+#include "SKSE/Trampoline.h"
 
 #include "fixes.h"
 #include "utils.h"
@@ -16,13 +21,13 @@ namespace fixes
     
     void hk_TESObjectBook_LoadBuffer(RE::TESObjectBOOK * thisPtr, RE::BGSLoadFormBuffer* a_buf)
     {
-        using Flag = RE::TESObjectBOOK::Data::Flag;
+        using Flag = RE::OBJ_BOOK::Flag;
 
         orig_LoadBuffer(thisPtr, a_buf);
 
-        if (thisPtr->data.teaches.skill == RE::ActorValue::kNone) {
+        if (thisPtr->data.teaches.actorValueToAdvance == RE::ActorValue::kNone) {
             if (thisPtr->TeachesSkill()) {
-                thisPtr->data.flags &= ~Flag::kTeachesSkill;
+                thisPtr->data.flags &= ~Flag::kAdvancesActorValue;
             }
             if (thisPtr->TeachesSpell()) {
                 thisPtr->data.flags &= ~Flag::kTeachesSpell;
@@ -53,7 +58,8 @@ namespace fixes
     bool PatchPerkFragmentIsRunning()
     {       
         _VMESSAGE("- ::IsRunning fix -");
-        g_branchTrampoline.Write5Call(call_IsRunning.GetUIntPtr(), GetFnAddr(&ActorEx::Hook_IsRunning));
+        auto trampoline = SKSE::GetTrampoline();
+        trampoline->Write5Call(call_IsRunning.GetUIntPtr(), GetFnAddr(&ActorEx::Hook_IsRunning));
         _VMESSAGE("success");
 
         return true;
@@ -92,7 +98,7 @@ namespace fixes
         {
             struct SetupMaterial_Snow_Hook_Code : Xbyak::CodeGenerator
             {
-                SetupMaterial_Snow_Hook_Code(void* buf) : CodeGenerator(4096, buf)
+                SetupMaterial_Snow_Hook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label vtblAddr;
                     Xbyak::Label snowRetnLabel;
@@ -126,12 +132,12 @@ namespace fixes
                 }
             };
 
-            void* codeBuf = g_localTrampoline.StartAlloc();
-            SetupMaterial_Snow_Hook_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            SetupMaterial_Snow_Hook_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(BSLightingShader_SetupMaterial_Snow_Hook.GetUIntPtr(),
-                uintptr_t(code.getCode()));
+            trampoline->Write6Branch(BSLightingShader_SetupMaterial_Snow_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patching BGSShaderParticleGeometryData limit");
 
@@ -143,7 +149,7 @@ namespace fixes
             // Xbyak is used here to generate the ASM to use instead of just doing it by hand
             struct Patch : Xbyak::CodeGenerator
             {
-                Patch(void* buf) : CodeGenerator(1024, buf)
+                Patch(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
                 {
                     mov(r9, r15);
                     nop();
@@ -153,9 +159,8 @@ namespace fixes
                 }
             };
 
-            void* patchBuf = g_localTrampoline.StartAlloc();
-            Patch patch(patchBuf);
-            g_localTrampoline.EndAlloc(patch.getCurr());
+            std::array<char, 100> patchBuf;
+            Patch patch(patchBuf.size(), patchBuf.data());
 
             for (UInt32 i = 0; i < patch.getSize(); ++i)
             {
@@ -185,7 +190,7 @@ namespace fixes
         _VMESSAGE("patching BSDistantTreeShader vfunc 3");
         struct PatchTreeReflection_Code : Xbyak::CodeGenerator
         {
-            PatchTreeReflection_Code(void* buf) : CodeGenerator(4096, buf)
+            PatchTreeReflection_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
             {
                 Xbyak::Label retnLabel;
 
@@ -213,11 +218,12 @@ namespace fixes
             }
         };
 
-        void* codeBuf = g_localTrampoline.StartAlloc();
-        PatchTreeReflection_Code code(codeBuf);
-        g_localTrampoline.EndAlloc(code.getCurr());
+        auto trampoline = SKSE::GetTrampoline();
+        auto codeBuf = trampoline->StartAlloc();
+        PatchTreeReflection_Code code(trampoline->FreeSize(), codeBuf);
+        trampoline->EndAlloc(code.getCurr());
 
-        g_branchTrampoline.Write6Branch(BSDistantTreeShader_VFunc3_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+        trampoline->Write6Branch(BSDistantTreeShader_VFunc3_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
 
         _VMESSAGE("success");
         return true;
@@ -312,7 +318,7 @@ namespace fixes
         constexpr std::uintptr_t BRANCH_OFF = 0x17A;
         constexpr std::uintptr_t SEND_EVENT_BEGIN = 0x18A;
         constexpr std::uintptr_t SEND_EVENT_END = 0x236;
-        constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, equippedShout);
+        constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, selectedPower);
         constexpr UInt32 BRANCH_SIZE = 5;
         constexpr UInt32 CODE_CAVE_SIZE = 16;
         constexpr UInt32 DIFF = CODE_CAVE_SIZE - BRANCH_SIZE;
@@ -322,7 +328,7 @@ namespace fixes
 
         struct Patch : Xbyak::CodeGenerator
         {
-            Patch(void* a_buf, UInt64 a_funcBase) : Xbyak::CodeGenerator(1024, a_buf)
+            Patch(std::size_t a_maxSize, void* a_buf, UInt64 a_funcBase) : Xbyak::CodeGenerator(a_maxSize, a_buf)
             {
                 Xbyak::Label exitLbl;
                 Xbyak::Label exitIP;
@@ -350,11 +356,12 @@ namespace fixes
             }
         };
 
-        void* patchBuf = g_localTrampoline.StartAlloc();
-        Patch patch(patchBuf, funcBase.GetUIntPtr());
-        g_localTrampoline.EndAlloc(patch.getCurr());
+        auto trampoline = SKSE::GetTrampoline();
+        auto patchBuf = trampoline->StartAlloc();
+        Patch patch(trampoline->FreeSize(), patchBuf, funcBase.GetUIntPtr());
+        trampoline->EndAlloc(patch.getCurr());
 
-        g_branchTrampoline.Write5Branch(funcBase.GetUIntPtr() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
+        trampoline->Write5Branch(funcBase.GetUIntPtr() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
         for (UInt32 i = 0; i < DIFF; ++i) {
             SafeWrite8(funcBase.GetUIntPtr() + BRANCH_OFF + BRANCH_SIZE + i, NOP);
@@ -386,7 +393,7 @@ namespace fixes
 
         struct Patch : Xbyak::CodeGenerator
         {
-            Patch(void *a_buf) : Xbyak::CodeGenerator(1024, a_buf)
+            Patch(std::size_t a_maxSize, void *a_buf) : Xbyak::CodeGenerator(a_maxSize, a_buf)
             {
                 Xbyak::Label jmpOut;
                 // hook: 0x130AB2D (in middle of SetupGeometry, right before if (rawTechnique & RAW_FLAG_SPECULAR), just picked a random place tbh
@@ -412,11 +419,12 @@ namespace fixes
             }
         };
 
-        void* patchBuf = g_localTrampoline.StartAlloc();
-        Patch patch(patchBuf);
-        g_localTrampoline.EndAlloc(patch.getCurr());
+        auto trampoline = SKSE::GetTrampoline();
+        auto patchBuf = trampoline->StartAlloc();
+        Patch patch(trampoline->FreeSize(), patchBuf);
+        trampoline->EndAlloc(patch.getCurr());
 
-        g_branchTrampoline.Write5Branch(AddAmbientSpecularToSetupGeometry.GetUIntPtr(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
+        trampoline->Write5Branch(AddAmbientSpecularToSetupGeometry.GetUIntPtr(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
         _VMESSAGE("success");
 
@@ -460,7 +468,7 @@ namespace fixes
         {
             struct ThirdPersonStateHook_Code : Xbyak::CodeGenerator
             {
-                ThirdPersonStateHook_Code(void* buf) : CodeGenerator(4096, buf)
+                ThirdPersonStateHook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label magicLabel;
@@ -491,11 +499,12 @@ namespace fixes
                 }
             };
 
-            void* codeBuf = g_localTrampoline.StartAlloc();
-            ThirdPersonStateHook_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            ThirdPersonStateHook_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(ThirdPersonState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(ThirdPersonState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -503,7 +512,7 @@ namespace fixes
         {
             struct DragonCameraStateHook_Code : Xbyak::CodeGenerator
             {
-                DragonCameraStateHook_Code(void* buf) : CodeGenerator(4096, buf)
+                DragonCameraStateHook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label magicLabel;
@@ -534,11 +543,12 @@ namespace fixes
                 }
             };
 
-            void* codeBuf = g_localTrampoline.StartAlloc();
-            DragonCameraStateHook_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            DragonCameraStateHook_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(DragonCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(DragonCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -546,7 +556,7 @@ namespace fixes
         {
             struct HorseCameraStateHook_Code : Xbyak::CodeGenerator
             {
-                HorseCameraStateHook_Code(void* buf) : CodeGenerator(4096, buf)
+                HorseCameraStateHook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label magicLabel;
@@ -577,11 +587,12 @@ namespace fixes
                 }
             };
 
-            void* codeBuf = g_localTrampoline.StartAlloc();
-            HorseCameraStateHook_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            HorseCameraStateHook_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(HorseCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(HorseCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -591,13 +602,13 @@ namespace fixes
 	class EnchantmentItemEx : public RE::EnchantmentItem
 	{
 	public:
-		using func_t = function_type_t<decltype(&RE::EnchantmentItem::DisallowsAbsorbReflection)>;
-		inline static func_t* func = 0;
+		using func_t = decltype(&RE::EnchantmentItem::GetNoAbsorb); // 5E
+		static inline REL::Function<func_t> func;
 
 
 		bool Hook_DisallowsAbsorbReflection()
 		{
-			using Archetype = RE::EffectSetting::Data::Archetype;
+			using Archetype = RE::EffectArchetypes::ArchetypeID;
 			for (auto& effect : effects) {
 				if (effect->baseEffect->HasArchetype(Archetype::kSummonCreature)) {
 					return true;
@@ -610,10 +621,9 @@ namespace fixes
 		static void InstallHooks()
 		{
 			// ??_7EnchantmentItem@@6B@
-			REL::Offset<func_t**> vFunc(offset_vtbl_EnchantmentItem + (0x8 * 0x5E));    // 1_5_73
-			func = *vFunc;
-			SafeWrite64(vFunc.GetAddress(), unrestricted_cast<std::uintptr_t>(&Hook_DisallowsAbsorbReflection));
-			_DMESSAGE("[DEBUG] Installed hook for (%s)", typeid(EnchantmentItemEx).name());
+			REL::Offset<std::uintptr_t> vTbl(offset_vtbl_EnchantmentItem + (0x8 * 0x5E));
+            func = vTbl.WriteVFunc(0x5E, &EnchantmentItemEx::Hook_DisallowsAbsorbReflection);
+			_DMESSAGE("Installed hook for (%s)", typeid(EnchantmentItemEx).name());
 		}
 	};
 
@@ -626,50 +636,38 @@ namespace fixes
 		return true;
 	}
 
-	class ArrowProjectileEx : public RE::ArrowProjectile
-	{
-	public:
-		void Hook_CalculateCollision(RE::NiPoint3& a_shooterPos, RE::NiPoint3& a_projectilePos)
-		{
-			RE::TESObjectREFRPtr shooterPtr;
-			RE::TESObjectREFR::LookupByHandle(shooterHandle, shooterPtr);
-			auto shooter = static_cast<RE::Actor*>(shooterPtr.get());
-			float height = shooter->GetHeight();
-			if (height > 0.0) {
-				height *= 0.6;
-				if (shooter->IsSneaking()) {
-					height *= 0.57;
-				}
-			}
-			else {
-				height = 96.0;
-			}
-			a_shooterPos.z += height;
-			func(this, a_shooterPos, a_projectilePos);
-		}
+    class ArcheryDownwardAiming
+    {
+    public:
+        static void Install()
+        {
+            REL::Offset<std::uintptr_t> funcBase(CalculateCollisionCall_offset);
+            auto trampoline = SKSE::GetTrampoline();
+            _Move = trampoline->Write5CallEx(funcBase.GetAddress() + 0x3E9, &ArcheryDownwardAiming::Hook_Move);
+        }
+
+    private:
+        static void Hook_Move(RE::Projectile* a_this, /*const*/ RE::NiPoint3& a_from, const RE::NiPoint3& a_to)
+        {
+            auto refShooter = a_this->shooter.get();
+            if (refShooter && refShooter->Is(RE::FormType::ActorCharacter)) {
+                auto akShooter = static_cast<RE::Actor*>(refShooter.get());
+                [[maybe_unused]] RE::NiPoint3 direction;
+                akShooter->GetEyeVector(a_from, direction, true);
+            }
+
+            _Move(a_this, a_from, a_to);
+        }
 
 
-		static void InstallHooks()
-		{
-			REL::Offset<std::uintptr_t> funcBase(CalculateCollisionCall_offset); 
-			std::uintptr_t hookPoint = funcBase.GetAddress() + 0x3E9;
-
-			auto offset = reinterpret_cast<std::int32_t*>(hookPoint + 1);
-			auto nextOp = hookPoint + 5;
-			func = unrestricted_cast<func_t*>(nextOp + *offset);
-
-			g_branchTrampoline.Write5Call(hookPoint, unrestricted_cast<std::uintptr_t>(&Hook_CalculateCollision));
-			_DMESSAGE("[DEBUG] Installed archery downward aim fix");
-		}
-
-		using func_t = function_type_t<decltype(&Hook_CalculateCollision)>;
-		inline static func_t* func = 0;
-	};
+        using Move_t = decltype(&ArcheryDownwardAiming::Hook_Move);
+        static inline REL::Function<Move_t> _Move;
+    };
 
 	bool PatchArcheryDownwardAiming()
 	{
 		_VMESSAGE("- archery downward aiming -");
-		ArrowProjectileEx::InstallHooks();
+        ArcheryDownwardAiming::Install();
 		_VMESSAGE("- success -");
 
 		return true;
@@ -735,7 +733,7 @@ namespace fixes
 
 			struct Patch : Xbyak::CodeGenerator
 			{
-				Patch(void* a_buf, std::uintptr_t a_addr) : Xbyak::CodeGenerator(1024, a_buf)
+				Patch(std::size_t maxSize, void* a_buf, std::uintptr_t a_addr) : Xbyak::CodeGenerator(maxSize, a_buf)
 				{
 					Xbyak::Label jmpLbl;
 
@@ -747,9 +745,9 @@ namespace fixes
 				}
 			};
 
-			void* patchBuf = g_localTrampoline.StartAlloc();
-			Patch patch(patchBuf, unrestricted_cast<std::uintptr_t>(&CalendarEx::AdvanceTime));
-			g_localTrampoline.EndAlloc(patch.getCurr());
+            std::array<char, CAVE_SIZE> patchBuf;
+
+			Patch patch(patchBuf.size(), patchBuf.data(), unrestricted_cast<std::uintptr_t>(&CalendarEx::AdvanceTime));
 
 			assert(patch.getSize() <= CAVE_SIZE);
 
@@ -771,13 +769,13 @@ namespace fixes
     class GetKeywordItemCount
     {
     public:
-        static bool Execute(const RE::SCRIPT_PARAMETER* a_paramInfo, RE::CommandInfo::ScriptData* a_scriptData, RE::TESObjectREFR* a_thisObj, RE::TESObjectREFR* a_containingObj, RE::Script* a_scriptObj, RE::ScriptLocals* a_locals, double& a_result, UInt32& a_opcodeOffsetPtr)
+        static bool Execute(const RE::SCRIPT_PARAMETER* a_paramInfo, RE::SCRIPT_FUNCTION::ScriptData* a_scriptData, RE::TESObjectREFR* a_thisObj, RE::TESObjectREFR* a_containingObj, RE::Script* a_scriptObj, RE::ScriptLocals* a_locals, double& a_result, UInt32& a_opcodeOffsetPtr)
         {
-            if (a_scriptObj->paramData.empty()) {
+            if (!a_scriptObj || a_scriptObj->refObjects.empty()) {
                 return false;
             }
 
-            auto param = a_scriptObj->paramData.front();
+            auto param = a_scriptObj->refObjects.front();
             if (!param->form || param->form->IsNot(RE::FormType::Keyword)) {
                 return false;
             }
@@ -802,14 +800,14 @@ namespace fixes
             }
 
             auto keyword = static_cast<RE::BGSKeyword*>(a_param1);
-            auto inv = a_thisObj->GetInventory([&](RE::TESBoundObject* a_object) -> bool
-                {
-                    auto keywordForm = a_object->As<RE::BGSKeywordForm*>();
-                    return keywordForm && keywordForm->HasKeyword(keyword);
-                });
+            auto inv = a_thisObj->GetInventoryCounts([&](RE::TESBoundObject* a_object) -> bool
+            {
+                auto keywordForm = a_object->As<RE::BGSKeywordForm>();
+                return keywordForm && keywordForm->HasKeyword(keyword);
+            });
 
             for (auto& elem : inv) {
-                a_result += elem.second.first;
+                a_result += elem.second;
             }
 
             if (log->IsConsoleMode()) {
@@ -822,10 +820,10 @@ namespace fixes
 
         static void Register()
         {
-            auto command = RE::CommandInfo::LocateScriptCommand(LONG_NAME);
+            auto command = RE::SCRIPT_FUNCTION::LocateScriptCommand(LONG_NAME);
             if (command) {
-                command->execute = Execute;
-                command->eval = Eval;
+                command->executeFunction = Execute;
+                command->conditionFunction = Eval;
             }
         }
 
