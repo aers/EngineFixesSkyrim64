@@ -1,5 +1,8 @@
 #include "skse64_common/Utilities.h"
 
+#include "SKSE/API.h"
+#include "SKSE/Trampoline.h"
+
 #include "patches.h"
 
 #include "offsets.h"
@@ -64,7 +67,7 @@ namespace fixes
         {
             struct BSBatchRenderer_SetupAndDrawPass_Code : Xbyak::CodeGenerator
             {
-                BSBatchRenderer_SetupAndDrawPass_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                BSBatchRenderer_SetupAndDrawPass_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     // 131F810
                     mov(ptr[rsp + 0x10], rbx);
@@ -77,12 +80,13 @@ namespace fixes
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            BSBatchRenderer_SetupAndDrawPass_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            BSBatchRenderer_SetupAndDrawPass_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
             BSBatchRenderer_SetupAndDrawPass_Orig = _BSBatchRenderer_SetupAndDrawPass(code.getCode());
-            g_branchTrampoline.Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.GetUIntPtr(), GetFnAddr(hk_BSBatchRenderer_SetupAndDrawPass));
+            trampoline->Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.GetUIntPtr(), GetFnAddr(hk_BSBatchRenderer_SetupAndDrawPass));
         }
         _VMESSAGE("patched");
         return true;
@@ -96,7 +100,7 @@ namespace fixes
         {
 	        struct BSLightingShader_SetupGeometry_Parallax_Code : Xbyak::CodeGenerator
 	        {
-                BSLightingShader_SetupGeometry_Parallax_Code(void* buf) : Xbyak::CodeGenerator(4096, buf)
+                BSLightingShader_SetupGeometry_Parallax_Code(std::size_t maxSize, void* buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                 	// orig code
                     and (eax, 0x21C00);
@@ -112,11 +116,12 @@ namespace fixes
                 };
 	        };
 
-            void* codeBuf = g_localTrampoline.StartAlloc();
-            BSLightingShader_SetupGeometry_Parallax_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            BSLightingShader_SetupGeometry_Parallax_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patched");
         return true;

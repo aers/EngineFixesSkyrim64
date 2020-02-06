@@ -1,6 +1,5 @@
 #pragma once
 
-#include "skse64_common/BranchTrampoline.h"
 #include "skse64_common/Relocation.h"
 #include "skse64_common/SafeWrite.h"
 

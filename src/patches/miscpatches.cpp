@@ -1,7 +1,8 @@
-#include "RE/TESDataHandler.h"
-#include "RE/TESFile.h"
-
 #include <intrin.h>
+
+#include "RE/Skyrim.h"
+#include "SKSE/API.h"
+#include "SKSE/Trampoline.h"
 
 #include "patches.h"
 #include "utils.h"
@@ -36,7 +37,7 @@ namespace patches
         {
             struct GameLoopHook_Code : Xbyak::CodeGenerator
             {
-                GameLoopHook_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                GameLoopHook_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -76,17 +77,18 @@ namespace patches
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            GameLoopHook_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            GameLoopHook_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(GameLoop_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(GameLoop_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("replacing water flow timer with our timer...");
         {
             struct WaterFlowHook_Code : Xbyak::CodeGenerator
             {
-                WaterFlowHook_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                WaterFlowHook_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label timerLabel;
@@ -109,11 +111,12 @@ namespace patches
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            WaterFlowHook_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            WaterFlowHook_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(WaterShader_ReadTimer_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(WaterShader_ReadTimer_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -199,16 +202,17 @@ namespace patches
         // Xbyak is used here to generate the ASM to use instead of just doing it by hand
         struct Patch : Xbyak::CodeGenerator
         {
-            Patch(void* buf) : CodeGenerator(1024, buf)
+            Patch(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
             {
                 mov(al, 0);
                 ret();
             }
         };
 
-        void* patchBuf = g_localTrampoline.StartAlloc();
-        Patch patch(patchBuf);
-        g_localTrampoline.EndAlloc(patch.getCurr());
+        auto trampoline = SKSE::GetTrampoline();
+        auto patchBuf = trampoline->StartAlloc();
+        Patch patch(trampoline->FreeSize(), patchBuf);
+        trampoline->EndAlloc(patch.getCurr());
 
         for (UInt32 i = 0; i < patch.getSize(); ++i)
         {
@@ -246,14 +250,14 @@ namespace patches
             loadSet = true;
             _MESSAGE("load order finished");
             auto dhnl = RE::TESDataHandler::GetSingleton();
-            for (auto mod : dhnl->modList.loadOrder)
+            for (auto& mod : dhnl->compiledFileCollection.files)
             {
-                mod->recordFlags |= RE::TESFile::RecordFlag::kESM;
+                mod->recordFlags |= RE::TESFile::RecordFlag::kMaster;
             }
             return true;
         }
 
-		return (modInfo->recordFlags & RE::TESFile::RecordFlag::kESM) != RE::TESFile::RecordFlag::kNone;
+		return (modInfo->recordFlags & RE::TESFile::RecordFlag::kMaster) != RE::TESFile::RecordFlag::kNone;
     }
 
     RelocAddr<uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
@@ -262,7 +266,8 @@ namespace patches
     {
         _VMESSAGE("- treat all mods as masters -");
         MessageBox(nullptr, TEXT("WARNING: You have the treat all mods as masters patch enabled. I hope you know what you're doing!"), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
-        g_branchTrampoline.Write6Branch(TESFile_IsMaster.GetUIntPtr(), GetFnAddr(hk_TESFile_IsMaster));
+        auto trampoline = SKSE::GetTrampoline();
+        trampoline->Write6Branch(TESFile_IsMaster.GetUIntPtr(), GetFnAddr(hk_TESFile_IsMaster));
         _VMESSAGE("success");
 
         return true;
@@ -288,7 +293,7 @@ namespace patches
         {
             struct SleepWaitTime_Code : Xbyak::CodeGenerator
             {
-                SleepWaitTime_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                SleepWaitTime_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                 {
                     push(rax);
                     mov(rax, (size_t)&config::sleepWaitTimeModifier);
@@ -299,11 +304,12 @@ namespace patches
                 }
             };
 
-            void *codeBuf = g_localTrampoline.StartAlloc();
-            SleepWaitTime_Code code(codeBuf);
-            g_localTrampoline.EndAlloc(code.getCurr());
+            auto trampoline = SKSE::GetTrampoline();
+            auto codeBuf = trampoline->StartAlloc();
+            SleepWaitTime_Code code(trampoline->FreeSize(), codeBuf);
+            trampoline->EndAlloc(code.getCurr());
 
-            g_branchTrampoline.Write6Branch(SleepWaitTime_Compare.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(SleepWaitTime_Compare.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
         return true;

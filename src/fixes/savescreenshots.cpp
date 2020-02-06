@@ -1,5 +1,9 @@
 #include "skse64/GameSettings.h"
 
+#include "RE/Skyrim.h"
+#include "SKSE/API.h"
+#include "SKSE/Trampoline.h"
+
 #include "fixes.h"
 
 namespace fixes
@@ -25,7 +29,7 @@ namespace fixes
     {
         _VMESSAGE("- save game screenshot fix -");
 
-        if (GetINISetting("bUseTAA:Display")->data.u8 >= 1)
+        if (RE::GetINISetting("bUseTAA:Display")->GetBool())
         {
             _VMESSAGE("you have TAA enabled, those fixes are uneeded");
             return true;
@@ -38,11 +42,11 @@ namespace fixes
             _VMESSAGE("patching in-game save delay & blank screenshot bugs");
 
             // with DoF enabled just use the "flicker" fix even for ingame requests
-            if (GetINISetting("bDoDepthOfField:Imagespace")->data.u8 >= 1)
+            if (RE::GetINISetting("bDoDepthOfField:Imagespace")->GetBool())
             {
                 struct IsSaveRequest_Code : Xbyak::CodeGenerator
                 {
-                    IsSaveRequest_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                    IsSaveRequest_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
@@ -58,11 +62,12 @@ namespace fixes
                     }
                 };
 
-                void *codeBuf = g_localTrampoline.StartAlloc();
-                IsSaveRequest_Code code(codeBuf);
-                g_localTrampoline.EndAlloc(code.getCurr());
+                auto trampoline = SKSE::GetTrampoline();
+                auto codeBuf = trampoline->StartAlloc();
+                IsSaveRequest_Code code(trampoline->FreeSize(), codeBuf);
+                trampoline->EndAlloc(code.getCurr());
 
-                g_branchTrampoline.Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
 
             }
             // use menu fix for DoF+TAA Disabled ingame requests
@@ -70,7 +75,7 @@ namespace fixes
             {
                 struct IsSaveRequest_Code : Xbyak::CodeGenerator
                 {
-                    IsSaveRequest_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                    IsSaveRequest_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
@@ -86,11 +91,12 @@ namespace fixes
                     }
                 };
 
-                void *codeBuf = g_localTrampoline.StartAlloc();
-                IsSaveRequest_Code code(codeBuf);
-                g_localTrampoline.EndAlloc(code.getCurr());
+                auto trampoline = SKSE::GetTrampoline();
+                auto codeBuf = trampoline->StartAlloc();
+                IsSaveRequest_Code code(trampoline->FreeSize(), codeBuf);
+                trampoline->EndAlloc(code.getCurr());
 
-                g_branchTrampoline.Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
 
             }
 
@@ -98,7 +104,7 @@ namespace fixes
             {
                 struct MenuSave_Code : Xbyak::CodeGenerator
                 {
-                    MenuSave_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                    MenuSave_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                     {
                         Xbyak::Label requestScreenshot;
 
@@ -121,18 +127,19 @@ namespace fixes
                     }
                 };
 
-                void * codeBuf = g_localTrampoline.StartAlloc();
-                MenuSave_Code code(codeBuf);
-                g_localTrampoline.EndAlloc(code.getCurr());
+                auto trampoline = SKSE::GetTrampoline();
+                auto codeBuf = trampoline->StartAlloc();
+                MenuSave_Code code(trampoline->FreeSize(), codeBuf);
+                trampoline->EndAlloc(code.getCurr());
 
                 // warning: 5 byte branch instead of 6 byte branch 
-                g_branchTrampoline.Write5Branch(MenuSave_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write5Branch(MenuSave_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
             }
 
             {
                 struct ScreenshotRender_Code : Xbyak::CodeGenerator
                 {
-                    ScreenshotRender_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                    ScreenshotRender_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                     {
                         // .text:00000001412AEDAA                 test    dil, dil
                         // .text:00000001412AEDAD                 jnz     ScreenshotRenderOrigJnz
@@ -178,18 +185,19 @@ namespace fixes
                     }
                 };
 
-                void *codeBuf = g_localTrampoline.StartAlloc();
-                ScreenshotRender_Code code(codeBuf);
-                g_localTrampoline.EndAlloc(code.getCurr());
+                auto trampoline = SKSE::GetTrampoline();
+                auto codeBuf = trampoline->StartAlloc();
+                ScreenshotRender_Code code(trampoline->FreeSize(), codeBuf);
+                trampoline->EndAlloc(code.getCurr());
 
-                g_branchTrampoline.Write6Branch(ScreenshotJnz.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(ScreenshotJnz.GetUIntPtr(), uintptr_t(code.getCode()));
             }
 
             // flicker version of fix, checks for screenshot requested from open menu
             {
                 struct RenderTargetHook_1_Code : Xbyak::CodeGenerator
                 {
-                    RenderTargetHook_1_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                    RenderTargetHook_1_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                     {
                         Xbyak::Label screenRequested;
 
@@ -215,17 +223,18 @@ namespace fixes
                     }
                 };
 
-                void *codeBuf = g_localTrampoline.StartAlloc();
-                RenderTargetHook_1_Code code(codeBuf);
-                g_localTrampoline.EndAlloc(code.getCurr());
+                auto trampoline = SKSE::GetTrampoline();
+                auto codeBuf = trampoline->StartAlloc();
+                RenderTargetHook_1_Code code(trampoline->FreeSize(), codeBuf);
+                trampoline->EndAlloc(code.getCurr());
 
-                g_branchTrampoline.Write6Branch(RenderTargetHook_1.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(RenderTargetHook_1.GetUIntPtr(), uintptr_t(code.getCode()));
             }
 
             {
                 struct RenderTargetHook_2_Code : Xbyak::CodeGenerator
                 {
-                    RenderTargetHook_2_Code(void * buf) : Xbyak::CodeGenerator(4096, buf)
+                    RenderTargetHook_2_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
                     {
                         // .text:00000001412AEF5A                 mov     [rbp+218h], rax
                         mov(ptr[rbp + 0x218], rax);
@@ -244,11 +253,12 @@ namespace fixes
                     }
                 };
 
-                void *codeBuf = g_localTrampoline.StartAlloc();
-                RenderTargetHook_2_Code code(codeBuf);
-                g_localTrampoline.EndAlloc(code.getCurr());
+                auto trampoline = SKSE::GetTrampoline();
+                auto codeBuf = trampoline->StartAlloc();
+                RenderTargetHook_2_Code code(trampoline->FreeSize(), codeBuf);
+                trampoline->EndAlloc(code.getCurr());
 
-                g_branchTrampoline.Write6Branch(RenderTargetHook_2.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(RenderTargetHook_2.GetUIntPtr(), uintptr_t(code.getCode()));
             }
         }
 

@@ -1,9 +1,7 @@
-#include "RE/BGSSoundCategory.h"
-#include "RE/TESFile.h"
+#include "RE/Skyrim.h"
 
 #include "patches.h"
 #include "Simpleini.h"
-#include "RE/TESDataHandler.h"
 
 #include "utils.h"
 
@@ -29,9 +27,11 @@ namespace patches
         {
             for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
-                if ((soundCategory->flags & RE::BGSSoundCategory::Flag::kShouldAppearOnMenu) != RE::BGSSoundCategory::Flag::kNone)
+                if (soundCategory->IsMenuCategory())
                 {
-                    _VMESSAGE("processing %s", dynamic_cast<RE::TESFullName *>(soundCategory)->GetFullName());
+                    auto fullName = soundCategory->GetFullName();
+                    fullName = fullName ? fullName : "";
+                    _VMESSAGE("processing %s", fullName);
                     _VMESSAGE("menu flag set, saving");
                     auto localFormId = soundCategory->formID & 0x00FFFFFF;
                     // esl
@@ -39,12 +39,13 @@ namespace patches
                     {
                         localFormId = localFormId & 0x00000FFF;
                     }
-                    _VMESSAGE("plugin: %s form id: %08X", soundCategory->sourceFiles->files[0]->name, localFormId);
+                    auto srcFile = soundCategory->GetDescriptionOwnerFile();
+                    _VMESSAGE("plugin: %s form id: %08X", srcFile->fileName, localFormId);
 
                     char localFormIdHex[9];
                     sprintf_s(localFormIdHex, sizeof(localFormIdHex), "%08X", localFormId);
 
-                    snctIni.SetDoubleValue(soundCategory->sourceFiles->files[0]->name, localFormIdHex, static_cast<double>(soundCategory->ingameVolume));
+                    snctIni.SetDoubleValue(srcFile->fileName, localFormIdHex, static_cast<double>(soundCategory->volumeMult));
                 }
             }
 
@@ -85,7 +86,8 @@ namespace patches
                 char localFormIdHex[9];
                 sprintf_s(localFormIdHex, sizeof(localFormIdHex), "%08X", localFormId);
 
-                const auto vol = snctIni.GetDoubleValue(soundCategory->sourceFiles->files[0]->name, localFormIdHex, -1.0);
+                auto srcFile = soundCategory->GetDescriptionOwnerFile();
+                const auto vol = snctIni.GetDoubleValue(srcFile->fileName, localFormIdHex, -1.0);
 
                 if (vol != -1.0)
                 {
