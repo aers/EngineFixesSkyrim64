@@ -2,11 +2,12 @@
 
 #include "tbb/concurrent_hash_map.h"
 
+#include "skse64/GameForms.h"
+
 #include "RE/Skyrim.h"
 #include "SKSE/API.h"
+#include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
-
-#include "skse64/GameForms.h"
 
 #include "patches.h"
 
@@ -132,9 +133,9 @@ namespace patches
         // TODO: write a generic detour instead
         _VMESSAGE("detouring global form table write functions");
         {
-            struct UnknownFormFunction0_Code : Xbyak::CodeGenerator
+            struct UnknownFormFunction0_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction0_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                UnknownFormFunction0_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -154,19 +155,18 @@ namespace patches
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            UnknownFormFunction0_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
-
+            UnknownFormFunction0_Code code;
+            code.finalize();
             origFunc0 = UnknownFormFunction0_(code.getCode());
+
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(origFunc0HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction0));
         }
 
         {
-            struct UnknownFormFunction1_Code : Xbyak::CodeGenerator
+            struct UnknownFormFunction1_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction1_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                UnknownFormFunction1_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -185,19 +185,18 @@ namespace patches
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            UnknownFormFunction1_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
-
+            UnknownFormFunction1_Code code;
+            code.finalize();
             origFunc1 = UnknownFormFunction1_(code.getCode());
+
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(origFunc1HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction1));
         }
 
         {
-            struct UnknownFormFunction2_Code : Xbyak::CodeGenerator
+            struct UnknownFormFunction2_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction2_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                UnknownFormFunction2_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -215,19 +214,18 @@ namespace patches
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            UnknownFormFunction2_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
-
+            UnknownFormFunction2_Code code;
+            code.finalize();
             origFunc2 = UnknownFormFunction2_(code.getCode());
+
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(origFunc2HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction2));
         }
 
         {
-            struct UnknownFormFunction3_Code : Xbyak::CodeGenerator
+            struct UnknownFormFunction3_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction3_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                UnknownFormFunction3_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -246,12 +244,11 @@ namespace patches
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            UnknownFormFunction3_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
-
+            UnknownFormFunction3_Code code;
+            code.finalize();
             origFunc3 = UnknownFormFunction3_(code.getCode());
+
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(origFunc3HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction3));
         }
         _VMESSAGE("done");

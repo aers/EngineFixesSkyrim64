@@ -1,6 +1,7 @@
 #include "skse64/InternalTasks.h"
 
 #include "SKSE/API.h"
+#include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
 
 #include "fixes.h"
@@ -81,9 +82,9 @@ namespace fixes
 
         _VMESSAGE("hooking for next form ID");
         {
-            struct GetNextFormId_Code : Xbyak::CodeGenerator
+            struct GetNextFormId_Code : SKSE::CodeGenerator
             {
-                GetNextFormId_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                GetNextFormId_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -106,19 +107,18 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            GetNextFormId_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            GetNextFormId_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(NextFormIdGetHook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("hooking handle function");
         {
-            struct DoHandleHook_Code : Xbyak::CodeGenerator
+            struct DoHandleHook_Code : SKSE::CodeGenerator
             {
-                DoHandleHook_Code(std::size_t maxSize, void * buf, UInt64 doHandleAddr) : Xbyak::CodeGenerator(maxSize, buf)
+                DoHandleHook_Code(std::uintptr_t doHandleAddr) : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -156,19 +156,18 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            DoHandleHook_Code code(trampoline->FreeSize(), codeBuf, uintptr_t(do_handle));
-            trampoline->EndAlloc(code.getCurr());
+            DoHandleHook_Code code(reinterpret_cast<std::uintptr_t>(do_handle));
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(DoHandleHook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("hooking add function");
         {
-            struct DoAddHook_Code : Xbyak::CodeGenerator
+            struct DoAddHook_Code : SKSE::CodeGenerator
             {
-                DoAddHook_Code(std::size_t maxSize, void * buf, UInt64 doAddAddr) : Xbyak::CodeGenerator(maxSize, buf)
+                DoAddHook_Code(std::uintptr_t doAddAddr) : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -201,11 +200,10 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            DoAddHook_Code code(trampoline->FreeSize(), codeBuf, uintptr_t(do_add));
-            trampoline->EndAlloc(code.getCurr());
+            DoAddHook_Code code(reinterpret_cast<std::uintptr_t>(do_add));
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(DoAddHook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
 

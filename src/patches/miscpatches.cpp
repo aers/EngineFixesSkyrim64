@@ -2,6 +2,7 @@
 
 #include "RE/Skyrim.h"
 #include "SKSE/API.h"
+#include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
 
 #include "patches.h"
@@ -35,9 +36,9 @@ namespace patches
 
         _VMESSAGE("hooking new timer to the game update loop...");
         {
-            struct GameLoopHook_Code : Xbyak::CodeGenerator
+            struct GameLoopHook_Code : SKSE::CodeGenerator
             {
-                GameLoopHook_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                GameLoopHook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -77,18 +78,17 @@ namespace patches
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            GameLoopHook_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            GameLoopHook_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(GameLoop_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("replacing water flow timer with our timer...");
         {
-            struct WaterFlowHook_Code : Xbyak::CodeGenerator
+            struct WaterFlowHook_Code : SKSE::CodeGenerator
             {
-                WaterFlowHook_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                WaterFlowHook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label timerLabel;
@@ -111,11 +111,10 @@ namespace patches
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            WaterFlowHook_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            WaterFlowHook_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(WaterShader_ReadTimer_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
@@ -200,23 +199,21 @@ namespace patches
     {
         _VMESSAGE("- enable achievements with mods -");
         // Xbyak is used here to generate the ASM to use instead of just doing it by hand
-        struct Patch : Xbyak::CodeGenerator
+        struct Patch : SKSE::CodeGenerator
         {
-            Patch(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
+            Patch() : SKSE::CodeGenerator(100)
             {
                 mov(al, 0);
                 ret();
             }
         };
 
-        auto trampoline = SKSE::GetTrampoline();
-        auto patchBuf = trampoline->StartAlloc();
-        Patch patch(trampoline->FreeSize(), patchBuf);
-        trampoline->EndAlloc(patch.getCurr());
+        Patch patch;
+        patch.finalize();
 
         for (UInt32 i = 0; i < patch.getSize(); ++i)
         {
-            SafeWrite8(AchievementModsEnabledFunction.GetUIntPtr() + i, *(patch.getCode() + i));
+            SafeWrite8(AchievementModsEnabledFunction.GetUIntPtr() + i, patch.getCode()[i]);
         }
 
         _VMESSAGE("success");
@@ -291,9 +288,9 @@ namespace patches
     {
         _VMESSAGE("- sleep wait time -");
         {
-            struct SleepWaitTime_Code : Xbyak::CodeGenerator
+            struct SleepWaitTime_Code : SKSE::CodeGenerator
             {
-                SleepWaitTime_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                SleepWaitTime_Code() : SKSE::CodeGenerator()
                 {
                     push(rax);
                     mov(rax, (size_t)&config::sleepWaitTimeModifier);
@@ -304,11 +301,10 @@ namespace patches
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            SleepWaitTime_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            SleepWaitTime_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(SleepWaitTime_Compare.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
