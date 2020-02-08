@@ -1,6 +1,4 @@
-﻿#include "skse64/PluginAPI.h" 
-
-#include "skse64_common/Utilities.h"
+﻿#include "skse64_common/Utilities.h"
 
 #include "SKSE/API.h"
 
@@ -99,7 +97,7 @@ extern "C" {
 			return false;
 		}
 
-		if (!SKSE::AllocTrampoline(1 << 10)) {
+		if (!SKSE::AllocTrampoline(1 << 11)) {
 			return false;
 		}
 

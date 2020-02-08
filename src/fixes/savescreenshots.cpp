@@ -2,6 +2,7 @@
 
 #include "RE/Skyrim.h"
 #include "SKSE/API.h"
+#include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
 
 #include "fixes.h"
@@ -44,9 +45,9 @@ namespace fixes
             // with DoF enabled just use the "flicker" fix even for ingame requests
             if (RE::GetINISetting("bDoDepthOfField:Imagespace")->GetBool())
             {
-                struct IsSaveRequest_Code : Xbyak::CodeGenerator
+                struct IsSaveRequest_Code : SKSE::CodeGenerator
                 {
-                    IsSaveRequest_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                    IsSaveRequest_Code() : SKSE::CodeGenerator()
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
@@ -62,20 +63,19 @@ namespace fixes
                     }
                 };
 
-                auto trampoline = SKSE::GetTrampoline();
-                auto codeBuf = trampoline->StartAlloc();
-                IsSaveRequest_Code code(trampoline->FreeSize(), codeBuf);
-                trampoline->EndAlloc(code.getCurr());
+                IsSaveRequest_Code code;
+                code.finalize();
 
+                auto trampoline = SKSE::GetTrampoline();
                 trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
 
             }
             // use menu fix for DoF+TAA Disabled ingame requests
             else
             {
-                struct IsSaveRequest_Code : Xbyak::CodeGenerator
+                struct IsSaveRequest_Code : SKSE::CodeGenerator
                 {
-                    IsSaveRequest_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                    IsSaveRequest_Code() : SKSE::CodeGenerator()
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
@@ -91,20 +91,19 @@ namespace fixes
                     }
                 };
 
-                auto trampoline = SKSE::GetTrampoline();
-                auto codeBuf = trampoline->StartAlloc();
-                IsSaveRequest_Code code(trampoline->FreeSize(), codeBuf);
-                trampoline->EndAlloc(code.getCurr());
+                IsSaveRequest_Code code;
+                code.finalize();
 
+                auto trampoline = SKSE::GetTrampoline();
                 trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
 
             }
 
             // flicker fix for open menu screenshot requests
             {
-                struct MenuSave_Code : Xbyak::CodeGenerator
+                struct MenuSave_Code : SKSE::CodeGenerator
                 {
-                    MenuSave_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                    MenuSave_Code() : SKSE::CodeGenerator()
                     {
                         Xbyak::Label requestScreenshot;
 
@@ -127,19 +126,18 @@ namespace fixes
                     }
                 };
 
-                auto trampoline = SKSE::GetTrampoline();
-                auto codeBuf = trampoline->StartAlloc();
-                MenuSave_Code code(trampoline->FreeSize(), codeBuf);
-                trampoline->EndAlloc(code.getCurr());
+                MenuSave_Code code;
+                code.finalize();
 
+                auto trampoline = SKSE::GetTrampoline();
                 // warning: 5 byte branch instead of 6 byte branch 
                 trampoline->Write5Branch(MenuSave_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
             }
 
             {
-                struct ScreenshotRender_Code : Xbyak::CodeGenerator
+                struct ScreenshotRender_Code : SKSE::CodeGenerator
                 {
-                    ScreenshotRender_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                    ScreenshotRender_Code() : SKSE::CodeGenerator()
                     {
                         // .text:00000001412AEDAA                 test    dil, dil
                         // .text:00000001412AEDAD                 jnz     ScreenshotRenderOrigJnz
@@ -185,19 +183,18 @@ namespace fixes
                     }
                 };
 
-                auto trampoline = SKSE::GetTrampoline();
-                auto codeBuf = trampoline->StartAlloc();
-                ScreenshotRender_Code code(trampoline->FreeSize(), codeBuf);
-                trampoline->EndAlloc(code.getCurr());
+                ScreenshotRender_Code code;
+                code.finalize();
 
+                auto trampoline = SKSE::GetTrampoline();
                 trampoline->Write6Branch(ScreenshotJnz.GetUIntPtr(), uintptr_t(code.getCode()));
             }
 
             // flicker version of fix, checks for screenshot requested from open menu
             {
-                struct RenderTargetHook_1_Code : Xbyak::CodeGenerator
+                struct RenderTargetHook_1_Code : SKSE::CodeGenerator
                 {
-                    RenderTargetHook_1_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                    RenderTargetHook_1_Code() : SKSE::CodeGenerator()
                     {
                         Xbyak::Label screenRequested;
 
@@ -223,18 +220,17 @@ namespace fixes
                     }
                 };
 
-                auto trampoline = SKSE::GetTrampoline();
-                auto codeBuf = trampoline->StartAlloc();
-                RenderTargetHook_1_Code code(trampoline->FreeSize(), codeBuf);
-                trampoline->EndAlloc(code.getCurr());
+                RenderTargetHook_1_Code code;
+                code.finalize();
 
+                auto trampoline = SKSE::GetTrampoline();
                 trampoline->Write6Branch(RenderTargetHook_1.GetUIntPtr(), uintptr_t(code.getCode()));
             }
 
             {
-                struct RenderTargetHook_2_Code : Xbyak::CodeGenerator
+                struct RenderTargetHook_2_Code : SKSE::CodeGenerator
                 {
-                    RenderTargetHook_2_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                    RenderTargetHook_2_Code() : SKSE::CodeGenerator()
                     {
                         // .text:00000001412AEF5A                 mov     [rbp+218h], rax
                         mov(ptr[rbp + 0x218], rax);
@@ -253,11 +249,10 @@ namespace fixes
                     }
                 };
 
-                auto trampoline = SKSE::GetTrampoline();
-                auto codeBuf = trampoline->StartAlloc();
-                RenderTargetHook_2_Code code(trampoline->FreeSize(), codeBuf);
-                trampoline->EndAlloc(code.getCurr());
+                RenderTargetHook_2_Code code;
+                code.finalize();
 
+                auto trampoline = SKSE::GetTrampoline();
                 trampoline->Write6Branch(RenderTargetHook_2.GetUIntPtr(), uintptr_t(code.getCode()));
             }
         }

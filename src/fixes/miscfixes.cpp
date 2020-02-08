@@ -1,10 +1,7 @@
 #include "RE/Skyrim.h"
-
-#include <array>
-#include <future>
-
 #include "REL/Relocation.h"
 #include "SKSE/API.h"
+#include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
 
 #include "fixes.h"
@@ -96,9 +93,9 @@ namespace fixes
         _VMESSAGE("- memory access errors -");
         _VMESSAGE("patching BSLightingShader::SetupMaterial snow material case");
         {
-            struct SetupMaterial_Snow_Hook_Code : Xbyak::CodeGenerator
+            struct SetupMaterial_Snow_Hook_Code : SKSE::CodeGenerator
             {
-                SetupMaterial_Snow_Hook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
+                SetupMaterial_Snow_Hook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label vtblAddr;
                     Xbyak::Label snowRetnLabel;
@@ -132,11 +129,10 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            SetupMaterial_Snow_Hook_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            SetupMaterial_Snow_Hook_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(BSLightingShader_SetupMaterial_Snow_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patching BGSShaderParticleGeometryData limit");
@@ -147,9 +143,9 @@ namespace fixes
         _VMESSAGE("patching BSShadowDirectionalLight use after free");
         {
             // Xbyak is used here to generate the ASM to use instead of just doing it by hand
-            struct Patch : Xbyak::CodeGenerator
+            struct Patch : SKSE::CodeGenerator
             {
-                Patch(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
+                Patch() : SKSE::CodeGenerator(100)
                 {
                     mov(r9, r15);
                     nop();
@@ -159,8 +155,8 @@ namespace fixes
                 }
             };
 
-            std::array<char, 100> patchBuf;
-            Patch patch(patchBuf.size(), patchBuf.data());
+            Patch patch;
+            patch.finalize();
 
             for (UInt32 i = 0; i < patch.getSize(); ++i)
             {
@@ -188,9 +184,9 @@ namespace fixes
 		}
 
         _VMESSAGE("patching BSDistantTreeShader vfunc 3");
-        struct PatchTreeReflection_Code : Xbyak::CodeGenerator
+        struct PatchTreeReflection_Code : SKSE::CodeGenerator
         {
-            PatchTreeReflection_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
+            PatchTreeReflection_Code() : SKSE::CodeGenerator()
             {
                 Xbyak::Label retnLabel;
 
@@ -218,11 +214,10 @@ namespace fixes
             }
         };
 
-        auto trampoline = SKSE::GetTrampoline();
-        auto codeBuf = trampoline->StartAlloc();
-        PatchTreeReflection_Code code(trampoline->FreeSize(), codeBuf);
-        trampoline->EndAlloc(code.getCurr());
+        PatchTreeReflection_Code code;
+        code.finalize();
 
+        auto trampoline = SKSE::GetTrampoline();
         trampoline->Write6Branch(BSDistantTreeShader_VFunc3_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
 
         _VMESSAGE("success");
@@ -326,9 +321,9 @@ namespace fixes
 
         RelocAddr<std::uintptr_t> funcBase(Equip_Shout_Procedure_Function_offset);
 
-        struct Patch : Xbyak::CodeGenerator
+        struct Patch : SKSE::CodeGenerator
         {
-            Patch(std::size_t a_maxSize, void* a_buf, UInt64 a_funcBase) : Xbyak::CodeGenerator(a_maxSize, a_buf)
+            Patch(std::uintptr_t a_funcBase) : SKSE::CodeGenerator()
             {
                 Xbyak::Label exitLbl;
                 Xbyak::Label exitIP;
@@ -356,11 +351,10 @@ namespace fixes
             }
         };
 
-        auto trampoline = SKSE::GetTrampoline();
-        auto patchBuf = trampoline->StartAlloc();
-        Patch patch(trampoline->FreeSize(), patchBuf, funcBase.GetUIntPtr());
-        trampoline->EndAlloc(patch.getCurr());
+        Patch patch(funcBase.GetUIntPtr());
+        patch.finalize();
 
+        auto trampoline = SKSE::GetTrampoline();
         trampoline->Write5Branch(funcBase.GetUIntPtr() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
         for (UInt32 i = 0; i < DIFF; ++i) {
@@ -391,9 +385,9 @@ namespace fixes
 
         _VMESSAGE("Adding SetupGeometry case");
 
-        struct Patch : Xbyak::CodeGenerator
+        struct Patch : SKSE::CodeGenerator
         {
-            Patch(std::size_t a_maxSize, void *a_buf) : Xbyak::CodeGenerator(a_maxSize, a_buf)
+            Patch() : SKSE::CodeGenerator()
             {
                 Xbyak::Label jmpOut;
                 // hook: 0x130AB2D (in middle of SetupGeometry, right before if (rawTechnique & RAW_FLAG_SPECULAR), just picked a random place tbh
@@ -419,11 +413,10 @@ namespace fixes
             }
         };
 
-        auto trampoline = SKSE::GetTrampoline();
-        auto patchBuf = trampoline->StartAlloc();
-        Patch patch(trampoline->FreeSize(), patchBuf);
-        trampoline->EndAlloc(patch.getCurr());
+        Patch patch;
+        patch.finalize();
 
+        auto trampoline = SKSE::GetTrampoline();
         trampoline->Write5Branch(AddAmbientSpecularToSetupGeometry.GetUIntPtr(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
         _VMESSAGE("success");
@@ -466,9 +459,9 @@ namespace fixes
 
         _VMESSAGE("patching third person state...");
         {
-            struct ThirdPersonStateHook_Code : Xbyak::CodeGenerator
+            struct ThirdPersonStateHook_Code : SKSE::CodeGenerator
             {
-                ThirdPersonStateHook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
+                ThirdPersonStateHook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label magicLabel;
@@ -499,20 +492,19 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            ThirdPersonStateHook_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            ThirdPersonStateHook_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(ThirdPersonState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
         _VMESSAGE("patching dragon camera state...");
         {
-            struct DragonCameraStateHook_Code : Xbyak::CodeGenerator
+            struct DragonCameraStateHook_Code : SKSE::CodeGenerator
             {
-                DragonCameraStateHook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
+                DragonCameraStateHook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label magicLabel;
@@ -543,20 +535,19 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            DragonCameraStateHook_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            DragonCameraStateHook_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(DragonCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
         _VMESSAGE("patching horse camera state...");
         {
-            struct HorseCameraStateHook_Code : Xbyak::CodeGenerator
+            struct HorseCameraStateHook_Code : SKSE::CodeGenerator
             {
-                HorseCameraStateHook_Code(std::size_t maxSize, void* buf) : CodeGenerator(maxSize, buf)
+                HorseCameraStateHook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label magicLabel;
@@ -587,11 +578,10 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            HorseCameraStateHook_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            HorseCameraStateHook_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(HorseCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
@@ -712,14 +702,14 @@ namespace fixes
 		static void AdvanceTime(float a_secondsPassed)
 		{
 			auto time = RE::Calendar::GetSingleton();
-			float hoursPassed = (a_secondsPassed * time->timeScale->value / (60.0 * 60.0)) + time->hour->value - 24.0;
+			float hoursPassed = (a_secondsPassed * time->timeScale->value / (60.0 * 60.0)) + time->gameHour->value - 24.0;
 			if (hoursPassed > 24.0) {
 				do {
-					time->uDaysPassed += 1;
-					time->fDaysPassed += 1.0;
+					time->midnightsPassed += 1;
+					time->rawDaysPassed += 1.0;
 					hoursPassed -= 24.0;
 				} while (hoursPassed > 24.0);
-				time->daysPassed->value = (hoursPassed / 24.0) + time->fDaysPassed;
+				time->gameDaysPassed->value = (hoursPassed / 24.0) + time->rawDaysPassed;
 			}
 		}
 
@@ -731,9 +721,9 @@ namespace fixes
 
 			REL::Offset<std::uintptr_t> funcBase(Calendar_AdvanceTime_call_offset);
 
-			struct Patch : Xbyak::CodeGenerator
+			struct Patch : SKSE::CodeGenerator
 			{
-				Patch(std::size_t maxSize, void* a_buf, std::uintptr_t a_addr) : Xbyak::CodeGenerator(maxSize, a_buf)
+				Patch(std::uintptr_t a_addr) : SKSE::CodeGenerator(CAVE_SIZE)
 				{
 					Xbyak::Label jmpLbl;
 
@@ -745,11 +735,8 @@ namespace fixes
 				}
 			};
 
-            std::array<char, CAVE_SIZE> patchBuf;
-
-			Patch patch(patchBuf.size(), patchBuf.data(), unrestricted_cast<std::uintptr_t>(&CalendarEx::AdvanceTime));
-
-			assert(patch.getSize() <= CAVE_SIZE);
+			Patch patch(unrestricted_cast<std::uintptr_t>(&CalendarEx::AdvanceTime));
+            patch.finalize();
 
 			for (std::size_t i = 0; i < patch.getSize(); ++i) {
 				SafeWrite8(funcBase.GetAddress() + CAVE_START + i, patch.getCode()[i]);

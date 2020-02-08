@@ -4,7 +4,7 @@ namespace patches
 {
     bool PatchAll()
     {
-        if (config::patchEnableAchievementsWithMods)
+        if (config::patchDisableChargenPrecache)
             PatchDisableChargenPrecache();
 
         if (config::patchEnableAchievementsWithMods)

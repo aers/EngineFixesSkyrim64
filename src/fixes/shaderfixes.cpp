@@ -1,6 +1,7 @@
 #include "skse64_common/Utilities.h"
 
 #include "SKSE/API.h"
+#include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
 
 #include "patches.h"
@@ -65,9 +66,9 @@ namespace fixes
     {
         _VMESSAGE("- BSLightingShader Force Alpha Testing -");
         {
-            struct BSBatchRenderer_SetupAndDrawPass_Code : Xbyak::CodeGenerator
+            struct BSBatchRenderer_SetupAndDrawPass_Code : SKSE::CodeGenerator
             {
-                BSBatchRenderer_SetupAndDrawPass_Code(std::size_t maxSize, void * buf) : Xbyak::CodeGenerator(maxSize, buf)
+                BSBatchRenderer_SetupAndDrawPass_Code() : SKSE::CodeGenerator()
                 {
                     // 131F810
                     mov(ptr[rsp + 0x10], rbx);
@@ -80,12 +81,11 @@ namespace fixes
                 }
             };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            BSBatchRenderer_SetupAndDrawPass_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
-
+            BSBatchRenderer_SetupAndDrawPass_Code code;
+            code.finalize();
             BSBatchRenderer_SetupAndDrawPass_Orig = _BSBatchRenderer_SetupAndDrawPass(code.getCode());
+
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.GetUIntPtr(), GetFnAddr(hk_BSBatchRenderer_SetupAndDrawPass));
         }
         _VMESSAGE("patched");
@@ -98,9 +98,9 @@ namespace fixes
     {
         _VMESSAGE("- BSLightingShader SetupGeometry - Parallax Bug -");
         {
-	        struct BSLightingShader_SetupGeometry_Parallax_Code : Xbyak::CodeGenerator
+	        struct BSLightingShader_SetupGeometry_Parallax_Code : SKSE::CodeGenerator
 	        {
-                BSLightingShader_SetupGeometry_Parallax_Code(std::size_t maxSize, void* buf) : Xbyak::CodeGenerator(maxSize, buf)
+                BSLightingShader_SetupGeometry_Parallax_Code() : SKSE::CodeGenerator()
                 {
                 	// orig code
                     and (eax, 0x21C00);
@@ -116,11 +116,10 @@ namespace fixes
                 };
 	        };
 
-            auto trampoline = SKSE::GetTrampoline();
-            auto codeBuf = trampoline->StartAlloc();
-            BSLightingShader_SetupGeometry_Parallax_Code code(trampoline->FreeSize(), codeBuf);
-            trampoline->EndAlloc(code.getCurr());
+            BSLightingShader_SetupGeometry_Parallax_Code code;
+            code.finalize();
 
+            auto trampoline = SKSE::GetTrampoline();
             trampoline->Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetUIntPtr(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patched");
