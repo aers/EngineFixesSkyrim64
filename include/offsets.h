@@ -215,6 +215,8 @@ constexpr REL::ID g_RefrHandleArray_offset(514478);
 constexpr REL::ID Win32FileType_CopyToBuffer_offset(101985);
 // C6 83 ? ? ? ? ? BA ? ? ? ? ->
 constexpr REL::ID Win32FileType_ctor_offset(101962);
+// E8 ? ? ? ? 8B D0 4C 8B CB ->
+constexpr REL::ID ScrapHeap_GetMaxSize_offset(35203);
 
 // E8 ? ? ? ? 0F B6 D0 EB 02 
 constexpr REL::ID TESFile_IsMaster_offset(13913);

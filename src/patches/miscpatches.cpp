@@ -313,24 +313,17 @@ namespace patches
         return true;
     }
 
-	REL::Offset<uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset, 0x14);
-    REL::Offset<uintptr_t> Win32FileType_ctor(Win32FileType_ctor_offset, 0x14E);
+	REL::Offset<std::uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset, 0x14);
+    REL::Offset<std::uintptr_t> Win32FileType_ctor(Win32FileType_ctor_offset, 0x14E);
+    REL::Offset<std::uintptr_t> ScrapHeap_GetMaxSize(ScrapHeap_GetMaxSize_offset, 0x4);
 
 	bool PatchSaveGameMaxSize()
 	{
 		_VMESSAGE("- save game max size -");
 		SKSE::SafeWrite8(Win32FileType_CopyToBuffer.GetAddress(), 0x08);
         SKSE::SafeWrite8(Win32FileType_ctor.GetAddress(), 0x08);
+        SKSE::SafeWrite8(ScrapHeap_GetMaxSize.GetAddress(), 0x08);
 
-        // get max size
-        {
-            REL::Offset<std::uintptr_t> base(REL::ID(35546), 0x4E);
-            auto src = base.GetAddress();
-            auto disp = reinterpret_cast<std::int32_t*>(src + 1);
-            auto nextOp = src + 5;
-            auto func = nextOp + *disp;
-            SKSE::SafeWrite8(func, 0x08);
-        }
 		_VMESSAGE("success");
 		return true;
 	}
