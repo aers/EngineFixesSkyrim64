@@ -1,8 +1,10 @@
 #include <intrin.h>
 
 #include "RE/Skyrim.h"
+#include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/CodeGenerator.h"
+#include "SKSE/SafeWrite.h"
 #include "SKSE/Trampoline.h"
 
 #include "patches.h"
@@ -10,16 +12,16 @@
 
 namespace patches
 {
-    RelocPtr<float> FrameTimer_WithSlowTime(g_FrameTimer_SlowTime_offset);
+    REL::Offset<float*> FrameTimer_WithSlowTime(g_FrameTimer_SlowTime_offset);
 
     // +0x252
-    RelocAddr<uintptr_t> GameLoop_Hook(GameLoop_Hook_offset);
-    RelocPtr<uint32_t> UnkGameLoopDword(UnkGameLoopDword_offset);
+    REL::Offset<std::uintptr_t> GameLoop_Hook(GameLoop_Hook_offset, 0x252);
+    REL::Offset<std::uint32_t*> UnkGameLoopDword(UnkGameLoopDword_offset);
 
     // 5th function in??_7BSWaterShader@@6B@ vtbl
     // F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
     // loads TIMER_DEFAULT which is a timer representing the GameHour in seconds
-    RelocAddr<uintptr_t> WaterShader_ReadTimer_Hook(WaterShader_ReadTimer_Hook_offset);
+    REL::Offset<uintptr_t> WaterShader_ReadTimer_Hook(WaterShader_ReadTimer_Hook_offset, 0x4A9);
 
     float timer = 8 * 3600; // Game timer inits to 8 AM
 
@@ -71,10 +73,10 @@ namespace patches
                     dq(uintptr_t(update_timer));
 
                     L(retnLabel);
-                    dq(GameLoop_Hook.GetUIntPtr() + 0x6);
+                    dq(GameLoop_Hook.GetAddress() + 0x6);
 
                     L(unkDwordLabel);
-                    dq(UnkGameLoopDword.GetUIntPtr());
+                    dq(UnkGameLoopDword.GetAddress());
                 }
             };
 
@@ -82,7 +84,7 @@ namespace patches
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(GameLoop_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(GameLoop_Hook.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("replacing water flow timer with our timer...");
         {
@@ -104,7 +106,7 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(WaterShader_ReadTimer_Hook.GetUIntPtr() + 0xE);
+                    dq(WaterShader_ReadTimer_Hook.GetAddress() + 0xE);
 
                     L(timerLabel);
                     dq(uintptr_t(&timer));
@@ -115,7 +117,7 @@ namespace patches
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(WaterShader_ReadTimer_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(WaterShader_ReadTimer_Hook.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -171,15 +173,15 @@ namespace patches
 
         _VMESSAGE("max stdio set to %d", maxStdio);
 
-        *(void **)&VC140_fopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
-        *(void **)&VC140_wfopen_s = (uintptr_t *)PatchIAT(GetFnAddr(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
-        *(void **)&VC140_fopen = (uintptr_t *)PatchIAT(GetFnAddr(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
+        *(void **)&VC140_fopen_s = (uintptr_t *)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
+        *(void **)&VC140_wfopen_s = (uintptr_t *)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
+        *(void **)&VC140_fopen = (uintptr_t *)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
 
         return true;
     }
 
-    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(QuickSaveLoadHandler_HandleEvent_SaveType_offset);
-    RelocAddr<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHandler_HandleEvent_LoadType_offset);
+    REL::Offset<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(QuickSaveLoadHandler_HandleEvent_SaveType_offset, 0x68);
+    REL::Offset<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHandler_HandleEvent_LoadType_offset, 0x9B);
 
     bool PatchRegularQuicksaves()
     {
@@ -187,13 +189,13 @@ namespace patches
         const uint32_t load_last_save = 0xD0000100;
 
         _VMESSAGE("- regular quicksaves -");
-        SafeWrite32(QuickSaveLoadHandler_HandleEvent_SaveType.GetUIntPtr(), regular_save);
-        SafeWrite32(QuickSaveLoadHandler_HandleEvent_LoadType.GetUIntPtr(), load_last_save);
+        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_SaveType.GetAddress(), regular_save);
+        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_LoadType.GetAddress(), load_last_save);
         _VMESSAGE("success");
         return true;
     }
 
-    RelocAddr<uintptr_t> AchievementModsEnabledFunction(AchievementModsEnabledFunction_offset);
+    REL::Offset<std::uintptr_t> AchievementModsEnabledFunction(AchievementModsEnabledFunction_offset);
 
     bool PatchEnableAchievementsWithMods()
     {
@@ -213,22 +215,22 @@ namespace patches
 
         for (UInt32 i = 0; i < patch.getSize(); ++i)
         {
-            SafeWrite8(AchievementModsEnabledFunction.GetUIntPtr() + i, patch.getCode()[i]);
+            SKSE::SafeWrite8(AchievementModsEnabledFunction.GetAddress() + i, patch.getCode()[i]);
         }
 
         _VMESSAGE("success");
         return true;
     }
 
-    RelocAddr<uintptr_t> ChargenCacheFunction(ChargenCacheFunction_offset);
-    RelocAddr<uintptr_t> ChargenCacheClearFunction(ChargenCacheClearFunction_offset);
+    REL::Offset<std::uintptr_t> ChargenCacheFunction(ChargenCacheFunction_offset);
+    REL::Offset<std::uintptr_t> ChargenCacheClearFunction(ChargenCacheClearFunction_offset);
 
     bool PatchDisableChargenPrecache()
     {
 
         _VMESSAGE("- disable chargen precache -");
-        SafeWrite8(ChargenCacheClearFunction.GetUIntPtr(), 0xC3);
-        SafeWrite8(ChargenCacheClearFunction.GetUIntPtr(), 0xC3);
+        SKSE::SafeWrite8(ChargenCacheClearFunction.GetAddress(), 0xC3);
+        SKSE::SafeWrite8(ChargenCacheClearFunction.GetAddress(), 0xC3);
         _VMESSAGE("success");
         return true;
     }
@@ -240,7 +242,7 @@ namespace patches
         if (loadSet)
             return true;
 
-        uintptr_t returnAddr = (uintptr_t)(_ReturnAddress()) - RelocationManager::s_baseAddr;
+        uintptr_t returnAddr = (uintptr_t)(_ReturnAddress()) - REL::Module::BaseAddr();
 
         if (returnAddr == 0x16E11E)
         {
@@ -257,32 +259,32 @@ namespace patches
 		return (modInfo->recordFlags & RE::TESFile::RecordFlag::kMaster) != RE::TESFile::RecordFlag::kNone;
     }
 
-    RelocAddr<uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
+    REL::Offset<std::uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
 
     bool PatchTreatAllModsAsMasters()
     {
         _VMESSAGE("- treat all mods as masters -");
         MessageBox(nullptr, TEXT("WARNING: You have the treat all mods as masters patch enabled. I hope you know what you're doing!"), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(TESFile_IsMaster.GetUIntPtr(), GetFnAddr(hk_TESFile_IsMaster));
+        trampoline->Write6Branch(TESFile_IsMaster.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_TESFile_IsMaster));
         _VMESSAGE("success");
 
         return true;
     }
 
-    RelocAddr<uintptr_t> FirstPersonState_DontSwitchPOV(FirstPersonState_DontSwitchPOV_offset);
-    RelocAddr<uintptr_t> ThirdPersonState_DontSwitchPOV(ThirdPersonState_DontSwitchPOV_offset);
+    REL::Offset<std::uintptr_t> FirstPersonState_DontSwitchPOV(FirstPersonState_DontSwitchPOV_offset, 0x43);
+    REL::Offset<std::uintptr_t> ThirdPersonState_DontSwitchPOV(ThirdPersonState_DontSwitchPOV_offset, 0x1E8);
 
     bool PatchScrollingDoesntSwitchPOV()
     {
         _VMESSAGE("- scrolling doesnt switch POV -");
-        SafeWrite8(FirstPersonState_DontSwitchPOV.GetUIntPtr(), 0xEB);
-        SafeWrite8(ThirdPersonState_DontSwitchPOV.GetUIntPtr(), 0xEB);
+        SKSE::SafeWrite8(FirstPersonState_DontSwitchPOV.GetAddress(), 0xEB);
+        SKSE::SafeWrite8(ThirdPersonState_DontSwitchPOV.GetAddress(), 0xEB);
         _VMESSAGE("- success -");
         return true;
     }
 
-    RelocAddr<uintptr_t> SleepWaitTime_Compare(SleepWaitTime_Compare_offset);
+    REL::Offset<std::uintptr_t> SleepWaitTime_Compare(SleepWaitTime_Compare_offset, 0x1CE);
 
     bool PatchSleepWaitTime()
     {
@@ -297,7 +299,7 @@ namespace patches
                     comiss(xmm0, ptr[rax]);
                     pop(rax);
                     jmp(ptr[rip]);
-                    dq(SleepWaitTime_Compare.GetUIntPtr() + 0x7);
+                    dq(SleepWaitTime_Compare.GetAddress() + 0x7);
                 }
             };
 
@@ -305,22 +307,30 @@ namespace patches
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(SleepWaitTime_Compare.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(SleepWaitTime_Compare.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
         return true;
     }
 
-	RelocAddr<uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset);
-	RelocAddr<uintptr_t> Win32FileType_ctor(Win32FileType_ctor_offset);
-	RelocAddr<uintptr_t> ScrapHeap_GetMaxSize(ScrapHeap_GetMaxSize_offset);
+	REL::Offset<uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset, 0x14);
+    REL::Offset<uintptr_t> Win32FileType_ctor(Win32FileType_ctor_offset, 0x14E);
 
 	bool PatchSaveGameMaxSize()
 	{
 		_VMESSAGE("- save game max size -");
-		SafeWrite8(Win32FileType_CopyToBuffer.GetUIntPtr(), 0x08);
-		SafeWrite8(Win32FileType_ctor.GetUIntPtr(), 0x08);
-		SafeWrite8(ScrapHeap_GetMaxSize.GetUIntPtr(), 0x08);
+		SKSE::SafeWrite8(Win32FileType_CopyToBuffer.GetAddress(), 0x08);
+        SKSE::SafeWrite8(Win32FileType_ctor.GetAddress(), 0x08);
+
+        // get max size
+        {
+            REL::Offset<std::uintptr_t> base(REL::ID(35546), 0x4E);
+            auto src = base.GetAddress();
+            auto disp = reinterpret_cast<std::int32_t*>(src + 1);
+            auto nextOp = src + 5;
+            auto func = nextOp + *disp;
+            SKSE::SafeWrite8(func, 0x08);
+        }
 		_VMESSAGE("success");
 		return true;
 	}

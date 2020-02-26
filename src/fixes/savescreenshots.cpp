@@ -1,6 +1,5 @@
-#include "skse64/GameSettings.h"
-
 #include "RE/Skyrim.h"
+#include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
@@ -17,13 +16,13 @@ namespace fixes
     // 0 = none, 1 = BGSSaveManager::ProcessEvents, 2 = open menu
     byte screenshot_requested_location = 0;
 
-    RelocAddr<uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot(BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset);
-    RelocAddr<uintptr_t> MenuSave_RequestScreenshot(MenuSave_RequestScreenshot_hook_offset);
-    RelocAddr<uintptr_t> ScreenshotJnz(Screenshot_Jnz_hook_offset);
-    RelocAddr<uintptr_t> RenderTargetHook_1(Render_Target_Hook_1_offset);
-    RelocAddr<uintptr_t> RenderTargetHook_2(Render_Target_Hook_2_offset);
-    RelocAddr<uintptr_t> SaveScreenshotRequestedDword(g_RequestSaveScreenshot_offset);
-    RelocAddr<uintptr_t> ScreenshotRenderOrigJnz(Screenshot_Render_Orig_jnz_offset);
+    REL::Offset<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot(BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset, 0x163);
+    REL::Offset<std::uintptr_t> MenuSave_RequestScreenshot(MenuSave_RequestScreenshot_hook_offset, 0x56A);
+    REL::Offset<std::uintptr_t> ScreenshotJnz(Screenshot_Jnz_hook_offset, 0x23A);
+    REL::Offset<std::uintptr_t> RenderTargetHook_1(Render_Target_Hook_1_offset, 0x365);
+    REL::Offset<std::uintptr_t> RenderTargetHook_2(Render_Target_Hook_2_offset, 0x3EA);
+    REL::Offset<std::uintptr_t> SaveScreenshotRequestedDword(g_RequestSaveScreenshot_offset);
+    REL::Offset<std::uintptr_t> ScreenshotRenderOrigJnz(Screenshot_Render_Orig_jnz_offset, 0x4D5);
 
 
     bool PatchSaveScreenshots()
@@ -59,7 +58,7 @@ namespace fixes
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr() + 0xD);
+                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress() + 0xD);
                     }
                 };
 
@@ -67,7 +66,7 @@ namespace fixes
                 code.finalize();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
 
             }
             // use menu fix for DoF+TAA Disabled ingame requests
@@ -87,7 +86,7 @@ namespace fixes
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr() + 0xD);
+                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress() + 0xD);
                     }
                 };
 
@@ -95,7 +94,7 @@ namespace fixes
                 code.finalize();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
 
             }
 
@@ -119,10 +118,10 @@ namespace fixes
                         mov(dword[rax], 1);
                         pop(rax);
                         jmp(ptr[rip]);
-                        dq(MenuSave_RequestScreenshot.GetUIntPtr() + 0x5);
+                        dq(MenuSave_RequestScreenshot.GetAddress() + 0x5);
 
                         L(requestScreenshot);
-                        dq(SaveScreenshotRequestedDword.GetUIntPtr());
+                        dq(SaveScreenshotRequestedDword.GetAddress());
                     }
                 };
 
@@ -131,7 +130,7 @@ namespace fixes
 
                 auto trampoline = SKSE::GetTrampoline();
                 // warning: 5 byte branch instead of 6 byte branch 
-                trampoline->Write5Branch(MenuSave_RequestScreenshot.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write5Branch(MenuSave_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
             }
 
             {
@@ -175,11 +174,11 @@ namespace fixes
 
                         L("JMP_OUT");
                         jmp(ptr[rip]);
-                        dq(ScreenshotJnz.GetUIntPtr() + 0x19);
+                        dq(ScreenshotJnz.GetAddress() + 0x19);
 
                         L("ORIG_JNZ");
                         jmp(ptr[rip]);
-                        dq(ScreenshotRenderOrigJnz.GetUIntPtr());
+                        dq(ScreenshotRenderOrigJnz.GetAddress());
                     }
                 };
 
@@ -187,7 +186,7 @@ namespace fixes
                 code.finalize();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(ScreenshotJnz.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(ScreenshotJnz.GetAddress(), uintptr_t(code.getCode()));
             }
 
             // flicker version of fix, checks for screenshot requested from open menu
@@ -216,7 +215,7 @@ namespace fixes
                         jmp(ptr[rip]);
                         //.text:00000001412AEEDE                 mov     rdx, [rax + 110h]
                         // 12AEED5+0x9
-                        dq(RenderTargetHook_1.GetUIntPtr() + 0x9);
+                        dq(RenderTargetHook_1.GetAddress() + 0x9);
                     }
                 };
 
@@ -224,7 +223,7 @@ namespace fixes
                 code.finalize();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(RenderTargetHook_1.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(RenderTargetHook_1.GetAddress(), uintptr_t(code.getCode()));
             }
 
             {
@@ -245,7 +244,7 @@ namespace fixes
                         L("ORIG");
                         pop(rax);
                         jmp(ptr[rip]);
-                        dq(RenderTargetHook_2.GetUIntPtr() + 0x7);
+                        dq(RenderTargetHook_2.GetAddress() + 0x7);
                     }
                 };
 
@@ -253,7 +252,7 @@ namespace fixes
                 code.finalize();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(RenderTargetHook_2.GetUIntPtr(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(RenderTargetHook_2.GetAddress(), uintptr_t(code.getCode()));
             }
         }
 

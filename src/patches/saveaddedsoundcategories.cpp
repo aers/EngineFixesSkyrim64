@@ -1,4 +1,6 @@
 #include "RE/Skyrim.h"
+#include "REL/Relocation.h"
+#include "SKSE/SafeWrite.h"
 
 #include "patches.h"
 #include "Simpleini.h"
@@ -10,13 +12,13 @@ namespace patches
 {
     CSimpleIniA snctIni;
 
-    RelocPtr<uintptr_t> vtbl_BGSSoundCategory(vtbl_BGSSoundCategory_offset);
+    REL::Offset<std::uintptr_t*> vtbl_BGSSoundCategory(vtbl_BGSSoundCategory_offset);
 
     typedef bool(*_BSISoundCategory_SetVolume)(RE::BSISoundCategory * thisPtr, float volume);
-    RelocPtr<_BSISoundCategory_SetVolume> vtbl_BSISoundCategory_SetVolume(vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
+    REL::Offset<_BSISoundCategory_SetVolume*> vtbl_BSISoundCategory_SetVolume(vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset, 0x8 * 0x3); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
 
     typedef bool(*_INIPrefSettingCollection_Unlock)(__int64 thisPtr);
-    RelocPtr<_INIPrefSettingCollection_Unlock> vtbl_INIPrefSettingCollection_Unlock(vtbl_INIPrefSettingCollection_Unlock_offset);
+    REL::Offset<_INIPrefSettingCollection_Unlock*> vtbl_INIPrefSettingCollection_Unlock(vtbl_INIPrefSettingCollection_Unlock_offset, 0x8 * 0x6);
     _INIPrefSettingCollection_Unlock orig_INIPrefSettingCollection_Unlock;
 
     bool hk_INIPrefSettingCollection_Unlock(__int64 thisPtr)
@@ -49,9 +51,7 @@ namespace patches
                 }
             }
 
-            const std::string& runtimePath = GetRuntimeDirectory();
-
-            const SI_Error saveRes = snctIni.SaveFile((runtimePath + R"(Data\SKSE\plugins\EngineFixes_SNCT.ini)").c_str());
+            const SI_Error saveRes = snctIni.SaveFile(R"(.\Data\SKSE\plugins\EngineFixes_SNCT.ini)");
 
             if (saveRes < 0)
             {
@@ -104,9 +104,7 @@ namespace patches
     {
         _VMESSAGE("- save added sound categories -");
 
-        const std::string& runtimePath = GetRuntimeDirectory();
-
-        const SI_Error loadRes = snctIni.LoadFile((runtimePath + R"(Data\SKSE\plugins\EngineFixes_SNCT.ini)").c_str());
+        const SI_Error loadRes = snctIni.LoadFile(R"(.\Data\SKSE\plugins\EngineFixes_SNCT.ini)");
 
         if (loadRes < 0)
         {
@@ -116,7 +114,7 @@ namespace patches
 
         _VMESSAGE("hooking vtbls");
         orig_INIPrefSettingCollection_Unlock = *vtbl_INIPrefSettingCollection_Unlock;
-        SafeWrite64(vtbl_INIPrefSettingCollection_Unlock.GetUIntPtr(), GetFnAddr(hk_INIPrefSettingCollection_Unlock));
+        SKSE::SafeWrite64(vtbl_INIPrefSettingCollection_Unlock.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_INIPrefSettingCollection_Unlock));
         _VMESSAGE("success");
         return true;
     }

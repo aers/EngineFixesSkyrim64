@@ -25,6 +25,7 @@ namespace config
     extern bool fixBSLightingAmbientSpecular;
     extern bool fixBSLightingShaderForceAlphaTest;
     extern bool fixBSLightingShaderGeometryParallaxBug;
+    extern bool fixBSTempEffectNiRTTI;
     extern bool fixCalendarSkipping;
 	extern bool fixConjurationEnchantAbsorbs;
     extern bool fixDoublePerkApply;

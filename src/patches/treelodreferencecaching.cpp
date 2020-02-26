@@ -1,6 +1,5 @@
-#include "skse64/GameSettings.h"
-
 #include "RE/Skyrim.h"
+#include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/Trampoline.h"
 
@@ -12,13 +11,13 @@
 namespace patches
 {
     typedef void(*UpdateBlockVisibility_)(RE::BGSDistantTreeBlock * data);
-    RelocAddr<UpdateBlockVisibility_> UpdateBlockVisibility_orig(UpdateBlockVisibility_orig_offset);
+    REL::Offset<UpdateBlockVisibility_> UpdateBlockVisibility_orig(UpdateBlockVisibility_orig_offset);
 
     typedef uint16_t(*Float2Half_)(float f);
-    RelocAddr<Float2Half_> Float2Half(Float2Half_offset);
+    REL::Offset<Float2Half_> Float2Half(Float2Half_offset);
 
     typedef RE::TESForm* (*_LookupFormByID)(uint32_t id);
-    RelocAddr<_LookupFormByID> LookupFormByID(LookupFormByID_offset);
+    REL::Offset<_LookupFormByID> LookupFormByID(LookupFormByID_offset);
 
     tbb::concurrent_hash_map<uint32_t, RE::TESObjectREFR *> referencesFormCache;
 
@@ -129,7 +128,7 @@ namespace patches
 
         _VMESSAGE("detouring UpdateLODAlphaFade");
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(UpdateBlockVisibility_orig.GetUIntPtr(), GetFnAddr(hk_UpdateBlockVisibility));
+        trampoline->Write6Branch(UpdateBlockVisibility_orig.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_UpdateBlockVisibility));
         _VMESSAGE("success");
 
         return true;

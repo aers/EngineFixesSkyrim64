@@ -2,8 +2,6 @@
 
 #include "tbb/concurrent_hash_map.h"
 
-#include "skse64/GameForms.h"
-
 #include "RE/Skyrim.h"
 #include "SKSE/API.h"
 #include "SKSE/CodeGenerator.h"
@@ -19,23 +17,23 @@ namespace patches
 
     tbb::concurrent_hash_map<uint32_t, RE::TESForm *> globalFormCacheMap[256];
 
-    RelocPtr<BSReadWriteLock> GlobalFormTableLock(GlobalFormTableLock_offset);
-    RelocPtr<RE::BSTHashMap<UInt32, RE::TESForm *> *> GlobalFormTable(GlobalFormTable_offset);
+    REL::Offset<RE::BSReadWriteLock*> GlobalFormTableLock(GlobalFormTableLock_offset);
+    REL::Offset<RE::BSTHashMap<UInt32, RE::TESForm *> **> GlobalFormTable(GlobalFormTable_offset);
 
     typedef void(*UnknownFormFunction0_)(__int64 form, bool a2);
-    RelocAddr<UnknownFormFunction0_> origFunc0HookAddr(UnkFormFunc1_offset);
+    REL::Offset<UnknownFormFunction0_> origFunc0HookAddr(UnkFormFunc1_offset);
     UnknownFormFunction0_ origFunc0;
 
-     typedef __int64(*UnknownFormFunction1_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 *a5);
-    RelocAddr <UnknownFormFunction1_> origFunc1HookAddr(UnkFormFunc2_offset);
+    typedef __int64(*UnknownFormFunction1_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 *a5);
+    REL::Offset <UnknownFormFunction1_> origFunc1HookAddr(UnkFormFunc2_offset);
     UnknownFormFunction1_ origFunc1;
 
-       typedef __int64(*UnknownFormFunction2_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 **a5);
-    RelocAddr <UnknownFormFunction2_> origFunc2HookAddr(UnkFormFunc3_offset);
+    typedef __int64(*UnknownFormFunction2_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 **a5);
+    REL::Offset <UnknownFormFunction2_> origFunc2HookAddr(UnkFormFunc3_offset);
     UnknownFormFunction2_ origFunc2;
 
-       typedef __int64(*UnknownFormFunction3_)(__int64 a1, __int64 a2, int a3, __int64 a4);
-    RelocAddr <UnknownFormFunction3_> origFunc3HookAddr(UnkFormFunc4_offset);
+    typedef __int64(*UnknownFormFunction3_)(__int64 a1, __int64 a2, int a3, __int64 a4);
+    REL::Offset <UnknownFormFunction3_> origFunc3HookAddr(UnkFormFunc4_offset);
     UnknownFormFunction3_ origFunc3;
 
     void UpdateFormCache(uint32_t FormId, RE::TESForm *Value, bool Invalidate)
@@ -69,7 +67,7 @@ namespace patches
         }
 
         // Try to use Bethesda's scatter table which is considerably slower
-        CALL_MEMBER_FN(GlobalFormTableLock, LockForRead)();
+        GlobalFormTableLock->LockForRead();
 
         if (*GlobalFormTable)
         {
@@ -77,7 +75,7 @@ namespace patches
             formPointer = (iter != (*GlobalFormTable)->end()) ? iter->second : nullptr;
         }
 
-        CALL_MEMBER_FN(GlobalFormTableLock, UnlockRead)();
+        GlobalFormTableLock->UnlockForRead();
 
         if (formPointer)
             UpdateFormCache(FormId, formPointer, false);
@@ -118,7 +116,8 @@ namespace patches
     {
         _VMESSAGE("- form caching -");
 
-        if (*(uint32_t *)LookupFormByID.GetUIntPtr() != 0x83485740)
+        REL::Offset<std::uint32_t*> LookupFormByID(REL::ID(14461));
+        if (*LookupFormByID != 0x83485740)
         {
             _VMESSAGE("sse fixes is installed and enabled. aborting form cache patch.");
             config::patchFormCaching = false;
@@ -127,7 +126,7 @@ namespace patches
         }
 
         _VMESSAGE("detouring GetFormById");
-        SKSE::GetTrampoline()->Write6Branch(LookupFormByID.GetUIntPtr(), GetFnAddr(hk_GetFormByID));
+        SKSE::GetTrampoline()->Write6Branch(LookupFormByID.GetAddress(), unrestricted_cast<std::uintptr_t>(&hk_GetFormByID));
         _VMESSAGE("done");
 
         // TODO: write a generic detour instead
@@ -151,7 +150,7 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc0HookAddr.GetUIntPtr() + 0x8);
+                    dq(origFunc0HookAddr.GetAddress() + 0x8);
                 }
             };
 
@@ -160,7 +159,7 @@ namespace patches
             origFunc0 = UnknownFormFunction0_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc0HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction0));
+            trampoline->Write6Branch(origFunc0HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction0));
         }
 
         {
@@ -181,7 +180,7 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc1HookAddr.GetUIntPtr() + 0xA);
+                    dq(origFunc1HookAddr.GetAddress() + 0xA);
                 }
             };
 
@@ -190,7 +189,7 @@ namespace patches
             origFunc1 = UnknownFormFunction1_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc1HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction1));
+            trampoline->Write6Branch(origFunc1HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction1));
         }
 
         {
@@ -210,7 +209,7 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc2HookAddr.GetUIntPtr() + 0xA);
+                    dq(origFunc2HookAddr.GetAddress() + 0xA);
                 }
             };
 
@@ -219,7 +218,7 @@ namespace patches
             origFunc2 = UnknownFormFunction2_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc2HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction2));
+            trampoline->Write6Branch(origFunc2HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction2));
         }
 
         {
@@ -240,7 +239,7 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc3HookAddr.GetUIntPtr() + 0x9);
+                    dq(origFunc3HookAddr.GetAddress() + 0x9);
                 }
             };
 
@@ -249,7 +248,7 @@ namespace patches
             origFunc3 = UnknownFormFunction3_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc3HookAddr.GetUIntPtr(), GetFnAddr(UnknownFormFunction3));
+            trampoline->Write6Branch(origFunc3HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction3));
         }
         _VMESSAGE("done");
 

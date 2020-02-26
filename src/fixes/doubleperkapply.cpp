@@ -1,7 +1,8 @@
-#include "skse64/InternalTasks.h"
-
+#include "RE/Skyrim.h"
+#include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/CodeGenerator.h"
+#include "SKSE/SafeWrite.h"
 #include "SKSE/Trampoline.h"
 
 #include "fixes.h"
@@ -10,32 +11,32 @@ namespace fixes
 {
     uint32_t next_formid;
 
-    typedef void(*_UnknownAddFunc)(BSTaskPool * taskPool, int64_t actorPtr, int64_t perkPtr, uint32_t val, int32_t unk1);
-    RelocAddr<_UnknownAddFunc> UnknownAddFunc(Unknown_Add_Func_offset);
+    typedef void(*_QueueApplyPerk)(RE::TaskQueueInterface* thisPtr, RE::Actor* actor, RE::BGSPerk* perk, std::int8_t oldRank, std::int8_t newRank);
+    REL::Offset<_QueueApplyPerk> QueueApplyPerk(QueueApplyPerk_offset);
     typedef void(*_HandleAddRf)(int64_t apm);
-    RelocAddr<_HandleAddRf> HandleAddRf(Handle_Add_Rf_offset);
-    RelocAddr<uintptr_t> SwitchFunctionMovzx(Switch_Function_movzx_offset);
-    RelocAddr<uintptr_t> UnknownAddFuncMovzx1(Unknown_Add_Function_movzx_offset);
-    RelocAddr<uintptr_t> UnknownAddFuncMovzx2(Unknown_Add_Function_movzx2_offset);
-    RelocAddr<uintptr_t> NextFormIdGetHook(Next_Formid_Get_Hook_offset);
-    RelocAddr<uintptr_t> DoHandleHook(Do_Handle_Hook_offset);
-    RelocAddr<uintptr_t> DoAddHook(Do_Add_Hook_offset);
+    REL::Offset<_HandleAddRf> HandleAddRf(Handle_Add_Rf_offset);
+    REL::Offset<std::uintptr_t> SwitchFunctionMovzx(Switch_Function_movzx_offset, 0x1C4E);
+    REL::Offset<std::uintptr_t> UnknownAddFuncMovzx1(Unknown_Add_Function_movzx_offset, 0x1A);
+    REL::Offset<std::uintptr_t> UnknownAddFuncMovzx2(Unknown_Add_Function_movzx2_offset, 0x46);
+    REL::Offset<std::uintptr_t> NextFormIdGetHook(Next_Formid_Get_Hook_offset, 0x1B);
+    REL::Offset<std::uintptr_t> DoHandleHook(Do_Handle_Hook_offset, 0x1B);
+    REL::Offset<std::uintptr_t> DoAddHook(Do_Add_Hook_offset, 0x11);
 
-    void do_add(int64_t actorPtr, int64_t perkPtr, int32_t unk1)
+    void do_add(RE::Actor* actorPtr, RE::BGSPerk* perkPtr, std::int8_t newRank)
     {
-        uint32_t val = 0;
+        std::int8_t oldRank = 0;
 
-        uint32_t formid = *(uint32_t *)(actorPtr + 0x14); // formid 0x14 in SSE TESForm
+        auto formid = actorPtr->GetFormID();
 
         if (formid == next_formid)
         {
             //_DMESSAGE("perk loop in formid %08X", formid);
             next_formid = 0;
             if (formid != 0x14) // player formid = 0x14
-                val |= 0x100;
+                oldRank |= 0x100;
         }
 
-        UnknownAddFunc(BSTaskPool::GetSingleton(), actorPtr, perkPtr, val, unk1);
+        QueueApplyPerk(RE::TaskQueueInterface::GetSingleton(), actorPtr, perkPtr, oldRank, newRank);
     }
 
 
@@ -62,7 +63,7 @@ namespace fixes
         // mov r8d, dword ptr [rdi+18h]
         // 44 8b 47 18 90
         unsigned char first_movzx_patch[] = { 0x44, 0x8b, 0x47, 0x18, 0x90 };
-        SafeWriteBuf(SwitchFunctionMovzx.GetUIntPtr(), first_movzx_patch, 5);
+        SKSE::SafeWriteBuf(SwitchFunctionMovzx.GetAddress(), first_movzx_patch, 5);
 
         // .text:00000001405C6C6A                 movzx   edi, r9b
         // 41 0F B6 F9
@@ -70,7 +71,7 @@ namespace fixes
         // mov edi, r9d
         // 44 89 CF 90
         unsigned char second_movzx_patch[] = { 0x44, 0x89, 0xCF, 0x90 };
-        SafeWriteBuf(UnknownAddFuncMovzx1.GetUIntPtr(), second_movzx_patch, 4);
+        SKSE::SafeWriteBuf(UnknownAddFuncMovzx1.GetAddress(), second_movzx_patch, 4);
 
         // .text:00000001405C6C96                 movzx   eax, dil
         // 40 0F B6 C7
@@ -78,7 +79,7 @@ namespace fixes
         // mov eax, edi
         // 89 F8 90 90
         unsigned char third_movzx_patch[] = { 0x89, 0xF8, 0x90, 0x90 };
-        SafeWriteBuf(UnknownAddFuncMovzx2.GetUIntPtr(), third_movzx_patch, 4);
+        SKSE::SafeWriteBuf(UnknownAddFuncMovzx2.GetAddress(), third_movzx_patch, 4);
 
         _VMESSAGE("hooking for next form ID");
         {
@@ -103,7 +104,7 @@ namespace fixes
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(NextFormIdGetHook.GetUIntPtr() + 0xA);
+                    dq(NextFormIdGetHook.GetAddress() + 0xA);
                 }
             };
 
@@ -111,7 +112,7 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(NextFormIdGetHook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(NextFormIdGetHook.GetAddress(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("hooking handle function");
@@ -152,7 +153,7 @@ namespace fixes
                     dq(doHandleAddr);
 
                     L(retnLabel);
-                    dq(DoHandleHook.GetUIntPtr() + 0x8);
+                    dq(DoHandleHook.GetAddress() + 0x8);
                 }
             };
 
@@ -160,7 +161,7 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(DoHandleHook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(DoHandleHook.GetAddress(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("hooking add function");
@@ -195,7 +196,7 @@ namespace fixes
                     dq(doAddAddr);
 
                     L(retnLabel);
-                    dq(DoAddHook.GetUIntPtr() + 0x1B);
+                    dq(DoAddHook.GetAddress() + 0x1B);
 
                 }
             };
@@ -204,7 +205,7 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(DoAddHook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(DoAddHook.GetAddress(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("success");

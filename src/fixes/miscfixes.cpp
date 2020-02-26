@@ -14,7 +14,7 @@ namespace fixes
     typedef void _TESObjectBook_LoadBuffer(RE::TESObjectBOOK* a_this, RE::BGSLoadFormBuffer* a_buf);
     static _TESObjectBook_LoadBuffer * orig_LoadBuffer;
 
-    RelocPtr<_TESObjectBook_LoadBuffer*> vtbl_LoadBuffer(TESObjectBook_vtbl_offset + (0x0F * 0x8));
+    REL::Offset<_TESObjectBook_LoadBuffer**> vtbl_LoadBuffer(TESObjectBook_vtbl_offset, 0xF * 0x8);
     
     void hk_TESObjectBook_LoadBuffer(RE::TESObjectBOOK * thisPtr, RE::BGSLoadFormBuffer* a_buf)
     {
@@ -36,7 +36,7 @@ namespace fixes
     {
         _VMESSAGE("- Removed Spell Book -");
         orig_LoadBuffer = *vtbl_LoadBuffer;
-        SafeWrite64(vtbl_LoadBuffer.GetUIntPtr(), GetFnAddr(hk_TESObjectBook_LoadBuffer));
+        SKSE::SafeWrite64(vtbl_LoadBuffer.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_TESObjectBook_LoadBuffer));
         _VMESSAGE("success");
         return true;
     }
@@ -50,28 +50,27 @@ namespace fixes
         }
     };
 
-    RelocAddr<uintptr_t> call_IsRunning(GameFunc_Native_IsRunning_offset + 0x22);
+    REL::Offset<uintptr_t> call_IsRunning(GameFunc_Native_IsRunning_offset, 0x22);
 
     bool PatchPerkFragmentIsRunning()
     {       
         _VMESSAGE("- ::IsRunning fix -");
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write5Call(call_IsRunning.GetUIntPtr(), GetFnAddr(&ActorEx::Hook_IsRunning));
+        trampoline->Write5Call(call_IsRunning.GetAddress(), unrestricted_cast<std::uintptr_t>(&ActorEx::Hook_IsRunning));
         _VMESSAGE("success");
 
         return true;
      }
 
-    RelocAddr<uintptr_t> BSLightingShaderMaterialSnow_vtbl(BSLightingShaderMaterialSnow_vtbl_offset);
-    RelocAddr<uintptr_t> BSLightingShader_SetupMaterial_Snow_Hook(BSLightingShader_SetupMaterial_Snow_Hook_offset);
-    RelocAddr<uintptr_t> BSLightingShader_SetupMaterial_Snow_Exit(BSLightingShader_SetupMaterial_Snow_Exit_offset);
+    REL::Offset<std::uintptr_t> BSLightingShaderMaterialSnow_vtbl(BSLightingShaderMaterialSnow_vtbl_offset);
+    REL::Offset<std::uintptr_t> BSLightingShader_SetupMaterial_Snow_Hook(BSLightingShader_SetupMaterial_Snow_Hook_offset, 0x4E0);
+    REL::Offset<std::uintptr_t> BSLightingShader_SetupMaterial_Snow_Exit(BSLightingShader_SetupMaterial_Snow_Exit_offset, 0x5B6);
 
-    typedef bool(*BGSShaderParticleGeometryData_LoadForm_)(RE::BGSShaderParticleGeometryData* thisPtr,
-        RE::TESFile* modInfo);
+    typedef bool(*BGSShaderParticleGeometryData_LoadForm_)(RE::BGSShaderParticleGeometryData* thisPtr, RE::TESFile* modInfo);
     BGSShaderParticleGeometryData_LoadForm_ orig_BGSShaderParticleGeometryData_LoadForm;
-    RelocPtr<BGSShaderParticleGeometryData_LoadForm_> vtbl_BGSShaderParticleGeometryData_LoadForm(vtbl_BGSShaderParticleGeometryData_LoadForm_offset); // vtbl[6]
+    REL::Offset<BGSShaderParticleGeometryData_LoadForm_*> vtbl_BGSShaderParticleGeometryData_LoadForm(vtbl_BGSShaderParticleGeometryData_LoadForm_offset, 0x8 * 0x6); // vtbl[6]
 
-    RelocAddr<uintptr_t> BadUse(BadUseFuncBase_offset + 0x1AFD);
+    REL::Offset<std::uintptr_t> BadUse(BadUseFuncBase_offset, 0x1AFD);
 
     bool hk_BGSShaderParticleGeometryData_LoadForm(RE::BGSShaderParticleGeometryData* thisPtr, RE::TESFile* file)
     {
@@ -119,13 +118,13 @@ namespace fixes
                     jmp(ptr[rip + snowRetnLabel]);
 
                     L(vtblAddr);
-                    dq(BSLightingShaderMaterialSnow_vtbl.GetUIntPtr());
+                    dq(BSLightingShaderMaterialSnow_vtbl.GetAddress());
 
                     L(snowRetnLabel);
-                    dq(BSLightingShader_SetupMaterial_Snow_Hook.GetUIntPtr() + 0x8);
+                    dq(BSLightingShader_SetupMaterial_Snow_Hook.GetAddress() + 0x8);
 
                     L(exitRetnLabel);
-                    dq(BSLightingShader_SetupMaterial_Snow_Exit.GetUIntPtr());
+                    dq(BSLightingShader_SetupMaterial_Snow_Exit.GetAddress());
                 }
             };
 
@@ -133,12 +132,12 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(BSLightingShader_SetupMaterial_Snow_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(BSLightingShader_SetupMaterial_Snow_Hook.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patching BGSShaderParticleGeometryData limit");
 
         orig_BGSShaderParticleGeometryData_LoadForm = *vtbl_BGSShaderParticleGeometryData_LoadForm;
-        SafeWrite64(vtbl_BGSShaderParticleGeometryData_LoadForm.GetUIntPtr(), GetFnAddr(hk_BGSShaderParticleGeometryData_LoadForm));
+        SKSE::SafeWrite64(vtbl_BGSShaderParticleGeometryData_LoadForm.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_BGSShaderParticleGeometryData_LoadForm));
 
         _VMESSAGE("patching BSShadowDirectionalLight use after free");
         {
@@ -160,7 +159,7 @@ namespace fixes
 
             for (UInt32 i = 0; i < patch.getSize(); ++i)
             {
-                SafeWrite8(BadUse.GetUIntPtr() + i, *(patch.getCode() + i));
+                SKSE::SafeWrite8(BadUse.GetAddress() + i, *(patch.getCode() + i));
             }
         }
         _VMESSAGE("success");
@@ -169,7 +168,7 @@ namespace fixes
     }
 
 
-    RelocAddr<uintptr_t> BSDistantTreeShader_VFunc3_Hook(BSDistantTreeShader_hook_offset);
+    REL::Offset<std::uintptr_t> BSDistantTreeShader_VFunc3_Hook(BSDistantTreeShader_hook_offset, 0x37);
 
     bool PatchTreeReflections()
     {
@@ -210,7 +209,7 @@ namespace fixes
                 jmp(ptr[rip + retnLabel]);
 
                 L(retnLabel);
-                dq(BSDistantTreeShader_VFunc3_Hook.GetUIntPtr() + 0x6);
+                dq(BSDistantTreeShader_VFunc3_Hook.GetAddress() + 0x6);
             }
         };
 
@@ -218,40 +217,40 @@ namespace fixes
         code.finalize();
 
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(BSDistantTreeShader_VFunc3_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+        trampoline->Write6Branch(BSDistantTreeShader_VFunc3_Hook.GetAddress(), uintptr_t(code.getCode()));
 
         _VMESSAGE("success");
         return true;
     }
 
-    RelocAddr<int16_t> CameraMove_Timer1(CameraMove_Timer1_offset); 
-    RelocAddr<int16_t> CameraMove_Timer2(CameraMove_Timer2_offset);
-    RelocAddr<int16_t> CameraMove_Timer3(CameraMove_Timer3_offset);
-    RelocAddr<int16_t> CameraMove_Timer4(CameraMove_Timer4_offset);
-    RelocAddr<int16_t> CameraMove_Timer5(CameraMove_Timer5_offset);
+    REL::Offset<std::int16_t*> CameraMove_Timer1(CameraMove_Timer1_offset, 0x2F);
+    REL::Offset<std::int16_t*> CameraMove_Timer2(CameraMove_Timer2_offset, 0x96);
+    REL::Offset<std::int16_t*> CameraMove_Timer3(CameraMove_Timer3_offset, 0x1FD);
+    REL::Offset<std::int16_t*> CameraMove_Timer4(CameraMove_Timer4_offset, 0xBA);
+    REL::Offset<std::int16_t*> CameraMove_Timer5(CameraMove_Timer5_offset, 0x17);
 
     bool PatchSlowTimeCameraMovement()
     {
         _VMESSAGE("- slow time camera movement -");
         _VMESSAGE("patching camera movement to use frame timer that ignores slow time");
         // patch (+0x4)
-        SafeWrite16(CameraMove_Timer1.GetUIntPtr(), *(int16_t *)CameraMove_Timer1.GetUIntPtr() + 0x4);
-        SafeWrite16(CameraMove_Timer2.GetUIntPtr(), *(int16_t *)CameraMove_Timer2.GetUIntPtr() + 0x4);
-        SafeWrite16(CameraMove_Timer3.GetUIntPtr(), *(int16_t *)CameraMove_Timer3.GetUIntPtr() + 0x4);
-        SafeWrite16(CameraMove_Timer4.GetUIntPtr(), *(int16_t *)CameraMove_Timer4.GetUIntPtr() + 0x4);
-        SafeWrite16(CameraMove_Timer5.GetUIntPtr(), *(int16_t *)CameraMove_Timer5.GetUIntPtr() + 0x4);
+        SKSE::SafeWrite16(CameraMove_Timer1.GetAddress(), *CameraMove_Timer1 + 0x4);
+        SKSE::SafeWrite16(CameraMove_Timer2.GetAddress(), *CameraMove_Timer2 + 0x4);
+        SKSE::SafeWrite16(CameraMove_Timer3.GetAddress(), *CameraMove_Timer3 + 0x4);
+        SKSE::SafeWrite16(CameraMove_Timer4.GetAddress(), *CameraMove_Timer4 + 0x4);
+        SKSE::SafeWrite16(CameraMove_Timer5.GetAddress(), *CameraMove_Timer5 + 0x4);
         _VMESSAGE("success");
 
         return true;
     }
 
-    RelocAddr<uintptr_t> MO5STypo(MO5STypo_offset);
+    REL::Offset<std::uintptr_t> MO5STypo(MO5STypo_offset, 0x83);
 
     bool PatchMO5STypo()
     {
         _VMESSAGE("- MO5S Typo -");
         // Change "D" to "5"
-        SafeWrite8(MO5STypo.GetUIntPtr(), 0x35);
+        SKSE::SafeWrite8(MO5STypo.GetAddress(), 0x35);
         _VMESSAGE("success");
 
         return true;
@@ -301,7 +300,7 @@ namespace fixes
     bool PatchBethesdaNetCrash()
     {
         _VMESSAGE("- bethesda.net crash -");
-        PatchIAT(GetFnAddr(hk_wcsrtombs_s), "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
+        PatchIAT(unrestricted_cast<std::uintptr_t>(hk_wcsrtombs_s), "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
         _VMESSAGE("success");
         return true;
     }
@@ -319,7 +318,7 @@ namespace fixes
         constexpr UInt32 DIFF = CODE_CAVE_SIZE - BRANCH_SIZE;
         constexpr UInt8 NOP = 0x90;
 
-        RelocAddr<std::uintptr_t> funcBase(Equip_Shout_Procedure_Function_offset);
+        REL::Offset<std::uintptr_t> funcBase(Equip_Shout_Procedure_Function_offset);
 
         struct Patch : SKSE::CodeGenerator
         {
@@ -351,14 +350,14 @@ namespace fixes
             }
         };
 
-        Patch patch(funcBase.GetUIntPtr());
+        Patch patch(funcBase.GetAddress());
         patch.finalize();
 
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write5Branch(funcBase.GetUIntPtr() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
+        trampoline->Write5Branch(funcBase.GetAddress() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
         for (UInt32 i = 0; i < DIFF; ++i) {
-            SafeWrite8(funcBase.GetUIntPtr() + BRANCH_OFF + BRANCH_SIZE + i, NOP);
+            SKSE::SafeWrite8(funcBase.GetAddress() + BRANCH_OFF + BRANCH_SIZE + i, NOP);
         }
 
         _VMESSAGE("installed patch for equip event spam (size == %zu)", patch.getSize());
@@ -366,9 +365,9 @@ namespace fixes
         return true;
     }
 
-    RelocAddr<uintptr_t> AddAmbientSpecularToSetupGeometry(AddAmbientSpecularToSetupGeometry_offset);
-    RelocAddr<uintptr_t> g_AmbientSpecularAndFresnel(g_AmbientSpecularAndFresnel_offset);
-    RelocAddr<uintptr_t> DisableSetupMaterialAmbientSpecular(DisableSetupMaterialAmbientSpecular_offset);
+    REL::Offset<std::uintptr_t> AddAmbientSpecularToSetupGeometry(AddAmbientSpecularToSetupGeometry_offset, 0xBAD);
+    REL::Offset<std::uintptr_t> g_AmbientSpecularAndFresnel(g_AmbientSpecularAndFresnel_offset);
+    REL::Offset<std::uintptr_t> DisableSetupMaterialAmbientSpecular(DisableSetupMaterialAmbientSpecular_offset, 0x713);
 
     bool PatchBSLightingAmbientSpecular()
     {
@@ -380,7 +379,7 @@ namespace fixes
 
         for (int i = 0; i < length; ++i)
         {
-            SafeWrite8(DisableSetupMaterialAmbientSpecular.GetUIntPtr() + i, nop);
+            SKSE::SafeWrite8(DisableSetupMaterialAmbientSpecular.GetAddress() + i, nop);
         }            
 
         _VMESSAGE("Adding SetupGeometry case");
@@ -397,7 +396,7 @@ namespace fixes
                 // ambient specular
                 push(rax);
                 push(rdx);
-                mov(rax, g_AmbientSpecularAndFresnel.GetUIntPtr()); // xmmword_1E3403C
+                mov(rax, g_AmbientSpecularAndFresnel.GetAddress()); // xmmword_1E3403C
                 movups(xmm0, ptr[rax]);
                 mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]); // PixelShader
                 movzx(edx, byte[rax + 0x46]); // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
@@ -409,7 +408,7 @@ namespace fixes
                 L(jmpOut);
                 test(dword[r13 + 0x94], 0x200);
                 jmp(ptr[rip]);
-                dq(AddAmbientSpecularToSetupGeometry.GetUIntPtr() + 11);
+                dq(AddAmbientSpecularToSetupGeometry.GetAddress() + 11);
             }
         };
 
@@ -417,7 +416,7 @@ namespace fixes
         patch.finalize();
 
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write5Branch(AddAmbientSpecularToSetupGeometry.GetUIntPtr(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
+        trampoline->Write5Branch(AddAmbientSpecularToSetupGeometry.GetAddress(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
         _VMESSAGE("success");
 
@@ -431,10 +430,10 @@ namespace fixes
         constexpr std::uintptr_t START = 0x4B;
         constexpr std::uintptr_t END = 0x5C;
         constexpr UInt8 NOP = 0x90;
-        RelocAddr<std::uintptr_t> funcBase(GHeap_Leak_Detection_Crash_offset);
+        REL::Offset<std::uintptr_t> funcBase(GHeap_Leak_Detection_Crash_offset);
 
         for (std::uintptr_t i = START; i < END; ++i) {
-            SafeWrite8(funcBase.GetUIntPtr() + i, NOP);
+            SKSE::SafeWrite8(funcBase.GetAddress() + i, NOP);
         }
         
         _VMESSAGE("success");
@@ -444,14 +443,14 @@ namespace fixes
 
     static int magic = 0x3CC0C0C0; // 1 / 42.5
 
-    RelocPtr<float> FrameTimer_WithoutSlowTime(g_FrameTimer_NoSlowTime_offset);
+    REL::Offset<float*> FrameTimer_WithoutSlowTime(g_FrameTimer_NoSlowTime_offset);
 
     // ??_7ThirdPersonState@@6B@ vtbl last function + 0x71
-    RelocAddr<uintptr_t> ThirdPersonState_Vfunc_Hook(ThirdPersonState_Vfunc_Hook_offset);
+    REL::Offset<uintptr_t> ThirdPersonState_Vfunc_Hook(ThirdPersonState_Vfunc_Hook_offset, 0x71);
     // ??_7DragonCameraState@@6B@ vtbl last function + 0x5F
-    RelocAddr<uintptr_t> DragonCameraState_Vfunc_Hook(DragonCameraState_Vfunc_Hook_offset);
+    REL::Offset<uintptr_t> DragonCameraState_Vfunc_Hook(DragonCameraState_Vfunc_Hook_offset, 0x5F);
     // ??_7HorseCameraState@@6B@ vtbl last function + 0x5F
-    RelocAddr<uintptr_t> HorseCameraState_Vfunc_Hook(HorseCameraState_Vfunc_Hook_offset);
+    REL::Offset<uintptr_t> HorseCameraState_Vfunc_Hook(HorseCameraState_Vfunc_Hook_offset, 0x5F);
 
     bool PatchVerticalLookSensitivity()
     {
@@ -482,13 +481,13 @@ namespace fixes
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(ThirdPersonState_Vfunc_Hook.GetUIntPtr() + 0xB);
+                    dq(ThirdPersonState_Vfunc_Hook.GetAddress() + 0xB);
 
                     L(magicLabel);
                     dq(uintptr_t(&magic));
 
                     L(timerLabel);
-                    dq(FrameTimer_WithoutSlowTime.GetUIntPtr());
+                    dq(FrameTimer_WithoutSlowTime.GetAddress());
                 }
             };
 
@@ -496,7 +495,7 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(ThirdPersonState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(ThirdPersonState_Vfunc_Hook.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -525,13 +524,13 @@ namespace fixes
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(DragonCameraState_Vfunc_Hook.GetUIntPtr() + 0xB);
+                    dq(DragonCameraState_Vfunc_Hook.GetAddress() + 0xB);
 
                     L(magicLabel);
                     dq(uintptr_t(&magic));
 
                     L(timerLabel);
-                    dq(FrameTimer_WithoutSlowTime.GetUIntPtr());
+                    dq(FrameTimer_WithoutSlowTime.GetAddress());
                 }
             };
 
@@ -539,7 +538,7 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(DragonCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(DragonCameraState_Vfunc_Hook.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -568,13 +567,13 @@ namespace fixes
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(HorseCameraState_Vfunc_Hook.GetUIntPtr() + 0xB);
+                    dq(HorseCameraState_Vfunc_Hook.GetAddress() + 0xB);
 
                     L(magicLabel);
                     dq(uintptr_t(&magic));
 
                     L(timerLabel);
-                    dq(FrameTimer_WithoutSlowTime.GetUIntPtr());
+                    dq(FrameTimer_WithoutSlowTime.GetAddress());
                 }
             };
 
@@ -582,7 +581,7 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(HorseCameraState_Vfunc_Hook.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(HorseCameraState_Vfunc_Hook.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("success");
 
@@ -611,7 +610,7 @@ namespace fixes
 		static void InstallHooks()
 		{
 			// ??_7EnchantmentItem@@6B@
-			REL::Offset<std::uintptr_t> vTbl(offset_vtbl_EnchantmentItem + (0x8 * 0x5E));
+			REL::Offset<std::uintptr_t> vTbl(offset_vtbl_EnchantmentItem, 0x8 * 0x5E);
             func = vTbl.WriteVFunc(0x5E, &EnchantmentItemEx::Hook_DisallowsAbsorbReflection);
 			_DMESSAGE("Installed hook for (%s)", typeid(EnchantmentItemEx).name());
 		}
@@ -663,13 +662,13 @@ namespace fixes
 		return true;
 	}
 
-  RelocAddr<uintptr_t> AnimationSignedCrash(offset_AnimationLoadSigned);
+    REL::Offset<std::uintptr_t> AnimationSignedCrash(offset_AnimationLoadSigned, 0x91);
 
   bool PatchAnimationLoadSignedCrash()
   {
       _VMESSAGE("- animation load crash -");
       // Change "BF" to "B7"
-      SafeWrite8(AnimationSignedCrash.GetUIntPtr(), 0xB7);
+      SKSE::SafeWrite8(AnimationSignedCrash.GetAddress(), 0xB7);
       _VMESSAGE("success");
 
     return true;
@@ -689,7 +688,7 @@ namespace fixes
 
 		REL::Offset<std::uintptr_t> funcBase(LipSync_FUNC_ADDR);
 		for (std::size_t i = 0; i < NUM_OFFSETS; ++i) {
-			SafeWrite8(funcBase.GetAddress() + OFFSETS[i], 0xEB);    // jns -> jmp
+			SKSE::SafeWrite8(funcBase.GetAddress() + OFFSETS[i], 0xEB);    // jns -> jmp
 		}
 		_VMESSAGE("- success -");
 
@@ -739,7 +738,7 @@ namespace fixes
             patch.finalize();
 
 			for (std::size_t i = 0; i < patch.getSize(); ++i) {
-				SafeWrite8(funcBase.GetAddress() + CAVE_START + i, patch.getCode()[i]);
+				SKSE::SafeWrite8(funcBase.GetAddress() + CAVE_START + i, patch.getCode()[i]);
 			}
 		}
 	};
@@ -826,4 +825,13 @@ namespace fixes
 
         return true;
 	}
+
+    bool PatchBSTempEffectNiRTTI()
+    {
+        REL::Offset<RE::NiRTTI*> rttiBSTempEffect(RE::BSTempEffect::Ni_RTTI);
+        REL::Offset<RE::NiRTTI*> rttiNiObject(RE::NiObject::Ni_RTTI);
+        rttiBSTempEffect->baseRTTI = rttiNiObject.GetType();
+
+        return true;
+    }
 }

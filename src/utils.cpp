@@ -1,9 +1,12 @@
-#include "skse64_common/Utilities.h"
-#include "skse64_common/SafeWrite.h"
-#include "skse64_common/skse_version.h"
-
-#include "ShlObj.h"
 #include <unordered_set>
+
+#include <ShlObj.h>
+
+#include "skse64_common/Utilities.h"
+
+#include "REL/Relocation.h"
+#include "SKSE/SafeWrite.h"
+#include "SKSE/Version.h"
 
 #include "utils.h"
 
@@ -205,35 +208,14 @@ bool VersionStrToInt(const std::string& verStr, UInt64* out)
     return true;
 }
 
-uint32_t GetGameVersion()
-{
-    TCHAR filename[MAX_PATH];
-    GetModuleFileName(nullptr, filename, MAX_PATH);
-
-    VS_FIXEDFILEINFO info;
-    std::string productName;
-    std::string productVersion;
-
-    if (GetFileVersion(filename, &info, &productName, &productVersion))
-    {
-        uint64_t version;
-
-        VersionStrToInt(productVersion, &version);
-
-        return MAKE_EXE_VERSION(version >> 48, version >> 32, version >> 16);
-    }
-
-    return 0;
-}
-
 uintptr_t PatchIAT(uintptr_t func, const char* dllName, const char* importName)
 {
-    const auto addr = reinterpret_cast<uintptr_t>(GetIATAddr(reinterpret_cast<void*>(RelocationManager::s_baseAddr),
+    const auto addr = reinterpret_cast<uintptr_t>(GetIATAddr(reinterpret_cast<void*>(REL::Module::BaseAddr()),
                                                              dllName, importName));
     if (addr)
     {
         const auto orig = *reinterpret_cast<uintptr_t *>(addr);
-        SafeWrite64(addr, func);
+        SKSE::SafeWrite64(addr, func);
         return orig;
     }
 

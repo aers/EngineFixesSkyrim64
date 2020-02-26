@@ -28,6 +28,7 @@ namespace config
     bool fixBSLightingAmbientSpecular = true;
     bool fixBSLightingShaderForceAlphaTest = true;
     bool fixBSLightingShaderGeometryParallaxBug = true;
+    bool fixBSTempEffectNiRTTI = true;
     bool fixCalendarSkipping = true;
 	bool fixConjurationEnchantAbsorbs = true;
     bool fixDoublePerkApply = true;
@@ -89,6 +90,7 @@ namespace config
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
         fixBSLightingShaderForceAlphaTest = ini.GetBoolean("Fixes", "BSLightingShaderForceAlphaTest", true);
         fixBSLightingShaderGeometryParallaxBug = ini.GetBoolean("Fixes", "BSLightingShaderParallaxBug", true);
+        fixBSTempEffectNiRTTI = ini.GetBoolean("Fixes", "BSTempEffectNiRTTI", true);
         fixCalendarSkipping = ini.GetBoolean("Fixes", "CalendarSkipping", true);
 		fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);

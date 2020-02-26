@@ -1,10 +1,5 @@
 #pragma once
 
-#include "skse64_common/Relocation.h"
-#include "skse64_common/SafeWrite.h"
-
-#include "xbyak/xbyak.h"
-
 #include "config.h"
 #include "offsets.h"
 
@@ -15,6 +10,7 @@ namespace fixes
     bool PatchBSLightingAmbientSpecular();
     bool PatchBSLightingShaderForceAlphaTest();
     bool PatchBSLightingShaderSetupGeometryParallax();
+    bool PatchBSTempEffectNiRTTI();
     bool PatchCalendarSkipping();
 	bool PatchConjurationEnchantAbsorbs();
     bool PatchDoublePerkApply();

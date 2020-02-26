@@ -1,4 +1,5 @@
 #include "RE/Skyrim.h"
+#include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/Trampoline.h"
 
@@ -13,10 +14,10 @@ namespace warnings
     std::unordered_map<uint32_t, RE::BGSAddonNode *> nodeMap;
 
     typedef bool(*_BGSAddonNode_LoadForm)(RE::BGSAddonNode * addonNode, RE::TESFile * modInfo);
-    RelocPtr<_BGSAddonNode_LoadForm> vtbl_BGSAddonNode_LoadForm(vtbl_BGSAddonNode_LoadForm_offset);
+    REL::Offset<_BGSAddonNode_LoadForm*> vtbl_BGSAddonNode_LoadForm(vtbl_BGSAddonNode_LoadForm_offset, 0x8 * 0x6);
     _BGSAddonNode_LoadForm orig_BGSAddonNode_LoadForm;
 
-    RelocPtr<uint32_t> g_RefrHandleArray(g_RefrHandleArray_offset);
+    REL::Offset<std::uint32_t*> g_RefrHandleArray(g_RefrHandleArray_offset);
 
     bool hk_BGSAddonNode_LoadForm(RE::BGSAddonNode *addonNode, RE::TESFile * modInfo)
     {
@@ -55,7 +56,7 @@ namespace warnings
     void Hook_Main_Unk(void* a_this)
     {
         typedef void _Main_Unk_t(void* a_this);
-        static RelocAddr<_Main_Unk_t*> orig_Fn(Unk_DataReload_Func_offset);
+        static REL::Offset<_Main_Unk_t*> orig_Fn(Unk_DataReload_Func_offset);
 
         orig_Fn(a_this);
 
@@ -69,13 +70,13 @@ namespace warnings
         auto trampoline = SKSE::GetTrampoline();
 
         orig_BGSAddonNode_LoadForm = *vtbl_BGSAddonNode_LoadForm;
-        SafeWrite64(vtbl_BGSAddonNode_LoadForm.GetUIntPtr(), GetFnAddr(hk_BGSAddonNode_LoadForm));
+        SKSE::SafeWrite64(vtbl_BGSAddonNode_LoadForm.GetAddress(), unrestricted_cast<std::uintptr_t>(&hk_BGSAddonNode_LoadForm));
 
-        RelocAddr<uintptr_t> call1_Main_Unk(Call1_Unk_DataReload_func_offset + 0x163);
-        trampoline->Write5Call(call1_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
+        REL::Offset<std::uintptr_t> call1_Main_Unk(Call1_Unk_DataReload_func_offset, 0x163);
+        trampoline->Write5Call(call1_Main_Unk.GetAddress(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
 
-        RelocAddr<uintptr_t> call2_Main_Unk(Call2_Unk_DataReload_func_offset + 0xD);
-        trampoline->Write5Call(call2_Main_Unk.GetUIntPtr(), GetFnAddr(&Hook_Main_Unk));
+        REL::Offset<std::uintptr_t> call2_Main_Unk(Call2_Unk_DataReload_func_offset, 0xD);
+        trampoline->Write5Call(call2_Main_Unk.GetAddress(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
 
         _VMESSAGE("- hooked -");
         return true;

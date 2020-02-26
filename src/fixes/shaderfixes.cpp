@@ -1,5 +1,4 @@
-#include "skse64_common/Utilities.h"
-
+#include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/CodeGenerator.h"
 #include "SKSE/Trampoline.h"
@@ -34,10 +33,10 @@ namespace fixes
     };
 
     typedef void(*_BSBatchRenderer_SetupAndDrawPass)(BSRenderPass * pass, uint32_t technique, bool alphaTest, uint32_t renderFlags);
-    RelocPtr<_BSBatchRenderer_SetupAndDrawPass> BSBatchRenderer_SetupAndDrawPass_origLoc(BSBatchRenderer_SetupAndDrawPass_offset);
+    REL::Offset<_BSBatchRenderer_SetupAndDrawPass*> BSBatchRenderer_SetupAndDrawPass_origLoc(BSBatchRenderer_SetupAndDrawPass_offset);
     _BSBatchRenderer_SetupAndDrawPass BSBatchRenderer_SetupAndDrawPass_Orig;
 
-    RelocAddr<uintptr_t> BSLightingShader_vtbl(BSLightingShader_vtbl_offset);
+    REL::Offset<std::uintptr_t> BSLightingShader_vtbl(BSLightingShader_vtbl_offset);
 	
 	uint32_t RAW_FLAG_RIM_LIGHTING = 1 << 11;
     uint32_t RAW_FLAG_DO_ALPHA_TEST = 1 << 20;
@@ -48,7 +47,7 @@ namespace fixes
 
     void hk_BSBatchRenderer_SetupAndDrawPass(BSRenderPass * pass, uint32_t technique, bool alphaTest, uint32_t renderFlags)
     {
-        if (*(uintptr_t *)pass->m_Shader == BSLightingShader_vtbl.GetUIntPtr() && alphaTest)
+        if (*(uintptr_t *)pass->m_Shader == BSLightingShader_vtbl.GetAddress() && alphaTest)
         {
 			auto rawTechnique = technique - 0x4800002D;
 			auto subIndex = (rawTechnique >> 24) & 0x3F;
@@ -77,7 +76,7 @@ namespace fixes
 
                     // exit 
                     jmp(ptr[rip]);
-                    dq(BSBatchRenderer_SetupAndDrawPass_origLoc.GetUIntPtr() + 0xA);
+                    dq(BSBatchRenderer_SetupAndDrawPass_origLoc.GetAddress() + 0xA);
                 }
             };
 
@@ -86,13 +85,13 @@ namespace fixes
             BSBatchRenderer_SetupAndDrawPass_Orig = _BSBatchRenderer_SetupAndDrawPass(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.GetUIntPtr(), GetFnAddr(hk_BSBatchRenderer_SetupAndDrawPass));
+            trampoline->Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_BSBatchRenderer_SetupAndDrawPass));
         }
         _VMESSAGE("patched");
         return true;
     }
 
-    RelocAddr<uintptr_t> BSLightingShader_SetupGeometry_ParallaxFixHookLoc(offset_BSLightingShader_SetupGeometry_ParallaxTechniqueFix);
+    REL::Offset<uintptr_t> BSLightingShader_SetupGeometry_ParallaxFixHookLoc(offset_BSLightingShader_SetupGeometry_ParallaxTechniqueFix, 0x577);
 	
 	bool PatchBSLightingShaderSetupGeometryParallax()
     {
@@ -103,7 +102,7 @@ namespace fixes
                 BSLightingShader_SetupGeometry_Parallax_Code() : SKSE::CodeGenerator()
                 {
                 	// orig code
-                    and (eax, 0x21C00);
+                    and_(eax, 0x21C00);
                     cmovnz(edx, r8d);
 
                 	// new code
@@ -112,7 +111,7 @@ namespace fixes
 
                 	// jmp out
                     jmp(ptr[rip]);
-                    dq(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetUIntPtr() + 0x9);
+                    dq(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetAddress() + 0x9);
                 };
 	        };
 
@@ -120,7 +119,7 @@ namespace fixes
             code.finalize();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetUIntPtr(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetAddress(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patched");
         return true;
