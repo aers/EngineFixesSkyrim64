@@ -20,6 +20,9 @@ namespace fixes
         if (config::fixBSLightingShaderGeometryParallaxBug)
             PatchBSLightingShaderSetupGeometryParallax();
 
+        if (config::fixBSTempEffectNiRTTI)
+            PatchBSTempEffectNiRTTI();
+
         if (config::fixCalendarSkipping)
             PatchCalendarSkipping();
 
