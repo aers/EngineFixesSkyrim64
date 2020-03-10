@@ -42,6 +42,7 @@ namespace config
     extern bool fixTreeReflections;
     extern bool fixVerticalLookSensitivity;
     extern bool fixAnimationLoadSignedCrash;
+    extern bool fixCreateArmorNodeNullptrCrash;
 
     // Warnings
     extern bool warnDupeAddonNodes;

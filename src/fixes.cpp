@@ -65,6 +65,9 @@ namespace fixes
         if (config::fixAnimationLoadSignedCrash)
             PatchAnimationLoadSignedCrash();
 
+        if (config::fixCreateArmorNodeNullptrCrash)
+            PatchCreateArmorNodeNullptrCrash();
+
         return true;
     }
 }

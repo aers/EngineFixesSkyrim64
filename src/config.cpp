@@ -44,6 +44,7 @@ namespace config
     bool fixSlowTimeCameraMovement = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
+    bool fixCreateArmorNodeNullptrCrash = true;
 
 
     // Warnings
@@ -106,6 +107,7 @@ namespace config
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
+        fixCreateArmorNodeNullptrCrash = ini.GetBoolean("Fixes", "fixCreateArmorNodeNullptrCrash", true);
 
         // Warnings
         warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);
