@@ -30,6 +30,7 @@ namespace fixes
     bool PatchUnequipAllCrash();
     bool PatchVerticalLookSensitivity();
     bool PatchWeaponBlockScaling();
+    bool PatchCreateArmorNodeNullptrCrash();
 
     bool PatchAll();
 }

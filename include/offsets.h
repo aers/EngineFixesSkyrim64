@@ -114,6 +114,9 @@ constexpr REL::ID Calendar_AdvanceTime_call_offset(35402);
 // 8B C1 25 ? ? ? ? 41 0F 45 D0
 constexpr REL::ID offset_BSLightingShader_SetupGeometry_ParallaxTechniqueFix(100565);
 
+// Fix for crash somewhere called from CreateArmorNode
+constexpr REL::ID offset_CreateArmorNode_subfunc(15535);
+
 // Warnings
 
 // Dupe Addon Node index

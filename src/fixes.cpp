@@ -73,6 +73,9 @@ namespace fixes
         if (config::fixWeaponBlockScaling)
             PatchWeaponBlockScaling();
 
+        if (config::fixCreateArmorNodeNullptrCrash)
+            PatchCreateArmorNodeNullptrCrash();
+
         return true;
     }
 }
