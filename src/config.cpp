@@ -107,7 +107,7 @@ namespace config
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
-        fixCreateArmorNodeNullptrCrash = ini.GetBoolean("Fixes", "fixCreateArmorNodeNullptrCrash", true);
+        fixCreateArmorNodeNullptrCrash = ini.GetBoolean("Fixes", "CreateArmorNodeNullptrCrash", true);
 
         // Warnings
         warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);

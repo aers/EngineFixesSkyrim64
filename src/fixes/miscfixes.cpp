@@ -887,7 +887,7 @@ namespace fixes
 
         if(memcmp(loc2p, expected2, sizeof(expected2)))
         {
-            _VMESSAGE("Code at second offset is not as expected, skipping patch", offs2);
+            _VMESSAGE("Code at second offset is not as expected, skipping patch");
             return false;
         }
 
