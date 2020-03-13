@@ -64,6 +64,9 @@ namespace fixes
         if (config::fixAnimationLoadSignedCrash)
             PatchAnimationLoadSignedCrash();
 
+        if (config::fixWeaponBlockScaling)
+            PatchWeaponBlockScaling();
+
         return true;
     }
 }

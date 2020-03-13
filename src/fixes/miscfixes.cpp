@@ -854,4 +854,98 @@ namespace fixes
         _VMESSAGE("success");
         return true;
     }
+
+    class WeaponBlockScalingPatch
+    {
+    public:
+        static void Install()
+        {
+            constexpr UInt8 NOP = 0x90;
+            constexpr std::size_t START = 0x3B8;
+            constexpr std::size_t END = 0x3D1;
+            constexpr std::size_t CAVE_SIZE = END - START;
+
+            REL::Offset<std::uintptr_t> target(REL::ID(42842), START);
+
+            struct Patch : SKSE::CodeGenerator
+            {
+                Patch(std::uintptr_t a_func) : SKSE::CodeGenerator(CAVE_SIZE)
+                {
+                    // rbx = Actor*
+
+                    mov(rcx, rbx);
+                    mov(rdx, a_func);
+                    call(rdx);
+                    movaps(xmm8, xmm0);
+                }
+            };
+
+            Patch patch(unrestricted_cast<std::uintptr_t>(CalcWeaponDamage));
+            patch.finalize();
+
+            for (std::size_t i = 0; i < patch.getSize(); ++i)
+            {
+                SKSE::SafeWrite8(target.GetAddress() + i, patch.getCode()[i]);
+            }
+
+            for (std::size_t i = patch.getSize(); i < CAVE_SIZE; ++i)
+            {
+                SKSE::SafeWrite8(target.GetAddress() + i, NOP);
+            }
+        }
+
+    private:
+        static float CalcWeaponDamage(RE::Actor* a_target)
+        {
+            auto weap = GetWeaponData(a_target);
+            if (weap)
+            {
+                return static_cast<float>(weap->GetAttackDamage());
+            }
+            else
+            {
+                return 0.0;
+            }
+        }
+
+        static RE::TESObjectWEAP* GetWeaponData(RE::Actor* a_actor)
+        {
+            auto proc = a_actor->currentProcess;
+            if (!proc || !proc->middleHigh)
+            {
+                return nullptr;
+            }
+
+            auto middleProc = proc->middleHigh;
+            std::array<RE::InventoryEntryData*, 3> entries = {
+                middleProc->bothHands,
+                middleProc->rightHand,
+                middleProc->leftHand
+            };
+
+            for (auto& entry : entries)
+            {
+                if (entry)
+                {
+                    auto obj = entry->GetObject();
+                    if (obj && obj->Is(RE::FormType::Weapon))
+                    {
+                        return static_cast<RE::TESObjectWEAP*>(obj);
+                    }
+                }
+            }
+
+            return nullptr;
+        }
+    };
+
+    bool PatchWeaponBlockScaling()
+    {
+        _VMESSAGE("- weapon block scaling patch -");
+
+        WeaponBlockScalingPatch::Install();
+
+        _VMESSAGE("success");
+        return true;
+    }
 }

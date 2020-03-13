@@ -27,6 +27,7 @@ namespace fixes
     bool PatchTreeReflections();
     bool PatchVerticalLookSensitivity();
     bool PatchAnimationLoadSignedCrash();
+    bool PatchWeaponBlockScaling();
 
     bool PatchAll();
 }

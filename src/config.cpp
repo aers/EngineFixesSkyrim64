@@ -44,6 +44,7 @@ namespace config
     bool fixSlowTimeCameraMovement = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
+    bool fixWeaponBlockScaling = true;
 
     // Warnings
     bool warnDupeAddonNodes = true;
@@ -105,6 +106,7 @@ namespace config
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
+        fixWeaponBlockScaling = ini.GetBoolean("Fixes", "WeaponBlockScaling", true);
 
         // Warnings
         warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);
