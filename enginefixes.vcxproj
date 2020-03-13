@@ -145,6 +145,7 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include=".clang-format" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="EngineFixes_SNCT.ini" />
@@ -162,9 +163,6 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse
     </ProjectReference>
     <ProjectReference Include="..\skse64_common\skse64_common.vcxproj">
       <Project>{5fd1c08d-db80-480c-a1c6-f0920005cd13}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\skse64_loader_common\skse64_loader_common.vcxproj">
-      <Project>{fb6e1aeb-69b7-496e-a02c-9776fc0d6e0d}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
