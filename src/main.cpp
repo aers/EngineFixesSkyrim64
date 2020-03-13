@@ -17,6 +17,9 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
     case SKSE::MessagingInterface::kDataLoaded:
         {
             _MESSAGE("beginning post-load patches");
+            if (config::cleanSKSECosaves)
+                CleanSKSECosaves();
+
             // patch post load so ini settings are loaded
             if (config::fixSaveScreenshots)
                 fixes::PatchSaveScreenshots();
@@ -129,9 +132,6 @@ extern "C"
         }
 
         _MESSAGE("beginning pre-load patches");
-
-        if (config::cleanSKSECosaves)
-            CleanSKSECosaves();
 
         patches::PatchAll();
         fixes::PatchAll();

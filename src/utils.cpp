@@ -4,121 +4,110 @@
 
 #include "skse64_common/Utilities.h"
 
+#include <filesystem>
+#include <memory>
+#include <optional>
+#include <regex>
+#include <system_error>
+#include <vector>
+
+#include "RE/Skyrim.h"
 #include "REL/Relocation.h"
 #include "SKSE/SafeWrite.h"
 #include "SKSE/Version.h"
 
 #include "utils.h"
 
-std::string savesFolderPath;
-std::unordered_set<std::string> existingSaves;
-
-bool InitSavePath(int folderID, const char* relPath)
+std::optional<std::filesystem::path> GetSavesPath()
 {
-    char path[MAX_PATH];
-
-    HRESULT err = SHGetFolderPath(NULL, folderID | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, path);
-    if (!SUCCEEDED(err))
+    wchar_t* buffer;
+    auto result = SHGetKnownFolderPath(FOLDERID_Documents, KNOWN_FOLDER_FLAG::KF_FLAG_DEFAULT, NULL, &buffer);
+    std::unique_ptr<wchar_t[], decltype(&CoTaskMemFree)> mydocs(buffer, CoTaskMemFree);
+    if (result != S_OK)
     {
-        return false;
+        return std::nullopt;
     }
 
-    strcat_s(path, sizeof(path), relPath);
+    std::filesystem::path path = mydocs.get();
+    path /= "My Games";
+    path /= "Skyrim Special Edition";
 
-    savesFolderPath = path;
+    auto sLocalSavePath = RE::GetINISetting("sLocalSavePath:General");
+    if (sLocalSavePath)
+    {
+        path /= sLocalSavePath->GetString();
+    }
+    else
+    {
+        _ERROR("Failed to get local save path ini setting");
+        return std::nullopt;
+    }
 
-    return true;
+    std::error_code ec;
+    if (!std::filesystem::exists(path, ec) || ec)
+    {
+        _ERROR("Path \"%s\" does not exist", path.c_str());
+        if (ec)
+        {
+            _ERROR("Error message: %s", ec.message().c_str());
+        }
+        return std::nullopt;
+    }
+    else
+    {
+        return std::make_optional(std::move(path));
+    }
 }
 
 bool CleanSKSECosaves()
 {
-    _VMESSAGE("- skse cosave cleaner -");
-
-    if (!InitSavePath(CSIDL_MYDOCUMENTS, R"(\My Games\Skyrim Special Edition\Saves\)"))
+    auto savesPath = GetSavesPath();
+    if (!savesPath)
     {
-        _VMESSAGE("unable to find saves folder, aborting");
         return false;
     }
 
-    _VMESSAGE("save folder: %s", savesFolderPath.c_str());
+    constexpr auto REGEX_CONSTANTS = std::regex_constants::grep | std::regex_constants::icase;
+    std::regex savePattern(".*\\.ess$", REGEX_CONSTANTS);
+    std::regex cosavePattern(".*\\.skse$", REGEX_CONSTANTS);
+    std::vector<std::filesystem::path> matches;
+    std::error_code ec;
 
-    // find valid saves
-    WIN32_FIND_DATA ffd;
-    HANDLE hFind = INVALID_HANDLE_VALUE;
-    DWORD dwError = 0;
-
-    hFind = FindFirstFile((savesFolderPath + "*.ess").c_str(), &ffd);
-
-    if (hFind == INVALID_HANDLE_VALUE)
+    for (auto& dirEntry : std::filesystem::directory_iterator(*savesPath))
     {
-        _VMESSAGE("no save files found in save folder");
-        return true;
-    }
-
-    do
-    {
-        //_MESSAGE("found %s", ffd.cFileName);
-        std::string tempString = ffd.cFileName;
-        tempString.erase(tempString.size() - 4, 4);
-        existingSaves.insert(tempString);
-    } while (FindNextFile(hFind, &ffd) != 0);
-
-    dwError = GetLastError();
-
-    if (dwError != ERROR_NO_MORE_FILES)
-    {
-        _VMESSAGE("find file loop failed with error %d, aborting", dwError);
-        FindClose(hFind);
-        return false;
-    }
-
-    FindClose(hFind);
-
-    _VMESSAGE("found %d valid saves", existingSaves.size());
-
-    // erase cosaves
-    hFind = FindFirstFile((savesFolderPath + "*.skse").c_str(), &ffd);
-
-    if (hFind == INVALID_HANDLE_VALUE)
-    {
-        _VMESSAGE("no skse cosave files found in save folder");
-        return true;
-    }
-
-    int countDeleted = 0;
-
-    do
-    {
-        std::string tempString = ffd.cFileName;
-        tempString.erase(tempString.size() - 5, 5);
-        if (!existingSaves.count(tempString))
+        if (dirEntry.is_regular_file())
         {
-            //_MESSAGE("orphaned cosave %s detected, deleting", ffd.cFileName);
-            if (DeleteFile((savesFolderPath + ffd.cFileName).c_str()))
+            auto& path = dirEntry.path();
+            if (std::regex_match(path.filename().string(), cosavePattern))
             {
-                countDeleted++;
-                //_MESSAGE("deleted");
-            }
-            else
-            {
-                dwError = GetLastError();
-                _VMESSAGE("delete failed on %s, dwError %d", ffd.cFileName, dwError);
+                std::filesystem::path saveFile = path.parent_path();
+                saveFile /= path.stem().string() + ".ess";
+                if (!std::filesystem::exists(saveFile, ec))
+                {
+                    if (!ec)
+                    {
+                        matches.push_back(path);
+                    }
+                    else
+                    {
+                        _ERROR("Error while checking if \"%s\" exists: %s", saveFile.c_str(), ec.message().c_str());
+                    }
+                }
             }
         }
-    } while (FindNextFile(hFind, &ffd) != 0);
-
-    dwError = GetLastError();
-
-    if (dwError != ERROR_NO_MORE_FILES)
-    {
-        _VMESSAGE("find file loop failed with error %d, aborting", dwError);
-        FindClose(hFind);
-        return false;
     }
 
-    FindClose(hFind);
-
-    _VMESSAGE("deleted %d orphaned cosaves", countDeleted);
+    for (auto& match : matches)
+    {
+        if (!std::filesystem::remove(match, ec) || ec)
+        {
+            _ERROR("Failed to remove \"%s\"", match.c_str());
+            if (ec)
+            {
+                _ERROR("Error message: %s", ec.message().c_str());
+            }
+        }
+    }
 
     return true;
 }
