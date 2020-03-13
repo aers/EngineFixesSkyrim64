@@ -132,8 +132,7 @@ namespace patches
         {
             struct UnknownFormFunction0_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction0_Code() :
-                    SKSE::CodeGenerator()
+                UnknownFormFunction0_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -164,8 +163,7 @@ namespace patches
         {
             struct UnknownFormFunction1_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction1_Code() :
-                    SKSE::CodeGenerator()
+                UnknownFormFunction1_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -195,8 +193,7 @@ namespace patches
         {
             struct UnknownFormFunction2_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction2_Code() :
-                    SKSE::CodeGenerator()
+                UnknownFormFunction2_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 
@@ -225,8 +222,7 @@ namespace patches
         {
             struct UnknownFormFunction3_Code : SKSE::CodeGenerator
             {
-                UnknownFormFunction3_Code() :
-                    SKSE::CodeGenerator()
+                UnknownFormFunction3_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
 

@@ -45,8 +45,7 @@ namespace fixes
             {
                 struct IsSaveRequest_Code : SKSE::CodeGenerator
                 {
-                    IsSaveRequest_Code() :
-                        SKSE::CodeGenerator()
+                    IsSaveRequest_Code() : SKSE::CodeGenerator()
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
@@ -73,8 +72,7 @@ namespace fixes
             {
                 struct IsSaveRequest_Code : SKSE::CodeGenerator
                 {
-                    IsSaveRequest_Code() :
-                        SKSE::CodeGenerator()
+                    IsSaveRequest_Code() : SKSE::CodeGenerator()
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
@@ -101,8 +99,7 @@ namespace fixes
             {
                 struct MenuSave_Code : SKSE::CodeGenerator
                 {
-                    MenuSave_Code() :
-                        SKSE::CodeGenerator()
+                    MenuSave_Code() : SKSE::CodeGenerator()
                     {
                         Xbyak::Label requestScreenshot;
 
@@ -136,8 +133,7 @@ namespace fixes
             {
                 struct ScreenshotRender_Code : SKSE::CodeGenerator
                 {
-                    ScreenshotRender_Code() :
-                        SKSE::CodeGenerator()
+                    ScreenshotRender_Code() : SKSE::CodeGenerator()
                     {
                         // .text:00000001412AEDAA                 test    dil, dil
                         // .text:00000001412AEDAD                 jnz     ScreenshotRenderOrigJnz
@@ -167,7 +163,7 @@ namespace fixes
                         jmp("SKIP_JNZ");
 
                         L("FROM_PROCESSEVENT");  // use menu version of fix here
-                        mov(byte[rax], 0);  // screenshot request processed disable code for future iterations
+                        mov(byte[rax], 0);       // screenshot request processed disable code for future iterations
                         pop(rax);
                         mov(edi, 0x2A);  // menu version of fix
                         cmp(byte[rbp + 0x211], 0);
@@ -194,8 +190,7 @@ namespace fixes
             {
                 struct RenderTargetHook_1_Code : SKSE::CodeGenerator
                 {
-                    RenderTargetHook_1_Code() :
-                        SKSE::CodeGenerator()
+                    RenderTargetHook_1_Code() : SKSE::CodeGenerator()
                     {
                         Xbyak::Label screenRequested;
 
@@ -231,8 +226,7 @@ namespace fixes
             {
                 struct RenderTargetHook_2_Code : SKSE::CodeGenerator
                 {
-                    RenderTargetHook_2_Code() :
-                        SKSE::CodeGenerator()
+                    RenderTargetHook_2_Code() : SKSE::CodeGenerator()
                     {
                         // .text:00000001412AEF5A                 mov     [rbp+218h], rax
                         mov(ptr[rbp + 0x218], rax);

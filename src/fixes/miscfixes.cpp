@@ -343,7 +343,7 @@ namespace fixes
                 cmp(ptr[r14 + EQUIPPED_SHOUT], rdi);  // if (actor->equippedShout != shout)
                 je(exitLbl);
                 mov(ptr[r14 + EQUIPPED_SHOUT], rdi);  // actor->equippedShout = shout;
-                test(rdi, rdi);  // if (shout)
+                test(rdi, rdi);                       // if (shout)
                 jz(exitLbl);
                 jmp(ptr[rip + sendEvent]);
 
@@ -408,9 +408,9 @@ namespace fixes
                 mov(rax, g_AmbientSpecularAndFresnel.GetAddress());  // xmmword_1E3403C
                 movups(xmm0, ptr[rax]);
                 mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]);  // PixelShader
-                movzx(edx, byte[rax + 0x46]);  // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
-                mov(rax, ptr[r15 + 8]);  // m_PerGeometry buffer (copied from SetupGeometry)
-                movups(ptr[rax + rdx * 4], xmm0);  // m_PerGeometry buffer offset 0x6
+                movzx(edx, byte[rax + 0x46]);                 // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
+                mov(rax, ptr[r15 + 8]);                       // m_PerGeometry buffer (copied from SetupGeometry)
+                movups(ptr[rax + rdx * 4], xmm0);             // m_PerGeometry buffer offset 0x6
                 pop(rdx);
                 pop(rax);
                 // original code
@@ -845,10 +845,13 @@ namespace fixes
 
     bool PatchBSTempEffectNiRTTI()
     {
+        _VMESSAGE("- BSTempEffect NiRTTI -");
+
         REL::Offset<RE::NiRTTI*> rttiBSTempEffect(RE::BSTempEffect::Ni_RTTI);
         REL::Offset<RE::NiRTTI*> rttiNiObject(RE::NiObject::Ni_RTTI);
         rttiBSTempEffect->baseRTTI = rttiNiObject.GetType();
 
+        _VMESSAGE("success");
         return true;
     }
 }

@@ -19,7 +19,7 @@ namespace fixes
         uint32_t m_TechniqueID;
         uint8_t Byte1C;
         uint8_t Byte1D;  // Instance index (offset) in an instance group?
-        struct  // LOD information
+        struct           // LOD information
         {
             uint8_t Index : 7;  // Also referred to as "texture degrade level"
             bool SingleLevel : 1;
@@ -27,9 +27,9 @@ namespace fixes
         uint8_t m_LightCount;
         uint16_t Word20;
         BSRenderPass* m_Previous;  // Previous sub-pass
-        BSRenderPass* m_Next;  // Next sub-pass
-        void** m_SceneLights;  // Pointer to an array of 16 lights (MaxLightInArrayC, restricted to 3?)
-        uint32_t UnkDword40;  // Set from TLS variable. Pool index in BSRenderPassCache? Almost always zero.
+        BSRenderPass* m_Next;      // Next sub-pass
+        void** m_SceneLights;      // Pointer to an array of 16 lights (MaxLightInArrayC, restricted to 3?)
+        uint32_t UnkDword40;       // Set from TLS variable. Pool index in BSRenderPassCache? Almost always zero.
     };
 
     typedef void (*_BSBatchRenderer_SetupAndDrawPass)(BSRenderPass* pass, uint32_t technique, bool alphaTest, uint32_t renderFlags);
@@ -67,8 +67,7 @@ namespace fixes
         {
             struct BSBatchRenderer_SetupAndDrawPass_Code : SKSE::CodeGenerator
             {
-                BSBatchRenderer_SetupAndDrawPass_Code() :
-                    SKSE::CodeGenerator()
+                BSBatchRenderer_SetupAndDrawPass_Code() : SKSE::CodeGenerator()
                 {
                     // 131F810
                     mov(ptr[rsp + 0x10], rbx);
@@ -100,15 +99,14 @@ namespace fixes
         {
             struct BSLightingShader_SetupGeometry_Parallax_Code : SKSE::CodeGenerator
             {
-                BSLightingShader_SetupGeometry_Parallax_Code() :
-                    SKSE::CodeGenerator()
+                BSLightingShader_SetupGeometry_Parallax_Code() : SKSE::CodeGenerator()
                 {
                     // orig code
                     and_(eax, 0x21C00);
                     cmovnz(edx, r8d);
 
                     // new code
-                    cmp(ebx, 0x3);  // technique ID = PARALLAX
+                    cmp(ebx, 0x3);    // technique ID = PARALLAX
                     cmovz(edx, r8d);  // set eye update true
 
                     // jmp out

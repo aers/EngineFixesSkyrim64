@@ -40,8 +40,7 @@ namespace patches
         {
             struct GameLoopHook_Code : SKSE::CodeGenerator
             {
-                GameLoopHook_Code() :
-                    SKSE::CodeGenerator()
+                GameLoopHook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -91,8 +90,7 @@ namespace patches
         {
             struct WaterFlowHook_Code : SKSE::CodeGenerator
             {
-                WaterFlowHook_Code() :
-                    SKSE::CodeGenerator()
+                WaterFlowHook_Code() : SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label timerLabel;
@@ -205,8 +203,7 @@ namespace patches
         // Xbyak is used here to generate the ASM to use instead of just doing it by hand
         struct Patch : SKSE::CodeGenerator
         {
-            Patch() :
-                SKSE::CodeGenerator(100)
+            Patch() : SKSE::CodeGenerator(100)
             {
                 mov(al, 0);
                 ret();
@@ -294,8 +291,7 @@ namespace patches
         {
             struct SleepWaitTime_Code : SKSE::CodeGenerator
             {
-                SleepWaitTime_Code() :
-                    SKSE::CodeGenerator()
+                SleepWaitTime_Code() : SKSE::CodeGenerator()
                 {
                     push(rax);
                     mov(rax, (size_t)&config::sleepWaitTimeModifier);
