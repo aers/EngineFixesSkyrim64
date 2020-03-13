@@ -5,19 +5,19 @@
 
 namespace fixes
 {
-	bool PatchArcheryDownwardAiming();
+    bool PatchArcheryDownwardAiming();
     bool PatchBethesdaNetCrash();
     bool PatchBSLightingAmbientSpecular();
     bool PatchBSLightingShaderForceAlphaTest();
     bool PatchBSLightingShaderSetupGeometryParallax();
     bool PatchBSTempEffectNiRTTI();
     bool PatchCalendarSkipping();
-	bool PatchConjurationEnchantAbsorbs();
+    bool PatchConjurationEnchantAbsorbs();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
     bool PatchGetKeywordItemCount();
     bool PatchGHeapLeakDetectionCrash();
-	bool PatchLipSync();
+    bool PatchLipSync();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
     bool PatchPerkFragmentIsRunning();

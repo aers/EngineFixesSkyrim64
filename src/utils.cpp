@@ -13,9 +13,9 @@
 std::string savesFolderPath;
 std::unordered_set<std::string> existingSaves;
 
-bool InitSavePath(int folderID, const char * relPath)
+bool InitSavePath(int folderID, const char* relPath)
 {
-    char	path[MAX_PATH];
+    char path[MAX_PATH];
 
     HRESULT err = SHGetFolderPath(NULL, folderID | CSIDL_FLAG_CREATE, NULL, SHGFP_TYPE_CURRENT, path);
     if (!SUCCEEDED(err))
@@ -123,8 +123,7 @@ bool CleanSKSECosaves()
     return true;
 }
 
-bool GetFileVersion(const char* path, VS_FIXEDFILEINFO* info, std::string* outProductName,
-                    std::string* outProductVersion)
+bool GetFileVersion(const char* path, VS_FIXEDFILEINFO* info, std::string* outProductName, std::string* outProductVersion)
 {
     bool result = false;
 
@@ -143,7 +142,7 @@ bool GetFileVersion(const char* path, VS_FIXEDFILEINFO* info, std::string* outPr
             VS_FIXEDFILEINFO* retrievedInfo = nullptr;
             UInt32 realVersionSize = sizeof(VS_FIXEDFILEINFO);
 
-            if (VerQueryValue(versionBuf, "\\", (void **)&retrievedInfo, (PUINT)&realVersionSize) && retrievedInfo)
+            if (VerQueryValue(versionBuf, "\\", (void**)&retrievedInfo, (PUINT)&realVersionSize) && retrievedInfo)
             {
                 *info = *retrievedInfo;
                 result = true;
@@ -158,8 +157,7 @@ bool GetFileVersion(const char* path, VS_FIXEDFILEINFO* info, std::string* outPr
                 // try to get the product name, failure is ok
                 char* productName = nullptr;
                 UInt32 productNameLen = 0;
-                if (VerQueryValue(versionBuf, "\\StringFileInfo\\040904B0\\ProductName", (void **)&productName,
-                                  (PUINT)&productNameLen) && productNameLen && productName)
+                if (VerQueryValue(versionBuf, "\\StringFileInfo\\040904B0\\ProductName", (void**)&productName, (PUINT)&productNameLen) && productNameLen && productName)
                 {
                     *outProductName = productName;
                 }
@@ -168,8 +166,7 @@ bool GetFileVersion(const char* path, VS_FIXEDFILEINFO* info, std::string* outPr
             {
                 char* productVersion = nullptr;
                 UInt32 productVersionLen = 0;
-                if (VerQueryValue(versionBuf, "\\StringFileInfo\\040904B0\\ProductVersion", (void **)&productVersion,
-                                  (PUINT)&productVersionLen) && productVersionLen && productVersion)
+                if (VerQueryValue(versionBuf, "\\StringFileInfo\\040904B0\\ProductVersion", (void**)&productVersion, (PUINT)&productVersionLen) && productVersionLen && productVersion)
                 {
                     *outProductVersion = productVersion;
                 }
@@ -210,11 +207,10 @@ bool VersionStrToInt(const std::string& verStr, UInt64* out)
 
 uintptr_t PatchIAT(uintptr_t func, const char* dllName, const char* importName)
 {
-    const auto addr = reinterpret_cast<uintptr_t>(GetIATAddr(reinterpret_cast<void*>(REL::Module::BaseAddr()),
-                                                             dllName, importName));
+    const auto addr = reinterpret_cast<std::uintptr_t>(GetIATAddr(REL::Module::BasePtr(), dllName, importName));
     if (addr)
     {
-        const auto orig = *reinterpret_cast<uintptr_t *>(addr);
+        const auto orig = *reinterpret_cast<std::uintptr_t*>(addr);
         SKSE::SafeWrite64(addr, func);
         return orig;
     }

@@ -1,12 +1,11 @@
 #include "fixes.h"
 
-
 namespace fixes
 {
     bool PatchAll()
     {
-		if (config::fixArcheryDownwardAiming)
-			PatchArcheryDownwardAiming();
+        if (config::fixArcheryDownwardAiming)
+            PatchArcheryDownwardAiming();
 
         if (config::fixBethesdaNetCrash)
             PatchBethesdaNetCrash();
@@ -26,8 +25,8 @@ namespace fixes
         if (config::fixCalendarSkipping)
             PatchCalendarSkipping();
 
-		if (config::fixConjurationEnchantAbsorbs)
-			PatchConjurationEnchantAbsorbs();
+        if (config::fixConjurationEnchantAbsorbs)
+            PatchConjurationEnchantAbsorbs();
 
         if (config::fixDoublePerkApply)
             PatchDoublePerkApply();
@@ -41,8 +40,8 @@ namespace fixes
         if (config::fixGHeapLeakDetectionCrash)
             PatchGHeapLeakDetectionCrash();
 
-		if (config::fixLipSync)
-			PatchLipSync();
+        if (config::fixLipSync)
+            PatchLipSync();
 
         if (config::fixMemoryAccessErrors)
             PatchMemoryAccessErrors();
@@ -58,7 +57,7 @@ namespace fixes
 
         if (config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
-               
+
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
 

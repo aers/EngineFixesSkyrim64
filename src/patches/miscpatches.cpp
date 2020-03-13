@@ -23,12 +23,12 @@ namespace patches
     // loads TIMER_DEFAULT which is a timer representing the GameHour in seconds
     REL::Offset<uintptr_t> WaterShader_ReadTimer_Hook(WaterShader_ReadTimer_Hook_offset, 0x4A9);
 
-    float timer = 8 * 3600; // Game timer inits to 8 AM
+    float timer = 8 * 3600;  // Game timer inits to 8 AM
 
     void update_timer()
     {
         timer = timer + *FrameTimer_WithSlowTime * config::waterflowSpeed;
-        if (timer > 86400) // reset timer to 0 if we go past 24 hours
+        if (timer > 86400)  // reset timer to 0 if we go past 24 hours
             timer = timer - 86400;
     }
 
@@ -40,7 +40,8 @@ namespace patches
         {
             struct GameLoopHook_Code : SKSE::CodeGenerator
             {
-                GameLoopHook_Code() : SKSE::CodeGenerator()
+                GameLoopHook_Code() :
+                    SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -90,7 +91,8 @@ namespace patches
         {
             struct WaterFlowHook_Code : SKSE::CodeGenerator
             {
-                WaterFlowHook_Code() : SKSE::CodeGenerator()
+                WaterFlowHook_Code() :
+                    SKSE::CodeGenerator()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label timerLabel;
@@ -98,7 +100,7 @@ namespace patches
                     // enter 130DFD9
                     // .text:000000014130DFD9                 movss   xmm1, cs:TIMER_DEFAULT
                     // .text:000000014130DFE1                 movss   dword ptr[rdx + rax * 4 + 0Ch], xmm1
-                    mov(r9, ptr[rip + timerLabel]); // r9 is safe to use, unused again until .text:000000014130E13C                 mov     r9, r12
+                    mov(r9, ptr[rip + timerLabel]);  // r9 is safe to use, unused again until .text:000000014130E13C                 mov     r9, r12
                     movss(xmm1, dword[r9]);
                     movss(dword[rdx + rax * 4 + 0xC], xmm1);
 
@@ -125,7 +127,7 @@ namespace patches
     }
 
     decltype(&fopen_s) VC140_fopen_s;
-    errno_t hk_fopen_s(FILE **File, const char *Filename, const char *Mode)
+    errno_t hk_fopen_s(FILE** File, const char* Filename, const char* Mode)
     {
         errno_t err = VC140_fopen_s(File, Filename, Mode);
 
@@ -136,7 +138,7 @@ namespace patches
     }
 
     decltype(&_wfopen_s) VC140_wfopen_s;
-    errno_t hk_wfopen_s(FILE **File, const wchar_t *Filename, const wchar_t *Mode)
+    errno_t hk_wfopen_s(FILE** File, const wchar_t* Filename, const wchar_t* Mode)
     {
         errno_t err = VC140_wfopen_s(File, Filename, Mode);
 
@@ -147,9 +149,9 @@ namespace patches
     }
 
     decltype(&fopen) VC140_fopen;
-    FILE *hk_fopen(const char *Filename, const char *Mode)
+    FILE* hk_fopen(const char* Filename, const char* Mode)
     {
-        FILE *f = VC140_fopen(Filename, Mode);
+        FILE* f = VC140_fopen(Filename, Mode);
 
         if (!f)
             _MESSAGE("WARNING: Error occurred trying to open file: fopen(%s, %s)", Filename, Mode);
@@ -173,9 +175,9 @@ namespace patches
 
         _VMESSAGE("max stdio set to %d", maxStdio);
 
-        *(void **)&VC140_fopen_s = (uintptr_t *)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
-        *(void **)&VC140_wfopen_s = (uintptr_t *)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
-        *(void **)&VC140_fopen = (uintptr_t *)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
+        *(void**)&VC140_fopen_s = (uintptr_t*)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
+        *(void**)&VC140_wfopen_s = (uintptr_t*)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
+        *(void**)&VC140_fopen = (uintptr_t*)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
 
         return true;
     }
@@ -203,7 +205,8 @@ namespace patches
         // Xbyak is used here to generate the ASM to use instead of just doing it by hand
         struct Patch : SKSE::CodeGenerator
         {
-            Patch() : SKSE::CodeGenerator(100)
+            Patch() :
+                SKSE::CodeGenerator(100)
             {
                 mov(al, 0);
                 ret();
@@ -227,7 +230,6 @@ namespace patches
 
     bool PatchDisableChargenPrecache()
     {
-
         _VMESSAGE("- disable chargen precache -");
         SKSE::SafeWrite8(ChargenCacheClearFunction.GetAddress(), 0xC3);
         SKSE::SafeWrite8(ChargenCacheClearFunction.GetAddress(), 0xC3);
@@ -237,7 +239,7 @@ namespace patches
 
     bool loadSet = false;
 
-    bool hk_TESFile_IsMaster(RE::TESFile * modInfo)
+    bool hk_TESFile_IsMaster(RE::TESFile* modInfo)
     {
         if (loadSet)
             return true;
@@ -256,7 +258,7 @@ namespace patches
             return true;
         }
 
-		return (modInfo->recordFlags & RE::TESFile::RecordFlag::kMaster) != RE::TESFile::RecordFlag::kNone;
+        return (modInfo->recordFlags & RE::TESFile::RecordFlag::kMaster) != RE::TESFile::RecordFlag::kNone;
     }
 
     REL::Offset<std::uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
@@ -292,7 +294,8 @@ namespace patches
         {
             struct SleepWaitTime_Code : SKSE::CodeGenerator
             {
-                SleepWaitTime_Code() : SKSE::CodeGenerator()
+                SleepWaitTime_Code() :
+                    SKSE::CodeGenerator()
                 {
                     push(rax);
                     mov(rax, (size_t)&config::sleepWaitTimeModifier);
@@ -313,18 +316,18 @@ namespace patches
         return true;
     }
 
-	REL::Offset<std::uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset, 0x14);
+    REL::Offset<std::uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset, 0x14);
     REL::Offset<std::uintptr_t> Win32FileType_ctor(Win32FileType_ctor_offset, 0x14E);
     REL::Offset<std::uintptr_t> ScrapHeap_GetMaxSize(ScrapHeap_GetMaxSize_offset, 0x4);
 
-	bool PatchSaveGameMaxSize()
-	{
-		_VMESSAGE("- save game max size -");
-		SKSE::SafeWrite8(Win32FileType_CopyToBuffer.GetAddress(), 0x08);
+    bool PatchSaveGameMaxSize()
+    {
+        _VMESSAGE("- save game max size -");
+        SKSE::SafeWrite8(Win32FileType_CopyToBuffer.GetAddress(), 0x08);
         SKSE::SafeWrite8(Win32FileType_ctor.GetAddress(), 0x08);
         SKSE::SafeWrite8(ScrapHeap_GetMaxSize.GetAddress(), 0x08);
 
-		_VMESSAGE("success");
-		return true;
-	}
+        _VMESSAGE("success");
+        return true;
+    }
 }

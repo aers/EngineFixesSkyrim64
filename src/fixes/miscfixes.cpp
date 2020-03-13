@@ -7,26 +7,28 @@
 #include "fixes.h"
 #include "utils.h"
 
-
 namespace fixes
 {
     // TY SniffleMan https://github.com/SniffleMan/MiscFixesSSE
     typedef void _TESObjectBook_LoadBuffer(RE::TESObjectBOOK* a_this, RE::BGSLoadFormBuffer* a_buf);
-    static _TESObjectBook_LoadBuffer * orig_LoadBuffer;
+    static _TESObjectBook_LoadBuffer* orig_LoadBuffer;
 
     REL::Offset<_TESObjectBook_LoadBuffer**> vtbl_LoadBuffer(TESObjectBook_vtbl_offset, 0xF * 0x8);
-    
-    void hk_TESObjectBook_LoadBuffer(RE::TESObjectBOOK * thisPtr, RE::BGSLoadFormBuffer* a_buf)
+
+    void hk_TESObjectBook_LoadBuffer(RE::TESObjectBOOK* thisPtr, RE::BGSLoadFormBuffer* a_buf)
     {
         using Flag = RE::OBJ_BOOK::Flag;
 
         orig_LoadBuffer(thisPtr, a_buf);
 
-        if (thisPtr->data.teaches.actorValueToAdvance == RE::ActorValue::kNone) {
-            if (thisPtr->TeachesSkill()) {
+        if (thisPtr->data.teaches.actorValueToAdvance == RE::ActorValue::kNone)
+        {
+            if (thisPtr->TeachesSkill())
+            {
                 thisPtr->data.flags &= ~Flag::kAdvancesActorValue;
             }
-            if (thisPtr->TeachesSpell()) {
+            if (thisPtr->TeachesSpell())
+            {
                 thisPtr->data.flags &= ~Flag::kTeachesSpell;
             }
         }
@@ -53,22 +55,22 @@ namespace fixes
     REL::Offset<uintptr_t> call_IsRunning(GameFunc_Native_IsRunning_offset, 0x22);
 
     bool PatchPerkFragmentIsRunning()
-    {       
+    {
         _VMESSAGE("- ::IsRunning fix -");
         auto trampoline = SKSE::GetTrampoline();
         trampoline->Write5Call(call_IsRunning.GetAddress(), unrestricted_cast<std::uintptr_t>(&ActorEx::Hook_IsRunning));
         _VMESSAGE("success");
 
         return true;
-     }
+    }
 
     REL::Offset<std::uintptr_t> BSLightingShaderMaterialSnow_vtbl(BSLightingShaderMaterialSnow_vtbl_offset);
     REL::Offset<std::uintptr_t> BSLightingShader_SetupMaterial_Snow_Hook(BSLightingShader_SetupMaterial_Snow_Hook_offset, 0x4E0);
     REL::Offset<std::uintptr_t> BSLightingShader_SetupMaterial_Snow_Exit(BSLightingShader_SetupMaterial_Snow_Exit_offset, 0x5B6);
 
-    typedef bool(*BGSShaderParticleGeometryData_LoadForm_)(RE::BGSShaderParticleGeometryData* thisPtr, RE::TESFile* modInfo);
+    typedef bool (*BGSShaderParticleGeometryData_LoadForm_)(RE::BGSShaderParticleGeometryData* thisPtr, RE::TESFile* modInfo);
     BGSShaderParticleGeometryData_LoadForm_ orig_BGSShaderParticleGeometryData_LoadForm;
-    REL::Offset<BGSShaderParticleGeometryData_LoadForm_*> vtbl_BGSShaderParticleGeometryData_LoadForm(vtbl_BGSShaderParticleGeometryData_LoadForm_offset, 0x8 * 0x6); // vtbl[6]
+    REL::Offset<BGSShaderParticleGeometryData_LoadForm_*> vtbl_BGSShaderParticleGeometryData_LoadForm(vtbl_BGSShaderParticleGeometryData_LoadForm_offset, 0x8 * 0x6);  // vtbl[6]
 
     REL::Offset<std::uintptr_t> BadUse(BadUseFuncBase_offset, 0x1AFD);
 
@@ -167,20 +169,19 @@ namespace fixes
         return true;
     }
 
-
     REL::Offset<std::uintptr_t> BSDistantTreeShader_VFunc3_Hook(BSDistantTreeShader_hook_offset, 0x37);
 
     bool PatchTreeReflections()
     {
         _VMESSAGE("- blocky tree reflections -");
 
-		const auto handle = GetModuleHandleA("d3dcompiler_46e.dll");
+        const auto handle = GetModuleHandleA("d3dcompiler_46e.dll");
 
-		if (handle)
-		{
-			_VMESSAGE("enb detected - disabling fix, please use ENB's tree reflection fix instead");
-			return true;
-		}
+        if (handle)
+        {
+            _VMESSAGE("enb detected - disabling fix, please use ENB's tree reflection fix instead");
+            return true;
+        }
 
         _VMESSAGE("patching BSDistantTreeShader vfunc 3");
         struct PatchTreeReflection_Code : SKSE::CodeGenerator
@@ -263,35 +264,43 @@ namespace fixes
         std::string str;
         char* dst = 0;
         rsize_t dstsz = 0;
-        if (a_dst) {
+        if (a_dst)
+        {
             dst = a_dst;
             dstsz = a_dstsz;
         }
-        else {
+        else
+        {
             str.resize(numChars);
             dst = str.data();
             dstsz = str.max_size();
         }
 
         bool err;
-        if (a_src && numChars != 0 && numChars <= dstsz) {
+        if (a_src && numChars != 0 && numChars <= dstsz)
+        {
             err = WideCharToMultiByte(CP_UTF8, 0, *a_src, a_len, dst, numChars, NULL, NULL) ? false : true;
         }
-        else {
+        else
+        {
             err = true;
         }
 
-        if (err) {
-            if (a_retval) {
+        if (err)
+        {
+            if (a_retval)
+            {
                 *a_retval = static_cast<std::size_t>(-1);
             }
-            if (a_dst && a_dstsz != 0 && a_dstsz <= (std::numeric_limits<rsize_t>::max)()) {
+            if (a_dst && a_dstsz != 0 && a_dstsz <= (std::numeric_limits<rsize_t>::max)())
+            {
                 a_dst[0] = '\0';
             }
             return GetLastError();
         }
 
-        if (a_retval) {
+        if (a_retval)
+        {
             *a_retval = static_cast<std::size_t>(numChars);
         }
         return 0;
@@ -331,13 +340,12 @@ namespace fixes
                 // r14 = Actor*
                 // rdi = TESShout*
 
-                cmp(ptr[r14 + EQUIPPED_SHOUT], rdi);	// if (actor->equippedShout != shout)
+                cmp(ptr[r14 + EQUIPPED_SHOUT], rdi);  // if (actor->equippedShout != shout)
                 je(exitLbl);
-                mov(ptr[r14 + EQUIPPED_SHOUT], rdi);	// actor->equippedShout = shout;
-                test(rdi, rdi);							// if (shout)
+                mov(ptr[r14 + EQUIPPED_SHOUT], rdi);  // actor->equippedShout = shout;
+                test(rdi, rdi);  // if (shout)
                 jz(exitLbl);
                 jmp(ptr[rip + sendEvent]);
-
 
                 L(exitLbl);
                 jmp(ptr[rip + exitIP]);
@@ -356,7 +364,8 @@ namespace fixes
         auto trampoline = SKSE::GetTrampoline();
         trampoline->Write5Branch(funcBase.GetAddress() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
-        for (UInt32 i = 0; i < DIFF; ++i) {
+        for (UInt32 i = 0; i < DIFF; ++i)
+        {
             SKSE::SafeWrite8(funcBase.GetAddress() + BRANCH_OFF + BRANCH_SIZE + i, NOP);
         }
 
@@ -380,7 +389,7 @@ namespace fixes
         for (int i = 0; i < length; ++i)
         {
             SKSE::SafeWrite8(DisableSetupMaterialAmbientSpecular.GetAddress() + i, nop);
-        }            
+        }
 
         _VMESSAGE("Adding SetupGeometry case");
 
@@ -391,17 +400,17 @@ namespace fixes
                 Xbyak::Label jmpOut;
                 // hook: 0x130AB2D (in middle of SetupGeometry, right before if (rawTechnique & RAW_FLAG_SPECULAR), just picked a random place tbh
                 // test
-                test(dword[r13 + 0x94], 0x20000); // RawTechnique & RAW_FLAG_AMBIENT_SPECULAR
+                test(dword[r13 + 0x94], 0x20000);  // RawTechnique & RAW_FLAG_AMBIENT_SPECULAR
                 jz(jmpOut);
                 // ambient specular
                 push(rax);
                 push(rdx);
-                mov(rax, g_AmbientSpecularAndFresnel.GetAddress()); // xmmword_1E3403C
+                mov(rax, g_AmbientSpecularAndFresnel.GetAddress());  // xmmword_1E3403C
                 movups(xmm0, ptr[rax]);
-                mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]); // PixelShader
-                movzx(edx, byte[rax + 0x46]); // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
+                mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]);  // PixelShader
+                movzx(edx, byte[rax + 0x46]);  // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
                 mov(rax, ptr[r15 + 8]);  // m_PerGeometry buffer (copied from SetupGeometry)
-                movups(ptr[rax + rdx * 4], xmm0); // m_PerGeometry buffer offset 0x6
+                movups(ptr[rax + rdx * 4], xmm0);  // m_PerGeometry buffer offset 0x6
                 pop(rdx);
                 pop(rax);
                 // original code
@@ -432,16 +441,17 @@ namespace fixes
         constexpr UInt8 NOP = 0x90;
         REL::Offset<std::uintptr_t> funcBase(GHeap_Leak_Detection_Crash_offset);
 
-        for (std::uintptr_t i = START; i < END; ++i) {
+        for (std::uintptr_t i = START; i < END; ++i)
+        {
             SKSE::SafeWrite8(funcBase.GetAddress() + i, NOP);
         }
-        
+
         _VMESSAGE("success");
 
         return true;
     }
 
-    static int magic = 0x3CC0C0C0; // 1 / 42.5
+    static int magic = 0x3CC0C0C0;  // 1 / 42.5
 
     REL::Offset<float*> FrameTimer_WithoutSlowTime(g_FrameTimer_NoSlowTime_offset);
 
@@ -588,42 +598,42 @@ namespace fixes
         return true;
     }
 
-	class EnchantmentItemEx : public RE::EnchantmentItem
-	{
-	public:
-		using func_t = decltype(&RE::EnchantmentItem::GetNoAbsorb); // 5E
-		static inline REL::Function<func_t> func;
+    class EnchantmentItemEx : public RE::EnchantmentItem
+    {
+    public:
+        using func_t = decltype(&RE::EnchantmentItem::GetNoAbsorb);  // 5E
+        static inline REL::Function<func_t> func;
 
+        bool Hook_DisallowsAbsorbReflection()
+        {
+            using Archetype = RE::EffectArchetypes::ArchetypeID;
+            for (auto& effect : effects)
+            {
+                if (effect->baseEffect->HasArchetype(Archetype::kSummonCreature))
+                {
+                    return true;
+                }
+            }
+            return func(this);
+        }
 
-		bool Hook_DisallowsAbsorbReflection()
-		{
-			using Archetype = RE::EffectArchetypes::ArchetypeID;
-			for (auto& effect : effects) {
-				if (effect->baseEffect->HasArchetype(Archetype::kSummonCreature)) {
-					return true;
-				}
-			}
-			return func(this);
-		}
-
-
-		static void InstallHooks()
-		{
-			// ??_7EnchantmentItem@@6B@
-			REL::Offset<std::uintptr_t> vTbl(offset_vtbl_EnchantmentItem, 0x8 * 0x5E);
+        static void InstallHooks()
+        {
+            // ??_7EnchantmentItem@@6B@
+            REL::Offset<std::uintptr_t> vTbl(offset_vtbl_EnchantmentItem, 0x8 * 0x5E);
             func = vTbl.WriteVFunc(0x5E, &EnchantmentItemEx::Hook_DisallowsAbsorbReflection);
-			_DMESSAGE("Installed hook for (%s)", typeid(EnchantmentItemEx).name());
-		}
-	};
+            _DMESSAGE("Installed hook for (%s)", typeid(EnchantmentItemEx).name());
+        }
+    };
 
-	bool PatchConjurationEnchantAbsorbs()
-	{
-		_VMESSAGE("- Enchantment Absorption on Staff Summons -");
-		EnchantmentItemEx::InstallHooks();
-		_VMESSAGE("success");
+    bool PatchConjurationEnchantAbsorbs()
+    {
+        _VMESSAGE("- Enchantment Absorption on Staff Summons -");
+        EnchantmentItemEx::InstallHooks();
+        _VMESSAGE("success");
 
-		return true;
-	}
+        return true;
+    }
 
     class ArcheryDownwardAiming
     {
@@ -639,7 +649,8 @@ namespace fixes
         static void Hook_Move(RE::Projectile* a_this, /*const*/ RE::NiPoint3& a_from, const RE::NiPoint3& a_to)
         {
             auto refShooter = a_this->shooter.get();
-            if (refShooter && refShooter->Is(RE::FormType::ActorCharacter)) {
+            if (refShooter && refShooter->Is(RE::FormType::ActorCharacter))
+            {
                 auto akShooter = static_cast<RE::Actor*>(refShooter.get());
                 [[maybe_unused]] RE::NiPoint3 direction;
                 akShooter->GetEyeVector(a_from, direction, true);
@@ -648,183 +659,189 @@ namespace fixes
             _Move(a_this, a_from, a_to);
         }
 
-
         using Move_t = decltype(&ArcheryDownwardAiming::Hook_Move);
         static inline REL::Function<Move_t> _Move;
     };
 
-	bool PatchArcheryDownwardAiming()
-	{
-		_VMESSAGE("- archery downward aiming -");
+    bool PatchArcheryDownwardAiming()
+    {
+        _VMESSAGE("- archery downward aiming -");
         ArcheryDownwardAiming::Install();
-		_VMESSAGE("- success -");
+        _VMESSAGE("- success -");
 
-		return true;
-	}
+        return true;
+    }
 
     REL::Offset<std::uintptr_t> AnimationSignedCrash(offset_AnimationLoadSigned, 0x91);
 
-  bool PatchAnimationLoadSignedCrash()
-  {
-      _VMESSAGE("- animation load crash -");
-      // Change "BF" to "B7"
-      SKSE::SafeWrite8(AnimationSignedCrash.GetAddress(), 0xB7);
-      _VMESSAGE("success");
+    bool PatchAnimationLoadSignedCrash()
+    {
+        _VMESSAGE("- animation load crash -");
+        // Change "BF" to "B7"
+        SKSE::SafeWrite8(AnimationSignedCrash.GetAddress(), 0xB7);
+        _VMESSAGE("success");
 
-    return true;
-  }
+        return true;
+    }
 
-	bool PatchLipSync()
-	{			   
-		_VMESSAGE("- lip sync bug -");
-		constexpr UInt8 OFFSETS[] = {
-			0x1E,
-			0x3A,
-			0x9A,
-			0xD8
-		};
+    bool PatchLipSync()
+    {
+        _VMESSAGE("- lip sync bug -");
+        constexpr UInt8 OFFSETS[] = {
+            0x1E,
+            0x3A,
+            0x9A,
+            0xD8
+        };
 
-		constexpr std::size_t NUM_OFFSETS = std::extent<decltype(OFFSETS)>::value;
+        constexpr std::size_t NUM_OFFSETS = std::extent<decltype(OFFSETS)>::value;
 
-		REL::Offset<std::uintptr_t> funcBase(LipSync_FUNC_ADDR);
-		for (std::size_t i = 0; i < NUM_OFFSETS; ++i) {
-			SKSE::SafeWrite8(funcBase.GetAddress() + OFFSETS[i], 0xEB);    // jns -> jmp
-		}
-		_VMESSAGE("- success -");
+        REL::Offset<std::uintptr_t> funcBase(LipSync_FUNC_ADDR);
+        for (std::size_t i = 0; i < NUM_OFFSETS; ++i)
+        {
+            SKSE::SafeWrite8(funcBase.GetAddress() + OFFSETS[i], 0xEB);  // jns -> jmp
+        }
+        _VMESSAGE("- success -");
 
-		return true;
-	}
+        return true;
+    }
 
-	class CalendarEx
-	{
-	public:
-		static void AdvanceTime(float a_secondsPassed)
-		{
-			auto time = RE::Calendar::GetSingleton();
-			float hoursPassed = (a_secondsPassed * time->timeScale->value / (60.0 * 60.0)) + time->gameHour->value - 24.0;
-			if (hoursPassed > 24.0) {
-				do {
-					time->midnightsPassed += 1;
-					time->rawDaysPassed += 1.0;
-					hoursPassed -= 24.0;
-				} while (hoursPassed > 24.0);
-				time->gameDaysPassed->value = (hoursPassed / 24.0) + time->rawDaysPassed;
-			}
-		}
+    class CalendarEx
+    {
+    public:
+        static void AdvanceTime(float a_secondsPassed)
+        {
+            auto time = RE::Calendar::GetSingleton();
+            float hoursPassed = (a_secondsPassed * time->timeScale->value / (60.0 * 60.0)) + time->gameHour->value - 24.0;
+            if (hoursPassed > 24.0)
+            {
+                do
+                {
+                    time->midnightsPassed += 1;
+                    time->rawDaysPassed += 1.0;
+                    hoursPassed -= 24.0;
+                } while (hoursPassed > 24.0);
+                time->gameDaysPassed->value = (hoursPassed / 24.0) + time->rawDaysPassed;
+            }
+        }
 
+        static void InstallHooks()
+        {
+            constexpr std::size_t CAVE_START = 0x17A;
+            constexpr std::size_t CAVE_SIZE = 0x15;
 
-		static void InstallHooks()
-		{
-			constexpr std::size_t CAVE_START = 0x17A;
-			constexpr std::size_t CAVE_SIZE = 0x15;
+            REL::Offset<std::uintptr_t> funcBase(Calendar_AdvanceTime_call_offset);
 
-			REL::Offset<std::uintptr_t> funcBase(Calendar_AdvanceTime_call_offset);
+            struct Patch : SKSE::CodeGenerator
+            {
+                Patch(std::uintptr_t a_addr) : SKSE::CodeGenerator(CAVE_SIZE)
+                {
+                    Xbyak::Label jmpLbl;
 
-			struct Patch : SKSE::CodeGenerator
-			{
-				Patch(std::uintptr_t a_addr) : SKSE::CodeGenerator(CAVE_SIZE)
-				{
-					Xbyak::Label jmpLbl;
+                    movaps(xmm0, xmm1);
+                    jmp(ptr[rip + jmpLbl]);
 
-					movaps(xmm0, xmm1);
-					jmp(ptr[rip + jmpLbl]);
+                    L(jmpLbl);
+                    dq(a_addr);
+                }
+            };
 
-					L(jmpLbl);
-					dq(a_addr);
-				}
-			};
-
-			Patch patch(unrestricted_cast<std::uintptr_t>(&CalendarEx::AdvanceTime));
+            Patch patch(unrestricted_cast<std::uintptr_t>(&CalendarEx::AdvanceTime));
             patch.finalize();
 
-			for (std::size_t i = 0; i < patch.getSize(); ++i) {
-				SKSE::SafeWrite8(funcBase.GetAddress() + CAVE_START + i, patch.getCode()[i]);
-			}
-		}
-	};
+            for (std::size_t i = 0; i < patch.getSize(); ++i)
+            {
+                SKSE::SafeWrite8(funcBase.GetAddress() + CAVE_START + i, patch.getCode()[i]);
+            }
+        }
+    };
 
-	bool PatchCalendarSkipping()
-	{
-		_VMESSAGE("-calendar skipping-");
-		CalendarEx::InstallHooks();
-		_VMESSAGE("success");
+    bool PatchCalendarSkipping()
+    {
+        _VMESSAGE("-calendar skipping-");
+        CalendarEx::InstallHooks();
+        _VMESSAGE("success");
 
-		return true;
-	}
+        return true;
+    }
 
     class GetKeywordItemCount
     {
     public:
         static bool Execute(const RE::SCRIPT_PARAMETER* a_paramInfo, RE::SCRIPT_FUNCTION::ScriptData* a_scriptData, RE::TESObjectREFR* a_thisObj, RE::TESObjectREFR* a_containingObj, RE::Script* a_scriptObj, RE::ScriptLocals* a_locals, double& a_result, UInt32& a_opcodeOffsetPtr)
         {
-            if (!a_scriptObj || a_scriptObj->refObjects.empty()) {
+            if (!a_scriptObj || a_scriptObj->refObjects.empty())
+            {
                 return false;
             }
 
             auto param = a_scriptObj->refObjects.front();
-            if (!param->form || param->form->IsNot(RE::FormType::Keyword)) {
+            if (!param->form || param->form->IsNot(RE::FormType::Keyword))
+            {
                 return false;
             }
 
             return Eval(a_thisObj, param->form, 0, a_result);
         }
 
-
         static bool Eval(RE::TESObjectREFR* a_thisObj, void* a_param1, void* a_param2, double& a_result)
         {
             a_result = 0.0;
-            if (!a_thisObj || !a_param1) {
+            if (!a_thisObj || !a_param1)
+            {
                 return true;
             }
 
             auto log = RE::ConsoleLog::GetSingleton();
-            if (!a_thisObj->GetContainer()) {
-                if (log->IsConsoleMode()) {
+            if (!a_thisObj->GetContainer())
+            {
+                if (log->IsConsoleMode())
+                {
                     log->Print("Calling Reference is not a Container Object");
                 }
                 return true;
             }
 
             auto keyword = static_cast<RE::BGSKeyword*>(a_param1);
-            auto inv = a_thisObj->GetInventoryCounts([&](RE::TESBoundObject* a_object) -> bool
-            {
+            auto inv = a_thisObj->GetInventoryCounts([&](RE::TESBoundObject* a_object) -> bool {
                 auto keywordForm = a_object->As<RE::BGSKeywordForm>();
                 return keywordForm && keywordForm->HasKeyword(keyword);
             });
 
-            for (auto& elem : inv) {
+            for (auto& elem : inv)
+            {
                 a_result += elem.second;
             }
 
-            if (log->IsConsoleMode()) {
+            if (log->IsConsoleMode())
+            {
                 log->Print("GetKeywordItemCount >> %0.2f", a_result);
             }
 
             return true;
         }
 
-
         static void Register()
         {
             auto command = RE::SCRIPT_FUNCTION::LocateScriptCommand(LONG_NAME);
-            if (command) {
+            if (command)
+            {
                 command->executeFunction = Execute;
                 command->conditionFunction = Eval;
             }
         }
 
-
         static constexpr char LONG_NAME[] = "GetKeywordItemCount";
     };
 
-	bool PatchGetKeywordItemCount()
-	{
+    bool PatchGetKeywordItemCount()
+    {
         _VMESSAGE("-broken GetKeywordItemCount condition function-");
         GetKeywordItemCount::Register();
         _VMESSAGE("success");
 
         return true;
-	}
+    }
 
     bool PatchBSTempEffectNiRTTI()
     {
