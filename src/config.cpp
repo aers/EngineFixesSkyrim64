@@ -5,7 +5,7 @@
 namespace config
 {
     bool verboseLogging = false;
-	bool cleanSKSECosaves = true;
+    bool cleanSKSECosaves = true;
 
     // Patches
     bool patchDisableChargenPrecache = false;
@@ -22,20 +22,20 @@ namespace config
     float waterflowSpeed = 20.0;
 
     // Fixes
-	bool fixAnimationLoadSignedCrash = true;
-	bool fixArcheryDownwardAiming = true;
+    bool fixAnimationLoadSignedCrash = true;
+    bool fixArcheryDownwardAiming = true;
     bool fixBethesdaNetCrash = true;
     bool fixBSLightingAmbientSpecular = true;
     bool fixBSLightingShaderForceAlphaTest = true;
     bool fixBSLightingShaderGeometryParallaxBug = true;
     bool fixBSTempEffectNiRTTI = true;
     bool fixCalendarSkipping = true;
-	bool fixConjurationEnchantAbsorbs = true;
+    bool fixConjurationEnchantAbsorbs = true;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
     bool fixGetKeywordItemCount = false;
     bool fixGHeapLeakDetectionCrash = true;
-	bool fixLipSync = true;
+    bool fixLipSync = true;
     bool fixMemoryAccessErrors = true;
     bool fixMO5STypo = true;
     bool fixPerkFragmentIsRunning = true;
@@ -44,7 +44,7 @@ namespace config
     bool fixSlowTimeCameraMovement = true;
     bool fixTreeReflections = true;
     bool fixVerticalLookSensitivity = true;
-
+    bool fixWeaponBlockScaling = true;
 
     // Warnings
     bool warnDupeAddonNodes = true;
@@ -53,7 +53,7 @@ namespace config
     uint32_t warnRefrLoadedGameLimit = 1000000;
 
     // Experimental
-	bool experimentalSaveGameMaxSize = false;
+    bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
     bool LoadConfig(const std::string& path)
@@ -84,20 +84,20 @@ namespace config
         waterflowSpeed = static_cast<float>(ini.GetReal("Patches", "WaterflowSpeed", 20.0));
 
         // Fixes
-		fixAnimationLoadSignedCrash = ini.GetBoolean("Fixes", "AnimationLoadSignedCrash", true);
-		fixArcheryDownwardAiming = ini.GetBoolean("Fixes", "ArcheryDownwardAiming", true);
+        fixAnimationLoadSignedCrash = ini.GetBoolean("Fixes", "AnimationLoadSignedCrash", true);
+        fixArcheryDownwardAiming = ini.GetBoolean("Fixes", "ArcheryDownwardAiming", true);
         fixBethesdaNetCrash = ini.GetBoolean("Fixes", "BethesdaNetCrash", true);
         fixBSLightingAmbientSpecular = ini.GetBoolean("Fixes", "BSLightingAmbientSpecular", true);
         fixBSLightingShaderForceAlphaTest = ini.GetBoolean("Fixes", "BSLightingShaderForceAlphaTest", true);
         fixBSLightingShaderGeometryParallaxBug = ini.GetBoolean("Fixes", "BSLightingShaderParallaxBug", true);
         fixBSTempEffectNiRTTI = ini.GetBoolean("Fixes", "BSTempEffectNiRTTI", true);
         fixCalendarSkipping = ini.GetBoolean("Fixes", "CalendarSkipping", true);
-		fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
+        fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
         fixGetKeywordItemCount = ini.GetBoolean("Fixes", "GetKeywordItemCount", false);
         fixGHeapLeakDetectionCrash = ini.GetBoolean("Fixes", "GHeapLeakDetectionCrash", true);
-		fixLipSync = ini.GetBoolean("Fixes", "LipSync", true);
+        fixLipSync = ini.GetBoolean("Fixes", "LipSync", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
         fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);
         fixPerkFragmentIsRunning = ini.GetBoolean("Fixes", "PerkFragmentIsRunning", true);
@@ -106,6 +106,7 @@ namespace config
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
+        fixWeaponBlockScaling = ini.GetBoolean("Fixes", "WeaponBlockScaling", true);
 
         // Warnings
         warnDupeAddonNodes = ini.GetBoolean("Warnings", "DupeAddonNodes", true);
@@ -114,7 +115,7 @@ namespace config
         warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
-		experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
+        experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 
         warnDupeAddonNodes = false;

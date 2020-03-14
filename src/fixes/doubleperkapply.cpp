@@ -11,9 +11,9 @@ namespace fixes
 {
     uint32_t next_formid;
 
-    typedef void(*_QueueApplyPerk)(RE::TaskQueueInterface* thisPtr, RE::Actor* actor, RE::BGSPerk* perk, std::int8_t oldRank, std::int8_t newRank);
+    typedef void (*_QueueApplyPerk)(RE::TaskQueueInterface* thisPtr, RE::Actor* actor, RE::BGSPerk* perk, std::int8_t oldRank, std::int8_t newRank);
     REL::Offset<_QueueApplyPerk> QueueApplyPerk(QueueApplyPerk_offset);
-    typedef void(*_HandleAddRf)(int64_t apm);
+    typedef void (*_HandleAddRf)(int64_t apm);
     REL::Offset<_HandleAddRf> HandleAddRf(Handle_Add_Rf_offset);
     REL::Offset<std::uintptr_t> SwitchFunctionMovzx(Switch_Function_movzx_offset, 0x1C4E);
     REL::Offset<std::uintptr_t> UnknownAddFuncMovzx1(Unknown_Add_Function_movzx_offset, 0x1A);
@@ -32,13 +32,12 @@ namespace fixes
         {
             //_DMESSAGE("perk loop in formid %08X", formid);
             next_formid = 0;
-            if (formid != 0x14) // player formid = 0x14
+            if (formid != 0x14)  // player formid = 0x14
                 oldRank |= 0x100;
         }
 
         QueueApplyPerk(RE::TaskQueueInterface::GetSingleton(), actorPtr, perkPtr, oldRank, newRank);
     }
-
 
     void do_handle(int64_t actorPtr, uint32_t val)
     {
@@ -46,11 +45,13 @@ namespace fixes
 
         if (shouldClear)
         {
-            int64_t apm = *((int64_t*)(actorPtr + 0xF0)); // actorprocessmanager 0xF0 in SSE Actor
+            int64_t apm = *((int64_t*)(actorPtr + 0xF0));  // actorprocessmanager 0xF0 in SSE Actor
             if (apm != 0)
                 HandleAddRf(apm);
         }
     }
+
+    using foobar = void (*)();
 
     bool PatchDoublePerkApply()
     {
@@ -124,27 +125,26 @@ namespace fixes
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
 
-                    // enter 33891B  
+                    // enter 33891B
                     // .text:000000014033891B                 add     rcx, 60h
                     add(rcx, 0x60);
                     // .text:000000014033891F                 movzx   ebp, r9b
                     movzx(ebp, r9b);
                     // .text:0000000140338923                 movzx   r14d, r8b
-                    mov(r14d, r8d); // preserve val
+                    mov(r14d, r8d);  // preserve val
 
-                                    // call do_handle
+                    // call do_handle
 
-                    push(rdx); // save rdx+rcx
+                    push(rdx);  // save rdx+rcx
                     push(rcx);
-                    mov(edx, r14d); // val
-                    mov(rcx, rsi); // actorPtr
-                    sub(rsp, 0x20); // parameter stack space 
-                                    //void do_handle(int64_t actorPtr, uint32_t val)
+                    mov(edx, r14d);  // val
+                    mov(rcx, rsi);   // actorPtr
+                    sub(rsp, 0x20);  // parameter stack space
+                                     //void do_handle(int64_t actorPtr, uint32_t val)
                     call(ptr[rip + funcLabel]);
                     add(rsp, 0x20);
                     pop(rcx);
                     pop(rdx);
-
 
                     // exit 338927
                     jmp(ptr[rip + retnLabel]);
@@ -182,11 +182,11 @@ namespace fixes
                     // .text:0000000140338CD3                 mov[rsp + 38h + var_18], al            do_add unk1
 
                     movzx(eax, byte[rdx + 0x8]);
-                    mov(rcx, ptr[rcx + 0x8]); // actorPtr
-                    mov(rdx, r8); //perkPtr
-                    mov(r8d, eax); //unk1
+                    mov(rcx, ptr[rcx + 0x8]);  // actorPtr
+                    mov(rdx, r8);              //perkPtr
+                    mov(r8d, eax);             //unk1
 
-                                   // void do_add(int64_t actorPtr, int64_t perkPtr, int32_t unk1)
+                    // void do_add(int64_t actorPtr, int64_t perkPtr, int32_t unk1)
                     call(ptr[rip + funcLabel]);
 
                     // exit 338CDC
@@ -197,7 +197,6 @@ namespace fixes
 
                     L(retnLabel);
                     dq(DoAddHook.GetAddress() + 0x1B);
-
                 }
             };
 
