@@ -5,6 +5,7 @@
 
 namespace fixes
 {
+    bool PatchAnimationLoadSignedCrash();
     bool PatchArcheryDownwardAiming();
     bool PatchBethesdaNetCrash();
     bool PatchBSLightingAmbientSpecular();
@@ -25,8 +26,8 @@ namespace fixes
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
     bool PatchTreeReflections();
+    bool PatchUnequipAllCrash();
     bool PatchVerticalLookSensitivity();
-    bool PatchAnimationLoadSignedCrash();
     bool PatchWeaponBlockScaling();
 
     bool PatchAll();

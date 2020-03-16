@@ -16,7 +16,7 @@ namespace config
     bool patchSaveAddedSoundCategories = true;
     bool patchScrollingDoesntSwitchPOV = false;
     bool patchSleepWaitTime = false;
-    float sleepWaitTimeModifier = 0.3;
+    float sleepWaitTimeModifier = 0.3F;
     bool patchWaterflowAnimation = true;
     bool patchTreeLODReferenceCaching = true;
     float waterflowSpeed = 20.0;
@@ -43,6 +43,7 @@ namespace config
     bool fixSaveScreenshots = true;
     bool fixSlowTimeCameraMovement = true;
     bool fixTreeReflections = true;
+    bool fixUnequipAllCrash = true;
     bool fixVerticalLookSensitivity = true;
     bool fixWeaponBlockScaling = true;
 
@@ -53,6 +54,7 @@ namespace config
     uint32_t warnRefrLoadedGameLimit = 1000000;
 
     // Experimental
+    bool experimentalCellInit = true;
     bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
@@ -105,6 +107,7 @@ namespace config
         fixSaveScreenshots = ini.GetBoolean("Fixes", "SaveScreenshots", true);
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
+        fixUnequipAllCrash = ini.GetBoolean("Fixes", "UnequipAllCrash", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
         fixWeaponBlockScaling = ini.GetBoolean("Fixes", "WeaponBlockScaling", true);
 
@@ -115,6 +118,7 @@ namespace config
         warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
+        experimentalCellInit = ini.GetBoolean("Experimental", "CellInit", false);
         experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 
