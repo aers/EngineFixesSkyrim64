@@ -54,6 +54,7 @@ namespace config
     uint32_t warnRefrLoadedGameLimit = 1000000;
 
     // Experimental
+    bool experimentalCellInit = true;
     bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
@@ -117,6 +118,7 @@ namespace config
         warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
+        experimentalCellInit = ini.GetBoolean("Experimental", "CellInit", false);
         experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 

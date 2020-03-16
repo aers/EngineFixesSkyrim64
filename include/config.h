@@ -52,6 +52,7 @@ namespace config
     extern uint32_t warnRefrLoadedGameLimit;
 
     // Experimental
+    extern bool experimentalCellInit;
     extern bool experimentalSaveGameMaxSize;
     extern bool experimentalTreatAllModsAsMasters;
 

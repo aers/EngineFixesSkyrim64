@@ -326,4 +326,168 @@ namespace patches
         _VMESSAGE("success");
         return true;
     }
+
+    class CellInitPatch
+    {
+    public:
+        static void Install()
+        {
+            REL::Offset<std::uintptr_t> target(REL::ID(18451), 0x238);
+            auto trampoline = SKSE::GetTrampoline();
+            trampoline->Write5Call(target.GetAddress(), ForEachReference);
+
+            constexpr std::array<std::pair<std::uint64_t, std::size_t>, 5> LOCATIONS = {
+                std::make_pair(21194, 0x26),
+                std::make_pair(21195, 0x26),
+                std::make_pair(21196, 0x7F),
+                std::make_pair(21197, 0x56),
+                std::make_pair(21199, 0x56)
+            };
+
+            for (auto& loc : LOCATIONS)
+            {
+                REL::ID id(loc.first);
+                trampoline->Write5Call(id.GetAddress() + loc.second, IsRefAtLocation);
+            }
+        }
+
+    private:
+        using ActorArray_t = RE::BSScrapArray<RE::Actor*>;
+        using ForEachResult_t = RE::BSContainer::ForEachResult;
+        using InitItem_t = ForEachResult_t(ActorArray_t*&, RE::TESObjectREFRPtr);
+
+        static ForEachResult_t ForEachReference(std::uint64_t a_references, ActorArray_t**& a_results)
+        {
+            auto cell = reinterpret_cast<RE::TESObjectCELL*>(a_references - 0x88);
+            std::vector<RE::TESObjectREFRPtr> refs;
+            refs.reserve(cell->references.size());
+
+            for (auto& ref : cell->references)
+            {
+                refs.push_back(ref);
+            }
+
+            for (auto& ref : refs)
+            {
+                _InitItem(*a_results, ref);
+            }
+
+            return ForEachResult_t::kStop;
+        }
+
+        static bool IsRefAtLocation(RE::BGSLocation* a_this, const RE::TESObjectREFR* a_ref, bool a_editorLoc)
+        {
+            __try
+            {
+                return _IsRefAtLocation(a_this, a_ref, a_editorLoc);
+            } __except (EXCEPTION_EXECUTE_HANDLER)
+            {
+                TracePossibleFailurePoints(a_ref);
+
+                [[maybe_unused]] auto ctd = *((void**)nullptr);  // get a crash log
+
+                std::abort();  // if above fails
+            }
+        }
+
+        static void TracePossibleFailurePoints(const RE::TESObjectREFR* a_ref)
+        {
+            LogForm("REFR", a_ref);
+            auto cell = a_ref->GetParentCell();
+            if (cell)
+            {
+                LogForm("CELL", cell);
+                RE::BGSEncounterZone* encounterZone = nullptr;
+                if (cell->loadedData && cell->loadedData->encounterZone)
+                {
+                    _FATALERROR("cell->loadedData->encounterZone");
+                    encounterZone = cell->loadedData->encounterZone;
+                }
+                else if (cell->extraList.HasType(RE::ExtraDataType::kEncounterZone))
+                {
+                    _FATALERROR("cell->extraList => ExtraEncounterZone::zone");
+                    auto xEncounterZone = cell->extraList.GetByType<RE::ExtraEncounterZone>();
+                    encounterZone = xEncounterZone ? xEncounterZone->zone : nullptr;
+                }
+
+                RE::BGSLocation* location = nullptr;
+                if (encounterZone)
+                {
+                    LogForm("ECZN", encounterZone);
+                    if (encounterZone->data.location)
+                    {
+                        _FATALERROR("encounterZone->data.location");
+                        location = encounterZone->data.location;
+                    }
+                }
+
+                if (!location)
+                {
+                    if (cell->extraList.HasType(RE::ExtraDataType::kLocation))
+                    {
+                        _FATALERROR("cell->extraList => ExtraLocation::location");
+                        auto xLocation = cell->extraList.GetByType<RE::ExtraLocation>();
+                        location = xLocation->location;
+                    }
+                    else if (cell->worldSpace)
+                    {
+                        _FATALERROR("cell->worldSpace");
+                        auto worldSpace = cell->worldSpace;
+                        LogForm("WRLD", worldSpace);
+                        if (worldSpace->location)
+                        {
+                            _FATALERROR("worldSpace->location");
+                            location = worldSpace->location;
+                        }
+                        else if (worldSpace->encounterZone)
+                        {
+                            _FATALERROR("worldSpace->encounterZone");
+                            encounterZone = worldSpace->encounterZone;
+                            LogForm("ECZN", encounterZone);
+                            if (encounterZone->data.location)
+                            {
+                                _FATALERROR("encounterZone->data.location");
+                                location = encounterZone->data.location;
+                            }
+                        }
+                    }
+                }
+
+                if (location)
+                {
+                    LogForm("LCTN", location);
+                }
+            }
+        }
+
+        static const char* EvalInit(const RE::TESForm* a_form)
+        {
+            if (a_form->formFlags & RE::TESForm::RecordFlags::kInitialized)
+            {
+                return "Initialized";
+            }
+            else
+            {
+                return "Not initialized";
+            }
+        }
+
+        static void LogForm(std::string_view a_type, const RE::TESForm* a_form)
+        {
+            _FATALERROR("%s: [0x%08X] %s", a_type.data(), a_form->GetFormID(), EvalInit(a_form));
+        }
+
+        static inline REL::Function<InitItem_t> _InitItem = REL::ID(18836);
+        static inline REL::Function<decltype(IsRefAtLocation)> _IsRefAtLocation = REL::ID(17961);
+    };
+
+    bool PatchCellInit()
+    {
+        _VMESSAGE("- cell init patch -");
+
+        CellInitPatch::Install();
+
+        _VMESSAGE("success");
+        return true;
+    }
 }
