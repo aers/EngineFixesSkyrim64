@@ -51,8 +51,6 @@ namespace fixes
         }
     }
 
-    using foobar = void (*)();
-
     bool PatchDoublePerkApply()
     {
         _VMESSAGE("- double perk apply -");

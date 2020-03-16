@@ -4,6 +4,9 @@ namespace fixes
 {
     bool PatchAll()
     {
+        if (config::fixAnimationLoadSignedCrash)
+            PatchAnimationLoadSignedCrash();
+
         if (config::fixArcheryDownwardAiming)
             PatchArcheryDownwardAiming();
 
@@ -60,9 +63,6 @@ namespace fixes
 
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
-
-        if (config::fixAnimationLoadSignedCrash)
-            PatchAnimationLoadSignedCrash();
 
         if (config::fixWeaponBlockScaling)
             PatchWeaponBlockScaling();

@@ -16,7 +16,7 @@ namespace config
     bool patchSaveAddedSoundCategories = true;
     bool patchScrollingDoesntSwitchPOV = false;
     bool patchSleepWaitTime = false;
-    float sleepWaitTimeModifier = 0.3;
+    float sleepWaitTimeModifier = 0.3F;
     bool patchWaterflowAnimation = true;
     bool patchTreeLODReferenceCaching = true;
     float waterflowSpeed = 20.0;
