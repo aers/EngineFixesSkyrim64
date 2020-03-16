@@ -26,6 +26,7 @@ namespace fixes
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
     bool PatchTreeReflections();
+    bool PatchUnequipAllCrash();
     bool PatchVerticalLookSensitivity();
     bool PatchWeaponBlockScaling();
 

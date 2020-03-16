@@ -40,6 +40,7 @@ namespace config
     extern bool fixSaveScreenshots;
     extern bool fixSlowTimeCameraMovement;
     extern bool fixTreeReflections;
+    extern bool fixUnequipAllCrash;
     extern bool fixVerticalLookSensitivity;
     extern bool fixAnimationLoadSignedCrash;
     extern bool fixWeaponBlockScaling;

@@ -834,6 +834,40 @@ namespace fixes
         return TreeReflectionsPatch::Install();
     }
 
+    class UnequipAllCrashPatch
+    {
+    public:
+        static void Install()
+        {
+            REL::Offset<std::uintptr_t> funcBase = REL::ID(37943);
+
+            auto trampoline = SKSE::GetTrampoline();
+            trampoline->Write5Call(funcBase.GetAddress() + 0x6C, GetEquippedLeftHand);
+            trampoline->Write5Call(funcBase.GetAddress() + 0x9C, GetEquippedRightHand);
+        }
+
+    private:
+        static RE::TESForm* GetEquippedLeftHand(RE::AIProcess* a_process)
+        {
+            return a_process ? a_process->GetEquippedLeftHand() : nullptr;
+        }
+
+        static RE::TESForm* GetEquippedRightHand(RE::AIProcess* a_process)
+        {
+            return a_process ? a_process->GetEquippedRightHand() : nullptr;
+        }
+    };
+
+    bool PatchUnequipAllCrash()
+    {
+        _VMESSAGE("- unequip all crash fix -");
+
+        UnequipAllCrashPatch::Install();
+
+        _VMESSAGE("success");
+        return true;
+    }
+
     class VerticalLookSensitivityPatch
     {
     public:

@@ -61,6 +61,9 @@ namespace fixes
         if (config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
 
+        if (config::fixUnequipAllCrash)
+            PatchUnequipAllCrash();
+
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
 
