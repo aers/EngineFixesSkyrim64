@@ -332,47 +332,47 @@ namespace patches
     public:
         static void Install()
         {
-            REL::Offset<std::uintptr_t> target(REL::ID(18451), 0x238);
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write5Call(target.GetAddress(), ForEachReference);
 
-            constexpr std::array<std::pair<std::uint64_t, std::size_t>, 5> LOCATIONS = {
-                std::make_pair(21194, 0x26),
-                std::make_pair(21195, 0x26),
-                std::make_pair(21196, 0x7F),
-                std::make_pair(21197, 0x56),
-                std::make_pair(21199, 0x56)
-            };
-
-            for (auto& loc : LOCATIONS)
             {
-                REL::ID id(loc.first);
-                trampoline->Write5Call(id.GetAddress() + loc.second, IsRefAtLocation);
+                constexpr std::array<std::pair<std::uint64_t, std::size_t>, 5> LOCATIONS = {
+                    std::make_pair(21194, 0x26),
+                    std::make_pair(21195, 0x26),
+                    std::make_pair(21196, 0x7F),
+                    std::make_pair(21197, 0x56),
+                    std::make_pair(21199, 0x56)
+                };
+
+                for (auto& loc : LOCATIONS)
+                {
+                    REL::ID id(loc.first);
+                    trampoline->Write5Call(id.GetAddress() + loc.second, IsRefAtLocation);
+                }
+            }
+
+            {
+                constexpr std::array<std::pair<std::uint64_t, std::size_t>, 2> LOCATIONS = {
+                    std::make_pair(20026, 0x1AA),
+                    std::make_pair(20086, 0xB1)
+                };
+
+                for (auto& loc : LOCATIONS)
+                {
+                    REL::ID id(loc.first);
+                    trampoline->Write5Call(id.GetAddress() + loc.second, AddCell);
+                }
             }
         }
 
     private:
-        using ActorArray_t = RE::BSScrapArray<RE::Actor*>;
-        using ForEachResult_t = RE::BSContainer::ForEachResult;
-        using InitItem_t = ForEachResult_t(ActorArray_t*&, RE::TESObjectREFRPtr);
-
-        static ForEachResult_t ForEachReference(std::uint64_t a_references, ActorArray_t**& a_results)
+        static bool AddCell(RE::TESWorldSpace* a_this, RE::TESObjectCELL* a_cell)
         {
-            auto cell = reinterpret_cast<RE::TESObjectCELL*>(a_references - 0x88);
-            std::vector<RE::TESObjectREFRPtr> refs;
-            refs.reserve(cell->references.size());
-
-            for (auto& ref : cell->references)
+            auto success = _AddCell(a_this, a_cell);
+            if (success && a_cell)
             {
-                refs.push_back(ref);
+                a_cell->InitItem();
             }
-
-            for (auto& ref : refs)
-            {
-                _InitItem(*a_results, ref);
-            }
-
-            return ForEachResult_t::kStop;
+            return success;
         }
 
         static bool IsRefAtLocation(RE::BGSLocation* a_this, const RE::TESObjectREFR* a_ref, bool a_editorLoc)
@@ -477,7 +477,7 @@ namespace patches
             _FATALERROR("%s: [0x%08X] %s", a_type.data(), a_form->GetFormID(), EvalInit(a_form));
         }
 
-        static inline REL::Function<InitItem_t> _InitItem = REL::ID(18836);
+        static inline REL::Function<decltype(AddCell)> _AddCell = REL::ID(20064);
         static inline REL::Function<decltype(IsRefAtLocation)> _IsRefAtLocation = REL::ID(17961);
     };
 

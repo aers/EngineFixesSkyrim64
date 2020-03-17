@@ -1,7 +1,7 @@
-﻿#include "SKSE/API.h"
-
-#include <ShlObj.h>
+﻿#include <ShlObj.h>
 #include <sstream>
+
+#include "SKSE/API.h"
 
 #include "config.h"
 #include "fixes.h"
