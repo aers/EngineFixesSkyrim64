@@ -351,28 +351,24 @@ namespace patches
             }
 
             {
-                constexpr std::array<std::pair<std::uint64_t, std::size_t>, 2> LOCATIONS = {
-                    std::make_pair(20026, 0x1AA),
-                    std::make_pair(20086, 0xB1)
-                };
-
-                for (auto& loc : LOCATIONS)
-                {
-                    REL::ID id(loc.first);
-                    trampoline->Write5Call(id.GetAddress() + loc.second, AddCell);
-                }
+                REL::Offset<std::uintptr_t> funcBase = REL::ID(18474);
+                _GetLocation = trampoline->Write5CallEx(funcBase.GetAddress() + 0x110, GetLocation);
             }
         }
 
     private:
-        static bool AddCell(RE::TESWorldSpace* a_this, RE::TESObjectCELL* a_cell)
+        static RE::BGSLocation* GetLocation(const RE::ExtraDataList* a_this)
         {
-            auto success = _AddCell(a_this, a_cell);
-            if (success && a_cell)
+            auto cell = adjust_pointer<RE::TESObjectCELL>(a_this, -0x48);
+            auto loc = _GetLocation(a_this);
+            if (!cell->IsInitialized())
             {
-                a_cell->InitItem();
+                auto file = cell->GetFile();
+                auto formID = reinterpret_cast<RE::FormID>(loc);
+                RE::TESForm::AddCompileIndex(formID, file);
+                loc = RE::TESForm::LookupByID<RE::BGSLocation>(formID);
             }
-            return success;
+            return loc;
         }
 
         static bool IsRefAtLocation(RE::BGSLocation* a_this, const RE::TESObjectREFR* a_ref, bool a_editorLoc)
@@ -477,7 +473,7 @@ namespace patches
             _FATALERROR("%s: [0x%08X] %s", a_type.data(), a_form->GetFormID(), EvalInit(a_form));
         }
 
-        static inline REL::Function<decltype(AddCell)> _AddCell = REL::ID(20064);
+        static inline REL::Function<decltype(GetLocation)> _GetLocation;
         static inline REL::Function<decltype(IsRefAtLocation)> _IsRefAtLocation = REL::ID(17961);
     };
 
