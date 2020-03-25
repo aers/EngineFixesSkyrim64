@@ -1,7 +1,8 @@
-﻿#include "SKSE/API.h"
-
-#include <ShlObj.h>
+﻿#include <ShlObj.h>
 #include <sstream>
+
+#include "SKSE/API.h"
+#include "SKSE/Interfaces.h"
 
 #include "config.h"
 #include "fixes.h"
@@ -105,13 +106,8 @@ extern "C"
         }
 
         auto messaging = SKSE::GetMessagingInterface();
-        if (messaging->RegisterListener("SKSE", MessageHandler))
+        if (!messaging->RegisterListener("SKSE", MessageHandler))
         {
-            _MESSAGE("Messaging interface registration successful");
-        }
-        else
-        {
-            _FATALERROR("Messaging interface registration failed!\n");
             return false;
         }
 

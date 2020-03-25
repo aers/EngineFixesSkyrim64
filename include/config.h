@@ -27,6 +27,7 @@ namespace config
     extern bool fixBSLightingShaderGeometryParallaxBug;
     extern bool fixBSTempEffectNiRTTI;
     extern bool fixCalendarSkipping;
+    extern bool fixCellInit;
     extern bool fixConjurationEnchantAbsorbs;
     extern bool fixDoublePerkApply;
     extern bool fixEquipShoutEventSpam;
@@ -52,7 +53,6 @@ namespace config
     extern uint32_t warnRefrLoadedGameLimit;
 
     // Experimental
-    extern bool experimentalCellInit;
     extern bool experimentalSaveGameMaxSize;
     extern bool experimentalTreatAllModsAsMasters;
 

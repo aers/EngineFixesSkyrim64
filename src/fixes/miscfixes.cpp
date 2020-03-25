@@ -280,6 +280,44 @@ namespace fixes
         return true;
     }
 
+    class CellInitPatch
+    {
+    public:
+        static void Install()
+        {
+            auto trampoline = SKSE::GetTrampoline();
+            REL::Offset<std::uintptr_t> funcBase = REL::ID(18474);
+            _GetLocation = trampoline->Write5CallEx(funcBase.GetAddress() + 0x110, GetLocation);
+        }
+
+    private:
+        static RE::BGSLocation* GetLocation(const RE::ExtraDataList* a_this)
+        {
+            auto cell = adjust_pointer<RE::TESObjectCELL>(a_this, -0x48);
+            auto loc = _GetLocation(a_this);
+            if (!cell->IsInitialized())
+            {
+                auto file = cell->GetFile();
+                auto formID = reinterpret_cast<RE::FormID>(loc);
+                RE::TESForm::AddCompileIndex(formID, file);
+                loc = RE::TESForm::LookupByID<RE::BGSLocation>(formID);
+            }
+            return loc;
+        }
+
+        static inline REL::Function<decltype(GetLocation)> _GetLocation;
+    };
+
+    bool PatchCellInit()
+    {
+        _VMESSAGE("- cell init fix -");
+
+        CellInitPatch::Install();
+
+        _VMESSAGE("success");
+        return true;
+    }
+
     class ConjurationEnchantAbsorbsPatch
     {
     public:

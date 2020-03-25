@@ -13,6 +13,7 @@ namespace fixes
     bool PatchBSLightingShaderSetupGeometryParallax();
     bool PatchBSTempEffectNiRTTI();
     bool PatchCalendarSkipping();
+    bool PatchCellInit();
     bool PatchConjurationEnchantAbsorbs();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
