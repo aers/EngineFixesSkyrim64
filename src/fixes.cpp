@@ -28,6 +28,9 @@ namespace fixes
         if (config::fixCalendarSkipping)
             PatchCalendarSkipping();
 
+        if (config::fixCellInit)
+            PatchCellInit();
+
         if (config::fixConjurationEnchantAbsorbs)
             PatchConjurationEnchantAbsorbs();
 

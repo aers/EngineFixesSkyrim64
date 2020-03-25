@@ -16,7 +16,6 @@ namespace patches
     bool PatchTreeLODReferenceCaching();
     bool PatchWaterflowAnimation();
 
-    bool PatchCellInit();
     bool PatchMemoryManager();
     bool PatchSaveGameMaxSize();
     bool PatchTreatAllModsAsMasters();

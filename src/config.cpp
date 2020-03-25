@@ -30,6 +30,7 @@ namespace config
     bool fixBSLightingShaderGeometryParallaxBug = true;
     bool fixBSTempEffectNiRTTI = true;
     bool fixCalendarSkipping = true;
+    bool fixCellInit = true;
     bool fixConjurationEnchantAbsorbs = true;
     bool fixDoublePerkApply = true;
     bool fixEquipShoutEventSpam = true;
@@ -54,7 +55,6 @@ namespace config
     uint32_t warnRefrLoadedGameLimit = 1000000;
 
     // Experimental
-    bool experimentalCellInit = true;
     bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
@@ -94,6 +94,7 @@ namespace config
         fixBSLightingShaderGeometryParallaxBug = ini.GetBoolean("Fixes", "BSLightingShaderParallaxBug", true);
         fixBSTempEffectNiRTTI = ini.GetBoolean("Fixes", "BSTempEffectNiRTTI", true);
         fixCalendarSkipping = ini.GetBoolean("Fixes", "CalendarSkipping", true);
+        fixCellInit = ini.GetBoolean("Fixes", "CellInit", true);
         fixConjurationEnchantAbsorbs = ini.GetBoolean("Fixes", "ConjurationEnchantAbsorbs", true);
         fixDoublePerkApply = ini.GetBoolean("Fixes", "DoublePerkApply", true);
         fixEquipShoutEventSpam = ini.GetBoolean("Fixes", "EquipShoutEventSpam", true);
@@ -118,7 +119,6 @@ namespace config
         warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
-        experimentalCellInit = ini.GetBoolean("Experimental", "CellInit", false);
         experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 
