@@ -5,11 +5,11 @@
 #include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/CodeGenerator.h"
+#include "SKSE/IAT.h"
 #include "SKSE/SafeWrite.h"
 #include "SKSE/Trampoline.h"
 
 #include "fixes.h"
-#include "utils.h"
 
 namespace fixes
 {
@@ -76,7 +76,7 @@ namespace fixes
     public:
         static void Install()
         {
-            PatchIAT(unrestricted_cast<std::uintptr_t>(hk_wcsrtombs_s), "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
+            SKSE::PatchIAT(hk_wcsrtombs_s, "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
         }
 
     private:

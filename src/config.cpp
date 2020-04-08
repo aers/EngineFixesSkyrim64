@@ -56,6 +56,8 @@ namespace config
     uint32_t warnRefrLoadedGameLimit = 1000000;
 
     // Experimental
+    bool experimentalMemoryManager = false;
+    bool experimentalUseTBBMalloc = true;
     bool experimentalSaveGameMaxSize = false;
     bool experimentalTreatAllModsAsMasters = false;
 
@@ -121,6 +123,8 @@ namespace config
         warnRefrLoadedGameLimit = ini.GetInteger("Warnings", "RefrLoadedGameLimit", 1000000);
 
         // Experimental
+        experimentalMemoryManager = ini.GetBoolean("Experimental", "MemoryManager", false);
+        experimentalUseTBBMalloc = ini.GetBoolean("Experimental", "UseTBBMalloc", true);
         experimentalSaveGameMaxSize = ini.GetBoolean("Experimental", "SaveGameMaxSize", false);
         experimentalTreatAllModsAsMasters = ini.GetBoolean("Experimental", "TreatAllModsAsMasters", false);
 

@@ -42,4 +42,18 @@ namespace patches
 
         return true;
     }
+
+    bool Preload()
+    {
+        if (config::experimentalMemoryManager)
+        {
+            PatchMemoryManager();
+            if (config::experimentalUseTBBMalloc)
+            {
+                PatchTBBMalloc();
+            }
+        }
+
+        return true;
+    }
 }

@@ -54,6 +54,8 @@ namespace config
     extern uint32_t warnRefrLoadedGameLimit;
 
     // Experimental
+    extern bool experimentalMemoryManager;
+    extern bool experimentalUseTBBMalloc;
     extern bool experimentalSaveGameMaxSize;
     extern bool experimentalTreatAllModsAsMasters;
 

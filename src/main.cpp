@@ -55,9 +55,19 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
     }
 }
 
+bool CheckVersion(const SKSE::Version& a_version)
+{
+    auto success = a_version >= SKSE::RUNTIME_1_5_39;
+    if (!success)
+    {
+        _FATALERROR("Unsupported runtime version %s!\n", a_version.GetString().c_str());
+    }
+    return success;
+}
+
 extern "C"
 {
-    bool SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+    void __declspec(dllexport) Initialize()
     {
         SKSE::Logger::OpenRelative(FOLDERID_Documents, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes.log)");
 #ifdef _DEBUG
@@ -72,6 +82,31 @@ extern "C"
 
         _MESSAGE("Engine Fixes v%s", EF_VERSION_VERSTRING);
 
+        if (config::LoadConfig(R"(.\Data\SKSE\plugins\EngineFixes.ini)"))
+        {
+            _MESSAGE("loaded config successfully");
+        }
+        else
+        {
+            _MESSAGE("config load failed, using default config");
+        }
+
+        auto ver = REL::Module::GetVersion();
+        if (!CheckVersion(ver))
+        {
+            return;
+        }
+
+        if (!SKSE::AllocTrampoline(1 << 11))
+        {
+            return;
+        }
+
+        patches::Preload();
+    }
+
+    bool __declspec(dllexport) SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+    {
         // populate info structure
         a_info->infoVersion = SKSE::PluginInfo::kVersion;
         a_info->name = "EngineFixes plugin";
@@ -84,23 +119,23 @@ extern "C"
         }
 
         auto ver = a_skse->RuntimeVersion();
-        if (ver <= SKSE::RUNTIME_1_5_39)
+        if (!CheckVersion(ver))
         {
-            _FATALERROR("Unsupported runtime version %s!\n", ver.GetString().c_str());
             return false;
         }
 
         return true;
     }
 
-    bool SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+    bool __declspec(dllexport) SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
     {
         if (!SKSE::Init(a_skse))
         {
             return false;
         }
 
-        if (!SKSE::AllocTrampoline(1 << 11))
+        auto trampoline = SKSE::GetTrampoline();
+        if (trampoline->Empty())
         {
             return false;
         }
@@ -109,15 +144,6 @@ extern "C"
         if (!messaging->RegisterListener("SKSE", MessageHandler))
         {
             return false;
-        }
-
-        if (config::LoadConfig(R"(.\Data\SKSE\plugins\EngineFixes.ini)"))
-        {
-            _MESSAGE("loaded config successfully");
-        }
-        else
-        {
-            _MESSAGE("config load failed, using default config");
         }
 
         if (config::verboseLogging)

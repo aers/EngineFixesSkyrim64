@@ -17,10 +17,12 @@ namespace patches
     bool PatchWaterflowAnimation();
 
     bool PatchMemoryManager();
+    bool PatchTBBMalloc();
     bool PatchSaveGameMaxSize();
     bool PatchTreatAllModsAsMasters();
 
     void LoadVolumes();
 
     bool PatchAll();
+    bool Preload();
 }

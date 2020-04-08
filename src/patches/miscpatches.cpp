@@ -4,11 +4,11 @@
 #include "REL/Relocation.h"
 #include "SKSE/API.h"
 #include "SKSE/CodeGenerator.h"
+#include "SKSE/IAT.h"
 #include "SKSE/SafeWrite.h"
 #include "SKSE/Trampoline.h"
 
 #include "patches.h"
-#include "utils.h"
 
 namespace patches
 {
@@ -173,20 +173,20 @@ namespace patches
 
         _VMESSAGE("max stdio set to %d", maxStdio);
 
-        *(void**)&VC140_fopen_s = (uintptr_t*)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
-        *(void**)&VC140_wfopen_s = (uintptr_t*)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_wfopen_s), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "wfopen_s");
-        *(void**)&VC140_fopen = (uintptr_t*)PatchIAT(unrestricted_cast<std::uintptr_t>(hk_fopen), "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
+        *(void**)&VC140_fopen_s = (std::uintptr_t*)SKSE::PatchIAT(hk_fopen_s, "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
+        *(void**)&VC140_wfopen_s = (std::uintptr_t*)SKSE::PatchIAT(hk_wfopen_s, "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "_wfopen_s");
+        *(void**)&VC140_fopen = (std::uintptr_t*)SKSE::PatchIAT(hk_fopen, "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen");
 
         return true;
     }
 
-    REL::Offset<uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(QuickSaveLoadHandler_HandleEvent_SaveType_offset, 0x68);
-    REL::Offset<uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHandler_HandleEvent_LoadType_offset, 0x9B);
+    REL::Offset<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(QuickSaveLoadHandler_HandleEvent_SaveType_offset, 0x68);
+    REL::Offset<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHandler_HandleEvent_LoadType_offset, 0x9B);
 
     bool PatchRegularQuicksaves()
     {
-        const uint32_t regular_save = 0xF0000080;
-        const uint32_t load_last_save = 0xD0000100;
+        const std::uint32_t regular_save = 0xF0000080;
+        const std::uint32_t load_last_save = 0xD0000100;
 
         _VMESSAGE("- regular quicksaves -");
         SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_SaveType.GetAddress(), regular_save);
