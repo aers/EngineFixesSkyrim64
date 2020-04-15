@@ -20,19 +20,20 @@ namespace config
     extern float waterflowSpeed;
 
     // Fixes
-	extern bool fixArcheryDownwardAiming;
+    extern bool fixArcheryDownwardAiming;
     extern bool fixBethesdaNetCrash;
     extern bool fixBSLightingAmbientSpecular;
     extern bool fixBSLightingShaderForceAlphaTest;
     extern bool fixBSLightingShaderGeometryParallaxBug;
     extern bool fixBSTempEffectNiRTTI;
     extern bool fixCalendarSkipping;
-	extern bool fixConjurationEnchantAbsorbs;
+    extern bool fixCellInit;
+    extern bool fixConjurationEnchantAbsorbs;
     extern bool fixDoublePerkApply;
     extern bool fixEquipShoutEventSpam;
     extern bool fixGetKeywordItemCount;
     extern bool fixGHeapLeakDetectionCrash;
-	extern bool fixLipSync;
+    extern bool fixLipSync;
     extern bool fixMemoryAccessErrors;
     extern bool fixMO5STypo;
     extern bool fixPerkFragmentIsRunning;
@@ -40,8 +41,10 @@ namespace config
     extern bool fixSaveScreenshots;
     extern bool fixSlowTimeCameraMovement;
     extern bool fixTreeReflections;
+    extern bool fixUnequipAllCrash;
     extern bool fixVerticalLookSensitivity;
     extern bool fixAnimationLoadSignedCrash;
+    extern bool fixWeaponBlockScaling;
     extern bool fixCreateArmorNodeNullptrCrash;
 
     // Warnings
@@ -51,8 +54,8 @@ namespace config
     extern uint32_t warnRefrLoadedGameLimit;
 
     // Experimental
-	extern bool experimentalSaveGameMaxSize;
+    extern bool experimentalSaveGameMaxSize;
     extern bool experimentalTreatAllModsAsMasters;
-    
+
     bool LoadConfig(const std::string& path);
 }

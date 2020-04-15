@@ -5,19 +5,21 @@
 
 namespace fixes
 {
-	bool PatchArcheryDownwardAiming();
+    bool PatchAnimationLoadSignedCrash();
+    bool PatchArcheryDownwardAiming();
     bool PatchBethesdaNetCrash();
     bool PatchBSLightingAmbientSpecular();
     bool PatchBSLightingShaderForceAlphaTest();
     bool PatchBSLightingShaderSetupGeometryParallax();
     bool PatchBSTempEffectNiRTTI();
     bool PatchCalendarSkipping();
-	bool PatchConjurationEnchantAbsorbs();
+    bool PatchCellInit();
+    bool PatchConjurationEnchantAbsorbs();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
     bool PatchGetKeywordItemCount();
     bool PatchGHeapLeakDetectionCrash();
-	bool PatchLipSync();
+    bool PatchLipSync();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
     bool PatchPerkFragmentIsRunning();
@@ -25,8 +27,9 @@ namespace fixes
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
     bool PatchTreeReflections();
+    bool PatchUnequipAllCrash();
     bool PatchVerticalLookSensitivity();
-    bool PatchAnimationLoadSignedCrash();
+    bool PatchWeaponBlockScaling();
     bool PatchCreateArmorNodeNullptrCrash();
 
     bool PatchAll();

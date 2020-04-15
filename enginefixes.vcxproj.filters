@@ -8,6 +8,7 @@
     <None Include=".gitignore" />
     <None Include=".gitattributes" />
     <None Include="EngineFixes_SNCT.ini" />
+    <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

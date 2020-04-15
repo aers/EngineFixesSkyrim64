@@ -7,26 +7,25 @@
 
 #include "patches.h"
 
-
 namespace patches
 {
-    typedef void(*UpdateBlockVisibility_)(RE::BGSDistantTreeBlock * data);
+    typedef void (*UpdateBlockVisibility_)(RE::BGSDistantTreeBlock* data);
     REL::Offset<UpdateBlockVisibility_> UpdateBlockVisibility_orig(UpdateBlockVisibility_orig_offset);
 
-    typedef uint16_t(*Float2Half_)(float f);
+    typedef uint16_t (*Float2Half_)(float f);
     REL::Offset<Float2Half_> Float2Half(Float2Half_offset);
 
     typedef RE::TESForm* (*_LookupFormByID)(uint32_t id);
     REL::Offset<_LookupFormByID> LookupFormByID(LookupFormByID_offset);
 
-    tbb::concurrent_hash_map<uint32_t, RE::TESObjectREFR *> referencesFormCache;
+    tbb::concurrent_hash_map<uint32_t, RE::TESObjectREFR*> referencesFormCache;
 
     void InvalidateCachedForm(uint32_t FormId)
     {
         referencesFormCache.erase(FormId & 0x00FFFFFF);
     }
 
-    void hk_UpdateBlockVisibility(RE::BGSDistantTreeBlock *data)
+    void hk_UpdateBlockVisibility(RE::BGSDistantTreeBlock* data)
     {
         for (auto& group : data->treeGroups)
         {
@@ -34,7 +33,7 @@ namespace patches
             {
                 const uint32_t maskedFormId = instance.id & 0x00FFFFFF;
 
-                RE::TESObjectREFR *refrObject = nullptr;
+                RE::TESObjectREFR* refrObject = nullptr;
 
                 decltype(referencesFormCache)::accessor accessor;
 
@@ -48,7 +47,7 @@ namespace patches
                     auto dataHandler = RE::TESDataHandler::GetSingleton();
                     for (uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
                     {
-                        RE::TESForm *form = LookupFormByID((i << 24) | maskedFormId);
+                        RE::TESForm* form = LookupFormByID((i << 24) | maskedFormId);
                         if (form)
                             refrObject = form->AsReference();
                         if (refrObject)
@@ -79,7 +78,7 @@ namespace patches
                     auto cell = refrObject->GetParentCell();
                     if (obj3D && !obj3D->GetAppCulled() && cell->IsAttached())
                     {
-                        static auto bEnableStippleFade = RE::GetINISetting("bEnableStippleFade:Display");   // ini settings are kept in a linked list, so we'll cache it
+                        static auto bEnableStippleFade = RE::GetINISetting("bEnableStippleFade:Display");  // ini settings are kept in a linked list, so we'll cache it
                         if (bEnableStippleFade->GetBool())
                         {
                             const auto fadeNode = obj3D->AsFadeNode();
@@ -89,7 +88,6 @@ namespace patches
                                 if (alpha <= 0.0f)
                                     fullyHidden = true;
                             }
-
                         }
                         else
                         {
@@ -133,5 +131,4 @@ namespace patches
 
         return true;
     }
-
 }

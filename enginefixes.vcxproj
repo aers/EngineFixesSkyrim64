@@ -62,9 +62,9 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <ForcedIncludeFiles>ForceInclude.h;SKSE\Logger.h</ForcedIncludeFiles>
+      <ForcedIncludeFiles>ForceInclude.h;SKSE/Logger.h</ForcedIncludeFiles>
       <ExceptionHandling>Sync</ExceptionHandling>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -74,12 +74,14 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UseFullPaths>false</UseFullPaths>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/experimental:external /external:anglebrackets /external:I "lib" /external:W0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>version.lib;tbb_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Version.lib;tbb_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -109,7 +111,7 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>ForceInclude.h;SKSE/Logger.h</ForcedIncludeFiles>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -121,6 +123,8 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse
       <LanguageStandard>stdcpp17</LanguageStandard>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <UseFullPaths>false</UseFullPaths>
+      <DisableSpecificWarnings>%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <AdditionalOptions>/experimental:external /external:anglebrackets /external:I "lib" /external:W0 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
@@ -128,7 +132,7 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <AdditionalDependencies>version.lib;tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Version.lib;tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -145,6 +149,7 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include=".clang-format" />
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="EngineFixes_SNCT.ini" />
@@ -162,9 +167,6 @@ xcopy "$(TargetDir)$(TargetName)$(TargetExt)" "D:\LOTD\mods\EngineFixes-dev\skse
     </ProjectReference>
     <ProjectReference Include="..\skse64_common\skse64_common.vcxproj">
       <Project>{5fd1c08d-db80-480c-a1c6-f0920005cd13}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\skse64_loader_common\skse64_loader_common.vcxproj">
-      <Project>{fb6e1aeb-69b7-496e-a02c-9776fc0d6e0d}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

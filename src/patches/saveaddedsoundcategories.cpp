@@ -2,11 +2,10 @@
 #include "REL/Relocation.h"
 #include "SKSE/SafeWrite.h"
 
-#include "patches.h"
 #include "Simpleini.h"
+#include "patches.h"
 
 #include "utils.h"
-
 
 namespace patches
 {
@@ -14,15 +13,15 @@ namespace patches
 
     REL::Offset<std::uintptr_t*> vtbl_BGSSoundCategory(vtbl_BGSSoundCategory_offset);
 
-    typedef bool(*_BSISoundCategory_SetVolume)(RE::BSISoundCategory * thisPtr, float volume);
-    REL::Offset<_BSISoundCategory_SetVolume*> vtbl_BSISoundCategory_SetVolume(vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset, 0x8 * 0x3); // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
+    typedef bool (*_BSISoundCategory_SetVolume)(RE::BSISoundCategory* thisPtr, float volume);
+    REL::Offset<_BSISoundCategory_SetVolume*> vtbl_BSISoundCategory_SetVolume(vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset, 0x8 * 0x3);  // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
 
-    typedef bool(*_INIPrefSettingCollection_Unlock)(__int64 thisPtr);
+    typedef bool (*_INIPrefSettingCollection_Unlock)(__int64 thisPtr);
     REL::Offset<_INIPrefSettingCollection_Unlock*> vtbl_INIPrefSettingCollection_Unlock(vtbl_INIPrefSettingCollection_Unlock_offset, 0x8 * 0x6);
     _INIPrefSettingCollection_Unlock orig_INIPrefSettingCollection_Unlock;
 
     bool hk_INIPrefSettingCollection_Unlock(__int64 thisPtr)
-    {        
+    {
         const auto dataHandler = RE::TESDataHandler::GetSingleton();
 
         if (dataHandler)
@@ -64,7 +63,7 @@ namespace patches
         {
             _VMESSAGE("SNCT save: data handler not ready, not saving sound categories for this call");
         }
-        
+
         return orig_INIPrefSettingCollection_Unlock(thisPtr);
     }
 
@@ -92,7 +91,7 @@ namespace patches
                 if (vol != -1.0)
                 {
                     _VMESSAGE("setting volume for formid %08X", soundCategory->formID);
-                    const auto soundCatInterface = dynamic_cast<RE::BSISoundCategory *>(soundCategory);
+                    const auto soundCatInterface = dynamic_cast<RE::BSISoundCategory*>(soundCategory);
 
                     (*vtbl_BSISoundCategory_SetVolume)(soundCatInterface, static_cast<float>(vol));
                 }

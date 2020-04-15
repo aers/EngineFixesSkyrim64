@@ -1,12 +1,14 @@
 #include "fixes.h"
 
-
 namespace fixes
 {
     bool PatchAll()
     {
-		if (config::fixArcheryDownwardAiming)
-			PatchArcheryDownwardAiming();
+        if (config::fixAnimationLoadSignedCrash)
+            PatchAnimationLoadSignedCrash();
+
+        if (config::fixArcheryDownwardAiming)
+            PatchArcheryDownwardAiming();
 
         if (config::fixBethesdaNetCrash)
             PatchBethesdaNetCrash();
@@ -26,8 +28,11 @@ namespace fixes
         if (config::fixCalendarSkipping)
             PatchCalendarSkipping();
 
-		if (config::fixConjurationEnchantAbsorbs)
-			PatchConjurationEnchantAbsorbs();
+        if (config::fixCellInit)
+            PatchCellInit();
+
+        if (config::fixConjurationEnchantAbsorbs)
+            PatchConjurationEnchantAbsorbs();
 
         if (config::fixDoublePerkApply)
             PatchDoublePerkApply();
@@ -41,8 +46,8 @@ namespace fixes
         if (config::fixGHeapLeakDetectionCrash)
             PatchGHeapLeakDetectionCrash();
 
-		if (config::fixLipSync)
-			PatchLipSync();
+        if (config::fixLipSync)
+            PatchLipSync();
 
         if (config::fixMemoryAccessErrors)
             PatchMemoryAccessErrors();
@@ -58,12 +63,18 @@ namespace fixes
 
         if (config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
-               
+
+        if (config::fixUnequipAllCrash)
+            PatchUnequipAllCrash();
+
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
 
-        if (config::fixAnimationLoadSignedCrash)
-            PatchAnimationLoadSignedCrash();
+        if (config::fixWeaponBlockScaling)
+            PatchWeaponBlockScaling();
+
+        if (config::fixCreateArmorNodeNullptrCrash)
+            PatchCreateArmorNodeNullptrCrash();
 
         if (config::fixCreateArmorNodeNullptrCrash)
             PatchCreateArmorNodeNullptrCrash();

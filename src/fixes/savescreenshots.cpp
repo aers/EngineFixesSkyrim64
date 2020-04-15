@@ -24,7 +24,6 @@ namespace fixes
     REL::Offset<std::uintptr_t> SaveScreenshotRequestedDword(g_RequestSaveScreenshot_offset);
     REL::Offset<std::uintptr_t> ScreenshotRenderOrigJnz(Screenshot_Render_Orig_jnz_offset, 0x4D5);
 
-
     bool PatchSaveScreenshots()
     {
         _VMESSAGE("- save game screenshot fix -");
@@ -67,7 +66,6 @@ namespace fixes
 
                 auto trampoline = SKSE::GetTrampoline();
                 trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
-
             }
             // use menu fix for DoF+TAA Disabled ingame requests
             else
@@ -95,7 +93,6 @@ namespace fixes
 
                 auto trampoline = SKSE::GetTrampoline();
                 trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
-
             }
 
             // flicker fix for open menu screenshot requests
@@ -129,7 +126,7 @@ namespace fixes
                 code.finalize();
 
                 auto trampoline = SKSE::GetTrampoline();
-                // warning: 5 byte branch instead of 6 byte branch 
+                // warning: 5 byte branch instead of 6 byte branch
                 trampoline->Write5Branch(MenuSave_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
             }
 
@@ -151,7 +148,7 @@ namespace fixes
                         cmp(byte[rax], 1);
                         je("FROM_PROCESSEVENT");
 
-                        L("ORIG"); // original version of code runs if no screenshot request - i think this possibly happens when you open inventory menus etc but i didnt check
+                        L("ORIG");  // original version of code runs if no screenshot request - i think this possibly happens when you open inventory menus etc but i didnt check
                         pop(rax);
                         test(dil, dil);
                         jnz("ORIG_JNZ");
@@ -161,14 +158,14 @@ namespace fixes
                         cmp(byte[rax + 0x18], 0);
                         jmp("JMP_OUT");
 
-                        L("FROM_MENU"); // use flicker version of fix here, all we need to do is skip jnz and rely on other patches
+                        L("FROM_MENU");  // use flicker version of fix here, all we need to do is skip jnz and rely on other patches
                         pop(rax);
                         jmp("SKIP_JNZ");
 
-                        L("FROM_PROCESSEVENT"); // use menu version of fix here
-                        mov(byte[rax], 0); // screenshot request processed disable code for future iterations
+                        L("FROM_PROCESSEVENT");  // use menu version of fix here
+                        mov(byte[rax], 0);       // screenshot request processed disable code for future iterations
                         pop(rax);
-                        mov(edi, 0x2A); // menu version of fix
+                        mov(edi, 0x2A);  // menu version of fix
                         cmp(byte[rbp + 0x211], 0);
                         jmp("JMP_OUT");
 

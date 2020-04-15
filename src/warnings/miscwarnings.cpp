@@ -5,21 +5,20 @@
 
 #include <sstream>
 
-#include "warnings.h"
 #include "utils.h"
-
+#include "warnings.h"
 
 namespace warnings
 {
-    std::unordered_map<uint32_t, RE::BGSAddonNode *> nodeMap;
+    std::unordered_map<uint32_t, RE::BGSAddonNode*> nodeMap;
 
-    typedef bool(*_BGSAddonNode_LoadForm)(RE::BGSAddonNode * addonNode, RE::TESFile * modInfo);
+    typedef bool (*_BGSAddonNode_LoadForm)(RE::BGSAddonNode* addonNode, RE::TESFile* modInfo);
     REL::Offset<_BGSAddonNode_LoadForm*> vtbl_BGSAddonNode_LoadForm(vtbl_BGSAddonNode_LoadForm_offset, 0x8 * 0x6);
     _BGSAddonNode_LoadForm orig_BGSAddonNode_LoadForm;
 
     REL::Offset<std::uint32_t*> g_RefrHandleArray(g_RefrHandleArray_offset);
 
-    bool hk_BGSAddonNode_LoadForm(RE::BGSAddonNode *addonNode, RE::TESFile * modInfo)
+    bool hk_BGSAddonNode_LoadForm(RE::BGSAddonNode* addonNode, RE::TESFile* modInfo)
     {
         bool retVal = orig_BGSAddonNode_LoadForm(addonNode, modInfo);
 
@@ -63,7 +62,7 @@ namespace warnings
         _VMESSAGE("data reload, clearing node map");
         nodeMap.clear();
     }
-    
+
     bool PatchDupeAddonNodes()
     {
         _VMESSAGE("- warn dupe addon nodes -");

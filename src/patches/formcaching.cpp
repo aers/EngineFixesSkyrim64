@@ -9,34 +9,33 @@
 
 #include "patches.h"
 
-
 namespace patches
 {
     // treelodreferencecaching.cpp
     void InvalidateCachedForm(uint32_t formId);
 
-    tbb::concurrent_hash_map<uint32_t, RE::TESForm *> globalFormCacheMap[256];
+    tbb::concurrent_hash_map<uint32_t, RE::TESForm*> globalFormCacheMap[256];
 
     REL::Offset<RE::BSReadWriteLock*> GlobalFormTableLock(GlobalFormTableLock_offset);
-    REL::Offset<RE::BSTHashMap<UInt32, RE::TESForm *> **> GlobalFormTable(GlobalFormTable_offset);
+    REL::Offset<RE::BSTHashMap<UInt32, RE::TESForm*>**> GlobalFormTable(GlobalFormTable_offset);
 
-    typedef void(*UnknownFormFunction0_)(__int64 form, bool a2);
+    typedef void (*UnknownFormFunction0_)(__int64 form, bool a2);
     REL::Offset<UnknownFormFunction0_> origFunc0HookAddr(UnkFormFunc1_offset);
     UnknownFormFunction0_ origFunc0;
 
-    typedef __int64(*UnknownFormFunction1_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 *a5);
-    REL::Offset <UnknownFormFunction1_> origFunc1HookAddr(UnkFormFunc2_offset);
+    typedef __int64 (*UnknownFormFunction1_)(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64* a5);
+    REL::Offset<UnknownFormFunction1_> origFunc1HookAddr(UnkFormFunc2_offset);
     UnknownFormFunction1_ origFunc1;
 
-    typedef __int64(*UnknownFormFunction2_)(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 **a5);
-    REL::Offset <UnknownFormFunction2_> origFunc2HookAddr(UnkFormFunc3_offset);
+    typedef __int64 (*UnknownFormFunction2_)(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64** a5);
+    REL::Offset<UnknownFormFunction2_> origFunc2HookAddr(UnkFormFunc3_offset);
     UnknownFormFunction2_ origFunc2;
 
-    typedef __int64(*UnknownFormFunction3_)(__int64 a1, __int64 a2, int a3, __int64 a4);
-    REL::Offset <UnknownFormFunction3_> origFunc3HookAddr(UnkFormFunc4_offset);
+    typedef __int64 (*UnknownFormFunction3_)(__int64 a1, __int64 a2, int a3, __int64 a4);
+    REL::Offset<UnknownFormFunction3_> origFunc3HookAddr(UnkFormFunc4_offset);
     UnknownFormFunction3_ origFunc3;
 
-    void UpdateFormCache(uint32_t FormId, RE::TESForm *Value, bool Invalidate)
+    void UpdateFormCache(uint32_t FormId, RE::TESForm* Value, bool Invalidate)
     {
         const unsigned char masterId = (FormId & 0xFF000000) >> 24;
         const unsigned int baseId = (FormId & 0x00FFFFFF);
@@ -49,9 +48,9 @@ namespace patches
         InvalidateCachedForm(FormId);
     }
 
-    RE::TESForm * hk_GetFormByID(unsigned int FormId)
+    RE::TESForm* hk_GetFormByID(unsigned int FormId)
     {
-        RE::TESForm *formPointer = nullptr;
+        RE::TESForm* formPointer = nullptr;
 
         const unsigned char masterId = (FormId & 0xFF000000) >> 24;
         const unsigned int baseId = (FormId & 0x00FFFFFF);
@@ -85,19 +84,19 @@ namespace patches
 
     __int64 UnknownFormFunction3(__int64 a1, __int64 a2, int a3, __int64 a4)
     {
-        UpdateFormCache(*(uint32_t *)a4, nullptr, true);
+        UpdateFormCache(*(uint32_t*)a4, nullptr, true);
 
         return origFunc3(a1, a2, a3, a4);
     }
 
-    __int64 UnknownFormFunction2(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 **a5)
+    __int64 UnknownFormFunction2(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64** a5)
     {
         UpdateFormCache(*formId, nullptr, true);
 
         return origFunc2(a1, a2, a3, formId, a5);
     }
 
-    __int64 UnknownFormFunction1(__int64 a1, __int64 a2, int a3, DWORD *formId, __int64 *a5)
+    __int64 UnknownFormFunction1(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64* a5)
     {
         UpdateFormCache(*formId, nullptr, true);
 
@@ -106,11 +105,10 @@ namespace patches
 
     void UnknownFormFunction0(__int64 form, bool a2)
     {
-        UpdateFormCache(*(uint32_t *)(form + 0x14), nullptr, true);
+        UpdateFormCache(*(uint32_t*)(form + 0x14), nullptr, true);
 
         origFunc0(form, a2);
     }
-
 
     bool PatchFormCaching()
     {
@@ -146,7 +144,7 @@ namespace patches
                     push(r12);
                     // 194978
 
-                    // exit 
+                    // exit
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
@@ -176,7 +174,7 @@ namespace patches
                     sub(rsp, 0x20);
                     // 19607A
 
-                    // exit 
+                    // exit
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
@@ -205,7 +203,7 @@ namespace patches
                     sub(rsp, 0x20);
                     // 195DAA
 
-                    // exit 
+                    // exit
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
@@ -235,7 +233,7 @@ namespace patches
                     sub(rsp, 0x20);
                     // 196969
 
-                    // exit 
+                    // exit
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
