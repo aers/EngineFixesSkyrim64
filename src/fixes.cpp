@@ -76,9 +76,6 @@ namespace fixes
         if (config::fixCreateArmorNodeNullptrCrash)
             PatchCreateArmorNodeNullptrCrash();
 
-        if (config::fixCreateArmorNodeNullptrCrash)
-            PatchCreateArmorNodeNullptrCrash();
-
         return true;
     }
 }
