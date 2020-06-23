@@ -4,7 +4,8 @@
 #include "REL/Relocation.h"
 #include "SKSE/SKSE.h"
 
-#include <INIReader.h>
+#include "AutoTOML.hpp"
+
 #include <Simpleini.h>
 
 #include <tbb/concurrent_hash_map.h>

@@ -80,7 +80,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
 
     _MESSAGE("Engine Fixes v%s", EF_VERSION_VERSTRING);
 
-    if (config::LoadConfig(R"(.\Data\SKSE\plugins\EngineFixes.ini)"))
+    if (config::load_config(R"(Data\SKSE\plugins\EngineFixes.toml)"))
     {
         _MESSAGE("loaded config successfully");
     }
