@@ -307,6 +307,101 @@ namespace fixes
         return true;
     }
 
+    // TODO: cleanup
+    // Patch for 1.5.97 but should be version-independent
+    bool PatchCreateArmorNodeNullptrCrash()
+    {
+        _VMESSAGE("- CreateArmorNode subfunction crash fix -");
+
+        // sub_1401CAFB0
+        const std::uint64_t faddr = REL::ID(15535).address();
+
+        /*
+        loc_1401CB520:
+          [...]
+        .text:00000001401CB538                 mov     esi, ebx
+        .text:00000001401CB53A                 test    r12, r12
+        .text:00000001401CB53D                 jz      short loc_1401CB5B6 // <-- this jump needs to be patched but the operand is too small to fit
+        */
+        static const std::uint8_t expected1[] = {
+            0x8B, 0xF3,        // mov     esi, ebx
+            0x4D, 0x85, 0xE4,  // test    r12, r12
+            0x74               // jz short (opcode only); +1 byte displacement
+        };
+
+        const std::uint8_t* loc1p = (std::uint8_t*)(std::uintptr_t)(faddr + 0x588);
+        if (memcmp(loc1p, expected1, sizeof(expected1)))
+        {
+            _VMESSAGE("Code at first offset is not as expected, skipping patch");
+            return false;
+        }
+
+        const std::int8_t disp8 = loc1p[sizeof(expected1)];  // jz short displacement (should be 0x77)
+        const std::uint8_t* const loc1end = loc1p + sizeof(expected1) + 1;
+
+        /*
+        loc_1401CB5B6:
+        .text:00000001401CB5B6                 mov     rdi, [r12+130h] // <-- this is where the crash happens, because r12 == 0
+        .text:00000001401CB5BE                 test    rdi, rdi
+        .text:00000001401CB5C1                 jz      loc_1401CB751 // <-- This is the location we want to jump to when test r12,r12 fails
+        */
+
+        const void* const loc2p = loc1end + disp8;
+        const std::ptrdiff_t offs2 = (std::uintptr_t)loc2p - faddr;
+        _VMESSAGE("Located second block at offset 0x%x", offs2);
+
+        static const uint8_t expected2[] =  // this should use scanning instead; hardcoding offset 130h is bad
+            {
+                0x49, 0x8B, 0xBC, 0x24, 0x30, 0x01, 0x00, 0x00,  // mov     rdi, [r12+130h]
+                0x48, 0x85, 0xFF,                                // test    rdi, rdi
+                0x0F, 0x84                                       // jz (opcode only); +4 bytes displacement
+            };
+
+        if (memcmp(loc2p, expected2, sizeof(expected2)))
+        {
+            _VMESSAGE("Code at second offset is not as expected, skipping patch");
+            return false;
+        }
+
+        _VMESSAGE("Code confirmed broken; installing fix");
+
+        const std::uint8_t* const loc2end = (const std::uint8_t*)loc2p + sizeof(expected2) + sizeof(std::int32_t);
+
+        std::int32_t disp2 = *unrestricted_cast<std::int32_t*>(((const std::uint8_t*)loc2p) + sizeof(expected2));
+        const std::uint8_t* const target = loc2end + disp2;
+
+        struct Code : SKSE::CodeGenerator
+        {
+            Code(std::uintptr_t contAddr, std::uintptr_t patchedAddr) : SKSE::CodeGenerator()
+            {
+                Xbyak::Label patchedJmpLbl, contLbl, zeroLbl;
+
+                // original instructions minus jz short
+                db(expected1, sizeof(expected1) - 1);
+
+                jz(zeroLbl);              // patched non-short jz
+                jmp(ptr[rip + contLbl]);  // continue original code
+                L(zeroLbl);               // was zero; skip over code that would crash
+                jmp(ptr[rip + patchedJmpLbl]);
+
+                L(contLbl);
+                dq(contAddr);
+                L(patchedJmpLbl);
+                dq(patchedAddr);
+            }
+        };
+
+        Code code(unrestricted_cast<std::uintptr_t>(loc1end), unrestricted_cast<std::uintptr_t>(target));
+        code.ready();
+
+        auto trampoline = SKSE::GetTrampoline();
+        if (!trampoline->Write5Branch(unrestricted_cast<std::uintptr_t>(loc1p), code.getCode()))
+            return false;
+
+        _VMESSAGE("success");
+        return true;
+    }
+
     class ConjurationEnchantAbsorbsPatch
     {
     public:

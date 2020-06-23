@@ -109,7 +109,7 @@ namespace patches
         if (*LookupFormByID != 0x83485740)
         {
             _VMESSAGE("sse fixes is installed and enabled. aborting form cache patch.");
-            config::patchFormCaching = false;
+            *config::patchFormCaching = false;
 
             return false;
         }

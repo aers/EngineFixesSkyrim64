@@ -17,7 +17,7 @@ namespace patches
 
     void update_timer()
     {
-        timer = timer + *FrameTimer_WithSlowTime * config::waterflowSpeed;
+        timer = timer + *FrameTimer_WithSlowTime * *config::waterflowSpeed;
         if (timer > 86400)  // reset timer to 0 if we go past 24 hours
             timer = timer - 86400;
     }

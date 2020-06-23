@@ -28,7 +28,7 @@ namespace fixes
             return true;
         }
 
-        if (config::fixSaveScreenshots)
+        if (*config::fixSaveScreenshots)
         {
             // lol so we have one fix that causes flicker during quicksave and one fix that causes blank journal menus
             // so just combine both, duh

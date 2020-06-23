@@ -213,7 +213,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\config.cpp" />
     <ClCompile Include="src\fixes.cpp" />
     <ClCompile Include="src\fixes\doubleperkapply.cpp" />
     <ClCompile Include="src\fixes\miscfixes.cpp" />

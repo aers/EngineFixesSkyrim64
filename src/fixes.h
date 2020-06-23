@@ -15,6 +15,7 @@ namespace fixes
     bool PatchCalendarSkipping();
     bool PatchCellInit();
     bool PatchConjurationEnchantAbsorbs();
+    bool PatchCreateArmorNodeNullptrCrash();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
     bool PatchGetKeywordItemCount();

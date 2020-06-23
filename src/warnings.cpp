@@ -4,7 +4,7 @@ namespace warnings
 {
     bool PatchAll()
     {
-        if (config::warnDupeAddonNodes)
+        if (*config::warnDupeAddonNodes)
             PatchDupeAddonNodes();
 
         return true;

@@ -12,22 +12,22 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
     case SKSE::MessagingInterface::kDataLoaded:
         {
             _MESSAGE("beginning post-load patches");
-            if (config::cleanSKSECosaves)
+            if (*config::cleanSKSECosaves)
                 CleanSKSECosaves();
 
             // patch post load so ini settings are loaded
-            if (config::fixSaveScreenshots)
+            if (*config::fixSaveScreenshots)
                 fixes::PatchSaveScreenshots();
 
-            if (config::warnRefHandleLimit)
+            if (*config::warnRefHandleLimit)
             {
-                warnings::WarnActiveRefrHandleCount(config::warnRefrMainMenuLimit);
+                warnings::WarnActiveRefrHandleCount(*config::warnRefrMainMenuLimit);
             }
 
-            if (config::patchSaveAddedSoundCategories)
+            if (*config::patchSaveAddedSoundCategories)
                 patches::LoadVolumes();
 
-            if (config::fixTreeReflections)
+            if (*config::fixTreeReflections)
                 fixes::PatchTreeReflections();
 
             _VMESSAGE("clearing node map");
@@ -38,9 +38,9 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
         break;
     case SKSE::MessagingInterface::kPostLoadGame:
         {
-            if (config::warnRefHandleLimit)
+            if (*config::warnRefHandleLimit)
             {
-                warnings::WarnActiveRefrHandleCount(config::warnRefrLoadedGameLimit);
+                warnings::WarnActiveRefrHandleCount(*config::warnRefrLoadedGameLimit);
             }
         }
         break;
@@ -144,7 +144,7 @@ extern "C" bool DLLEXPORT APIENTRY SKSEPlugin_Load(const SKSE::LoadInterface* a_
         return false;
     }
 
-    if (config::verboseLogging)
+    if (*config::verboseLogging)
     {
         _MESSAGE("enabling verbose logging");
         SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kVerboseMessage);

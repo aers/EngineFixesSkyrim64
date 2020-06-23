@@ -4,76 +4,79 @@ namespace fixes
 {
     bool PatchAll()
     {
-        if (config::fixAnimationLoadSignedCrash)
+        if (*config::fixAnimationLoadSignedCrash)
             PatchAnimationLoadSignedCrash();
 
-        if (config::fixArcheryDownwardAiming)
+        if (*config::fixArcheryDownwardAiming)
             PatchArcheryDownwardAiming();
 
-        if (config::fixBethesdaNetCrash)
+        if (*config::fixBethesdaNetCrash)
             PatchBethesdaNetCrash();
 
-        if (config::fixBSLightingAmbientSpecular)
+        if (*config::fixBSLightingAmbientSpecular)
             PatchBSLightingAmbientSpecular();
 
-        if (config::fixBSLightingShaderForceAlphaTest)
+        if (*config::fixBSLightingShaderForceAlphaTest)
             PatchBSLightingShaderForceAlphaTest();
 
-        if (config::fixBSLightingShaderGeometryParallaxBug)
+        if (*config::fixBSLightingShaderGeometryParallaxBug)
             PatchBSLightingShaderSetupGeometryParallax();
 
-        if (config::fixBSTempEffectNiRTTI)
+        if (*config::fixBSTempEffectNiRTTI)
             PatchBSTempEffectNiRTTI();
 
-        if (config::fixCalendarSkipping)
+        if (*config::fixCalendarSkipping)
             PatchCalendarSkipping();
 
-        if (config::fixCellInit)
+        if (*config::fixCellInit)
             PatchCellInit();
 
-        if (config::fixConjurationEnchantAbsorbs)
+        if (*config::fixCreateArmorNodeNullptrCrash)
+            PatchCreateArmorNodeNullptrCrash();
+
+        if (*config::fixConjurationEnchantAbsorbs)
             PatchConjurationEnchantAbsorbs();
 
-        if (config::fixDoublePerkApply)
+        if (*config::fixDoublePerkApply)
             PatchDoublePerkApply();
 
-        if (config::fixEquipShoutEventSpam)
+        if (*config::fixEquipShoutEventSpam)
             PatchEquipShoutEventSpam();
 
-        if (config::fixGetKeywordItemCount)
+        if (*config::fixGetKeywordItemCount)
             PatchGetKeywordItemCount();
 
-        if (config::fixGHeapLeakDetectionCrash)
+        if (*config::fixGHeapLeakDetectionCrash)
             PatchGHeapLeakDetectionCrash();
 
-        if (config::fixLipSync)
+        if (*config::fixLipSync)
             PatchLipSync();
 
-        if (config::fixMemoryAccessErrors)
+        if (*config::fixMemoryAccessErrors)
             PatchMemoryAccessErrors();
 
-        if (config::fixMO5STypo)
+        if (*config::fixMO5STypo)
             PatchMO5STypo();
 
-        if (config::fixNullProcessCrash)
+        if (*config::fixNullProcessCrash)
             PatchNullProcessCrash();
 
-        if (config::fixPerkFragmentIsRunning)
+        if (*config::fixPerkFragmentIsRunning)
             PatchPerkFragmentIsRunning();
 
-        if (config::fixRemovedSpellBook)
+        if (*config::fixRemovedSpellBook)
             PatchRemovedSpellBook();
 
-        if (config::fixSlowTimeCameraMovement)
+        if (*config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
 
-        if (config::fixTorchLandscape)
+        if (*config::fixTorchLandscape)
             PatchTorchLandscape();
 
-        if (config::fixVerticalLookSensitivity)
+        if (*config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();
 
-        if (config::fixWeaponBlockScaling)
+        if (*config::fixWeaponBlockScaling)
             PatchWeaponBlockScaling();
 
         if (config::fixCreateArmorNodeNullptrCrash)

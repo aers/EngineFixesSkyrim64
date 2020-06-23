@@ -4,40 +4,40 @@ namespace patches
 {
     bool PatchAll()
     {
-        if (config::patchDisableChargenPrecache)
+        if (*config::patchDisableChargenPrecache)
             PatchDisableChargenPrecache();
 
-        if (config::patchEnableAchievementsWithMods)
+        if (*config::patchEnableAchievementsWithMods)
             PatchEnableAchievementsWithMods();
 
-        if (config::patchFormCaching)
+        if (*config::patchFormCaching)
             PatchFormCaching();
 
-        if (config::patchMaxStdio)
+        if (*config::patchMaxStdio)
             PatchMaxStdio();
 
-        if (config::patchRegularQuicksaves)
+        if (*config::patchRegularQuicksaves)
             PatchRegularQuicksaves();
 
-        if (config::patchSaveAddedSoundCategories)
+        if (*config::patchSaveAddedSoundCategories)
             PatchSaveAddedSoundCategories();
 
-        if (config::patchScrollingDoesntSwitchPOV)
+        if (*config::patchScrollingDoesntSwitchPOV)
             PatchScrollingDoesntSwitchPOV();
 
-        if (config::patchSleepWaitTime)
+        if (*config::patchSleepWaitTime)
             PatchSleepWaitTime();
 
-        if (config::patchTreeLODReferenceCaching && config::patchFormCaching)
+        if (*config::patchTreeLODReferenceCaching && *config::patchFormCaching)
             PatchTreeLODReferenceCaching();
 
-        if (config::patchWaterflowAnimation)
+        if (*config::patchWaterflowAnimation)
             PatchWaterflowAnimation();
 
-        if (config::experimentalSaveGameMaxSize)
+        if (*config::experimentalSaveGameMaxSize)
             PatchSaveGameMaxSize();
 
-        if (config::experimentalTreatAllModsAsMasters)
+        if (*config::experimentalTreatAllModsAsMasters)
             PatchTreatAllModsAsMasters();
 
         return true;
@@ -45,10 +45,10 @@ namespace patches
 
     bool Preload()
     {
-        if (config::experimentalMemoryManager)
+        if (*config::experimentalMemoryManager)
         {
             PatchMemoryManager();
-            if (config::experimentalUseTBBMalloc)
+            if (*config::experimentalUseTBBMalloc)
             {
                 PatchTBBMalloc();
             }
