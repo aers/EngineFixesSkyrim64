@@ -1,7 +1,5 @@
 #pragma once
 
-#include "REL/Relocation.h"
-
 // Patches
 
 // E8 ? ? ? ? 84 DB 74 24 -> +0x230
@@ -12,12 +10,6 @@ constexpr REL::ID g_FrameTimer_NoSlowTime_offset(523661);
 // E8 ? ? ? ? 49 8B 96 ? ? ? ? 40 B6 01
 constexpr REL::ID BSBatchRenderer_SetupAndDrawPass_offset(100854);
 constexpr REL::ID BSLightingShader_vtbl_offset(305261);
-
-// Disable Chargen Precache
-// E8 ? ? ? ? E8 ? ? ? ? 48 8D 57 30  ->
-constexpr REL::ID ChargenCacheFunction_offset(51507);
-// 90 E8 ? ? ? ? 90 48 8B 15 ? ? ? ?  ->
-constexpr REL::ID ChargenCacheClearFunction_offset(51509);
 
 // Enable Achievements With Mods
 // 48 83 EC 28 C6 44 24 ? ?

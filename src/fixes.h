@@ -22,12 +22,13 @@ namespace fixes
     bool PatchLipSync();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
+    bool PatchNullProcessCrash();
     bool PatchPerkFragmentIsRunning();
     bool PatchRemovedSpellBook();
     bool PatchSaveScreenshots();
     bool PatchSlowTimeCameraMovement();
+    bool PatchTorchLandscape();
     bool PatchTreeReflections();
-    bool PatchUnequipAllCrash();
     bool PatchVerticalLookSensitivity();
     bool PatchWeaponBlockScaling();
     bool PatchCreateArmorNodeNullptrCrash();

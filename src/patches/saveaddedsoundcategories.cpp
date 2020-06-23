@@ -1,10 +1,4 @@
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/SafeWrite.h"
-
-#include "Simpleini.h"
 #include "patches.h"
-
 #include "utils.h"
 
 namespace patches
@@ -113,7 +107,7 @@ namespace patches
 
         _VMESSAGE("hooking vtbls");
         orig_INIPrefSettingCollection_Unlock = *vtbl_INIPrefSettingCollection_Unlock;
-        SKSE::SafeWrite64(vtbl_INIPrefSettingCollection_Unlock.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_INIPrefSettingCollection_Unlock));
+        SKSE::SafeWrite64(vtbl_INIPrefSettingCollection_Unlock.address(), unrestricted_cast<std::uintptr_t>(hk_INIPrefSettingCollection_Unlock));
         _VMESSAGE("success");
         return true;
     }

@@ -1,19 +1,5 @@
 #include "utils.h"
 
-#include <unordered_set>
-
-#include <filesystem>
-#include <memory>
-#include <optional>
-#include <regex>
-#include <system_error>
-#include <vector>
-
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/SafeWrite.h"
-#include "SKSE/Version.h"
-
 std::optional<std::filesystem::path> GetSavesPath()
 {
     wchar_t* buffer;

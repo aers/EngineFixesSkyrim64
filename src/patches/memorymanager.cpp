@@ -1,14 +1,5 @@
 #include "version.h"
 
-#include <cstdlib>
-
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/IAT.h"
-#include "SKSE/SafeWrite.h"
-
-#include "tbb/scalable_allocator.h"
-
 constexpr REL::ID MemoryManagerAlloc_offset(66859);
 constexpr REL::ID MemoryManagerFree_offset(66861);
 constexpr REL::ID ScrapHeapInit_offset(66882);
@@ -142,7 +133,7 @@ void* ScrapHeap::Alloc(std::size_t a_size, std::uint32_t a_alignment)
 {
     if (a_size > MAX_ALLOC_SIZE || a_size < 0)
     {
-        _MESSAGE("warning: scrapheap alloc size %d out of default bounds detected", a_size);
+        _WARNING("scrapheap alloc size %d out of default bounds detected", a_size);
     }
 
     return proxy_tbbmalloc(a_size, a_alignment, a_alignment != 0);
@@ -153,29 +144,29 @@ void ScrapHeap::Free(void* Memory)
     proxy_tbbfree(Memory);
 }
 
+class SafeExit
+{
+public:
+    static void Install()
+    {
+        _VMESSAGE("using safe exit");
+
+        REL::Offset<std::uintptr_t> target = REL::ID(35545);
+        auto trampoline = SKSE::GetTrampoline();
+        trampoline->Write5Call(target.address() + 0x35, Shutdown);  // Main::Shutdown
+    }
+
+private:
+    static void Shutdown()
+    {
+        _VMESSAGE("executing safe exit");
+
+        std::exit(EXIT_SUCCESS);
+    }
+};
+
 namespace patches
 {
-    class SafeExit
-    {
-    public:
-        static void Install()
-        {
-            _VMESSAGE("using safe exit");
-
-            REL::Offset<std::uintptr_t> target = REL::ID(35545);  // Main::Shutdown
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write5Call(target.GetAddress() + 0x35, Shutdown);
-        }
-
-    private:
-        static void Shutdown()
-        {
-            _VMESSAGE("executing safe exit");
-
-            std::exit(EXIT_SUCCESS);
-        }
-    };
-
     bool PatchMemoryManager()
     {
         _VMESSAGE("-- memory manager --");
@@ -187,8 +178,8 @@ namespace patches
         REL::Offset<std::uintptr_t> InitMemoryManager(InitMemoryManager_offset);
         REL::Offset<std::uintptr_t> InitBSSmallBlockAllocator(InitBSSmallBlockAllocator_offset);
 
-        SKSE::SafeWrite8(InitMemoryManager.GetAddress(), 0xC3);          // [3GB] MemoryManager - Default/Static/File heaps
-        SKSE::SafeWrite8(InitBSSmallBlockAllocator.GetAddress(), 0xC3);  // [1GB] BSSmallBlockAllocator
+        SKSE::SafeWrite8(InitMemoryManager.address(), 0xC3);          // [3GB] MemoryManager - Default/Static/File heaps
+        SKSE::SafeWrite8(InitBSSmallBlockAllocator.address(), 0xC3);  // [1GB] BSSmallBlockAllocator
 
         _VMESSAGE("success");
 
@@ -206,8 +197,8 @@ namespace patches
         REL::Offset<std::uintptr_t> ScrapHeapFree(ScrapHeapFree_offset);
         REL::Offset<std::uintptr_t> ScrapHeapDeInit(ScrapHeapDeInit_offset);
 
-        SKSE::SafeWrite8(ScrapHeapInit.GetAddress(), 0xC3);    // [64MB ] ScrapHeap init
-        SKSE::SafeWrite8(ScrapHeapDeInit.GetAddress(), 0xC3);  // [64MB ] ScrapHeap deinit
+        SKSE::SafeWrite8(ScrapHeapInit.address(), 0xC3);    // [64MB ] ScrapHeap init
+        SKSE::SafeWrite8(ScrapHeapDeInit.address(), 0xC3);  // [64MB ] ScrapHeap deinit
 
         _VMESSAGE("patching CRT IAT memory functions");
         SKSE::PatchIAT(hk_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
@@ -219,10 +210,10 @@ namespace patches
 
         _VMESSAGE("redirecting memory manager alloc and free");
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(MemoryManagerAlloc.GetAddress(), &MemoryManager::Alloc);
-        trampoline->Write6Branch(MemoryManagerFree.GetAddress(), &MemoryManager::Free);
-        trampoline->Write6Branch(ScrapHeapAlloc.GetAddress(), &ScrapHeap::Alloc);
-        trampoline->Write6Branch(ScrapHeapFree.GetAddress(), &ScrapHeap::Free);
+        trampoline->Write6Branch(MemoryManagerAlloc.address(), &MemoryManager::Alloc);
+        trampoline->Write6Branch(MemoryManagerFree.address(), &MemoryManager::Free);
+        trampoline->Write6Branch(ScrapHeapAlloc.address(), &ScrapHeap::Alloc);
+        trampoline->Write6Branch(ScrapHeapFree.address(), &ScrapHeap::Free);
 
         _VMESSAGE("success");
 

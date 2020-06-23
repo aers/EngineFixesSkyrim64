@@ -55,6 +55,9 @@ namespace fixes
         if (config::fixMO5STypo)
             PatchMO5STypo();
 
+        if (config::fixNullProcessCrash)
+            PatchNullProcessCrash();
+
         if (config::fixPerkFragmentIsRunning)
             PatchPerkFragmentIsRunning();
 
@@ -64,8 +67,8 @@ namespace fixes
         if (config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();
 
-        if (config::fixUnequipAllCrash)
-            PatchUnequipAllCrash();
+        if (config::fixTorchLandscape)
+            PatchTorchLandscape();
 
         if (config::fixVerticalLookSensitivity)
             PatchVerticalLookSensitivity();

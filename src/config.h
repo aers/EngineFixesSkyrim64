@@ -36,12 +36,13 @@ namespace config
     extern bool fixLipSync;
     extern bool fixMemoryAccessErrors;
     extern bool fixMO5STypo;
+    extern bool fixNullProcessCrash;
     extern bool fixPerkFragmentIsRunning;
     extern bool fixRemovedSpellBook;
     extern bool fixSaveScreenshots;
     extern bool fixSlowTimeCameraMovement;
+    extern bool fixTorchLandscape;
     extern bool fixTreeReflections;
-    extern bool fixUnequipAllCrash;
     extern bool fixVerticalLookSensitivity;
     extern bool fixAnimationLoadSignedCrash;
     extern bool fixWeaponBlockScaling;

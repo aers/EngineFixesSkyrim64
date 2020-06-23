@@ -1,13 +1,3 @@
-#include <intrin.h>
-
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/CodeGenerator.h"
-#include "SKSE/IAT.h"
-#include "SKSE/SafeWrite.h"
-#include "SKSE/Trampoline.h"
-
 #include "patches.h"
 
 namespace patches
@@ -21,7 +11,7 @@ namespace patches
     // 5th function in??_7BSWaterShader@@6B@ vtbl
     // F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
     // loads TIMER_DEFAULT which is a timer representing the GameHour in seconds
-    REL::Offset<uintptr_t> WaterShader_ReadTimer_Hook(WaterShader_ReadTimer_Hook_offset, 0x4A9);
+    REL::Offset<std::uintptr_t> WaterShader_ReadTimer_Hook(WaterShader_ReadTimer_Hook_offset, 0x4A9);
 
     float timer = 8 * 3600;  // Game timer inits to 8 AM
 
@@ -73,18 +63,18 @@ namespace patches
                     dq(uintptr_t(update_timer));
 
                     L(retnLabel);
-                    dq(GameLoop_Hook.GetAddress() + 0x6);
+                    dq(GameLoop_Hook.address() + 0x6);
 
                     L(unkDwordLabel);
-                    dq(UnkGameLoopDword.GetAddress());
+                    dq(UnkGameLoopDword.address());
                 }
             };
 
             GameLoopHook_Code code;
-            code.finalize();
+            code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(GameLoop_Hook.GetAddress(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(GameLoop_Hook.address(), code.getCode());
         }
         _VMESSAGE("replacing water flow timer with our timer...");
         {
@@ -106,18 +96,18 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(WaterShader_ReadTimer_Hook.GetAddress() + 0xE);
+                    dq(WaterShader_ReadTimer_Hook.address() + 0xE);
 
                     L(timerLabel);
-                    dq(uintptr_t(&timer));
+                    dq(std::uintptr_t(&timer));
                 }
             };
 
             WaterFlowHook_Code code;
-            code.finalize();
+            code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(WaterShader_ReadTimer_Hook.GetAddress(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(WaterShader_ReadTimer_Hook.address(), code.getCode());
         }
         _VMESSAGE("success");
 
@@ -189,8 +179,8 @@ namespace patches
         const std::uint32_t load_last_save = 0xD0000100;
 
         _VMESSAGE("- regular quicksaves -");
-        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_SaveType.GetAddress(), regular_save);
-        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_LoadType.GetAddress(), load_last_save);
+        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_SaveType.address(), regular_save);
+        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_LoadType.address(), load_last_save);
         _VMESSAGE("success");
         return true;
     }
@@ -211,25 +201,43 @@ namespace patches
         };
 
         Patch patch;
-        patch.finalize();
+        patch.ready();
 
         for (UInt32 i = 0; i < patch.getSize(); ++i)
         {
-            SKSE::SafeWrite8(AchievementModsEnabledFunction.GetAddress() + i, patch.getCode()[i]);
+            SKSE::SafeWrite8(AchievementModsEnabledFunction.address() + i, patch.getCode()[i]);
         }
 
         _VMESSAGE("success");
         return true;
     }
 
-    REL::Offset<std::uintptr_t> ChargenCacheFunction(ChargenCacheFunction_offset);
-    REL::Offset<std::uintptr_t> ChargenCacheClearFunction(ChargenCacheClearFunction_offset);
+    class DisableChargenPrecachePatch
+    {
+    public:
+        static void Install()
+        {
+            constexpr std::array<std::uint64_t, 2> IDS = {
+                51507,
+                51509
+            };
+
+            constexpr UInt8 RET = 0xC3;
+
+            for (auto& id : IDS)
+            {
+                REL::Offset<std::uintptr_t> target = REL::ID(id);
+                SKSE::SafeWrite8(target.address(), RET);
+            }
+        }
+    };
 
     bool PatchDisableChargenPrecache()
     {
-        _VMESSAGE("- disable chargen precache -");
-        SKSE::SafeWrite8(ChargenCacheClearFunction.GetAddress(), 0xC3);
-        SKSE::SafeWrite8(ChargenCacheClearFunction.GetAddress(), 0xC3);
+        _VMESSAGE("- disable chargen precache patch -");
+
+        DisableChargenPrecachePatch::Install();
+
         _VMESSAGE("success");
         return true;
     }
@@ -241,7 +249,7 @@ namespace patches
         if (loadSet)
             return true;
 
-        uintptr_t returnAddr = (uintptr_t)(_ReturnAddress()) - REL::Module::BaseAddr();
+        std::uintptr_t returnAddr = (std::uintptr_t)(_ReturnAddress()) - REL::Module::BaseAddr();
 
         if (returnAddr == 0x16E11E)
         {
@@ -265,7 +273,7 @@ namespace patches
         _VMESSAGE("- treat all mods as masters -");
         MessageBox(nullptr, TEXT("WARNING: You have the treat all mods as masters patch enabled. I hope you know what you're doing!"), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(TESFile_IsMaster.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_TESFile_IsMaster));
+        trampoline->Write6Branch(TESFile_IsMaster.address(), unrestricted_cast<std::uintptr_t>(hk_TESFile_IsMaster));
         _VMESSAGE("success");
 
         return true;
@@ -277,8 +285,8 @@ namespace patches
     bool PatchScrollingDoesntSwitchPOV()
     {
         _VMESSAGE("- scrolling doesnt switch POV -");
-        SKSE::SafeWrite8(FirstPersonState_DontSwitchPOV.GetAddress(), 0xEB);
-        SKSE::SafeWrite8(ThirdPersonState_DontSwitchPOV.GetAddress(), 0xEB);
+        SKSE::SafeWrite8(FirstPersonState_DontSwitchPOV.address(), 0xEB);
+        SKSE::SafeWrite8(ThirdPersonState_DontSwitchPOV.address(), 0xEB);
         _VMESSAGE("- success -");
         return true;
     }
@@ -294,19 +302,19 @@ namespace patches
                 SleepWaitTime_Code() : SKSE::CodeGenerator()
                 {
                     push(rax);
-                    mov(rax, (size_t)&config::sleepWaitTimeModifier);
+                    mov(rax, (std::size_t)&config::sleepWaitTimeModifier);
                     comiss(xmm0, ptr[rax]);
                     pop(rax);
                     jmp(ptr[rip]);
-                    dq(SleepWaitTime_Compare.GetAddress() + 0x7);
+                    dq(SleepWaitTime_Compare.address() + 0x7);
                 }
             };
 
             SleepWaitTime_Code code;
-            code.finalize();
+            code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(SleepWaitTime_Compare.GetAddress(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(SleepWaitTime_Compare.address(), code.getCode());
         }
         _VMESSAGE("success");
         return true;
@@ -319,9 +327,9 @@ namespace patches
     bool PatchSaveGameMaxSize()
     {
         _VMESSAGE("- save game max size -");
-        SKSE::SafeWrite8(Win32FileType_CopyToBuffer.GetAddress(), 0x08);
-        SKSE::SafeWrite8(Win32FileType_ctor.GetAddress(), 0x08);
-        SKSE::SafeWrite8(ScrapHeap_GetMaxSize.GetAddress(), 0x08);
+        SKSE::SafeWrite8(Win32FileType_CopyToBuffer.address(), 0x08);
+        SKSE::SafeWrite8(Win32FileType_ctor.address(), 0x08);
+        SKSE::SafeWrite8(ScrapHeap_GetMaxSize.address(), 0x08);
 
         _VMESSAGE("success");
         return true;

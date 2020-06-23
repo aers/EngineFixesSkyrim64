@@ -1,5 +1,3 @@
-#include "INIReader.h"
-
 #include "config.h"
 
 namespace config
@@ -39,12 +37,13 @@ namespace config
     bool fixLipSync = true;
     bool fixMemoryAccessErrors = true;
     bool fixMO5STypo = true;
+    bool fixNullProcessCrash = true;
     bool fixPerkFragmentIsRunning = true;
     bool fixRemovedSpellBook = true;
     bool fixSaveScreenshots = true;
     bool fixSlowTimeCameraMovement = true;
+    bool fixTorchLandscape = true;
     bool fixTreeReflections = true;
-    bool fixUnequipAllCrash = true;
     bool fixVerticalLookSensitivity = true;
     bool fixWeaponBlockScaling = true;
     bool fixCreateArmorNodeNullptrCrash = true;
@@ -106,12 +105,13 @@ namespace config
         fixLipSync = ini.GetBoolean("Fixes", "LipSync", true);
         fixMemoryAccessErrors = ini.GetBoolean("Fixes", "MemoryAccessErrors", true);
         fixMO5STypo = ini.GetBoolean("Fixes", "MO5STypo", true);
+        fixNullProcessCrash = ini.GetBoolean("Fixes", "NullProcessCrash", true);
         fixPerkFragmentIsRunning = ini.GetBoolean("Fixes", "PerkFragmentIsRunning", true);
         fixRemovedSpellBook = ini.GetBoolean("Fixes", "RemovedSpellBook", true);
         fixSaveScreenshots = ini.GetBoolean("Fixes", "SaveScreenshots", true);
         fixSlowTimeCameraMovement = ini.GetBoolean("Fixes", "SlowTimeCameraMovement", true);
+        fixTorchLandscape = ini.GetBoolean("Fixes", "TorchLandscape", true);
         fixTreeReflections = ini.GetBoolean("Fixes", "TreeReflections", true);
-        fixUnequipAllCrash = ini.GetBoolean("Fixes", "UnequipAllCrash", true);
         fixVerticalLookSensitivity = ini.GetBoolean("Fixes", "VerticalLookSensitivity", true);
         fixWeaponBlockScaling = ini.GetBoolean("Fixes", "WeaponBlockScaling", true);
         fixCreateArmorNodeNullptrCrash = ini.GetBoolean("Fixes", "CreateArmorNodeNullptrCrash", true);

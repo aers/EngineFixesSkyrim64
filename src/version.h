@@ -5,7 +5,7 @@
 #define MAKE_STR(a_str) MAKE_STR_HELPER(a_str)
 
 #define EF_VERSION_MAJOR 5
-#define EF_VERSION_MINOR 2
+#define EF_VERSION_MINOR 3
 #define EF_VERSION_PATCH 0
 #define EF_VERSION_BETA 0
 #define EF_VERSION_VERSTRING   \

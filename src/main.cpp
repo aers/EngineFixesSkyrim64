@@ -1,10 +1,4 @@
-﻿#include <ShlObj.h>
-#include <sstream>
-
-#include "SKSE/API.h"
-#include "SKSE/Interfaces.h"
-
-#include "config.h"
+﻿#include "config.h"
 #include "fixes.h"
 #include "patches.h"
 #include "utils.h"
@@ -65,101 +59,104 @@ bool CheckVersion(const SKSE::Version& a_version)
     return success;
 }
 
-extern "C"
+extern "C" void DLLEXPORT APIENTRY Initialize()
 {
-    void __declspec(dllexport) Initialize()
-    {
-        SKSE::Logger::OpenRelative(FOLDERID_Documents, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes.log)");
 #ifdef _DEBUG
-        SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kDebugMessage);
-        SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kDebugMessage);
-        SKSE::Logger::TrackTrampolineStats(true);
-#else
-        SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kMessage);
-        SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kMessage);
+    while (!IsDebuggerPresent())
+    {
+    }
 #endif
-        SKSE::Logger::UseLogStamp(true);
 
-        _MESSAGE("Engine Fixes v%s", EF_VERSION_VERSTRING);
+    SKSE::Logger::OpenRelative(FOLDERID_Documents, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes.log)");
+#ifdef _DEBUG
+    SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kDebugMessage);
+    SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kDebugMessage);
+    SKSE::Logger::TrackTrampolineStats(true);
+#else
+    SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kMessage);
+    SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kMessage);
+#endif
+    SKSE::Logger::UseLogStamp(true);
 
-        if (config::LoadConfig(R"(.\Data\SKSE\plugins\EngineFixes.ini)"))
-        {
-            _MESSAGE("loaded config successfully");
-        }
-        else
-        {
-            _MESSAGE("config load failed, using default config");
-        }
+    _MESSAGE("Engine Fixes v%s", EF_VERSION_VERSTRING);
 
-        auto ver = REL::Module::GetVersion();
-        if (!CheckVersion(ver))
-        {
-            return;
-        }
-
-        if (!SKSE::AllocTrampoline(1 << 11))
-        {
-            return;
-        }
-
-        patches::Preload();
-    }
-
-    bool __declspec(dllexport) SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+    if (config::LoadConfig(R"(.\Data\SKSE\plugins\EngineFixes.ini)"))
     {
-        // populate info structure
-        a_info->infoVersion = SKSE::PluginInfo::kVersion;
-        a_info->name = "EngineFixes plugin";
-        a_info->version = EF_VERSION_MAJOR;
-
-        if (a_skse->IsEditor())
-        {
-            _FATALERROR("loaded in editor, marking as incompatible");
-            return false;
-        }
-
-        auto ver = a_skse->RuntimeVersion();
-        if (!CheckVersion(ver))
-        {
-            return false;
-        }
-
-        return true;
+        _MESSAGE("loaded config successfully");
     }
-
-    bool __declspec(dllexport) SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+    else
     {
-        if (!SKSE::Init(a_skse))
-        {
-            return false;
-        }
-
-        auto trampoline = SKSE::GetTrampoline();
-        if (trampoline->Empty())
-        {
-            return false;
-        }
-
-        auto messaging = SKSE::GetMessagingInterface();
-        if (!messaging->RegisterListener("SKSE", MessageHandler))
-        {
-            return false;
-        }
-
-        if (config::verboseLogging)
-        {
-            _MESSAGE("enabling verbose logging");
-            SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kVerboseMessage);
-            SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kVerboseMessage);
-        }
-
-        _MESSAGE("beginning pre-load patches");
-
-        patches::PatchAll();
-        fixes::PatchAll();
-        warnings::PatchAll();
-
-        _MESSAGE("pre-load patches complete");
-        return true;
+        _MESSAGE("config load failed, using default config");
     }
+
+    auto ver = REL::Module::GetVersion();
+    if (!CheckVersion(ver))
+    {
+        return;
+    }
+
+    if (!SKSE::AllocTrampoline(1 << 11))
+    {
+        return;
+    }
+
+    patches::Preload();
+}
+
+extern "C" bool DLLEXPORT APIENTRY SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
+{
+    // populate info structure
+    a_info->infoVersion = SKSE::PluginInfo::kVersion;
+    a_info->name = "EngineFixes plugin";
+    a_info->version = EF_VERSION_MAJOR;
+
+    if (a_skse->IsEditor())
+    {
+        _FATALERROR("loaded in editor, marking as incompatible");
+        return false;
+    }
+
+    auto ver = a_skse->RuntimeVersion();
+    if (!CheckVersion(ver))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+extern "C" bool DLLEXPORT APIENTRY SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+{
+    if (!SKSE::Init(a_skse))
+    {
+        return false;
+    }
+
+    auto trampoline = SKSE::GetTrampoline();
+    if (trampoline->Empty())
+    {
+        return false;
+    }
+
+    auto messaging = SKSE::GetMessagingInterface();
+    if (!messaging->RegisterListener("SKSE", MessageHandler))
+    {
+        return false;
+    }
+
+    if (config::verboseLogging)
+    {
+        _MESSAGE("enabling verbose logging");
+        SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kVerboseMessage);
+        SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kVerboseMessage);
+    }
+
+    _MESSAGE("beginning pre-load patches");
+
+    patches::PatchAll();
+    fixes::PatchAll();
+    warnings::PatchAll();
+
+    _MESSAGE("pre-load patches complete");
+    return true;
 }
