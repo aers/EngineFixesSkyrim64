@@ -240,7 +240,7 @@
     <ClCompile Include="src\warnings\miscwarnings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lib\Simpleini.h" />
+    <ClInclude Include="lib\tortellini.hh" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\fixes.h" />
     <ClInclude Include="src\offsets.h" />

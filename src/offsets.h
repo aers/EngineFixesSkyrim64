@@ -34,11 +34,6 @@ constexpr REL::ID UnkFormFunc4_offset(14537);
 constexpr REL::ID QuickSaveLoadHandler_HandleEvent_SaveType_offset(51402);  // F0000200
 constexpr REL::ID QuickSaveLoadHandler_HandleEvent_LoadType_offset(51402);  // D0000400
 
-// Save Added Sound Categories
-constexpr REL::ID vtbl_BGSSoundCategory_offset(236600);
-constexpr REL::ID vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset(236602);  // vtbl 3
-constexpr REL::ID vtbl_INIPrefSettingCollection_Unlock_offset(230546);              // vtbl 6
-
 // Scrolling Doesn't Switch POV
 // FirstPersonState::PlayerInputHandler::sub_4
 // 48 39 08 75 0B

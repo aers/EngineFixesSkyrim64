@@ -68,7 +68,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lib\Simpleini.h">
+    <ClInclude Include="lib\tortellini.hh">
       <Filter>lib</Filter>
     </ClInclude>
     <ClInclude Include="src\config.h">

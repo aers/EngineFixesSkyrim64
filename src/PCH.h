@@ -6,7 +6,7 @@
 
 #include "AutoTOML.hpp"
 
-#include <Simpleini.h>
+#include <tortellini.hh>
 
 #include <tbb/concurrent_hash_map.h>
 #include <tbb/scalable_allocator.h>
@@ -18,11 +18,13 @@
 #include <array>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <memory>
 #include <optional>
 #include <regex>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <system_error>
 #include <type_traits>
 #include <unordered_set>

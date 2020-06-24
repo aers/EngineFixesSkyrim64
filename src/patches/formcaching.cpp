@@ -114,7 +114,7 @@ namespace patches
             return false;
         }
 
-        _VMESSAGE("detouring GetFormById");
+        _VMESSAGE("detouring GetFormByID");
         SKSE::GetTrampoline()->Write6Branch(LookupFormByID.address(), unrestricted_cast<std::uintptr_t>(&hk_GetFormByID));
         _VMESSAGE("done");
 
