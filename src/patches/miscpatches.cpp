@@ -302,7 +302,7 @@ namespace patches
                 SleepWaitTime_Code() : SKSE::CodeGenerator()
                 {
                     push(rax);
-                    mov(rax, (std::size_t)&config::sleepWaitTimeModifier);
+                    mov(rax, (std::size_t)std::addressof(*config::sleepWaitTimeModifier));
                     comiss(xmm0, ptr[rax]);
                     pop(rax);
                     jmp(ptr[rip]);
