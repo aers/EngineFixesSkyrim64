@@ -1,10 +1,3 @@
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/CodeGenerator.h"
-#include "SKSE/SafeWrite.h"
-#include "SKSE/Trampoline.h"
-
 #include "fixes.h"
 
 namespace fixes
@@ -62,7 +55,7 @@ namespace fixes
         // mov r8d, dword ptr [rdi+18h]
         // 44 8b 47 18 90
         unsigned char first_movzx_patch[] = { 0x44, 0x8b, 0x47, 0x18, 0x90 };
-        SKSE::SafeWriteBuf(SwitchFunctionMovzx.GetAddress(), first_movzx_patch, 5);
+        SKSE::SafeWriteBuf(SwitchFunctionMovzx.address(), first_movzx_patch, 5);
 
         // .text:00000001405C6C6A                 movzx   edi, r9b
         // 41 0F B6 F9
@@ -70,7 +63,7 @@ namespace fixes
         // mov edi, r9d
         // 44 89 CF 90
         unsigned char second_movzx_patch[] = { 0x44, 0x89, 0xCF, 0x90 };
-        SKSE::SafeWriteBuf(UnknownAddFuncMovzx1.GetAddress(), second_movzx_patch, 4);
+        SKSE::SafeWriteBuf(UnknownAddFuncMovzx1.address(), second_movzx_patch, 4);
 
         // .text:00000001405C6C96                 movzx   eax, dil
         // 40 0F B6 C7
@@ -78,7 +71,7 @@ namespace fixes
         // mov eax, edi
         // 89 F8 90 90
         unsigned char third_movzx_patch[] = { 0x89, 0xF8, 0x90, 0x90 };
-        SKSE::SafeWriteBuf(UnknownAddFuncMovzx2.GetAddress(), third_movzx_patch, 4);
+        SKSE::SafeWriteBuf(UnknownAddFuncMovzx2.address(), third_movzx_patch, 4);
 
         _VMESSAGE("hooking for next form ID");
         {
@@ -103,15 +96,15 @@ namespace fixes
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(NextFormIdGetHook.GetAddress() + 0xA);
+                    dq(NextFormIdGetHook.address() + 0xA);
                 }
             };
 
             GetNextFormId_Code code;
-            code.finalize();
+            code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(NextFormIdGetHook.GetAddress(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(NextFormIdGetHook.address(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("hooking handle function");
@@ -151,15 +144,15 @@ namespace fixes
                     dq(doHandleAddr);
 
                     L(retnLabel);
-                    dq(DoHandleHook.GetAddress() + 0x8);
+                    dq(DoHandleHook.address() + 0x8);
                 }
             };
 
             DoHandleHook_Code code(reinterpret_cast<std::uintptr_t>(do_handle));
-            code.finalize();
+            code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(DoHandleHook.GetAddress(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(DoHandleHook.address(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("hooking add function");
@@ -194,15 +187,15 @@ namespace fixes
                     dq(doAddAddr);
 
                     L(retnLabel);
-                    dq(DoAddHook.GetAddress() + 0x1B);
+                    dq(DoAddHook.address() + 0x1B);
                 }
             };
 
             DoAddHook_Code code(reinterpret_cast<std::uintptr_t>(do_add));
-            code.finalize();
+            code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(DoAddHook.GetAddress(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(DoAddHook.address(), uintptr_t(code.getCode()));
         }
 
         _VMESSAGE("success");

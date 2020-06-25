@@ -1,26 +1,16 @@
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/SafeWrite.h"
-
-#include "Simpleini.h"
 #include "patches.h"
-
 #include "utils.h"
 
 namespace patches
 {
-    CSimpleIniA snctIni;
+    tortellini::ini snctIni;
 
-    REL::Offset<std::uintptr_t*> vtbl_BGSSoundCategory(vtbl_BGSSoundCategory_offset);
+    const REL::Offset<bool (**)(RE::BSISoundCategory* a_this, float a_volume)> vtbl_BSISoundCategory_SetVolume{ REL::ID(236602), 0x8 * 0x3 };  // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
+    REL::Offset<bool(void*)> orig_INIPrefSettingCollection_Unlock;
 
-    typedef bool (*_BSISoundCategory_SetVolume)(RE::BSISoundCategory* thisPtr, float volume);
-    REL::Offset<_BSISoundCategory_SetVolume*> vtbl_BSISoundCategory_SetVolume(vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset, 0x8 * 0x3);  // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
+    constexpr std::string_view FILE_NAME = "Data/SKSE/plugins/EngineFixes_SNCT.ini";
 
-    typedef bool (*_INIPrefSettingCollection_Unlock)(__int64 thisPtr);
-    REL::Offset<_INIPrefSettingCollection_Unlock*> vtbl_INIPrefSettingCollection_Unlock(vtbl_INIPrefSettingCollection_Unlock_offset, 0x8 * 0x6);
-    _INIPrefSettingCollection_Unlock orig_INIPrefSettingCollection_Unlock;
-
-    bool hk_INIPrefSettingCollection_Unlock(__int64 thisPtr)
+    bool hk_INIPrefSettingCollection_Unlock(void* thisPtr)
     {
         const auto dataHandler = RE::TESDataHandler::GetSingleton();
 
@@ -34,28 +24,29 @@ namespace patches
                     fullName = fullName ? fullName : "";
                     _VMESSAGE("processing %s", fullName);
                     _VMESSAGE("menu flag set, saving");
-                    auto localFormId = soundCategory->formID & 0x00FFFFFF;
+                    auto localFormID = soundCategory->formID & 0x00FFFFFF;
                     // esl
                     if ((soundCategory->formID & 0xFF000000) == 0xFE000000)
                     {
-                        localFormId = localFormId & 0x00000FFF;
+                        localFormID = localFormID & 0x00000FFF;
                     }
                     auto srcFile = soundCategory->GetDescriptionOwnerFile();
-                    _VMESSAGE("plugin: %s form id: %08X", srcFile->fileName, localFormId);
+                    _VMESSAGE("plugin: %s form id: %08X", srcFile->fileName, localFormID);
 
-                    char localFormIdHex[9];
-                    sprintf_s(localFormIdHex, sizeof(localFormIdHex), "%08X", localFormId);
+                    char localFormIDHex[] = "DEADBEEF";
+                    sprintf_s(localFormIDHex, std::extent_v<decltype(localFormIDHex)>, "%08X", localFormID);
 
-                    snctIni.SetDoubleValue(srcFile->fileName, localFormIdHex, static_cast<double>(soundCategory->volumeMult));
+                    snctIni[srcFile->fileName][localFormIDHex] = static_cast<double>(soundCategory->volumeMult);
                 }
             }
 
-            const SI_Error saveRes = snctIni.SaveFile(R"(.\Data\SKSE\plugins\EngineFixes_SNCT.ini)");
-
-            if (saveRes < 0)
+            std::ofstream file{ FILE_NAME, std::ios_base::out | std::ios_base::trunc };
+            if (!file)
             {
                 _VMESSAGE("warning: unable to save snct ini");
             }
+
+            file << snctIni;
 
             _VMESSAGE("SNCT save: saved sound categories");
         }
@@ -76,24 +67,22 @@ namespace patches
         {
             for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
-                auto localFormId = soundCategory->formID & 0x00FFFFFF;
+                auto localFormID = soundCategory->formID & 0x00FFFFFF;
                 // esl
                 if ((soundCategory->formID & 0xFF000000) == 0xFE000000)
                 {
-                    localFormId = localFormId & 0x00000FFF;
+                    localFormID = localFormID & 0x00000FFF;
                 }
-                char localFormIdHex[9];
-                sprintf_s(localFormIdHex, sizeof(localFormIdHex), "%08X", localFormId);
+                char localFormIDHex[] = "DEADBEEF";
+                sprintf_s(localFormIDHex, std::extent_v<decltype(localFormIDHex)>, "%08X", localFormID);
 
                 auto srcFile = soundCategory->GetDescriptionOwnerFile();
-                const auto vol = snctIni.GetDoubleValue(srcFile->fileName, localFormIdHex, -1.0);
+                const auto vol = snctIni[srcFile->fileName][localFormIDHex] | -1.0;
 
                 if (vol != -1.0)
                 {
                     _VMESSAGE("setting volume for formid %08X", soundCategory->formID);
-                    const auto soundCatInterface = dynamic_cast<RE::BSISoundCategory*>(soundCategory);
-
-                    (*vtbl_BSISoundCategory_SetVolume)(soundCatInterface, static_cast<float>(vol));
+                    (*vtbl_BSISoundCategory_SetVolume)(soundCategory, static_cast<float>(vol));
                 }
             }
         }
@@ -103,17 +92,18 @@ namespace patches
     {
         _VMESSAGE("- save added sound categories -");
 
-        const SI_Error loadRes = snctIni.LoadFile(R"(.\Data\SKSE\plugins\EngineFixes_SNCT.ini)");
-
-        if (loadRes < 0)
+        std::ifstream file{ FILE_NAME };
+        if (!file)
         {
             _VMESSAGE("unable to load SNCT ini, disabling patch");
             return false;
         }
 
+        file >> snctIni;
+
         _VMESSAGE("hooking vtbls");
-        orig_INIPrefSettingCollection_Unlock = *vtbl_INIPrefSettingCollection_Unlock;
-        SKSE::SafeWrite64(vtbl_INIPrefSettingCollection_Unlock.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_INIPrefSettingCollection_Unlock));
+        REL::Offset<std::uintptr_t> vtbl{ REL::ID(230546) };  // INIPrefSettingCollection
+        orig_INIPrefSettingCollection_Unlock = vtbl.write_vfunc(0x6, hk_INIPrefSettingCollection_Unlock);
         _VMESSAGE("success");
         return true;
     }

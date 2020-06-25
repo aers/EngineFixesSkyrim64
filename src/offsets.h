@@ -1,7 +1,5 @@
 #pragma once
 
-#include "REL/Relocation.h"
-
 // Patches
 
 // E8 ? ? ? ? 84 DB 74 24 -> +0x230
@@ -12,12 +10,6 @@ constexpr REL::ID g_FrameTimer_NoSlowTime_offset(523661);
 // E8 ? ? ? ? 49 8B 96 ? ? ? ? 40 B6 01
 constexpr REL::ID BSBatchRenderer_SetupAndDrawPass_offset(100854);
 constexpr REL::ID BSLightingShader_vtbl_offset(305261);
-
-// Disable Chargen Precache
-// E8 ? ? ? ? E8 ? ? ? ? 48 8D 57 30  ->
-constexpr REL::ID ChargenCacheFunction_offset(51507);
-// 90 E8 ? ? ? ? 90 48 8B 15 ? ? ? ?  ->
-constexpr REL::ID ChargenCacheClearFunction_offset(51509);
 
 // Enable Achievements With Mods
 // 48 83 EC 28 C6 44 24 ? ?
@@ -41,11 +33,6 @@ constexpr REL::ID UnkFormFunc4_offset(14537);
 // QuickSaveLoadHandler::HandleEvent  = vtbl 5
 constexpr REL::ID QuickSaveLoadHandler_HandleEvent_SaveType_offset(51402);  // F0000200
 constexpr REL::ID QuickSaveLoadHandler_HandleEvent_LoadType_offset(51402);  // D0000400
-
-// Save Added Sound Categories
-constexpr REL::ID vtbl_BGSSoundCategory_offset(236600);
-constexpr REL::ID vtbl_BGSSoundCategory_BSISoundCategory_SetVolume_offset(236602);  // vtbl 3
-constexpr REL::ID vtbl_INIPrefSettingCollection_Unlock_offset(230546);              // vtbl 6
 
 // Scrolling Doesn't Switch POV
 // FirstPersonState::PlayerInputHandler::sub_4
@@ -113,9 +100,6 @@ constexpr REL::ID Calendar_AdvanceTime_call_offset(35402);
 // BSLightingShader::SetupGeometry Parallax Technique fix
 // 8B C1 25 ? ? ? ? 41 0F 45 D0
 constexpr REL::ID offset_BSLightingShader_SetupGeometry_ParallaxTechniqueFix(100565);
-
-// Fix for crash somewhere called from CreateArmorNode
-constexpr REL::ID offset_CreateArmorNode_subfunc(15535);
 
 // Warnings
 

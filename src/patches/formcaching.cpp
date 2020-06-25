@@ -1,12 +1,3 @@
-#include <type_traits>
-
-#include "tbb/concurrent_hash_map.h"
-
-#include "RE/Skyrim.h"
-#include "SKSE/API.h"
-#include "SKSE/CodeGenerator.h"
-#include "SKSE/Trampoline.h"
-
 #include "patches.h"
 
 namespace patches
@@ -118,13 +109,13 @@ namespace patches
         if (*LookupFormByID != 0x83485740)
         {
             _VMESSAGE("sse fixes is installed and enabled. aborting form cache patch.");
-            config::patchFormCaching = false;
+            *config::patchFormCaching = false;
 
             return false;
         }
 
-        _VMESSAGE("detouring GetFormById");
-        SKSE::GetTrampoline()->Write6Branch(LookupFormByID.GetAddress(), unrestricted_cast<std::uintptr_t>(&hk_GetFormByID));
+        _VMESSAGE("detouring GetFormByID");
+        SKSE::GetTrampoline()->Write6Branch(LookupFormByID.address(), unrestricted_cast<std::uintptr_t>(&hk_GetFormByID));
         _VMESSAGE("done");
 
         // TODO: write a generic detour instead
@@ -148,16 +139,16 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc0HookAddr.GetAddress() + 0x8);
+                    dq(origFunc0HookAddr.address() + 0x8);
                 }
             };
 
             UnknownFormFunction0_Code code;
-            code.finalize();
+            code.ready();
             origFunc0 = UnknownFormFunction0_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc0HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction0));
+            trampoline->Write6Branch(origFunc0HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction0));
         }
 
         {
@@ -178,16 +169,16 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc1HookAddr.GetAddress() + 0xA);
+                    dq(origFunc1HookAddr.address() + 0xA);
                 }
             };
 
             UnknownFormFunction1_Code code;
-            code.finalize();
+            code.ready();
             origFunc1 = UnknownFormFunction1_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc1HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction1));
+            trampoline->Write6Branch(origFunc1HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction1));
         }
 
         {
@@ -207,16 +198,16 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc2HookAddr.GetAddress() + 0xA);
+                    dq(origFunc2HookAddr.address() + 0xA);
                 }
             };
 
             UnknownFormFunction2_Code code;
-            code.finalize();
+            code.ready();
             origFunc2 = UnknownFormFunction2_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc2HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction2));
+            trampoline->Write6Branch(origFunc2HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction2));
         }
 
         {
@@ -237,16 +228,16 @@ namespace patches
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(origFunc3HookAddr.GetAddress() + 0x9);
+                    dq(origFunc3HookAddr.address() + 0x9);
                 }
             };
 
             UnknownFormFunction3_Code code;
-            code.finalize();
+            code.ready();
             origFunc3 = UnknownFormFunction3_(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc3HookAddr.GetAddress(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction3));
+            trampoline->Write6Branch(origFunc3HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction3));
         }
         _VMESSAGE("done");
 

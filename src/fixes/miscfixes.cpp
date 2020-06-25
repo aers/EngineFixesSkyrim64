@@ -1,15 +1,4 @@
-#include <array>
-#include <utility>
-
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/CodeGenerator.h"
-#include "SKSE/SafeWrite.h"
-#include "SKSE/Trampoline.h"
-
 #include "fixes.h"
-#include "utils.h"
 
 namespace fixes
 {
@@ -20,7 +9,7 @@ namespace fixes
         {
             // Change "BF" to "B7"
             REL::Offset<std::uintptr_t> target(REL::ID(64198), 0x91);
-            SKSE::SafeWrite8(target.GetAddress(), 0xB7);
+            SKSE::SafeWrite8(target.address(), 0xB7);
         }
     };
 
@@ -41,7 +30,7 @@ namespace fixes
         {
             REL::Offset<std::uintptr_t> funcBase = REL::ID(42852);
             auto trampoline = SKSE::GetTrampoline();
-            _Move = trampoline->Write5CallEx(funcBase.GetAddress() + 0x3E9, Move);
+            _Move = trampoline->Write5CallEx(funcBase.address() + 0x3E9, Move);
         }
 
     private:
@@ -76,7 +65,7 @@ namespace fixes
     public:
         static void Install()
         {
-            PatchIAT(unrestricted_cast<std::uintptr_t>(hk_wcsrtombs_s), "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
+            SKSE::PatchIAT(hk_wcsrtombs_s, "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
         }
 
     private:
@@ -156,7 +145,7 @@ namespace fixes
 
             for (int i = 0; i < length; ++i)
             {
-                SKSE::SafeWrite8(disableSetupMaterialAmbientSpecular.GetAddress() + i, nop);
+                SKSE::SafeWrite8(disableSetupMaterialAmbientSpecular.address() + i, nop);
             }
 
             _VMESSAGE("Adding SetupGeometry case");
@@ -189,11 +178,11 @@ namespace fixes
                 }
             };
 
-            Patch patch(ambientSpecularAndFresnel.GetAddress(), addAmbientSpecularToSetupGeometry.GetAddress());
+            Patch patch(ambientSpecularAndFresnel.address(), addAmbientSpecularToSetupGeometry.address());
             patch.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write5Branch(addAmbientSpecularToSetupGeometry.GetAddress(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
+            trampoline->Write5Branch(addAmbientSpecularToSetupGeometry.address(), reinterpret_cast<std::uintptr_t>(patch.getCode()));
         }
     };
 
@@ -213,7 +202,7 @@ namespace fixes
 
         REL::Offset<RE::NiRTTI*> rttiBSTempEffect(RE::BSTempEffect::Ni_RTTI);
         REL::Offset<RE::NiRTTI*> rttiNiObject(RE::NiObject::Ni_RTTI);
-        rttiBSTempEffect->baseRTTI = rttiNiObject.GetType();
+        rttiBSTempEffect->baseRTTI = rttiNiObject.type();
 
         _VMESSAGE("success");
         return true;
@@ -248,7 +237,7 @@ namespace fixes
 
             for (std::size_t i = 0; i < patch.getSize(); ++i)
             {
-                SKSE::SafeWrite8(funcBase.GetAddress() + CAVE_START + i, patch.getCode()[i]);
+                SKSE::SafeWrite8(funcBase.address() + CAVE_START + i, patch.getCode()[i]);
             }
         }
 
@@ -287,7 +276,7 @@ namespace fixes
         {
             auto trampoline = SKSE::GetTrampoline();
             REL::Offset<std::uintptr_t> funcBase = REL::ID(18474);
-            _GetLocation = trampoline->Write5CallEx(funcBase.GetAddress() + 0x110, GetLocation);
+            _GetLocation = trampoline->Write5CallEx(funcBase.address() + 0x110, GetLocation);
         }
 
     private:
@@ -318,13 +307,108 @@ namespace fixes
         return true;
     }
 
+    // TODO: cleanup
+    // Patch for 1.5.97 but should be version-independent
+    bool PatchCreateArmorNodeNullptrCrash()
+    {
+        _VMESSAGE("- CreateArmorNode subfunction crash fix -");
+
+        // sub_1401CAFB0
+        const std::uint64_t faddr = REL::ID(15535).address();
+
+        /*
+        loc_1401CB520:
+          [...]
+        .text:00000001401CB538                 mov     esi, ebx
+        .text:00000001401CB53A                 test    r12, r12
+        .text:00000001401CB53D                 jz      short loc_1401CB5B6 // <-- this jump needs to be patched but the operand is too small to fit
+        */
+        static const std::uint8_t expected1[] = {
+            0x8B, 0xF3,        // mov     esi, ebx
+            0x4D, 0x85, 0xE4,  // test    r12, r12
+            0x74               // jz short (opcode only); +1 byte displacement
+        };
+
+        const std::uint8_t* loc1p = (std::uint8_t*)(std::uintptr_t)(faddr + 0x588);
+        if (memcmp(loc1p, expected1, sizeof(expected1)))
+        {
+            _VMESSAGE("Code at first offset is not as expected, skipping patch");
+            return false;
+        }
+
+        const std::int8_t disp8 = loc1p[sizeof(expected1)];  // jz short displacement (should be 0x77)
+        const std::uint8_t* const loc1end = loc1p + sizeof(expected1) + 1;
+
+        /*
+        loc_1401CB5B6:
+        .text:00000001401CB5B6                 mov     rdi, [r12+130h] // <-- this is where the crash happens, because r12 == 0
+        .text:00000001401CB5BE                 test    rdi, rdi
+        .text:00000001401CB5C1                 jz      loc_1401CB751 // <-- This is the location we want to jump to when test r12,r12 fails
+        */
+
+        const void* const loc2p = loc1end + disp8;
+        const std::ptrdiff_t offs2 = (std::uintptr_t)loc2p - faddr;
+        _VMESSAGE("Located second block at offset 0x%x", offs2);
+
+        static const uint8_t expected2[] =  // this should use scanning instead; hardcoding offset 130h is bad
+            {
+                0x49, 0x8B, 0xBC, 0x24, 0x30, 0x01, 0x00, 0x00,  // mov     rdi, [r12+130h]
+                0x48, 0x85, 0xFF,                                // test    rdi, rdi
+                0x0F, 0x84                                       // jz (opcode only); +4 bytes displacement
+            };
+
+        if (memcmp(loc2p, expected2, sizeof(expected2)))
+        {
+            _VMESSAGE("Code at second offset is not as expected, skipping patch");
+            return false;
+        }
+
+        _VMESSAGE("Code confirmed broken; installing fix");
+
+        const std::uint8_t* const loc2end = (const std::uint8_t*)loc2p + sizeof(expected2) + sizeof(std::int32_t);
+
+        std::int32_t disp2 = *unrestricted_cast<std::int32_t*>(((const std::uint8_t*)loc2p) + sizeof(expected2));
+        const std::uint8_t* const target = loc2end + disp2;
+
+        struct Code : SKSE::CodeGenerator
+        {
+            Code(std::uintptr_t contAddr, std::uintptr_t patchedAddr) : SKSE::CodeGenerator()
+            {
+                Xbyak::Label patchedJmpLbl, contLbl, zeroLbl;
+
+                // original instructions minus jz short
+                db(expected1, sizeof(expected1) - 1);
+
+                jz(zeroLbl);              // patched non-short jz
+                jmp(ptr[rip + contLbl]);  // continue original code
+                L(zeroLbl);               // was zero; skip over code that would crash
+                jmp(ptr[rip + patchedJmpLbl]);
+
+                L(contLbl);
+                dq(contAddr);
+                L(patchedJmpLbl);
+                dq(patchedAddr);
+            }
+        };
+
+        Code code(unrestricted_cast<std::uintptr_t>(loc1end), unrestricted_cast<std::uintptr_t>(target));
+        code.ready();
+
+        auto trampoline = SKSE::GetTrampoline();
+        if (!trampoline->Write5Branch(unrestricted_cast<std::uintptr_t>(loc1p), code.getCode()))
+            return false;
+
+        _VMESSAGE("success");
+        return true;
+    }
+
     class ConjurationEnchantAbsorbsPatch
     {
     public:
         static void Install()
         {
             REL::Offset<std::uintptr_t> vtbl = REL::ID(228570);
-            _DisallowsAbsorbReflection = vtbl.WriteVFunc(0x5E, DisallowsAbsorbReflection);
+            _DisallowsAbsorbReflection = vtbl.write_vfunc(0x5E, DisallowsAbsorbReflection);
         }
 
     private:
@@ -400,15 +484,15 @@ namespace fixes
                 }
             };
 
-            Patch patch(funcBase.GetAddress());
-            patch.finalize();
+            Patch patch(funcBase.address());
+            patch.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write5Branch(funcBase.GetAddress() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
+            trampoline->Write5Branch(funcBase.address() + BRANCH_OFF, reinterpret_cast<std::uintptr_t>(patch.getCode()));
 
             for (UInt32 i = 0; i < DIFF; ++i)
             {
-                SKSE::SafeWrite8(funcBase.GetAddress() + BRANCH_OFF + BRANCH_SIZE + i, NOP);
+                SKSE::SafeWrite8(funcBase.address() + BRANCH_OFF + BRANCH_SIZE + i, NOP);
             }
         }
     };
@@ -515,7 +599,7 @@ namespace fixes
 
             for (std::uintptr_t i = START; i < END; ++i)
             {
-                SKSE::SafeWrite8(funcBase.GetAddress() + i, NOP);
+                SKSE::SafeWrite8(funcBase.address() + i, NOP);
             }
         }
     };
@@ -545,7 +629,7 @@ namespace fixes
             REL::Offset<std::uintptr_t> funcBase = REL::ID(16023);
             for (auto& offset : OFFSETS)
             {
-                SKSE::SafeWrite8(funcBase.GetAddress() + offset, 0xEB);  // jns -> jmp
+                SKSE::SafeWrite8(funcBase.address() + offset, 0xEB);  // jns -> jmp
             }
         }
     };
@@ -613,9 +697,9 @@ namespace fixes
 
             REL::Offset<std::uintptr_t> vtbl = REL::ID(304565);
             REL::Offset<std::uintptr_t> funcBase = REL::ID(100563);
-            std::uintptr_t hook = funcBase.GetAddress() + 0x4E0;
-            std::uintptr_t exit = funcBase.GetAddress() + 0x5B6;
-            Patch patch(vtbl.GetAddress(), hook, exit);
+            std::uintptr_t hook = funcBase.address() + 0x4E0;
+            std::uintptr_t exit = funcBase.address() + 0x5B6;
+            Patch patch(vtbl.address(), hook, exit);
             patch.ready();
 
             auto trampoline = SKSE::GetTrampoline();
@@ -627,7 +711,7 @@ namespace fixes
             _VMESSAGE("patching BGSShaderParticleGeometryData limit");
 
             REL::Offset<std::uintptr_t> vtbl = REL::ID(234671);
-            _Load = vtbl.WriteVFunc(0x6, Load);
+            _Load = vtbl.write_vfunc(0x6, Load);
         }
 
         static void PatchUseAfterFree()
@@ -653,7 +737,7 @@ namespace fixes
             REL::Offset<std::uintptr_t> target = REL::ID(101499);
             for (std::size_t i = 0; i < patch.getSize(); ++i)
             {
-                SKSE::SafeWrite8(target.GetAddress() + 0x1AFD + i, patch.getCode()[i]);
+                SKSE::SafeWrite8(target.address() + 0x1AFD + i, patch.getCode()[i]);
             }
         }
 
@@ -693,7 +777,7 @@ namespace fixes
         {
             // Change "D" to "5"
             REL::Offset<std::uintptr_t> typo = REL::ID(14653);
-            SKSE::SafeWrite8(typo.GetAddress() + 0x83, 0x35);
+            SKSE::SafeWrite8(typo.address() + 0x83, 0x35);
         }
     };
 
@@ -707,6 +791,48 @@ namespace fixes
         return true;
     }
 
+    class NullProcessCrashPatch
+    {
+    public:
+        static void Install()
+        {
+            auto trampoline = SKSE::GetTrampoline();
+
+            {
+                REL::Offset<std::uintptr_t> funcBase = REL::ID(37943);
+                trampoline->Write5Call(funcBase.address() + 0x6C, GetEquippedLeftHand);
+                trampoline->Write5Call(funcBase.address() + 0x9C, GetEquippedRightHand);
+            }
+
+            {
+                REL::Offset<std::uintptr_t> funcBase = REL::ID(46074);
+                trampoline->Write5Call(funcBase.address() + 0x47, GetEquippedLeftHand);
+                trampoline->Write5Call(funcBase.address() + 0x56, GetEquippedRightHand);
+            }
+        }
+
+    private:
+        static RE::TESForm* GetEquippedLeftHand(RE::AIProcess* a_process)
+        {
+            return a_process ? a_process->GetEquippedLeftHand() : nullptr;
+        }
+
+        static RE::TESForm* GetEquippedRightHand(RE::AIProcess* a_process)
+        {
+            return a_process ? a_process->GetEquippedRightHand() : nullptr;
+        }
+    };
+
+    bool PatchNullProcessCrash()
+    {
+        _VMESSAGE("- null process crash fix -");
+
+        NullProcessCrashPatch::Install();
+
+        _VMESSAGE("success");
+        return true;
+    }
+
     class PerkFragmentIsRunningPatch
     {
     public:
@@ -714,7 +840,7 @@ namespace fixes
         {
             REL::Offset<std::uintptr_t> funcBase = REL::ID(21119);
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write5Call(funcBase.GetAddress() + 0x22, IsRunning);
+            trampoline->Write5Call(funcBase.address() + 0x22, IsRunning);
         }
 
     private:
@@ -740,7 +866,7 @@ namespace fixes
         static void Install()
         {
             REL::Offset<std::uintptr_t> vtbl = REL::ID(234122);
-            _LoadGame = vtbl.WriteVFunc(0xF, LoadGame);
+            _LoadGame = vtbl.write_vfunc(0xF, LoadGame);
         }
 
     private:
@@ -795,7 +921,7 @@ namespace fixes
             for (auto& target : TARGETS)
             {
                 REL::Offset<std::int16_t*> offset(REL::ID(target.first), target.second);
-                SKSE::SafeWrite16(offset.GetAddress(), *offset + 0x4);
+                SKSE::SafeWrite16(offset.address(), *offset + 0x4);
             }
         }
     };
@@ -805,6 +931,63 @@ namespace fixes
         _VMESSAGE("- slow time camera movement fix -");
 
         SlowTimeCameraMovementPatch::Install();
+
+        _VMESSAGE("success");
+        return true;
+    }
+
+    class TorchLandscapePatch
+    {
+    public:
+        static void Install()
+        {
+            REL::Offset<std::uintptr_t> target{ REL::ID(17208), 0x52D };
+
+            struct Patch :
+                SKSE::CodeGenerator
+            {
+                Patch(std::uintptr_t a_func) : SKSE::CodeGenerator()
+                {
+                    Xbyak::Label f;
+
+                    mov(r9, rdi);
+                    jmp(ptr[rip + f]);
+
+                    L(f);
+                    dq(a_func);
+                }
+            };
+
+            Patch patch(unrestricted_cast<std::uintptr_t>(AddLight));
+            patch.ready();
+
+            auto trampoline = SKSE::GetTrampoline();
+            _AddLight = trampoline->Write5CallEx(target.address(), patch.getCode());
+        }
+
+    private:
+        static RE::BSLight* AddLight(
+            RE::ShadowSceneNode* a_this,
+            RE::NiLight* a_list,
+            RE::ShadowSceneNode::LIGHT_CREATE_PARAMS& a_params,
+            RE::not_null<RE::TESObjectREFR*> a_requester)
+        {
+            if (a_requester->Is(RE::FormType::ActorCharacter))
+            {
+                a_params.affectLand = true;
+            }
+
+            return _AddLight(a_this, a_list, a_params);
+        }
+
+        static inline REL::Offset<RE::BSLight*(RE::ShadowSceneNode*, RE::NiLight*, const RE::ShadowSceneNode::LIGHT_CREATE_PARAMS&)> _AddLight;
+    };
+
+    bool PatchTorchLandscape()
+    {
+        _VMESSAGE("- torch landscape fix -");
+
+        TorchLandscapePatch::Install();
 
         _VMESSAGE("success");
         return true;
@@ -855,11 +1038,11 @@ namespace fixes
             };
 
             REL::Offset<std::uintptr_t> target(REL::ID(100771), 0x37);
-            Patch patch(target.GetAddress());
+            Patch patch(target.address());
             patch.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(target.GetAddress(), patch.getCode<std::uintptr_t>());
+            trampoline->Write6Branch(target.address(), patch.getCode<std::uintptr_t>());
 
             _VMESSAGE("success");
             return true;
@@ -870,40 +1053,6 @@ namespace fixes
     {
         _VMESSAGE("- blocky tree reflections fix -");
         return TreeReflectionsPatch::Install();
-    }
-
-    class UnequipAllCrashPatch
-    {
-    public:
-        static void Install()
-        {
-            REL::Offset<std::uintptr_t> funcBase = REL::ID(37943);
-
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write5Call(funcBase.GetAddress() + 0x6C, GetEquippedLeftHand);
-            trampoline->Write5Call(funcBase.GetAddress() + 0x9C, GetEquippedRightHand);
-        }
-
-    private:
-        static RE::TESForm* GetEquippedLeftHand(RE::AIProcess* a_process)
-        {
-            return a_process ? a_process->GetEquippedLeftHand() : nullptr;
-        }
-
-        static RE::TESForm* GetEquippedRightHand(RE::AIProcess* a_process)
-        {
-            return a_process ? a_process->GetEquippedRightHand() : nullptr;
-        }
-    };
-
-    bool PatchUnequipAllCrash()
-    {
-        _VMESSAGE("- unequip all crash fix -");
-
-        UnequipAllCrashPatch::Install();
-
-        _VMESSAGE("success");
-        return true;
     }
 
     class VerticalLookSensitivityPatch
@@ -956,11 +1105,11 @@ namespace fixes
 
             REL::Offset<std::uintptr_t> hookTarget(REL::ID(49978), 0x71);
             REL::Offset<float*> noSlowFrameTimer = REL::ID(523661);
-            Patch patch(hookTarget.GetAddress(), noSlowFrameTimer.GetAddress());
+            Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(hookTarget.GetAddress(), patch.getCode<std::uintptr_t>());
+            trampoline->Write6Branch(hookTarget.address(), patch.getCode<std::uintptr_t>());
 
             _VMESSAGE("success");
         }
@@ -1004,11 +1153,11 @@ namespace fixes
 
             REL::Offset<std::uintptr_t> hookTarget(REL::ID(32370), 0x5F);
             REL::Offset<float*> noSlowFrameTimer = REL::ID(523661);
-            Patch patch(hookTarget.GetAddress(), noSlowFrameTimer.GetAddress());
+            Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(hookTarget.GetAddress(), patch.getCode<std::uintptr_t>());
+            trampoline->Write6Branch(hookTarget.address(), patch.getCode<std::uintptr_t>());
 
             _VMESSAGE("success");
         }
@@ -1052,11 +1201,11 @@ namespace fixes
 
             REL::Offset<std::uintptr_t> hookTarget(REL::ID(49839), 0x5F);
             REL::Offset<float*> noSlowFrameTimer = REL::ID(523661);
-            Patch patch(hookTarget.GetAddress(), noSlowFrameTimer.GetAddress());
+            Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(hookTarget.GetAddress(), patch.getCode<std::uintptr_t>());
+            trampoline->Write6Branch(hookTarget.address(), patch.getCode<std::uintptr_t>());
 
             _VMESSAGE("success");
         }
@@ -1100,16 +1249,16 @@ namespace fixes
             };
 
             Patch patch(unrestricted_cast<std::uintptr_t>(CalcWeaponDamage));
-            patch.finalize();
+            patch.ready();
 
             for (std::size_t i = 0; i < patch.getSize(); ++i)
             {
-                SKSE::SafeWrite8(target.GetAddress() + i, patch.getCode()[i]);
+                SKSE::SafeWrite8(target.address() + i, patch.getCode()[i]);
             }
 
             for (std::size_t i = patch.getSize(); i < CAVE_SIZE; ++i)
             {
-                SKSE::SafeWrite8(target.GetAddress() + i, NOP);
+                SKSE::SafeWrite8(target.address() + i, NOP);
             }
         }
 
@@ -1163,101 +1312,6 @@ namespace fixes
         _VMESSAGE("- weapon block scaling fix -");
 
         WeaponBlockScalingPatch::Install();
-
-        _VMESSAGE("success");
-        return true;
-    }
-
-    // Patch for 1.5.97 but should be version-independent
-    bool PatchCreateArmorNodeNullptrCrash()
-    {
-        _VMESSAGE("-fix for crash in CreateArmorNode subfunction-");
-
-        // sub_1401CAFB0
-        const uint64_t faddr = offset_CreateArmorNode_subfunc.GetAddress();
-
-        /*
-        loc_1401CB520:
-          [...]
-        .text:00000001401CB538                 mov     esi, ebx
-        .text:00000001401CB53A                 test    r12, r12
-        .text:00000001401CB53D                 jz      short loc_1401CB5B6 // <-- this jump needs to be patched but the operand is too small to fit
-        */
-        static const uint8_t expected1[] =
-        {
-            0x8B, 0xF3,       // mov     esi, ebx
-            0x4D, 0x85, 0xE4, // test    r12, r12
-            0x74              // jz short (opcode only); +1 byte displacement
-        };
-
-        const uint8_t *loc1p = (uint8_t*)(uintptr_t)(faddr + 0x588);
-        if(memcmp(loc1p, expected1, sizeof(expected1)))
-        {
-            _VMESSAGE("Code at first offset is not as expected, skipping patch");
-            return false;
-        }
-
-        const int8_t disp8 = loc1p[sizeof(expected1)]; // jz short displacement (should be 0x77)
-        const uint8_t * const loc1end = loc1p + sizeof(expected1) + 1;
-
-        /*
-        loc_1401CB5B6:
-        .text:00000001401CB5B6                 mov     rdi, [r12+130h] // <-- this is where the crash happens, because r12 == 0
-        .text:00000001401CB5BE                 test    rdi, rdi
-        .text:00000001401CB5C1                 jz      loc_1401CB751 // <-- This is the location we want to jump to when test r12,r12 fails
-        */
-
-        const void * const loc2p = loc1end + disp8;
-        const ptrdiff_t offs2 = (uintptr_t)loc2p - faddr;
-        _VMESSAGE("Located second block at offset 0x%x", offs2);
-
-        static const uint8_t expected2[] = // this should use scanning instead; hardcoding offset 130h is bad
-        {
-            0x49, 0x8B, 0xBC, 0x24, 0x30, 0x01, 0x00, 0x00, // mov     rdi, [r12+130h]
-            0x48, 0x85, 0xFF,                               // test    rdi, rdi
-            0x0F, 0x84                                      // jz (opcode only); +4 bytes displacement
-        };
-
-        if(memcmp(loc2p, expected2, sizeof(expected2)))
-        {
-            _VMESSAGE("Code at second offset is not as expected, skipping patch");
-            return false;
-        }
-
-        _VMESSAGE("Code confirmed broken; installing fix");
-
-        const uint8_t * const loc2end = (const uint8_t*)loc2p + sizeof(expected2) + sizeof(int32_t);
-
-        int32_t disp2 = *unrestricted_cast<int32_t*>(((const uint8_t*)loc2p) + sizeof(expected2));
-        const uint8_t * const target = loc2end + disp2;
-
-        struct Code : SKSE::CodeGenerator
-        {
-            Code(std::uintptr_t contAddr, std::uintptr_t patchedAddr) : SKSE::CodeGenerator()
-            {
-                Xbyak::Label patchedJmpLbl, contLbl, zeroLbl;
-
-                // original instructions minus jz short
-                db(expected1, sizeof(expected1) - 1);
-
-                jz(zeroLbl); // patched non-short jz
-                jmp(ptr[rip + contLbl]); // continue original code
-                L(zeroLbl); // was zero; skip over code that would crash
-                jmp(ptr[rip + patchedJmpLbl]);
-
-                L(contLbl);
-                dq(contAddr);
-                L(patchedJmpLbl);
-                dq(patchedAddr);
-            }
-        };
-
-        Code code(unrestricted_cast<std::uintptr_t>(loc1end), unrestricted_cast<std::uintptr_t>(target));
-        code.finalize();
-
-        auto trampoline = SKSE::GetTrampoline();
-        if(!trampoline->Write5Branch(unrestricted_cast<std::uintptr_t>(loc1p), uintptr_t(code.getCode())))
-            return false;
 
         _VMESSAGE("success");
         return true;

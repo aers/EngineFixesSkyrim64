@@ -1,10 +1,3 @@
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/Trampoline.h"
-
-#include "tbb/concurrent_hash_map.h"
-
 #include "patches.h"
 
 namespace patches
@@ -126,7 +119,7 @@ namespace patches
 
         _VMESSAGE("detouring UpdateLODAlphaFade");
         auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(UpdateBlockVisibility_orig.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_UpdateBlockVisibility));
+        trampoline->Write6Branch(UpdateBlockVisibility_orig.address(), unrestricted_cast<std::uintptr_t>(hk_UpdateBlockVisibility));
         _VMESSAGE("success");
 
         return true;

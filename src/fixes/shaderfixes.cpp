@@ -1,8 +1,3 @@
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/CodeGenerator.h"
-#include "SKSE/Trampoline.h"
-
 #include "patches.h"
 
 #include "offsets.h"
@@ -47,7 +42,7 @@ namespace fixes
 
     void hk_BSBatchRenderer_SetupAndDrawPass(BSRenderPass* pass, uint32_t technique, bool alphaTest, uint32_t renderFlags)
     {
-        if (*(uintptr_t*)pass->m_Shader == BSLightingShader_vtbl.GetAddress() && alphaTest)
+        if (*(uintptr_t*)pass->m_Shader == BSLightingShader_vtbl.address() && alphaTest)
         {
             auto rawTechnique = technique - 0x4800002D;
             auto subIndex = (rawTechnique >> 24) & 0x3F;
@@ -76,16 +71,16 @@ namespace fixes
 
                     // exit
                     jmp(ptr[rip]);
-                    dq(BSBatchRenderer_SetupAndDrawPass_origLoc.GetAddress() + 0xA);
+                    dq(BSBatchRenderer_SetupAndDrawPass_origLoc.address() + 0xA);
                 }
             };
 
             BSBatchRenderer_SetupAndDrawPass_Code code;
-            code.finalize();
+            code.ready();
             BSBatchRenderer_SetupAndDrawPass_Orig = _BSBatchRenderer_SetupAndDrawPass(code.getCode());
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.GetAddress(), unrestricted_cast<std::uintptr_t>(hk_BSBatchRenderer_SetupAndDrawPass));
+            trampoline->Write6Branch(BSBatchRenderer_SetupAndDrawPass_origLoc.address(), unrestricted_cast<std::uintptr_t>(hk_BSBatchRenderer_SetupAndDrawPass));
         }
         _VMESSAGE("patched");
         return true;
@@ -111,15 +106,15 @@ namespace fixes
 
                     // jmp out
                     jmp(ptr[rip]);
-                    dq(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetAddress() + 0x9);
+                    dq(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.address() + 0x9);
                 };
             };
 
             BSLightingShader_SetupGeometry_Parallax_Code code;
-            code.finalize();
+            code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.GetAddress(), uintptr_t(code.getCode()));
+            trampoline->Write6Branch(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.address(), uintptr_t(code.getCode()));
         }
         _VMESSAGE("patched");
         return true;

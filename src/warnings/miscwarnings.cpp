@@ -1,10 +1,3 @@
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/Trampoline.h"
-
-#include <sstream>
-
 #include "utils.h"
 #include "warnings.h"
 
@@ -69,13 +62,13 @@ namespace warnings
         auto trampoline = SKSE::GetTrampoline();
 
         orig_BGSAddonNode_LoadForm = *vtbl_BGSAddonNode_LoadForm;
-        SKSE::SafeWrite64(vtbl_BGSAddonNode_LoadForm.GetAddress(), unrestricted_cast<std::uintptr_t>(&hk_BGSAddonNode_LoadForm));
+        SKSE::SafeWrite64(vtbl_BGSAddonNode_LoadForm.address(), unrestricted_cast<std::uintptr_t>(&hk_BGSAddonNode_LoadForm));
 
         REL::Offset<std::uintptr_t> call1_Main_Unk(Call1_Unk_DataReload_func_offset, 0x163);
-        trampoline->Write5Call(call1_Main_Unk.GetAddress(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
+        trampoline->Write5Call(call1_Main_Unk.address(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
 
         REL::Offset<std::uintptr_t> call2_Main_Unk(Call2_Unk_DataReload_func_offset, 0xD);
-        trampoline->Write5Call(call2_Main_Unk.GetAddress(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
+        trampoline->Write5Call(call2_Main_Unk.address(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
 
         _VMESSAGE("- hooked -");
         return true;
@@ -83,7 +76,7 @@ namespace warnings
 
     void WarnActiveRefrHandleCount(uint32_t warnCount)
     {
-        const auto refrArray = &*g_RefrHandleArray;
+        const auto refrArray = g_RefrHandleArray.type();
 
         constexpr uint32_t maxHandleCount = 1 << 20;
 
@@ -97,13 +90,13 @@ namespace warnings
 
         if (activeHandleCount > warnCount)
         {
-            _MESSAGE("WARNING: your active refr handle count is currently %d which is higher than the warning level of %d", activeHandleCount, warnCount);
-            if (warnCount == config::warnRefrMainMenuLimit)
-                _MESSAGE("WARNING: this is your main menu limit");
-            if (warnCount == config::warnRefrLoadedGameLimit)
-                _MESSAGE("WARNING: this is your loaded game limit");
-            _MESSAGE("WARNING: for info about this warning, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");
-            _MESSAGE("WARNING: you can disable this warning in the ini file");
+            _WARNING("your active refr handle count is currently %d which is higher than the warning level of %d", activeHandleCount, warnCount);
+            if (warnCount == *config::warnRefrMainMenuLimit)
+                _WARNING("this is your main menu limit");
+            if (warnCount == *config::warnRefrLoadedGameLimit)
+                _WARNING("this is your loaded game limit");
+            _WARNING("for info about this warning, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");
+            _WARNING("you can disable this warning in the ini file");
 
             std::ostringstream warningString;
             warningString << "WARNING: Your active refr handle count is currently " << activeHandleCount << " which is dangerously close to the limit. Please check the Engine Fixes log for more details.";

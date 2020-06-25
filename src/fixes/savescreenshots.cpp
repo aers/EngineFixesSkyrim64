@@ -1,9 +1,3 @@
-#include "RE/Skyrim.h"
-#include "REL/Relocation.h"
-#include "SKSE/API.h"
-#include "SKSE/CodeGenerator.h"
-#include "SKSE/Trampoline.h"
-
 #include "fixes.h"
 
 namespace fixes
@@ -34,7 +28,7 @@ namespace fixes
             return true;
         }
 
-        if (config::fixSaveScreenshots)
+        if (*config::fixSaveScreenshots)
         {
             // lol so we have one fix that causes flicker during quicksave and one fix that causes blank journal menus
             // so just combine both, duh
@@ -57,15 +51,15 @@ namespace fixes
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress() + 0xD);
+                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0xD);
                     }
                 };
 
                 IsSaveRequest_Code code;
-                code.finalize();
+                code.ready();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address(), uintptr_t(code.getCode()));
             }
             // use menu fix for DoF+TAA Disabled ingame requests
             else
@@ -84,15 +78,15 @@ namespace fixes
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress() + 0xD);
+                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0xD);
                     }
                 };
 
                 IsSaveRequest_Code code;
-                code.finalize();
+                code.ready();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address(), uintptr_t(code.getCode()));
             }
 
             // flicker fix for open menu screenshot requests
@@ -115,19 +109,19 @@ namespace fixes
                         mov(dword[rax], 1);
                         pop(rax);
                         jmp(ptr[rip]);
-                        dq(MenuSave_RequestScreenshot.GetAddress() + 0x5);
+                        dq(MenuSave_RequestScreenshot.address() + 0x5);
 
                         L(requestScreenshot);
-                        dq(SaveScreenshotRequestedDword.GetAddress());
+                        dq(SaveScreenshotRequestedDword.address());
                     }
                 };
 
                 MenuSave_Code code;
-                code.finalize();
+                code.ready();
 
                 auto trampoline = SKSE::GetTrampoline();
                 // warning: 5 byte branch instead of 6 byte branch
-                trampoline->Write5Branch(MenuSave_RequestScreenshot.GetAddress(), uintptr_t(code.getCode()));
+                trampoline->Write5Branch(MenuSave_RequestScreenshot.address(), uintptr_t(code.getCode()));
             }
 
             {
@@ -171,19 +165,19 @@ namespace fixes
 
                         L("JMP_OUT");
                         jmp(ptr[rip]);
-                        dq(ScreenshotJnz.GetAddress() + 0x19);
+                        dq(ScreenshotJnz.address() + 0x19);
 
                         L("ORIG_JNZ");
                         jmp(ptr[rip]);
-                        dq(ScreenshotRenderOrigJnz.GetAddress());
+                        dq(ScreenshotRenderOrigJnz.address());
                     }
                 };
 
                 ScreenshotRender_Code code;
-                code.finalize();
+                code.ready();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(ScreenshotJnz.GetAddress(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(ScreenshotJnz.address(), uintptr_t(code.getCode()));
             }
 
             // flicker version of fix, checks for screenshot requested from open menu
@@ -212,15 +206,15 @@ namespace fixes
                         jmp(ptr[rip]);
                         //.text:00000001412AEEDE                 mov     rdx, [rax + 110h]
                         // 12AEED5+0x9
-                        dq(RenderTargetHook_1.GetAddress() + 0x9);
+                        dq(RenderTargetHook_1.address() + 0x9);
                     }
                 };
 
                 RenderTargetHook_1_Code code;
-                code.finalize();
+                code.ready();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(RenderTargetHook_1.GetAddress(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(RenderTargetHook_1.address(), uintptr_t(code.getCode()));
             }
 
             {
@@ -241,15 +235,15 @@ namespace fixes
                         L("ORIG");
                         pop(rax);
                         jmp(ptr[rip]);
-                        dq(RenderTargetHook_2.GetAddress() + 0x7);
+                        dq(RenderTargetHook_2.address() + 0x7);
                     }
                 };
 
                 RenderTargetHook_2_Code code;
-                code.finalize();
+                code.ready();
 
                 auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(RenderTargetHook_2.GetAddress(), uintptr_t(code.getCode()));
+                trampoline->Write6Branch(RenderTargetHook_2.address(), uintptr_t(code.getCode()));
             }
         }
 
