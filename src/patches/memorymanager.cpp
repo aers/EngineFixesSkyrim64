@@ -161,7 +161,7 @@ private:
     {
         _VMESSAGE("executing safe exit");
 
-        std::exit(EXIT_SUCCESS);
+        std::_Exit(EXIT_SUCCESS);
     }
 };
 
