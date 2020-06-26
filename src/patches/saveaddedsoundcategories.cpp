@@ -3,12 +3,15 @@
 
 namespace patches
 {
-    tortellini::ini snctIni;
-
-    const REL::Offset<bool (**)(RE::BSISoundCategory* a_this, float a_volume)> vtbl_BSISoundCategory_SetVolume{ REL::ID(236602), 0x8 * 0x3 };  // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
     REL::Offset<bool(void*)> orig_INIPrefSettingCollection_Unlock;
 
-    constexpr std::string_view FILE_NAME = "Data/SKSE/plugins/EngineFixes_SNCT.ini";
+    constexpr std::string_view FILE_NAME = "Data/SKSE/Plugins/EngineFixes_SNCT.toml";
+
+    toml::table& get_store()
+    {
+        static toml::table store;
+        return store;
+    }
 
     bool hk_INIPrefSettingCollection_Unlock(void* thisPtr)
     {
@@ -16,6 +19,8 @@ namespace patches
 
         if (dataHandler)
         {
+            auto& store = get_store();
+
             for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
                 if (soundCategory->IsMenuCategory())
@@ -36,7 +41,17 @@ namespace patches
                     char localFormIDHex[] = "DEADBEEF";
                     sprintf_s(localFormIDHex, std::extent_v<decltype(localFormIDHex)>, "%08X", localFormID);
 
-                    snctIni[srcFile->fileName][localFormIDHex] = static_cast<double>(soundCategory->volumeMult);
+                    auto table = store.get_as<toml::table>(srcFile->fileName);
+                    if (!table)
+                    {
+                        table =
+                            store.insert_or_assign(
+                                     srcFile->fileName,
+                                     toml::table{})
+                                .first->second.as_table();
+                    }
+
+                    table->insert_or_assign(localFormIDHex, static_cast<double>(soundCategory->volumeMult));
                 }
             }
 
@@ -46,7 +61,7 @@ namespace patches
                 _VMESSAGE("warning: unable to save snct ini");
             }
 
-            file << snctIni;
+            file << store;
 
             _VMESSAGE("SNCT save: saved sound categories");
         }
@@ -65,6 +80,8 @@ namespace patches
         const auto dataHandler = RE::TESDataHandler::GetSingleton();
         if (dataHandler)
         {
+            auto& store = get_store();
+
             for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
                 auto localFormID = soundCategory->formID & 0x00FFFFFF;
@@ -77,12 +94,13 @@ namespace patches
                 sprintf_s(localFormIDHex, std::extent_v<decltype(localFormIDHex)>, "%08X", localFormID);
 
                 auto srcFile = soundCategory->GetDescriptionOwnerFile();
-                const auto vol = snctIni[srcFile->fileName][localFormIDHex] | -1.0;
+                const auto vol = store[srcFile->fileName][localFormIDHex].as_floating_point();
 
-                if (vol != -1.0)
+                if (vol)
                 {
                     _VMESSAGE("setting volume for formid %08X", soundCategory->formID);
-                    (*vtbl_BSISoundCategory_SetVolume)(soundCategory, static_cast<float>(vol));
+                    const REL::Offset<bool (**)(RE::BSISoundCategory*, float)> SetVolume{ REL::ID(236602), 0x8 * 0x3 };
+                    (*SetVolume)(soundCategory, static_cast<float>(vol->get()));
                 }
             }
         }
@@ -92,14 +110,12 @@ namespace patches
     {
         _VMESSAGE("- save added sound categories -");
 
-        std::ifstream file{ FILE_NAME };
-        if (!file)
+        try
         {
-            _VMESSAGE("unable to load SNCT ini, disabling patch");
-            return false;
-        }
-
-        file >> snctIni;
+            auto& store = get_store();
+            store = toml::parse_file(FILE_NAME);
+        } catch (const std::exception&)
+        {}
 
         _VMESSAGE("hooking vtbls");
         REL::Offset<std::uintptr_t> vtbl{ REL::ID(230546) };  // INIPrefSettingCollection

@@ -6,8 +6,6 @@
 
 #include "AutoTOML.hpp"
 
-#include <tortellini.hh>
-
 #include <tbb/concurrent_hash_map.h>
 #include <tbb/scalable_allocator.h>
 

@@ -67,7 +67,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
     }
 #endif
 
-    SKSE::Logger::OpenRelative(FOLDERID_Documents, R"(\My Games\Skyrim Special Edition\SKSE\EngineFixes.log)");
+    SKSE::Logger::OpenRelative(FOLDERID_Documents, "My Games/Skyrim Special Edition/SKSE/EngineFixes.log)");
 #ifdef _DEBUG
     SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kDebugMessage);
     SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kDebugMessage);
@@ -80,7 +80,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
 
     _MESSAGE("Engine Fixes v%s", EF_VERSION_VERSTRING);
 
-    if (config::load_config(R"(Data\SKSE\plugins\EngineFixes.toml)"))
+    if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"))
     {
         _MESSAGE("loaded config successfully");
     }

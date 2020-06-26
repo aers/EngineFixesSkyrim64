@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="lib">
-      <UniqueIdentifier>{2d8640ad-fc8e-4f3b-963a-67c5a4d0c62c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{c3ef40e7-7dc5-4572-9311-70dd2b1e1d14}</UniqueIdentifier>
     </Filter>
@@ -68,9 +65,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lib\tortellini.hh">
-      <Filter>lib</Filter>
-    </ClInclude>
     <ClInclude Include="src\config.h">
       <Filter>src</Filter>
     </ClInclude>

@@ -58,7 +58,7 @@ public:
     static inline bSetting fixWeaponBlockScaling{ "Fixes", "WeaponBlockScaling", true };
 
     // Warnings
-    static inline bSetting warnDupeAddonNodes{ "Warnings", "DupeAddonNodes", true };
+    static inline bSetting warnDupeAddonNodes{ "Warnings", "DupeAddonNodes", false };
     static inline bSetting warnRefHandleLimit{ "Warnings", "RefHandleLimit", true };
     static inline iSetting warnRefrMainMenuLimit{ "Warnings", "RefrMainMenuLimit", 800000 };
     static inline iSetting warnRefrLoadedGameLimit{ "Warnings", "RefrLoadedGameLimit", 1000000 };
