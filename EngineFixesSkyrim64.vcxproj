@@ -250,7 +250,7 @@
     <ClInclude Include="src\warnings.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\skse64\CommonLibSSE\CommonLibSSE.vcxproj">
+    <ProjectReference Include="$(CommonLibSSEPath)\CommonLibSSE.vcxproj">
       <Project>{3e4b6ef3-ec6e-46cf-9003-eeb57a258b82}</Project>
     </ProjectReference>
   </ItemGroup>
