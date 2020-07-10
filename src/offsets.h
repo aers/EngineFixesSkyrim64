@@ -42,10 +42,6 @@ constexpr REL::ID FirstPersonState_DontSwitchPOV_offset(49800);
 // 74 35 48 8B 0D ? ? ? ? E8 ? ? ? ? 84 C0
 constexpr REL::ID ThirdPersonState_DontSwitchPOV_offset(49970);
 
-// Sleep Wait Time
-// "getSliderValue" comiss
-constexpr REL::ID SleepWaitTime_Compare_offset(51614);
-
 // Tree LOD Reference Caching
 // E8 ? ? ? ? EB 0F 48 8B 43 18 ->
 constexpr REL::ID UpdateBlockVisibility_orig_offset(30839);

@@ -291,30 +291,36 @@ namespace patches
         return true;
     }
 
-    REL::Offset<std::uintptr_t> SleepWaitTime_Compare(SleepWaitTime_Compare_offset, 0x1CE);
-
     bool PatchSleepWaitTime()
     {
         _VMESSAGE("- sleep wait time -");
         {
+            REL::Offset<std::uintptr_t> target{ REL::ID(51614), 0x1CE };
+
             struct SleepWaitTime_Code : SKSE::CodeGenerator
             {
-                SleepWaitTime_Code() : SKSE::CodeGenerator()
+                SleepWaitTime_Code(std::uintptr_t a_address, double a_val) : SKSE::CodeGenerator()
                 {
+                    static float VAL = static_cast<float>(a_val);
+
                     push(rax);
-                    mov(rax, (std::size_t)std::addressof(*config::sleepWaitTimeModifier));
+
+                    mov(rax, unrestricted_cast<std::uintptr_t>(std::addressof(VAL)));
                     comiss(xmm0, ptr[rax]);
+
                     pop(rax);
+
                     jmp(ptr[rip]);
-                    dq(SleepWaitTime_Compare.address() + 0x7);
+                    dq(a_address + 0x7);
                 }
             };
 
-            SleepWaitTime_Code code;
+            SleepWaitTime_Code code(target.address(), *config::sleepWaitTimeModifier);
             code.ready();
 
             auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(SleepWaitTime_Compare.address(), code.getCode());
+            trampoline->Write6Branch(target.address(), code.getCode());
+            SKSE::SafeWrite8(target.address() + 0x6, 0x90);  // nop
         }
         _VMESSAGE("success");
         return true;
