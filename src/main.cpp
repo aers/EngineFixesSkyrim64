@@ -67,7 +67,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
     }
 #endif
 
-    SKSE::Logger::OpenRelative(FOLDERID_Documents, "My Games/Skyrim Special Edition/SKSE/EngineFixes.log)");
+    SKSE::Logger::OpenRelative(FOLDERID_Documents, "My Games/Skyrim Special Edition/SKSE/EngineFixes.log");
 #ifdef _DEBUG
     SKSE::Logger::SetPrintLevel(SKSE::Logger::Level::kDebugMessage);
     SKSE::Logger::SetFlushLevel(SKSE::Logger::Level::kDebugMessage);
