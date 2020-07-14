@@ -120,7 +120,7 @@ namespace patches
         errno_t err = VC140_fopen_s(File, Filename, Mode);
 
         if (err != 0)
-            _MESSAGE("WARNING: Error occurred trying to open file: fopen_s(%s, %s), errno %d", Filename, Mode, err);
+            _WARNING("Error occurred trying to open file: fopen_s(%s, %s), errno %d", Filename, Mode, err);
 
         return err;
     }
@@ -131,7 +131,7 @@ namespace patches
         errno_t err = VC140_wfopen_s(File, Filename, Mode);
 
         if (err != 0)
-            _MESSAGE("WARNING: Error occurred trying to open file: _wfopen_s(%p, %p), errno %d", Filename, Mode, err);
+            _WARNING("Error occurred trying to open file: _wfopen_s(%p, %p), errno %d", Filename, Mode, err);
 
         return err;
     }
@@ -142,7 +142,7 @@ namespace patches
         FILE* f = VC140_fopen(Filename, Mode);
 
         if (!f)
-            _MESSAGE("WARNING: Error occurred trying to open file: fopen(%s, %s)", Filename, Mode);
+            _WARNING("Error occurred trying to open file: fopen(%s, %s)", Filename, Mode);
 
         return f;
     }
