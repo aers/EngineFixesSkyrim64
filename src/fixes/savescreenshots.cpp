@@ -2,29 +2,29 @@
 
 namespace fixes
 {
-    const uint32_t regular_save = 0xF0000080;
-    const uint32_t load_last_save = 0xD0000100;
+    const std::uint32_t regular_save = 0xF0000080;
+    const std::uint32_t load_last_save = 0xD0000100;
 
-    uint32_t edi_saved;
+    std::uint32_t edi_saved;
 
     // 0 = none, 1 = BGSSaveManager::ProcessEvents, 2 = open menu
-    byte screenshot_requested_location = 0;
+    std::uint8_t screenshot_requested_location = 0;
 
-    REL::Offset<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot(BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset, 0x163);
-    REL::Offset<std::uintptr_t> MenuSave_RequestScreenshot(MenuSave_RequestScreenshot_hook_offset, 0x56A);
-    REL::Offset<std::uintptr_t> ScreenshotJnz(Screenshot_Jnz_hook_offset, 0x23A);
-    REL::Offset<std::uintptr_t> RenderTargetHook_1(Render_Target_Hook_1_offset, 0x365);
-    REL::Offset<std::uintptr_t> RenderTargetHook_2(Render_Target_Hook_2_offset, 0x3EA);
-    REL::Offset<std::uintptr_t> SaveScreenshotRequestedDword(g_RequestSaveScreenshot_offset);
-    REL::Offset<std::uintptr_t> ScreenshotRenderOrigJnz(Screenshot_Render_Orig_jnz_offset, 0x4D5);
+    REL::Relocation<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset, 0x163 };
+    REL::Relocation<std::uintptr_t> MenuSave_RequestScreenshot{ MenuSave_RequestScreenshot_hook_offset, 0x56A };
+    REL::Relocation<std::uintptr_t> ScreenshotJnz{ Screenshot_Jnz_hook_offset, 0x23A };
+    REL::Relocation<std::uintptr_t> RenderTargetHook_1{ Render_Target_Hook_1_offset, 0x365 };
+    REL::Relocation<std::uintptr_t> RenderTargetHook_2{ Render_Target_Hook_2_offset, 0x3EA };
+    REL::Relocation<std::uintptr_t> SaveScreenshotRequestedDword{ g_RequestSaveScreenshot_offset };
+    REL::Relocation<std::uintptr_t> ScreenshotRenderOrigJnz{ Screenshot_Render_Orig_jnz_offset, 0x4D5 };
 
     bool PatchSaveScreenshots()
     {
-        _VMESSAGE("- save game screenshot fix -");
+        logger::trace("- save game screenshot fix -"sv);
 
         if (RE::GetINISetting("bUseTAA:Display")->GetBool())
         {
-            _VMESSAGE("you have TAA enabled, those fixes are uneeded");
+            logger::trace("you have TAA enabled, those fixes are uneeded"sv);
             return true;
         }
 
@@ -32,21 +32,21 @@ namespace fixes
         {
             // lol so we have one fix that causes flicker during quicksave and one fix that causes blank journal menus
             // so just combine both, duh
-            _VMESSAGE("patching in-game save delay & blank screenshot bugs");
+            logger::trace("patching in-game save delay & blank screenshot bugs"sv);
 
             // with DoF enabled just use the "flicker" fix even for ingame requests
             if (RE::GetINISetting("bDoDepthOfField:Imagespace")->GetBool())
             {
-                struct IsSaveRequest_Code : SKSE::CodeGenerator
+                struct IsSaveRequest_Code : Xbyak::CodeGenerator
                 {
-                    IsSaveRequest_Code() : SKSE::CodeGenerator()
+                    IsSaveRequest_Code()
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
                         // this applies to all saves except saves done from the journal menu
                         // since menu saves do not use the event processor; the game screenshot is actually saved
                         // when you first open the menu
-                        mov(rax, (uintptr_t)&screenshot_requested_location);
+                        mov(rax, (std::uintptr_t)&screenshot_requested_location);
                         mov(byte[rax], 2);
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
@@ -58,15 +58,17 @@ namespace fixes
                 IsSaveRequest_Code code;
                 code.ready();
 
-                auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address(), uintptr_t(code.getCode()));
+                auto& trampoline = SKSE::GetTrampoline();
+                trampoline.write_branch<6>(
+                    BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address(),
+                    trampoline.allocate(code));
             }
             // use menu fix for DoF+TAA Disabled ingame requests
             else
             {
-                struct IsSaveRequest_Code : SKSE::CodeGenerator
+                struct IsSaveRequest_Code : Xbyak::CodeGenerator
                 {
-                    IsSaveRequest_Code() : SKSE::CodeGenerator()
+                    IsSaveRequest_Code()
                     {
                         push(rax);
                         // from BGSSaveLoadManager::ProcessEvent
@@ -85,15 +87,17 @@ namespace fixes
                 IsSaveRequest_Code code;
                 code.ready();
 
-                auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address(), uintptr_t(code.getCode()));
+                auto& trampoline = SKSE::GetTrampoline();
+                trampoline.write_branch<6>(
+                    BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address(),
+                    trampoline.allocate(code));
             }
 
             // flicker fix for open menu screenshot requests
             {
-                struct MenuSave_Code : SKSE::CodeGenerator
+                struct MenuSave_Code : Xbyak::CodeGenerator
                 {
-                    MenuSave_Code() : SKSE::CodeGenerator()
+                    MenuSave_Code()
                     {
                         Xbyak::Label requestScreenshot;
 
@@ -119,15 +123,17 @@ namespace fixes
                 MenuSave_Code code;
                 code.ready();
 
-                auto trampoline = SKSE::GetTrampoline();
+                auto& trampoline = SKSE::GetTrampoline();
                 // warning: 5 byte branch instead of 6 byte branch
-                trampoline->Write5Branch(MenuSave_RequestScreenshot.address(), uintptr_t(code.getCode()));
+                trampoline.write_branch<5>(
+                    MenuSave_RequestScreenshot.address(),
+                    trampoline.allocate(code));
             }
 
             {
-                struct ScreenshotRender_Code : SKSE::CodeGenerator
+                struct ScreenshotRender_Code : Xbyak::CodeGenerator
                 {
-                    ScreenshotRender_Code() : SKSE::CodeGenerator()
+                    ScreenshotRender_Code()
                     {
                         // .text:00000001412AEDAA                 test    dil, dil
                         // .text:00000001412AEDAD                 jnz     ScreenshotRenderOrigJnz
@@ -176,15 +182,17 @@ namespace fixes
                 ScreenshotRender_Code code;
                 code.ready();
 
-                auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(ScreenshotJnz.address(), uintptr_t(code.getCode()));
+                auto& trampoline = SKSE::GetTrampoline();
+                trampoline.write_branch<6>(
+                    ScreenshotJnz.address(),
+                    trampoline.allocate(code));
             }
 
             // flicker version of fix, checks for screenshot requested from open menu
             {
-                struct RenderTargetHook_1_Code : SKSE::CodeGenerator
+                struct RenderTargetHook_1_Code : Xbyak::CodeGenerator
                 {
-                    RenderTargetHook_1_Code() : SKSE::CodeGenerator()
+                    RenderTargetHook_1_Code()
                     {
                         Xbyak::Label screenRequested;
 
@@ -213,14 +221,16 @@ namespace fixes
                 RenderTargetHook_1_Code code;
                 code.ready();
 
-                auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(RenderTargetHook_1.address(), uintptr_t(code.getCode()));
+                auto& trampoline = SKSE::GetTrampoline();
+                trampoline.write_branch<6>(
+                    RenderTargetHook_1.address(),
+                    trampoline.allocate(code));
             }
 
             {
-                struct RenderTargetHook_2_Code : SKSE::CodeGenerator
+                struct RenderTargetHook_2_Code : Xbyak::CodeGenerator
                 {
-                    RenderTargetHook_2_Code() : SKSE::CodeGenerator()
+                    RenderTargetHook_2_Code()
                     {
                         // .text:00000001412AEF5A                 mov     [rbp+218h], rax
                         mov(ptr[rbp + 0x218], rax);
@@ -242,12 +252,14 @@ namespace fixes
                 RenderTargetHook_2_Code code;
                 code.ready();
 
-                auto trampoline = SKSE::GetTrampoline();
-                trampoline->Write6Branch(RenderTargetHook_2.address(), uintptr_t(code.getCode()));
+                auto& trampoline = SKSE::GetTrampoline();
+                trampoline.write_branch<6>(
+                    RenderTargetHook_2.address(),
+                    trampoline.allocate(code));
             }
         }
 
-        _VMESSAGE("success");
+        logger::trace("success"sv);
         return true;
     }
 }

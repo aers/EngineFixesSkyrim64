@@ -133,7 +133,7 @@ void* ScrapHeap::Alloc(std::size_t a_size, std::uint32_t a_alignment)
 {
     if (a_size > MAX_ALLOC_SIZE || a_size < 0)
     {
-        _WARNING("scrapheap alloc size %d out of default bounds detected", a_size);
+        logger::warn(FMT_STRING("scrapheap alloc size {} out of default bounds detected"), a_size);
     }
 
     return proxy_tbbmalloc(a_size, a_alignment, a_alignment != 0);
@@ -149,17 +149,18 @@ class SafeExit
 public:
     static void Install()
     {
-        _VMESSAGE("using safe exit");
+        logger::trace("using safe exit"sv);
 
-        REL::Offset<std::uintptr_t> target = REL::ID(35545);
-        auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write5Call(target.address() + 0x35, Shutdown);  // Main::Shutdown
+        REL::Relocation<std::uintptr_t> target{ REL::ID(35545) };
+        auto& trampoline = SKSE::GetTrampoline();
+        trampoline.write_call<5>(target.address() + 0x35, Shutdown);  // Main::Shutdown
     }
 
 private:
     static void Shutdown()
     {
-        _VMESSAGE("executing safe exit");
+        logger::trace("executing safe exit"sv);
+        spdlog::default_logger()->flush();
 
         std::_Exit(EXIT_SUCCESS);
     }
@@ -169,38 +170,40 @@ namespace patches
 {
     bool PatchMemoryManager()
     {
-        _VMESSAGE("-- memory manager --");
+        logger::trace("-- memory manager --"sv);
 
         SafeExit::Install();
 
-        _VMESSAGE("enabling OS allocator use");
+        logger::trace("enabling OS allocator use"sv);
 
-        REL::Offset<std::uintptr_t> InitMemoryManager(InitMemoryManager_offset);
-        REL::Offset<std::uintptr_t> InitBSSmallBlockAllocator(InitBSSmallBlockAllocator_offset);
+        REL::Relocation<std::uintptr_t> InitMemoryManager{ InitMemoryManager_offset };
+        REL::Relocation<std::uintptr_t> InitBSSmallBlockAllocator{ InitBSSmallBlockAllocator_offset };
 
-        SKSE::SafeWrite8(InitMemoryManager.address(), 0xC3);          // [3GB] MemoryManager - Default/Static/File heaps
-        SKSE::SafeWrite8(InitBSSmallBlockAllocator.address(), 0xC3);  // [1GB] BSSmallBlockAllocator
+        constexpr std::uint8_t BYTE{ 0xC3 };
+        REL::safe_write(InitMemoryManager.address(), BYTE);          // [3GB] MemoryManager - Default/Static/File heaps
+        REL::safe_write(InitBSSmallBlockAllocator.address(), BYTE);  // [1GB] BSSmallBlockAllocator
 
-        _VMESSAGE("success");
+        logger::trace("success"sv);
 
         return true;
     }
 
     bool PatchTBBMalloc()
     {
-        _VMESSAGE("using tbbmalloc");
+        logger::trace("using tbbmalloc"sv);
 
-        REL::Offset<std::uintptr_t> MemoryManagerAlloc(MemoryManagerAlloc_offset);
-        REL::Offset<std::uintptr_t> MemoryManagerFree(MemoryManagerFree_offset);
-        REL::Offset<std::uintptr_t> ScrapHeapInit(ScrapHeapInit_offset);
-        REL::Offset<std::uintptr_t> ScrapHeapAlloc(ScrapHeapAlloc_offset);
-        REL::Offset<std::uintptr_t> ScrapHeapFree(ScrapHeapFree_offset);
-        REL::Offset<std::uintptr_t> ScrapHeapDeInit(ScrapHeapDeInit_offset);
+        REL::Relocation<std::uintptr_t> MemoryManagerAlloc{ MemoryManagerAlloc_offset };
+        REL::Relocation<std::uintptr_t> MemoryManagerFree{ MemoryManagerFree_offset };
+        REL::Relocation<std::uintptr_t> ScrapHeapInit{ ScrapHeapInit_offset };
+        REL::Relocation<std::uintptr_t> ScrapHeapAlloc{ ScrapHeapAlloc_offset };
+        REL::Relocation<std::uintptr_t> ScrapHeapFree{ ScrapHeapFree_offset };
+        REL::Relocation<std::uintptr_t> ScrapHeapDeInit{ ScrapHeapDeInit_offset };
 
-        SKSE::SafeWrite8(ScrapHeapInit.address(), 0xC3);    // [64MB ] ScrapHeap init
-        SKSE::SafeWrite8(ScrapHeapDeInit.address(), 0xC3);  // [64MB ] ScrapHeap deinit
+        constexpr std::uint8_t BYTE{ 0xC3 };
+        REL::safe_write(ScrapHeapInit.address(), BYTE);    // [64MB ] ScrapHeap init
+        REL::safe_write(ScrapHeapDeInit.address(), BYTE);  // [64MB ] ScrapHeap deinit
 
-        _VMESSAGE("patching CRT IAT memory functions");
+        logger::trace("patching CRT IAT memory functions"sv);
         SKSE::PatchIAT(hk_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
         SKSE::PatchIAT(hk_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
         SKSE::PatchIAT(hk_aligned_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
@@ -208,14 +211,14 @@ namespace patches
         SKSE::PatchIAT(hk_aligned_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
         SKSE::PatchIAT(hk_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
 
-        _VMESSAGE("redirecting memory manager alloc and free");
-        auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(MemoryManagerAlloc.address(), &MemoryManager::Alloc);
-        trampoline->Write6Branch(MemoryManagerFree.address(), &MemoryManager::Free);
-        trampoline->Write6Branch(ScrapHeapAlloc.address(), &ScrapHeap::Alloc);
-        trampoline->Write6Branch(ScrapHeapFree.address(), &ScrapHeap::Free);
+        logger::trace("redirecting memory manager alloc and free"sv);
+        auto& trampoline = SKSE::GetTrampoline();
+        trampoline.write_branch<6>(MemoryManagerAlloc.address(), &MemoryManager::Alloc);
+        trampoline.write_branch<6>(MemoryManagerFree.address(), &MemoryManager::Free);
+        trampoline.write_branch<6>(ScrapHeapAlloc.address(), &ScrapHeap::Alloc);
+        trampoline.write_branch<6>(ScrapHeapFree.address(), &ScrapHeap::Free);
 
-        _VMESSAGE("success");
+        logger::trace("success"sv);
 
         return true;
     }

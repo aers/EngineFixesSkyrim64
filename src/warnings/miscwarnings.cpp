@@ -3,13 +3,13 @@
 
 namespace warnings
 {
-    std::unordered_map<uint32_t, RE::BGSAddonNode*> nodeMap;
+    std::unordered_map<std::uint32_t, RE::BGSAddonNode*> nodeMap;
 
     typedef bool (*_BGSAddonNode_LoadForm)(RE::BGSAddonNode* addonNode, RE::TESFile* modInfo);
-    REL::Offset<_BGSAddonNode_LoadForm*> vtbl_BGSAddonNode_LoadForm(vtbl_BGSAddonNode_LoadForm_offset, 0x8 * 0x6);
+    REL::Relocation<_BGSAddonNode_LoadForm*> vtbl_BGSAddonNode_LoadForm{ vtbl_BGSAddonNode_LoadForm_offset, 0x8 * 0x6 };
     _BGSAddonNode_LoadForm orig_BGSAddonNode_LoadForm;
 
-    REL::Offset<std::uint32_t*> g_RefrHandleArray(g_RefrHandleArray_offset);
+    REL::Relocation<std::uint32_t*> g_RefrHandleArray{ g_RefrHandleArray_offset };
 
     bool hk_BGSAddonNode_LoadForm(RE::BGSAddonNode* addonNode, RE::TESFile* modInfo)
     {
@@ -26,10 +26,10 @@ namespace warnings
                 if (current != addonNode && current->formID != addonNode->formID)
                 {
                     auto srcFile = current->GetDescriptionOwnerFile();
-                    _MESSAGE("WARNING: duplicate addon node index found, formID %08x in plugin %s and formID %08x in plugin %s share node index %d", current->formID, srcFile->fileName, addonNode->formID, modInfo->fileName, addonNode->index);
-                    _MESSAGE("WARNING: for info on resolving this problem, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");
-                    _MESSAGE("WARNING: you can disable this warning in the ini file");
-                    MessageBox(nullptr, TEXT("WARNING: You have a duplicate Addon Node index. Please check the Engine Fixes log for more details."), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
+                    logger::warn(FMT_STRING("duplicate addon node index found, formID {:08X} in plugin {} and formID {:08X} in plugin {} share node index {}"), current->formID, srcFile->fileName, addonNode->formID, modInfo->fileName, addonNode->index);
+                    logger::warn("for info on resolving this problem, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230"sv);
+                    logger::warn("you can disable this warning in the ini file"sv);
+                    MessageBoxW(nullptr, L"WARNING: You have a duplicate Addon Node index. Please check the Engine Fixes log for more details.", L"Engine Fixes for Skyrim Special Edition", MB_OK);
                 }
             }
         }
@@ -48,41 +48,41 @@ namespace warnings
     void Hook_Main_Unk(void* a_this)
     {
         typedef void _Main_Unk_t(void* a_this);
-        static REL::Offset<_Main_Unk_t*> orig_Fn(Unk_DataReload_Func_offset);
+        static REL::Relocation<_Main_Unk_t*> orig_Fn{ Unk_DataReload_Func_offset };
 
         orig_Fn(a_this);
 
-        _VMESSAGE("data reload, clearing node map");
+        logger::trace("data reload, clearing node map"sv);
         nodeMap.clear();
     }
 
     bool PatchDupeAddonNodes()
     {
-        _VMESSAGE("- warn dupe addon nodes -");
-        auto trampoline = SKSE::GetTrampoline();
+        logger::trace("- warn dupe addon nodes -"sv);
+        auto& trampoline = SKSE::GetTrampoline();
 
         orig_BGSAddonNode_LoadForm = *vtbl_BGSAddonNode_LoadForm;
-        SKSE::SafeWrite64(vtbl_BGSAddonNode_LoadForm.address(), unrestricted_cast<std::uintptr_t>(&hk_BGSAddonNode_LoadForm));
+        REL::safe_write(vtbl_BGSAddonNode_LoadForm.address(), reinterpret_cast<std::uintptr_t>(&hk_BGSAddonNode_LoadForm));
 
-        REL::Offset<std::uintptr_t> call1_Main_Unk(Call1_Unk_DataReload_func_offset, 0x163);
-        trampoline->Write5Call(call1_Main_Unk.address(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
+        REL::Relocation<std::uintptr_t> call1_Main_Unk{ Call1_Unk_DataReload_func_offset, 0x163 };
+        trampoline.write_call<5>(call1_Main_Unk.address(), reinterpret_cast<std::uintptr_t>(&Hook_Main_Unk));
 
-        REL::Offset<std::uintptr_t> call2_Main_Unk(Call2_Unk_DataReload_func_offset, 0xD);
-        trampoline->Write5Call(call2_Main_Unk.address(), unrestricted_cast<std::uintptr_t>(&Hook_Main_Unk));
+        REL::Relocation<std::uintptr_t> call2_Main_Unk{ Call2_Unk_DataReload_func_offset, 0xD };
+        trampoline.write_call<5>(call2_Main_Unk.address(), reinterpret_cast<std::uintptr_t>(&Hook_Main_Unk));
 
-        _VMESSAGE("- hooked -");
+        logger::trace("- hooked -"sv);
         return true;
     }
 
-    void WarnActiveRefrHandleCount(uint32_t warnCount)
+    void WarnActiveRefrHandleCount(std::uint32_t warnCount)
     {
         const auto refrArray = g_RefrHandleArray.type();
 
-        constexpr uint32_t maxHandleCount = 1 << 20;
+        constexpr std::uint32_t maxHandleCount = 1 << 20;
 
-        uint32_t activeHandleCount = 0;
+        std::uint32_t activeHandleCount = 0;
 
-        for (auto i = 0; i < maxHandleCount; i++)
+        for (std::uint32_t i = 0; i < maxHandleCount; i++)
         {
             if ((refrArray[i * 4] & (1 << 26)) != 0)
                 activeHandleCount++;
@@ -90,17 +90,17 @@ namespace warnings
 
         if (activeHandleCount > warnCount)
         {
-            _WARNING("your active refr handle count is currently %d which is higher than the warning level of %d", activeHandleCount, warnCount);
+            logger::warn(FMT_STRING("your active refr handle count is currently {} which is higher than the warning level of {}"), activeHandleCount, warnCount);
             if (warnCount == *config::warnRefrMainMenuLimit)
-                _WARNING("this is your main menu limit");
+                logger::warn("this is your main menu limit"sv);
             if (warnCount == *config::warnRefrLoadedGameLimit)
-                _WARNING("this is your loaded game limit");
-            _WARNING("for info about this warning, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230");
-            _WARNING("you can disable this warning in the ini file");
+                logger::warn("this is your loaded game limit"sv);
+            logger::warn("for info about this warning, please check the Engine Fixes mod page https://www.nexusmods.com/skyrimspecialedition/mods/17230"sv);
+            logger::warn("you can disable this warning in the ini file"sv);
 
-            std::ostringstream warningString;
-            warningString << "WARNING: Your active refr handle count is currently " << activeHandleCount << " which is dangerously close to the limit. Please check the Engine Fixes log for more details.";
-            MessageBox(nullptr, warningString.str().c_str(), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
+            std::wostringstream warningString;
+            warningString << L"WARNING: Your active refr handle count is currently "sv << activeHandleCount << L" which is dangerously close to the limit. Please check the Engine Fixes log for more details."sv;
+            MessageBoxW(nullptr, warningString.str().c_str(), L"Engine Fixes for Skyrim Special Edition", MB_OK);
         }
     }
 }

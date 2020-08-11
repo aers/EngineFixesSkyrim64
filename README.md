@@ -3,7 +3,9 @@
 ## Build Dependencies
 
 * [AutoTOML](https://github.com/Ryan-rsm-McKenzie/AutoTOML)
+* [Boost.Regex](https://www.boost.org/)
 * [CommonLibSSE](https://github.com/Ryan-rsm-McKenzie/CommonLibSSE)
+* [span lite](https://github.com/martinmoene/span-lite)
 * [TBB](https://github.com/oneapi-src/oneTBB)
 * [Xbyak](https://github.com/herumi/xbyak)
 

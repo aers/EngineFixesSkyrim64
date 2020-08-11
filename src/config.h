@@ -82,7 +82,7 @@ public:
                     setting->load(table);
                 } catch (const std::exception& e)
                 {
-                    _WARNING("%s", e.what());
+                    logger::warn(e.what());
                 }
             }
         } catch (const toml::parse_error& e)
@@ -93,7 +93,7 @@ public:
                 << "\':\n"
                 << e.description()
                 << "\n  (" << e.source().begin << ")\n";
-            _ERROR("%s", ss.str().c_str());
+            logger::error(ss.str());
             return false;
         }
 

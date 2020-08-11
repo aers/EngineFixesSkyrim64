@@ -49,9 +49,7 @@ namespace patches
         {
             PatchMemoryManager();
             if (*config::experimentalUseTBBMalloc)
-            {
                 PatchTBBMalloc();
-            }
         }
 
         return true;
