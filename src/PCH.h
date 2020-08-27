@@ -43,6 +43,9 @@
 #define NOMCX
 
 #include "RE/Skyrim.h"
+
+#include <xbyak/xbyak.h>  // must be between these two
+
 #include "SKSE/SKSE.h"
 
 #include "AutoTOML.hpp"
@@ -69,7 +72,6 @@
 #include <nonstd/span.hpp>
 #include <tbb/concurrent_hash_map.h>
 #include <tbb/scalable_allocator.h>
-#include <xbyak/xbyak.h>
 
 #ifndef NDEBUG
 #include <spdlog/sinks/msvc_sink.h>
@@ -88,6 +90,7 @@ namespace logger = SKSE::log;
 namespace stl
 {
     using nonstd::span;
+    using SKSE::stl::report_and_fail;
 }
 
 #define DLLEXPORT __declspec(dllexport)

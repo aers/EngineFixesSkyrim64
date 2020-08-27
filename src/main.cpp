@@ -60,49 +60,41 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
     }
 #endif
 
-    try
-    {
 #ifndef NDEBUG
-        auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+    auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
 #else
-        auto path = logger::log_directory() / "EngineFixes.log"sv;
-        auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path.string(), true);
+    auto path = logger::log_directory();
+    if (!path)
+        stl::report_and_fail("failed to get standard log path"sv);
+
+    *path /= "EngineFixes.log"sv;
+    auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
 #endif
 
-        auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
+    auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
 
 #ifndef NDEBUG
-        log->set_level(spdlog::level::trace);
+    log->set_level(spdlog::level::trace);
 #else
-        log->set_level(spdlog::level::info);
-        log->flush_on(spdlog::level::warn);
+    log->set_level(spdlog::level::info);
+    log->flush_on(spdlog::level::warn);
 #endif
 
-        spdlog::set_default_logger(std::move(log));
-        spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
+    spdlog::set_default_logger(std::move(log));
+    spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
 
-        logger::info("Engine Fixes v{}"sv, EF_VERSION_VERSTRING);
+    logger::info("Engine Fixes v{}"sv, EF_VERSION_VERSTRING);
 
-        if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"s))
-            logger::info("loaded config successfully"sv);
-        else
-            logger::warn("config load failed, using default config"sv);
+    if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"s))
+        logger::info("loaded config successfully"sv);
+    else
+        logger::warn("config load failed, using default config"sv);
 
-        const auto ver = REL::Module::get().version();
-        if (!CheckVersion(ver))
-            return;
-
-        if (!SKSE::AllocTrampoline(1 << 11))
-            return;
-    } catch (const std::exception& e)
-    {
-        logger::critical(e.what());
+    const auto ver = REL::Module::get().version();
+    if (!CheckVersion(ver))
         return;
-    } catch (...)
-    {
-        logger::critical("caught unknown exception"sv);
-        return;
-    }
+
+    SKSE::AllocTrampoline(1 << 11);
 
     patches::Preload();
 }
@@ -129,42 +121,26 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
-    try
-    {
-        if (!SKSE::Init(a_skse))
-            return false;
+    SKSE::Init(a_skse);
 
-        const auto& trampoline = SKSE::GetTrampoline();
-        if (trampoline.empty())
-            return false;
-
-        auto messaging = SKSE::GetMessagingInterface();
-        if (!messaging->RegisterListener("SKSE", MessageHandler))
-            return false;
-
-        if (*config::verboseLogging)
-        {
-            logger::info("enabling verbose logging"sv);
-            spdlog::set_level(spdlog::level::trace);
-            spdlog::flush_on(spdlog::level::trace);
-        }
-
-        logger::info("beginning pre-load patches"sv);
-
-        patches::PatchAll();
-        fixes::PatchAll();
-        warnings::PatchAll();
-
-        logger::info("pre-load patches complete"sv);
-    } catch (const std::exception& e)
-    {
-        logger::critical(e.what());
+    const auto messaging = SKSE::GetMessagingInterface();
+    if (!messaging->RegisterListener("SKSE", MessageHandler))
         return false;
-    } catch (...)
+
+    if (*config::verboseLogging)
     {
-        logger::critical("caught unknown exception"sv);
-        return false;
+        logger::info("enabling verbose logging"sv);
+        spdlog::set_level(spdlog::level::trace);
+        spdlog::flush_on(spdlog::level::trace);
     }
+
+    logger::info("beginning pre-load patches"sv);
+
+    patches::PatchAll();
+    fixes::PatchAll();
+    warnings::PatchAll();
+
+    logger::info("pre-load patches complete"sv);
 
     return true;
 }
