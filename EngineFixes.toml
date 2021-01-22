@@ -11,6 +11,7 @@ FormCaching = true                      # Attempts to speed up the global form t
 MaxStdio = true                         # Sets the maximum number of open file handles to 2048 (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
 RegularQuicksaves = false               # Makes quick saves into regular saves
 SaveAddedSoundCategories = true         # Save sound categories added by mods
+ScaleformAllocator = true               # Enables the scaleform allocator the take advantage of more memory
 ScrollingDoesntSwitchPOV = false        # Disables swapping between 1st/3rd person when using scroll to zoom, making it require manual swapping
 SleepWaitTime = false                   # Modifies how long it takes an hour to pass when sleeping/waiting. 
 SleepWaitTimeModifier = 0.3             # 1.0 = default, smaller = faster, larger = slower

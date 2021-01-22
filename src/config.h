@@ -21,6 +21,7 @@ public:
     static inline bSetting patchMaxStdio{ "Patches", "MaxStdio", true };
     static inline bSetting patchRegularQuicksaves{ "Patches", "RegularQuicksaves", false };
     static inline bSetting patchSaveAddedSoundCategories{ "Patches", "SaveAddedSoundCategories", true };
+    static inline bSetting patchScaleformAllocator{ "Patches", "ScaleformAllocator", true };
     static inline bSetting patchScrollingDoesntSwitchPOV{ "Patches", "ScrollingDoesntSwitchPOV", false };
     static inline bSetting patchSleepWaitTime{ "Patches", "SleepWaitTime", false };
     static inline fSetting sleepWaitTimeModifier{ "Patches", "SleepWaitTimeModifier", 0.3 };
@@ -69,7 +70,7 @@ public:
     static inline bSetting experimentalSaveGameMaxSize{ "Experimental", "SaveGameMaxSize", false };
     static inline bSetting experimentalTreatAllModsAsMasters{ "Experimental", "TreatAllModsAsMasters", false };
 
-    static inline bool load_config(const std::string& a_path)
+    static bool load_config(const std::string& a_path)
     {
         try
         {

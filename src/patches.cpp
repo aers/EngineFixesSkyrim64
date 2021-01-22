@@ -45,6 +45,9 @@ namespace patches
 
     bool Preload()
     {
+        if (*config::patchScaleformAllocator)
+            PatchScaleformAllocator();
+
         if (*config::experimentalMemoryManager)
         {
             PatchMemoryManager();
