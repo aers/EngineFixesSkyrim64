@@ -1,0 +1,11 @@
+{
+  "name": "enginefixes",
+  "version-string": "1",
+  "dependencies": [
+    "autotoml",
+    "boost-regex",
+    "spdlog",
+    "tbb",
+    "xbyak"
+  ]
+}

@@ -1,5 +1,25 @@
 #pragma once
 
+#include "RE/Skyrim.h"
+#include "SKSE/SKSE.h"
+
+#include <array>
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <memory>
+#include <optional>
+#include <regex>
+#include <span>
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <system_error>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+
 #define SKSE_CUSTOM_WINDEF
 
 #define NOGDICAPMASKS
@@ -42,42 +62,25 @@
 #define NODEFERWINDOWPOS
 #define NOMCX
 
-#include "RE/Skyrim.h"
+#include <Windows.h>
 
-#include <xbyak/xbyak.h>  // must be between these two
-
-#include "SKSE/SKSE.h"
-
-#include "AutoTOML.hpp"
-
-#include <array>
-#include <cstdlib>
-#include <filesystem>
-#include <fstream>
-#include <memory>
-#include <optional>
-#include <regex>
-#include <sstream>
-#include <string>
-#include <string_view>
-#include <system_error>
-#include <type_traits>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-
+#include <ShlObj.h>
 #include <intrin.h>
 
+#pragma warning(push)
+#include "AutoTOML.hpp"
+
 #include <boost/regex.hpp>
-#include <nonstd/span.hpp>
 #include <tbb/concurrent_hash_map.h>
 #include <tbb/scalable_allocator.h>
+#include <xbyak/xbyak.h>
 
 #ifndef NDEBUG
 #include <spdlog/sinks/msvc_sink.h>
 #else
 #include <spdlog/sinks/basic_file_sink.h>
 #endif
+#pragma warning(pop)
 
 using namespace std::literals;
 
@@ -89,8 +92,8 @@ namespace logger = SKSE::log;
 
 namespace stl
 {
-    using nonstd::span;
     using SKSE::stl::report_and_fail;
+    using std::span;
 }
 
 #define DLLEXPORT __declspec(dllexport)

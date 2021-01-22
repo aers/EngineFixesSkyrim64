@@ -1,4 +1,4 @@
-﻿#include "config.h"
+#include "config.h"
 #include "fixes.h"
 #include "patches.h"
 #include "utils.h"
@@ -45,7 +45,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 bool CheckVersion(const REL::Version& a_version)
 {
-    auto success = a_version >= SKSE::RUNTIME_1_5_39;
+    const auto success = a_version >= SKSE::RUNTIME_1_5_39;
     if (!success)
         logger::critical("Unsupported runtime version {}"sv, a_version.string());
 
@@ -83,7 +83,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
     spdlog::set_default_logger(std::move(log));
     spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
 
-    logger::info("Engine Fixes v{}"sv, EF_VERSION_VERSTRING);
+    logger::info("Engine Fixes v{}"sv, Version::MAJOR);
 
     if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"s))
         logger::info("loaded config successfully"sv);
@@ -104,7 +104,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
     // populate info structure
     a_info->infoVersion = SKSE::PluginInfo::kVersion;
     a_info->name = "EngineFixes plugin";
-    a_info->version = EF_VERSION_MAJOR;
+    a_info->version = Version::MAJOR;
 
     if (a_skse->IsEditor())
     {
@@ -112,7 +112,7 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a
         return false;
     }
 
-    auto ver = a_skse->RuntimeVersion();
+    const auto ver = a_skse->RuntimeVersion();
     if (!CheckVersion(ver))
         return false;
 
