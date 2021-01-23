@@ -45,15 +45,14 @@ namespace patches
 
     bool Preload()
     {
+        if (*config::patchMemoryManager)
+            PatchMemoryManager();
+
+        if (*config::patchSafeExit)
+            PatchSafeExit();
+
         if (*config::patchScaleformAllocator)
             PatchScaleformAllocator();
-
-        if (*config::experimentalMemoryManager)
-        {
-            PatchMemoryManager();
-            if (*config::experimentalUseTBBMalloc)
-                PatchTBBMalloc();
-        }
 
         return true;
     }

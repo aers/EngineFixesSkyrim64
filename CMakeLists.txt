@@ -13,7 +13,7 @@ set(VCPKG_TARGET_TRIPLET "x64-windows-static-md-custom" CACHE STRING "")
 
 project(
 	EngineFixes
-	VERSION 5.4.1
+	VERSION 5.5.0
 	LANGUAGES CXX
 )
 

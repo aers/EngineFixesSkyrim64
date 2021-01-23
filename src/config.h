@@ -19,7 +19,9 @@ public:
     static inline bSetting patchEnableAchievementsWithMods{ "Patches", "EnableAchievementsWithMods", true };
     static inline bSetting patchFormCaching{ "Patches", "FormCaching", true };
     static inline bSetting patchMaxStdio{ "Patches", "MaxStdio", true };
+    static inline bSetting patchMemoryManager{ "Patches", "MemoryManager", true };
     static inline bSetting patchRegularQuicksaves{ "Patches", "RegularQuicksaves", false };
+    static inline bSetting patchSafeExit{ "Patches", "SafeExit", true };
     static inline bSetting patchSaveAddedSoundCategories{ "Patches", "SaveAddedSoundCategories", true };
     static inline bSetting patchScaleformAllocator{ "Patches", "ScaleformAllocator", true };
     static inline bSetting patchScrollingDoesntSwitchPOV{ "Patches", "ScrollingDoesntSwitchPOV", false };
@@ -65,8 +67,6 @@ public:
     static inline iSetting warnRefrLoadedGameLimit{ "Warnings", "RefrLoadedGameLimit", 1000000 };
 
     // Experimental
-    static inline bSetting experimentalMemoryManager{ "Experimental", "MemoryManager", false };
-    static inline bSetting experimentalUseTBBMalloc{ "Experimental", "UseTBBMalloc", true };
     static inline bSetting experimentalSaveGameMaxSize{ "Experimental", "SaveGameMaxSize", false };
     static inline bSetting experimentalTreatAllModsAsMasters{ "Experimental", "TreatAllModsAsMasters", false };
 

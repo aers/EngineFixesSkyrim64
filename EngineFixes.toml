@@ -9,9 +9,11 @@ DisableChargenPrecache = false          # "Precache Killer", same patch that is 
 EnableAchievementsWithMods = true       # Enables achievements with mods active
 FormCaching = true                      # Attempts to speed up the global form table by caching recently used forms (SSE Fixes)
 MaxStdio = true                         # Sets the maximum number of open file handles to 2048 (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
+MemoryManager = true                    # Replaces Skyrim's global allocator
 RegularQuicksaves = false               # Makes quick saves into regular saves
+SafeExit = true                         # Prevent the game from hanging while shutting down
 SaveAddedSoundCategories = true         # Save sound categories added by mods
-ScaleformAllocator = true               # Enables the scaleform allocator the take advantage of more memory
+ScaleformAllocator = true               # Replaces the scaleform allocator
 ScrollingDoesntSwitchPOV = false        # Disables swapping between 1st/3rd person when using scroll to zoom, making it require manual swapping
 SleepWaitTime = false                   # Modifies how long it takes an hour to pass when sleeping/waiting. 
 SleepWaitTimeModifier = 0.3             # 1.0 = default, smaller = faster, larger = slower
@@ -55,8 +57,6 @@ RefrMainMenuLimit = 800000              # Handle count to warn at on main menu
 RefrLoadedGameLimit = 1000000           # Handle count to warn at after loading a save game
 
 [Experimental]
-MemoryManager = false                   # Disables Skyrim's memory manager in favor of standard allocation (Use OS Allocators), can help with ILS
-UseTBBMalloc = true                     # Uses TBBMalloc instead of standard allocators, only active if MemoryManager is true
 SaveGameMaxSize = false                 # Expands the maximum uncompressed size of a save game from 64 MB to 128 MB# can fix "crash on save" issue in long-runnning saves
 
 # DO NOT USE THIS IT IS FOR SPECIFIC TESTING ONLY

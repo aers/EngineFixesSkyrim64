@@ -12,6 +12,7 @@ set(sources ${sources}
 	src/patches/formcaching.cpp
 	src/patches/memorymanager.cpp
 	src/patches/miscpatches.cpp
+	src/patches/safeexit.cpp
 	src/patches/saveaddedsoundcategories.cpp
 	src/patches/scaleformallocator.cpp
 	src/patches/treelodreferencecaching.cpp

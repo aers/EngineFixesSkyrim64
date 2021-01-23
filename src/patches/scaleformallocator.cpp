@@ -12,13 +12,6 @@ namespace
             return std::addressof(singleton);
         }
 
-        static void Install()
-        {
-            REL::Relocation<std::uintptr_t> target{ REL::ID(80300), 0xED };
-            auto& trampoline = SKSE::GetTrampoline();
-            _init = trampoline.write_call<5>(target.address(), Init);
-        }
-
     protected:
         void GetInfo(Info* a_info) const override
         {
@@ -34,15 +27,12 @@ namespace
 
         void* Alloc(std::size_t a_size, std::size_t a_align) override
         {
-            return a_size > 0 ?
-                       scalable_aligned_malloc(a_size, a_align) :
-                       nullptr;
+            return _allocator->Allocate(a_size, static_cast<std::uint32_t>(a_align), true);
         }
 
         bool Free(void* a_ptr, std::size_t, std::size_t) override
         {
-            if (a_ptr)
-                scalable_aligned_free(a_ptr);
+            _allocator->Deallocate(a_ptr, true);
             return true;
         }
 
@@ -57,15 +47,12 @@ namespace
 
             *a_actualSize = a_size;
             *a_actualAlign = a_alignment;
-            return a_size > 0 ?
-                       scalable_aligned_malloc(a_size, a_alignment) :
-                       nullptr;
+            return _allocator->Allocate(a_size, static_cast<std::uint32_t>(a_alignment), true);
         }
 
         bool FreeSysDirect(void* a_ptr, std::size_t, std::size_t) override
         {
-            if (a_ptr)
-                scalable_aligned_free(a_ptr);
+            _allocator->Deallocate(a_ptr, true);
             return true;
         }
 
@@ -77,13 +64,25 @@ namespace
         CustomAllocator& operator=(const CustomAllocator&) = delete;
         CustomAllocator& operator=(CustomAllocator&&) = delete;
 
-        static void Init(const RE::GMemoryHeap::HeapDesc& a_rootHeapDesc, RE::GSysAllocBase*)
+        RE::MemoryManager* _allocator{ RE::MemoryManager::GetSingleton() };
+    };
+
+    struct Init
+    {
+        static void thunk(const RE::GMemoryHeap::HeapDesc& a_rootHeapDesc, RE::GSysAllocBase*)
         {
-            return _init(a_rootHeapDesc, GetSingleton());
+            return hook(a_rootHeapDesc, CustomAllocator::GetSingleton());
         }
 
-        static inline REL::Relocation<decltype(Init)> _init;
+        static inline REL::Relocation<decltype(thunk)> hook;
     };
+
+    void Install()
+    {
+        REL::Relocation<std::uintptr_t> target{ REL::ID(80300), 0xED };
+        auto& trampoline = SKSE::GetTrampoline();
+        Init::hook = trampoline.write_call<5>(target.address(), Init::thunk);
+    }
 }
 
 namespace patches
@@ -92,7 +91,7 @@ namespace patches
     {
         logger::trace("- scalform allocator patch -"sv);
 
-        CustomAllocator::Install();
+        Install();
 
         logger::trace("success"sv);
         return true;
