@@ -2,7 +2,7 @@
 
 [EngineFixes]
 VerboseLogging = false                  # Add extra log messages
-CleanSKSECosaves = true                 # Delete SKSE cosaves that have no matching save
+CleanSKSECosaves = false                # Delete SKSE cosaves that have no matching save
 
 [Patches]
 DisableChargenPrecache = false          # "Precache Killer", same patch that is already in RaceMenu

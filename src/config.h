@@ -12,7 +12,7 @@ public:
 
     // EngineFixes
     static inline bSetting verboseLogging{ "EngineFixes", "VerboseLogging", false };
-    static inline bSetting cleanSKSECosaves{ "EngineFixes", "CleanSKSECosaves", true };
+    static inline bSetting cleanSKSECosaves{ "EngineFixes", "CleanSKSECosaves", false };
 
     // Patches
     static inline bSetting patchDisableChargenPrecache{ "Patches", "DisableChargenPrecache", false };

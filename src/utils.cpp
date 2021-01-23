@@ -49,17 +49,17 @@ bool CleanSKSECosaves()
     {
         if (dirEntry.is_regular_file())
         {
-            const auto& path = dirEntry.path();
-            if (boost::regex_match(path.filename().string(), cosavePattern))
+            const auto& cosave = dirEntry.path();
+            if (boost::regex_match(cosave.filename().string(), cosavePattern))
             {
-                std::filesystem::path saveFile = path.parent_path();
-                saveFile /= path.stem().string() + ".ess";
-                if (!std::filesystem::exists(saveFile, ec))
+                auto save = cosave;
+                save.replace_extension(".ess"sv);
+                if (!std::filesystem::exists(save, ec))
                 {
                     if (!ec)
-                        matches.push_back(path);
+                        matches.push_back(cosave);
                     else
-                        logger::error(FMT_STRING("Error while checking if \"{}\" exists: {}"), saveFile.string(), ec.message());
+                        logger::error(FMT_STRING("Error while checking if \"{}\" exists: {}"), save.string(), ec.message());
                 }
             }
         }
