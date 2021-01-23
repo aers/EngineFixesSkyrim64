@@ -83,7 +83,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
     spdlog::set_default_logger(std::move(log));
     spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
 
-    logger::info("Engine Fixes v{}"sv, Version::MAJOR);
+    logger::info("Engine Fixes v{}.{}.{}"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
     if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"s))
         logger::info("loaded config successfully"sv);
