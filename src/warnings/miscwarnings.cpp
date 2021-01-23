@@ -76,7 +76,7 @@ namespace warnings
 
     void WarnActiveRefrHandleCount(std::uint32_t warnCount)
     {
-        const auto refrArray = g_RefrHandleArray.type();
+        const auto refrArray = g_RefrHandleArray.get();
 
         constexpr std::uint32_t maxHandleCount = 1 << 20;
 

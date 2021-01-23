@@ -20,6 +20,7 @@ namespace fixes
     bool PatchEquipShoutEventSpam();
     bool PatchGetKeywordItemCount();
     bool PatchGHeapLeakDetectionCrash();
+    bool PatchGlobalTime();
     bool PatchLipSync();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();

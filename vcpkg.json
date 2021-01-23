@@ -4,6 +4,7 @@
   "dependencies": [
     "autotoml",
     "boost-regex",
+    "boost-stl-interfaces",
     "spdlog",
     "tbb",
     "xbyak"

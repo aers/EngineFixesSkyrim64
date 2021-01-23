@@ -205,11 +205,11 @@ namespace fixes
         static void Install()
         {
             std::array targets{
-                std::make_pair<std::uint64_t, std::size_t>(13183, 0xE2),
-                std::make_pair<std::uint64_t, std::size_t>(35565, 0x24D),
-                std::make_pair<std::uint64_t, std::size_t>(35567, 0x3A),
-                std::make_pair<std::uint64_t, std::size_t>(39373, 0x2B1),
-                std::make_pair<std::uint64_t, std::size_t>(39410, 0x78),
+                std::make_pair(13183, 0xE2),
+                std::make_pair(35565, 0x24D),
+                std::make_pair(35567, 0x3A),
+                std::make_pair(39373, 0x2B1),
+                std::make_pair(39410, 0x78),
             };
 
             auto& trampoline = SKSE::GetTrampoline();
@@ -257,7 +257,7 @@ namespace fixes
         static void Install()
         {
             auto& trampoline = SKSE::GetTrampoline();
-            REL::Relocation<std::uintptr_t> funcBase = REL::ID(18474);
+            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(18474) };
             _GetLocation = trampoline.write_call<5>(funcBase.address() + 0x110, GetLocation);
         }
 
@@ -892,11 +892,11 @@ namespace fixes
             logger::trace("patching camera movement to use frame timer that ignores slow time"sv);
 
             constexpr std::array targets{
-                std::make_pair<std::uint64_t, std::size_t>(49977, 0x2F),
-                std::make_pair<std::uint64_t, std::size_t>(49977, 0x96),
-                std::make_pair<std::uint64_t, std::size_t>(49977, 0x1FD),
-                std::make_pair<std::uint64_t, std::size_t>(49980, 0xBA),
-                std::make_pair<std::uint64_t, std::size_t>(49981, 0x17)
+                std::make_pair(49977, 0x2F),
+                std::make_pair(49977, 0x96),
+                std::make_pair(49977, 0x1FD),
+                std::make_pair(49980, 0xBA),
+                std::make_pair(49981, 0x17)
             };
 
             for (const auto& [id, offset] : targets)
@@ -1089,8 +1089,8 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> hookTarget(REL::ID(49978), 0x71);
-            REL::Relocation<float*> noSlowFrameTimer = REL::ID(523661);
+            REL::Relocation<std::uintptr_t> hookTarget{ REL::ID(49978), 0x71 };
+            REL::Relocation<float*> noSlowFrameTimer{ REL::ID(523661) };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
 

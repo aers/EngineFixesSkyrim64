@@ -6,6 +6,7 @@ set(sources ${sources}
 	src/utils.cpp
 	src/warnings.cpp
 	src/fixes/doubleperkapply.cpp
+	src/fixes/globaltime.cpp
 	src/fixes/miscfixes.cpp
 	src/fixes/savescreenshots.cpp
 	src/fixes/shaderfixes.cpp
