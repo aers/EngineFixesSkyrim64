@@ -3,30 +3,30 @@
 namespace patches
 {
     // treelodreferencecaching.cpp
-    void InvalidateCachedForm(uint32_t formId);
+    void InvalidateCachedForm(std::uint32_t formId);
 
-    tbb::concurrent_hash_map<uint32_t, RE::TESForm*> globalFormCacheMap[256];
+    tbb::concurrent_hash_map<std::uint32_t, RE::TESForm*> globalFormCacheMap[256];
 
-    REL::Offset<RE::BSReadWriteLock*> GlobalFormTableLock(GlobalFormTableLock_offset);
-    REL::Offset<RE::BSTHashMap<UInt32, RE::TESForm*>**> GlobalFormTable(GlobalFormTable_offset);
+    REL::Relocation<RE::BSReadWriteLock*> GlobalFormTableLock{ GlobalFormTableLock_offset };
+    REL::Relocation<RE::BSTHashMap<std::uint32_t, RE::TESForm*>**> GlobalFormTable{ GlobalFormTable_offset };
 
     typedef void (*UnknownFormFunction0_)(__int64 form, bool a2);
-    REL::Offset<UnknownFormFunction0_> origFunc0HookAddr(UnkFormFunc1_offset);
+    REL::Relocation<UnknownFormFunction0_> origFunc0HookAddr{ UnkFormFunc1_offset };
     UnknownFormFunction0_ origFunc0;
 
     typedef __int64 (*UnknownFormFunction1_)(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64* a5);
-    REL::Offset<UnknownFormFunction1_> origFunc1HookAddr(UnkFormFunc2_offset);
+    REL::Relocation<UnknownFormFunction1_> origFunc1HookAddr{ UnkFormFunc2_offset };
     UnknownFormFunction1_ origFunc1;
 
     typedef __int64 (*UnknownFormFunction2_)(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64** a5);
-    REL::Offset<UnknownFormFunction2_> origFunc2HookAddr(UnkFormFunc3_offset);
+    REL::Relocation<UnknownFormFunction2_> origFunc2HookAddr{ UnkFormFunc3_offset };
     UnknownFormFunction2_ origFunc2;
 
     typedef __int64 (*UnknownFormFunction3_)(__int64 a1, __int64 a2, int a3, __int64 a4);
-    REL::Offset<UnknownFormFunction3_> origFunc3HookAddr(UnkFormFunc4_offset);
+    REL::Relocation<UnknownFormFunction3_> origFunc3HookAddr{ UnkFormFunc4_offset };
     UnknownFormFunction3_ origFunc3;
 
-    void UpdateFormCache(uint32_t FormId, RE::TESForm* Value, bool Invalidate)
+    void UpdateFormCache(std::uint32_t FormId, RE::TESForm* Value, bool Invalidate)
     {
         const unsigned char masterId = (FormId & 0xFF000000) >> 24;
         const unsigned int baseId = (FormId & 0x00FFFFFF);
@@ -34,17 +34,17 @@ namespace patches
         if (Invalidate)
             globalFormCacheMap[masterId].erase(baseId);
         else
-            globalFormCacheMap[masterId].insert(std::make_pair(baseId, Value));
+            globalFormCacheMap[masterId].emplace(baseId, Value);
 
         InvalidateCachedForm(FormId);
     }
 
-    RE::TESForm* hk_GetFormByID(unsigned int FormId)
+    RE::TESForm* hk_GetFormByID(std::uint32_t FormId)
     {
         RE::TESForm* formPointer = nullptr;
 
-        const unsigned char masterId = (FormId & 0xFF000000) >> 24;
-        const unsigned int baseId = (FormId & 0x00FFFFFF);
+        const std::uint8_t masterId = (FormId & 0xFF000000) >> 24;
+        const std::uint32_t baseId = (FormId & 0x00FFFFFF);
 
         {
             std::remove_extent_t<decltype(globalFormCacheMap)>::accessor accessor;
@@ -75,7 +75,7 @@ namespace patches
 
     __int64 UnknownFormFunction3(__int64 a1, __int64 a2, int a3, __int64 a4)
     {
-        UpdateFormCache(*(uint32_t*)a4, nullptr, true);
+        UpdateFormCache(*(std::uint32_t*)a4, nullptr, true);
 
         return origFunc3(a1, a2, a3, a4);
     }
@@ -96,34 +96,34 @@ namespace patches
 
     void UnknownFormFunction0(__int64 form, bool a2)
     {
-        UpdateFormCache(*(uint32_t*)(form + 0x14), nullptr, true);
+        UpdateFormCache(*(std::uint32_t*)(form + 0x14), nullptr, true);
 
         origFunc0(form, a2);
     }
 
     bool PatchFormCaching()
     {
-        _VMESSAGE("- form caching -");
+        logger::trace("- form caching -"sv);
 
-        REL::Offset<std::uint32_t*> LookupFormByID(REL::ID(14461));
+        REL::Relocation<std::uint32_t*> LookupFormByID{ REL::ID(14461) };
         if (*LookupFormByID != 0x83485740)
         {
-            _VMESSAGE("sse fixes is installed and enabled. aborting form cache patch.");
+            logger::trace("sse fixes is installed and enabled. aborting form cache patch."sv);
             *config::patchFormCaching = false;
 
             return false;
         }
 
-        _VMESSAGE("detouring GetFormByID");
-        SKSE::GetTrampoline()->Write6Branch(LookupFormByID.address(), unrestricted_cast<std::uintptr_t>(&hk_GetFormByID));
-        _VMESSAGE("done");
+        logger::trace("detouring GetFormByID"sv);
+        SKSE::GetTrampoline().write_branch<6>(LookupFormByID.address(), reinterpret_cast<std::uintptr_t>(hk_GetFormByID));
+        logger::trace("done"sv);
 
         // TODO: write a generic detour instead
-        _VMESSAGE("detouring global form table write functions");
+        logger::trace("detouring global form table write functions"sv);
         {
-            struct UnknownFormFunction0_Code : SKSE::CodeGenerator
+            struct UnknownFormFunction0_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction0_Code() : SKSE::CodeGenerator()
+                UnknownFormFunction0_Code()
                 {
                     Xbyak::Label retnLabel;
 
@@ -145,16 +145,18 @@ namespace patches
 
             UnknownFormFunction0_Code code;
             code.ready();
-            origFunc0 = UnknownFormFunction0_(code.getCode());
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc0HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction0));
+            auto& trampoline = SKSE::GetTrampoline();
+            origFunc0 = reinterpret_cast<UnknownFormFunction0_>(trampoline.allocate(code));
+            trampoline.write_branch<6>(
+                origFunc0HookAddr.address(),
+                reinterpret_cast<std::uintptr_t>(UnknownFormFunction0));
         }
 
         {
-            struct UnknownFormFunction1_Code : SKSE::CodeGenerator
+            struct UnknownFormFunction1_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction1_Code() : SKSE::CodeGenerator()
+                UnknownFormFunction1_Code()
                 {
                     Xbyak::Label retnLabel;
 
@@ -175,16 +177,18 @@ namespace patches
 
             UnknownFormFunction1_Code code;
             code.ready();
-            origFunc1 = UnknownFormFunction1_(code.getCode());
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc1HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction1));
+            auto& trampoline = SKSE::GetTrampoline();
+            origFunc1 = reinterpret_cast<UnknownFormFunction1_>(trampoline.allocate(code));
+            trampoline.write_branch<6>(
+                origFunc1HookAddr.address(),
+                reinterpret_cast<std::uintptr_t>(UnknownFormFunction1));
         }
 
         {
-            struct UnknownFormFunction2_Code : SKSE::CodeGenerator
+            struct UnknownFormFunction2_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction2_Code() : SKSE::CodeGenerator()
+                UnknownFormFunction2_Code()
                 {
                     Xbyak::Label retnLabel;
 
@@ -204,16 +208,18 @@ namespace patches
 
             UnknownFormFunction2_Code code;
             code.ready();
-            origFunc2 = UnknownFormFunction2_(code.getCode());
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc2HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction2));
+            auto& trampoline = SKSE::GetTrampoline();
+            origFunc2 = reinterpret_cast<UnknownFormFunction2_>(trampoline.allocate(code));
+            trampoline.write_branch<6>(
+                origFunc2HookAddr.address(),
+                reinterpret_cast<std::uintptr_t>(UnknownFormFunction2));
         }
 
         {
-            struct UnknownFormFunction3_Code : SKSE::CodeGenerator
+            struct UnknownFormFunction3_Code : Xbyak::CodeGenerator
             {
-                UnknownFormFunction3_Code() : SKSE::CodeGenerator()
+                UnknownFormFunction3_Code()
                 {
                     Xbyak::Label retnLabel;
 
@@ -234,14 +240,16 @@ namespace patches
 
             UnknownFormFunction3_Code code;
             code.ready();
-            origFunc3 = UnknownFormFunction3_(code.getCode());
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(origFunc3HookAddr.address(), unrestricted_cast<std::uintptr_t>(&UnknownFormFunction3));
+            auto& trampoline = SKSE::GetTrampoline();
+            origFunc3 = reinterpret_cast<UnknownFormFunction3_>(trampoline.allocate(code));
+            trampoline.write_branch<6>(
+                origFunc3HookAddr.address(),
+                reinterpret_cast<std::uintptr_t>(UnknownFormFunction3));
         }
-        _VMESSAGE("done");
+        logger::trace("done"sv);
 
-        _VMESSAGE("success");
+        logger::trace("success"sv);
 
         return true;
     }

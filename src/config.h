@@ -12,15 +12,18 @@ public:
 
     // EngineFixes
     static inline bSetting verboseLogging{ "EngineFixes", "VerboseLogging", false };
-    static inline bSetting cleanSKSECosaves{ "EngineFixes", "CleanSKSECosaves", true };
+    static inline bSetting cleanSKSECosaves{ "EngineFixes", "CleanSKSECosaves", false };
 
     // Patches
     static inline bSetting patchDisableChargenPrecache{ "Patches", "DisableChargenPrecache", false };
     static inline bSetting patchEnableAchievementsWithMods{ "Patches", "EnableAchievementsWithMods", true };
     static inline bSetting patchFormCaching{ "Patches", "FormCaching", true };
     static inline bSetting patchMaxStdio{ "Patches", "MaxStdio", true };
+    static inline bSetting patchMemoryManager{ "Patches", "MemoryManager", true };
     static inline bSetting patchRegularQuicksaves{ "Patches", "RegularQuicksaves", false };
+    static inline bSetting patchSafeExit{ "Patches", "SafeExit", true };
     static inline bSetting patchSaveAddedSoundCategories{ "Patches", "SaveAddedSoundCategories", true };
+    static inline bSetting patchScaleformAllocator{ "Patches", "ScaleformAllocator", true };
     static inline bSetting patchScrollingDoesntSwitchPOV{ "Patches", "ScrollingDoesntSwitchPOV", false };
     static inline bSetting patchSleepWaitTime{ "Patches", "SleepWaitTime", false };
     static inline fSetting sleepWaitTimeModifier{ "Patches", "SleepWaitTimeModifier", 0.3 };
@@ -44,6 +47,7 @@ public:
     static inline bSetting fixEquipShoutEventSpam{ "Fixes", "EquipShoutEventSpam", true };
     static inline bSetting fixGetKeywordItemCount{ "Fixes", "GetKeywordItemCount", true };
     static inline bSetting fixGHeapLeakDetectionCrash{ "Fixes", "GHeapLeakDetectionCrash", true };
+    static inline bSetting fixGlobalTime{ "Fixes", "GlobalTime", true };
     static inline bSetting fixLipSync{ "Fixes", "LipSync", true };
     static inline bSetting fixMemoryAccessErrors{ "Fixes", "MemoryAccessErrors", true };
     static inline bSetting fixMO5STypo{ "Fixes", "MO5STypo", true };
@@ -58,18 +62,16 @@ public:
     static inline bSetting fixWeaponBlockScaling{ "Fixes", "WeaponBlockScaling", true };
 
     // Warnings
-    static inline bSetting warnDupeAddonNodes{ "Warnings", "DupeAddonNodes", true };
+    static inline bSetting warnDupeAddonNodes{ "Warnings", "DupeAddonNodes", false };
     static inline bSetting warnRefHandleLimit{ "Warnings", "RefHandleLimit", true };
     static inline iSetting warnRefrMainMenuLimit{ "Warnings", "RefrMainMenuLimit", 800000 };
     static inline iSetting warnRefrLoadedGameLimit{ "Warnings", "RefrLoadedGameLimit", 1000000 };
 
     // Experimental
-    static inline bSetting experimentalMemoryManager{ "Experimental", "MemoryManager", false };
-    static inline bSetting experimentalUseTBBMalloc{ "Experimental", "UseTBBMalloc", true };
     static inline bSetting experimentalSaveGameMaxSize{ "Experimental", "SaveGameMaxSize", false };
     static inline bSetting experimentalTreatAllModsAsMasters{ "Experimental", "TreatAllModsAsMasters", false };
 
-    static inline bool load_config(const std::string& a_path)
+    static bool load_config(const std::string& a_path)
     {
         try
         {
@@ -82,7 +84,7 @@ public:
                     setting->load(table);
                 } catch (const std::exception& e)
                 {
-                    _WARNING("%s", e.what());
+                    logger::warn(e.what());
                 }
             }
         } catch (const toml::parse_error& e)
@@ -93,7 +95,7 @@ public:
                 << "\':\n"
                 << e.description()
                 << "\n  (" << e.source().begin << ")\n";
-            _ERROR("%s", ss.str().c_str());
+            logger::error(ss.str());
             return false;
         }
 

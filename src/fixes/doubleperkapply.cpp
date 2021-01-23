@@ -2,24 +2,23 @@
 
 namespace fixes
 {
-    uint32_t next_formid;
+    std::uint32_t next_formid;
 
     typedef void (*_QueueApplyPerk)(RE::TaskQueueInterface* thisPtr, RE::Actor* actor, RE::BGSPerk* perk, std::int8_t oldRank, std::int8_t newRank);
-    REL::Offset<_QueueApplyPerk> QueueApplyPerk(QueueApplyPerk_offset);
-    typedef void (*_HandleAddRf)(int64_t apm);
-    REL::Offset<_HandleAddRf> HandleAddRf(Handle_Add_Rf_offset);
-    REL::Offset<std::uintptr_t> SwitchFunctionMovzx(Switch_Function_movzx_offset, 0x1C4E);
-    REL::Offset<std::uintptr_t> UnknownAddFuncMovzx1(Unknown_Add_Function_movzx_offset, 0x1A);
-    REL::Offset<std::uintptr_t> UnknownAddFuncMovzx2(Unknown_Add_Function_movzx2_offset, 0x46);
-    REL::Offset<std::uintptr_t> NextFormIdGetHook(Next_Formid_Get_Hook_offset, 0x1B);
-    REL::Offset<std::uintptr_t> DoHandleHook(Do_Handle_Hook_offset, 0x1B);
-    REL::Offset<std::uintptr_t> DoAddHook(Do_Add_Hook_offset, 0x11);
+    REL::Relocation<_QueueApplyPerk> QueueApplyPerk{ QueueApplyPerk_offset };
+    typedef void (*_HandleAddRf)(std::int64_t apm);
+    REL::Relocation<_HandleAddRf> HandleAddRf{ Handle_Add_Rf_offset };
+    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ Switch_Function_movzx_offset, 0x1C4E };
+    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx1{ Unknown_Add_Function_movzx_offset, 0x1A };
+    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx2{ Unknown_Add_Function_movzx2_offset, 0x46 };
+    REL::Relocation<std::uintptr_t> NextFormIdGetHook{ Next_Formid_Get_Hook_offset, 0x1B };
+    REL::Relocation<std::uintptr_t> DoHandleHook{ Do_Handle_Hook_offset, 0x1B };
+    REL::Relocation<std::uintptr_t> DoAddHook{ Do_Add_Hook_offset, 0x11 };
 
     void do_add(RE::Actor* actorPtr, RE::BGSPerk* perkPtr, std::int8_t newRank)
     {
         std::int8_t oldRank = 0;
-
-        auto formid = actorPtr->GetFormID();
+        const auto formid = actorPtr->GetFormID();
 
         if (formid == next_formid)
         {
@@ -32,13 +31,13 @@ namespace fixes
         QueueApplyPerk(RE::TaskQueueInterface::GetSingleton(), actorPtr, perkPtr, oldRank, newRank);
     }
 
-    void do_handle(int64_t actorPtr, uint32_t val)
+    void do_handle(std::int64_t actorPtr, std::uint32_t val)
     {
         bool shouldClear = (val & 0x100) != 0;
 
         if (shouldClear)
         {
-            int64_t apm = *((int64_t*)(actorPtr + 0xF0));  // actorprocessmanager 0xF0 in SSE Actor
+            std::int64_t apm = *((std::int64_t*)(actorPtr + 0xF0));  // actorprocessmanager 0xF0 in SSE Actor
             if (apm != 0)
                 HandleAddRf(apm);
         }
@@ -46,38 +45,38 @@ namespace fixes
 
     bool PatchDoublePerkApply()
     {
-        _VMESSAGE("- double perk apply -");
+        logger::trace("- double perk apply -"sv);
 
-        _VMESSAGE("patching val movzx");
+        logger::trace("patching val movzx"sv);
         // .text:00000001405C8FDE                 movzx   r8d, byte ptr [rdi+18h]
         // 44 0F B6 47 18
         // ->
         // mov r8d, dword ptr [rdi+18h]
         // 44 8b 47 18 90
-        unsigned char first_movzx_patch[] = { 0x44, 0x8b, 0x47, 0x18, 0x90 };
-        SKSE::SafeWriteBuf(SwitchFunctionMovzx.address(), first_movzx_patch, 5);
+        std::uint8_t first_movzx_patch[] = { 0x44, 0x8b, 0x47, 0x18, 0x90 };
+        REL::safe_write(SwitchFunctionMovzx.address(), first_movzx_patch, 5);
 
         // .text:00000001405C6C6A                 movzx   edi, r9b
         // 41 0F B6 F9
         // ->
         // mov edi, r9d
         // 44 89 CF 90
-        unsigned char second_movzx_patch[] = { 0x44, 0x89, 0xCF, 0x90 };
-        SKSE::SafeWriteBuf(UnknownAddFuncMovzx1.address(), second_movzx_patch, 4);
+        std::uint8_t second_movzx_patch[] = { 0x44, 0x89, 0xCF, 0x90 };
+        REL::safe_write(UnknownAddFuncMovzx1.address(), second_movzx_patch, 4);
 
         // .text:00000001405C6C96                 movzx   eax, dil
         // 40 0F B6 C7
         // ->
         // mov eax, edi
         // 89 F8 90 90
-        unsigned char third_movzx_patch[] = { 0x89, 0xF8, 0x90, 0x90 };
-        SKSE::SafeWriteBuf(UnknownAddFuncMovzx2.address(), third_movzx_patch, 4);
+        std::uint8_t third_movzx_patch[] = { 0x89, 0xF8, 0x90, 0x90 };
+        REL::safe_write(UnknownAddFuncMovzx2.address(), third_movzx_patch, 4);
 
-        _VMESSAGE("hooking for next form ID");
+        logger::trace("hooking for next form ID"sv);
         {
-            struct GetNextFormId_Code : SKSE::CodeGenerator
+            struct GetNextFormId_Code : Xbyak::CodeGenerator
             {
-                GetNextFormId_Code() : SKSE::CodeGenerator()
+                GetNextFormId_Code()
                 {
                     Xbyak::Label retnLabel;
 
@@ -103,15 +102,17 @@ namespace fixes
             GetNextFormId_Code code;
             code.ready();
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(NextFormIdGetHook.address(), uintptr_t(code.getCode()));
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(
+                NextFormIdGetHook.address(),
+                trampoline.allocate(code));
         }
 
-        _VMESSAGE("hooking handle function");
+        logger::trace("hooking handle function"sv);
         {
-            struct DoHandleHook_Code : SKSE::CodeGenerator
+            struct DoHandleHook_Code : Xbyak::CodeGenerator
             {
-                DoHandleHook_Code(std::uintptr_t doHandleAddr) : SKSE::CodeGenerator()
+                DoHandleHook_Code(std::uintptr_t doHandleAddr)
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -151,15 +152,17 @@ namespace fixes
             DoHandleHook_Code code(reinterpret_cast<std::uintptr_t>(do_handle));
             code.ready();
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(DoHandleHook.address(), uintptr_t(code.getCode()));
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(
+                DoHandleHook.address(),
+                trampoline.allocate(code));
         }
 
-        _VMESSAGE("hooking add function");
+        logger::trace("hooking add function");
         {
-            struct DoAddHook_Code : SKSE::CodeGenerator
+            struct DoAddHook_Code : Xbyak::CodeGenerator
             {
-                DoAddHook_Code(std::uintptr_t doAddAddr) : SKSE::CodeGenerator()
+                DoAddHook_Code(std::uintptr_t doAddAddr)
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -194,11 +197,13 @@ namespace fixes
             DoAddHook_Code code(reinterpret_cast<std::uintptr_t>(do_add));
             code.ready();
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(DoAddHook.address(), uintptr_t(code.getCode()));
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(
+                DoAddHook.address(),
+                trampoline.allocate(code));
         }
 
-        _VMESSAGE("success");
+        logger::trace("success");
 
         return true;
     }

@@ -2,35 +2,35 @@
 
 namespace patches
 {
-    REL::Offset<float*> FrameTimer_WithSlowTime(g_FrameTimer_SlowTime_offset);
+    REL::Relocation<float*> FrameTimer_WithSlowTime{ g_FrameTimer_SlowTime_offset };
 
     // +0x252
-    REL::Offset<std::uintptr_t> GameLoop_Hook(GameLoop_Hook_offset, 0x252);
-    REL::Offset<std::uint32_t*> UnkGameLoopDword(UnkGameLoopDword_offset);
+    REL::Relocation<std::uintptr_t> GameLoop_Hook{ GameLoop_Hook_offset, 0x252 };
+    REL::Relocation<std::uint32_t*> UnkGameLoopDword{ UnkGameLoopDword_offset };
 
     // 5th function in??_7BSWaterShader@@6B@ vtbl
     // F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
     // loads TIMER_DEFAULT which is a timer representing the GameHour in seconds
-    REL::Offset<std::uintptr_t> WaterShader_ReadTimer_Hook(WaterShader_ReadTimer_Hook_offset, 0x4A9);
+    REL::Relocation<std::uintptr_t> WaterShader_ReadTimer_Hook{ WaterShader_ReadTimer_Hook_offset, 0x4A9 };
 
     float timer = 8 * 3600;  // Game timer inits to 8 AM
 
     void update_timer()
     {
-        timer = timer + *FrameTimer_WithSlowTime * *config::waterflowSpeed;
+        timer = timer + *FrameTimer_WithSlowTime * static_cast<float>(*config::waterflowSpeed);
         if (timer > 86400)  // reset timer to 0 if we go past 24 hours
             timer = timer - 86400;
     }
 
     bool PatchWaterflowAnimation()
     {
-        _VMESSAGE("- waterflow timer -");
+        logger::trace("- waterflow timer -"sv);
 
-        _VMESSAGE("hooking new timer to the game update loop...");
+        logger::trace("hooking new timer to the game update loop..."sv);
         {
-            struct GameLoopHook_Code : SKSE::CodeGenerator
+            struct GameLoopHook_Code : Xbyak::CodeGenerator
             {
-                GameLoopHook_Code() : SKSE::CodeGenerator()
+                GameLoopHook_Code()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
@@ -73,14 +73,14 @@ namespace patches
             GameLoopHook_Code code;
             code.ready();
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(GameLoop_Hook.address(), code.getCode());
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(GameLoop_Hook.address(), trampoline.allocate(code));
         }
-        _VMESSAGE("replacing water flow timer with our timer...");
+        logger::trace("replacing water flow timer with our timer..."sv);
         {
-            struct WaterFlowHook_Code : SKSE::CodeGenerator
+            struct WaterFlowHook_Code : Xbyak::CodeGenerator
             {
-                WaterFlowHook_Code() : SKSE::CodeGenerator()
+                WaterFlowHook_Code()
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label timerLabel;
@@ -106,10 +106,12 @@ namespace patches
             WaterFlowHook_Code code;
             code.ready();
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(WaterShader_ReadTimer_Hook.address(), code.getCode());
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(
+                WaterShader_ReadTimer_Hook.address(),
+                trampoline.allocate(code));
         }
-        _VMESSAGE("success");
+        logger::trace("success"sv);
 
         return true;
     }
@@ -120,7 +122,7 @@ namespace patches
         errno_t err = VC140_fopen_s(File, Filename, Mode);
 
         if (err != 0)
-            _MESSAGE("WARNING: Error occurred trying to open file: fopen_s(%s, %s), errno %d", Filename, Mode, err);
+            logger::warn(FMT_STRING("Error occurred trying to open file: fopen_s({}, {}), errno {}"), Filename, Mode, err);
 
         return err;
     }
@@ -131,7 +133,7 @@ namespace patches
         errno_t err = VC140_wfopen_s(File, Filename, Mode);
 
         if (err != 0)
-            _MESSAGE("WARNING: Error occurred trying to open file: _wfopen_s(%p, %p), errno %d", Filename, Mode, err);
+            logger::warn(FMT_STRING("Error occurred trying to open file: _wfopen_s(?, ?), errno {}"), /*Filename, Mode,*/ err);
 
         return err;
     }
@@ -142,26 +144,26 @@ namespace patches
         FILE* f = VC140_fopen(Filename, Mode);
 
         if (!f)
-            _MESSAGE("WARNING: Error occurred trying to open file: fopen(%s, %s)", Filename, Mode);
+            logger::warn(FMT_STRING("Error occurred trying to open file: fopen({}, {})"), Filename, Mode);
 
         return f;
     }
 
     bool PatchMaxStdio()
     {
-        _VMESSAGE("- max stdio -");
+        logger::trace("- max stdio -"sv);
 
-        const HMODULE crtStdioModule = GetModuleHandleA("API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
+        const HMODULE crtStdioModule = GetModuleHandleW(L"API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
 
         if (!crtStdioModule)
         {
-            _VMESSAGE("crt stdio module not found, failed");
+            logger::trace("crt stdio module not found, failed"sv);
             return false;
         }
 
         const auto maxStdio = reinterpret_cast<decltype(&_setmaxstdio)>(GetProcAddress(crtStdioModule, "_setmaxstdio"))(2048);
 
-        _VMESSAGE("max stdio set to %d", maxStdio);
+        logger::trace(FMT_STRING("max stdio set to {}"), maxStdio);
 
         *(void**)&VC140_fopen_s = (std::uintptr_t*)SKSE::PatchIAT(hk_fopen_s, "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
         *(void**)&VC140_wfopen_s = (std::uintptr_t*)SKSE::PatchIAT(hk_wfopen_s, "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "_wfopen_s");
@@ -170,30 +172,30 @@ namespace patches
         return true;
     }
 
-    REL::Offset<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType(QuickSaveLoadHandler_HandleEvent_SaveType_offset, 0x68);
-    REL::Offset<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType(QuickSaveLoadHandler_HandleEvent_LoadType_offset, 0x9B);
+    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType{ QuickSaveLoadHandler_HandleEvent_SaveType_offset, 0x68 };
+    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType{ QuickSaveLoadHandler_HandleEvent_LoadType_offset, 0x9B };
 
     bool PatchRegularQuicksaves()
     {
         const std::uint32_t regular_save = 0xF0000080;
         const std::uint32_t load_last_save = 0xD0000100;
 
-        _VMESSAGE("- regular quicksaves -");
-        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_SaveType.address(), regular_save);
-        SKSE::SafeWrite32(QuickSaveLoadHandler_HandleEvent_LoadType.address(), load_last_save);
-        _VMESSAGE("success");
+        logger::trace("- regular quicksaves -"sv);
+        REL::safe_write(QuickSaveLoadHandler_HandleEvent_SaveType.address(), regular_save);
+        REL::safe_write(QuickSaveLoadHandler_HandleEvent_LoadType.address(), load_last_save);
+        logger::trace("success"sv);
         return true;
     }
 
-    REL::Offset<std::uintptr_t> AchievementModsEnabledFunction(AchievementModsEnabledFunction_offset);
+    REL::Relocation<std::uintptr_t> AchievementModsEnabledFunction{ AchievementModsEnabledFunction_offset };
 
     bool PatchEnableAchievementsWithMods()
     {
-        _VMESSAGE("- enable achievements with mods -");
+        logger::trace("- enable achievements with mods -"sv);
         // Xbyak is used here to generate the ASM to use instead of just doing it by hand
-        struct Patch : SKSE::CodeGenerator
+        struct Patch : Xbyak::CodeGenerator
         {
-            Patch() : SKSE::CodeGenerator(100)
+            Patch()
             {
                 mov(al, 0);
                 ret();
@@ -202,13 +204,9 @@ namespace patches
 
         Patch patch;
         patch.ready();
+        REL::safe_write(AchievementModsEnabledFunction.address(), stl::span{ patch.getCode(), patch.getSize() });
 
-        for (UInt32 i = 0; i < patch.getSize(); ++i)
-        {
-            SKSE::SafeWrite8(AchievementModsEnabledFunction.address() + i, patch.getCode()[i]);
-        }
-
-        _VMESSAGE("success");
+        logger::trace("success"sv);
         return true;
     }
 
@@ -217,28 +215,28 @@ namespace patches
     public:
         static void Install()
         {
-            constexpr std::array<std::uint64_t, 2> IDS = {
-                51507,
-                51509
+            constexpr std::array ids = {
+                static_cast<std::uint64_t>(51507),
+                static_cast<std::uint64_t>(51509),
             };
 
-            constexpr UInt8 RET = 0xC3;
+            constexpr std::uint8_t RET = 0xC3;
 
-            for (auto& id : IDS)
+            for (const auto& id : ids)
             {
-                REL::Offset<std::uintptr_t> target = REL::ID(id);
-                SKSE::SafeWrite8(target.address(), RET);
+                REL::Relocation<std::uintptr_t> target{ REL::ID(id) };
+                REL::safe_write(target.address(), RET);
             }
         }
     };
 
     bool PatchDisableChargenPrecache()
     {
-        _VMESSAGE("- disable chargen precache patch -");
+        logger::trace("- disable chargen precache patch -"sv);
 
         DisableChargenPrecachePatch::Install();
 
-        _VMESSAGE("success");
+        logger::trace("success"sv);
         return true;
     }
 
@@ -249,12 +247,12 @@ namespace patches
         if (loadSet)
             return true;
 
-        std::uintptr_t returnAddr = (std::uintptr_t)(_ReturnAddress()) - REL::Module::BaseAddr();
+        std::uintptr_t returnAddr = (std::uintptr_t)(_ReturnAddress()) - REL::Module::get().base();
 
         if (returnAddr == 0x16E11E)
         {
             loadSet = true;
-            _MESSAGE("load order finished");
+            logger::info("load order finished"sv);
             auto dhnl = RE::TESDataHandler::GetSingleton();
             for (auto& mod : dhnl->compiledFileCollection.files)
             {
@@ -266,72 +264,83 @@ namespace patches
         return (modInfo->recordFlags & RE::TESFile::RecordFlag::kMaster) != RE::TESFile::RecordFlag::kNone;
     }
 
-    REL::Offset<std::uintptr_t> TESFile_IsMaster(TESFile_IsMaster_offset);
+    REL::Relocation<std::uintptr_t> TESFile_IsMaster{ TESFile_IsMaster_offset };
 
     bool PatchTreatAllModsAsMasters()
     {
-        _VMESSAGE("- treat all mods as masters -");
-        MessageBox(nullptr, TEXT("WARNING: You have the treat all mods as masters patch enabled. I hope you know what you're doing!"), TEXT("Engine Fixes for Skyrim Special Edition"), MB_OK);
-        auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(TESFile_IsMaster.address(), unrestricted_cast<std::uintptr_t>(hk_TESFile_IsMaster));
-        _VMESSAGE("success");
+        logger::trace("- treat all mods as masters -"sv);
+        MessageBoxW(nullptr, L"WARNING: You have the treat all mods as masters patch enabled. I hope you know what you're doing!", L"Engine Fixes for Skyrim Special Edition", MB_OK);
+        auto& trampoline = SKSE::GetTrampoline();
+        trampoline.write_branch<6>(TESFile_IsMaster.address(), reinterpret_cast<std::uintptr_t>(hk_TESFile_IsMaster));
+        logger::trace("success"sv);
 
         return true;
     }
 
-    REL::Offset<std::uintptr_t> FirstPersonState_DontSwitchPOV(FirstPersonState_DontSwitchPOV_offset, 0x43);
-    REL::Offset<std::uintptr_t> ThirdPersonState_DontSwitchPOV(ThirdPersonState_DontSwitchPOV_offset, 0x1E8);
+    REL::Relocation<std::uintptr_t> FirstPersonState_DontSwitchPOV{ FirstPersonState_DontSwitchPOV_offset, 0x43 };
+    REL::Relocation<std::uintptr_t> ThirdPersonState_DontSwitchPOV{ ThirdPersonState_DontSwitchPOV_offset, 0x1E8 };
 
     bool PatchScrollingDoesntSwitchPOV()
     {
-        _VMESSAGE("- scrolling doesnt switch POV -");
-        SKSE::SafeWrite8(FirstPersonState_DontSwitchPOV.address(), 0xEB);
-        SKSE::SafeWrite8(ThirdPersonState_DontSwitchPOV.address(), 0xEB);
-        _VMESSAGE("- success -");
+        logger::trace("- scrolling doesnt switch POV -"sv);
+        constexpr std::uint8_t BYTE{ 0xEB };
+        REL::safe_write(FirstPersonState_DontSwitchPOV.address(), BYTE);
+        REL::safe_write(ThirdPersonState_DontSwitchPOV.address(), BYTE);
+        logger::trace("- success -"sv);
         return true;
     }
-
-    REL::Offset<std::uintptr_t> SleepWaitTime_Compare(SleepWaitTime_Compare_offset, 0x1CE);
 
     bool PatchSleepWaitTime()
     {
-        _VMESSAGE("- sleep wait time -");
+        logger::trace("- sleep wait time -"sv);
         {
-            struct SleepWaitTime_Code : SKSE::CodeGenerator
+            constexpr std::uint8_t NOP{ 0x90 };
+            REL::Relocation<std::uintptr_t> target{ REL::ID(51614), 0x1CE };
+
+            struct SleepWaitTime_Code : Xbyak::CodeGenerator
             {
-                SleepWaitTime_Code() : SKSE::CodeGenerator()
+                SleepWaitTime_Code(std::uintptr_t a_address, double a_val)
                 {
+                    static float VAL = static_cast<float>(a_val);
+
                     push(rax);
-                    mov(rax, (std::size_t)std::addressof(*config::sleepWaitTimeModifier));
+
+                    mov(rax, unrestricted_cast<std::uintptr_t>(std::addressof(VAL)));
                     comiss(xmm0, ptr[rax]);
+
                     pop(rax);
+
                     jmp(ptr[rip]);
-                    dq(SleepWaitTime_Compare.address() + 0x7);
+                    dq(a_address + 0x7);
                 }
             };
 
-            SleepWaitTime_Code code;
+            SleepWaitTime_Code code(target.address(), *config::sleepWaitTimeModifier);
             code.ready();
 
-            auto trampoline = SKSE::GetTrampoline();
-            trampoline->Write6Branch(SleepWaitTime_Compare.address(), code.getCode());
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(
+                target.address(),
+                trampoline.allocate(code));
+            REL::safe_write(target.address() + 0x6, NOP);
         }
-        _VMESSAGE("success");
+        logger::trace("success"sv);
         return true;
     }
 
-    REL::Offset<std::uintptr_t> Win32FileType_CopyToBuffer(Win32FileType_CopyToBuffer_offset, 0x14);
-    REL::Offset<std::uintptr_t> Win32FileType_ctor(Win32FileType_ctor_offset, 0x14E);
-    REL::Offset<std::uintptr_t> ScrapHeap_GetMaxSize(ScrapHeap_GetMaxSize_offset, 0x4);
+    REL::Relocation<std::uintptr_t> Win32FileType_CopyToBuffer{ Win32FileType_CopyToBuffer_offset, 0x14 };
+    REL::Relocation<std::uintptr_t> Win32FileType_ctor{ Win32FileType_ctor_offset, 0x14E };
+    REL::Relocation<std::uintptr_t> ScrapHeap_GetMaxSize{ ScrapHeap_GetMaxSize_offset, 0x4 };
 
     bool PatchSaveGameMaxSize()
     {
-        _VMESSAGE("- save game max size -");
-        SKSE::SafeWrite8(Win32FileType_CopyToBuffer.address(), 0x08);
-        SKSE::SafeWrite8(Win32FileType_ctor.address(), 0x08);
-        SKSE::SafeWrite8(ScrapHeap_GetMaxSize.address(), 0x08);
+        logger::trace("- save game max size -"sv);
+        constexpr std::uint8_t BYTE{ 0x08 };
+        REL::safe_write(Win32FileType_CopyToBuffer.address(), BYTE);
+        REL::safe_write(Win32FileType_ctor.address(), BYTE);
+        REL::safe_write(ScrapHeap_GetMaxSize.address(), BYTE);
 
-        _VMESSAGE("success");
+        logger::trace("success"sv);
         return true;
     }
 }

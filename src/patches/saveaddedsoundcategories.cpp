@@ -3,12 +3,15 @@
 
 namespace patches
 {
-    tortellini::ini snctIni;
+    REL::Relocation<bool(void*)> orig_INIPrefSettingCollection_Unlock;
 
-    const REL::Offset<bool (**)(RE::BSISoundCategory* a_this, float a_volume)> vtbl_BSISoundCategory_SetVolume{ REL::ID(236602), 0x8 * 0x3 };  // ::SetVolume = vtable[3] in ??_7BGSSoundCategory@@6B@_1 (BSISoundCategory)
-    REL::Offset<bool(void*)> orig_INIPrefSettingCollection_Unlock;
+    constexpr std::string_view FILE_NAME = "Data/SKSE/Plugins/EngineFixes_SNCT.toml"sv;
 
-    constexpr std::string_view FILE_NAME = "Data/SKSE/plugins/EngineFixes_SNCT.ini";
+    toml::table& get_store()
+    {
+        static toml::table store;
+        return store;
+    }
 
     bool hk_INIPrefSettingCollection_Unlock(void* thisPtr)
     {
@@ -16,14 +19,16 @@ namespace patches
 
         if (dataHandler)
         {
+            auto& store = get_store();
+
             for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
                 if (soundCategory->IsMenuCategory())
                 {
                     auto fullName = soundCategory->GetFullName();
                     fullName = fullName ? fullName : "";
-                    _VMESSAGE("processing %s", fullName);
-                    _VMESSAGE("menu flag set, saving");
+                    logger::trace(FMT_STRING("processing {}"), fullName);
+                    logger::trace("menu flag set, saving"sv);
                     auto localFormID = soundCategory->formID & 0x00FFFFFF;
                     // esl
                     if ((soundCategory->formID & 0xFF000000) == 0xFE000000)
@@ -31,28 +36,38 @@ namespace patches
                         localFormID = localFormID & 0x00000FFF;
                     }
                     auto srcFile = soundCategory->GetDescriptionOwnerFile();
-                    _VMESSAGE("plugin: %s form id: %08X", srcFile->fileName, localFormID);
+                    logger::trace(FMT_STRING("plugin: {} form id: {:08X}"), srcFile->fileName, localFormID);
 
                     char localFormIDHex[] = "DEADBEEF";
                     sprintf_s(localFormIDHex, std::extent_v<decltype(localFormIDHex)>, "%08X", localFormID);
 
-                    snctIni[srcFile->fileName][localFormIDHex] = static_cast<double>(soundCategory->volumeMult);
+                    auto table = store.get_as<toml::table>(srcFile->fileName);
+                    if (!table)
+                    {
+                        table =
+                            store.insert_or_assign(
+                                     srcFile->fileName,
+                                     toml::table{})
+                                .first->second.as_table();
+                    }
+
+                    table->insert_or_assign(localFormIDHex, static_cast<double>(soundCategory->volumeMult));
                 }
             }
 
             std::ofstream file{ FILE_NAME, std::ios_base::out | std::ios_base::trunc };
             if (!file)
             {
-                _VMESSAGE("warning: unable to save snct ini");
+                logger::trace("warning: unable to save snct ini"sv);
             }
 
-            file << snctIni;
+            file << store;
 
-            _VMESSAGE("SNCT save: saved sound categories");
+            logger::trace("SNCT save: saved sound categories"sv);
         }
         else
         {
-            _VMESSAGE("SNCT save: data handler not ready, not saving sound categories for this call");
+            logger::trace("SNCT save: data handler not ready, not saving sound categories for this call"sv);
         }
 
         return orig_INIPrefSettingCollection_Unlock(thisPtr);
@@ -60,11 +75,13 @@ namespace patches
 
     void LoadVolumes()
     {
-        _VMESSAGE("game has loaded, setting volumes");
+        logger::trace("game has loaded, setting volumes"sv);
 
         const auto dataHandler = RE::TESDataHandler::GetSingleton();
         if (dataHandler)
         {
+            auto& store = get_store();
+
             for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
             {
                 auto localFormID = soundCategory->formID & 0x00FFFFFF;
@@ -77,12 +94,13 @@ namespace patches
                 sprintf_s(localFormIDHex, std::extent_v<decltype(localFormIDHex)>, "%08X", localFormID);
 
                 auto srcFile = soundCategory->GetDescriptionOwnerFile();
-                const auto vol = snctIni[srcFile->fileName][localFormIDHex] | -1.0;
+                const auto vol = store[srcFile->fileName][localFormIDHex].as_floating_point();
 
-                if (vol != -1.0)
+                if (vol)
                 {
-                    _VMESSAGE("setting volume for formid %08X", soundCategory->formID);
-                    (*vtbl_BSISoundCategory_SetVolume)(soundCategory, static_cast<float>(vol));
+                    logger::trace(FMT_STRING("setting volume for formid {:08X}"), soundCategory->formID);
+                    const REL::Relocation<bool (**)(RE::BSISoundCategory*, float)> SetVolume{ REL::ID(236602), 0x8 * 0x3 };
+                    (*SetVolume)(soundCategory, static_cast<float>(vol->get()));
                 }
             }
         }
@@ -90,21 +108,19 @@ namespace patches
 
     bool PatchSaveAddedSoundCategories()
     {
-        _VMESSAGE("- save added sound categories -");
+        logger::trace("- save added sound categories -"sv);
 
-        std::ifstream file{ FILE_NAME };
-        if (!file)
+        try
         {
-            _VMESSAGE("unable to load SNCT ini, disabling patch");
-            return false;
-        }
+            auto& store = get_store();
+            store = toml::parse_file(FILE_NAME);
+        } catch (const std::exception&)
+        {}
 
-        file >> snctIni;
-
-        _VMESSAGE("hooking vtbls");
-        REL::Offset<std::uintptr_t> vtbl{ REL::ID(230546) };  // INIPrefSettingCollection
+        logger::trace("hooking vtbls"sv);
+        REL::Relocation<std::uintptr_t> vtbl{ REL::ID(230546) };  // INIPrefSettingCollection
         orig_INIPrefSettingCollection_Unlock = vtbl.write_vfunc(0x6, hk_INIPrefSettingCollection_Unlock);
-        _VMESSAGE("success");
+        logger::trace("success"sv);
         return true;
     }
 }

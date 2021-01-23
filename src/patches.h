@@ -17,8 +17,9 @@ namespace patches
     bool PatchWaterflowAnimation();
 
     bool PatchMemoryManager();
-    bool PatchTBBMalloc();
+    bool PatchSafeExit();
     bool PatchSaveGameMaxSize();
+    bool PatchScaleformAllocator();
     bool PatchTreatAllModsAsMasters();
 
     void LoadVolumes();

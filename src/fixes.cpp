@@ -49,6 +49,9 @@ namespace fixes
         if (*config::fixGHeapLeakDetectionCrash)
             PatchGHeapLeakDetectionCrash();
 
+        if (*config::fixGlobalTime)
+            PatchGlobalTime();
+
         if (*config::fixLipSync)
             PatchLipSync();
 

@@ -2,15 +2,18 @@
 
 [EngineFixes]
 VerboseLogging = false                  # Add extra log messages
-CleanSKSECosaves = true                 # Delete SKSE cosaves that have no matching save
+CleanSKSECosaves = false                # Delete SKSE cosaves that have no matching save
 
 [Patches]
 DisableChargenPrecache = false          # "Precache Killer", same patch that is already in RaceMenu
 EnableAchievementsWithMods = true       # Enables achievements with mods active
 FormCaching = true                      # Attempts to speed up the global form table by caching recently used forms (SSE Fixes)
 MaxStdio = true                         # Sets the maximum number of open file handles to 2048 (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
+MemoryManager = true                    # Replaces Skyrim's global allocator
 RegularQuicksaves = false               # Makes quick saves into regular saves
+SafeExit = true                         # Prevent the game from hanging while shutting down
 SaveAddedSoundCategories = true         # Save sound categories added by mods
+ScaleformAllocator = true               # Replaces the scaleform allocator
 ScrollingDoesntSwitchPOV = false        # Disables swapping between 1st/3rd person when using scroll to zoom, making it require manual swapping
 SleepWaitTime = false                   # Modifies how long it takes an hour to pass when sleeping/waiting. 
 SleepWaitTimeModifier = 0.3             # 1.0 = default, smaller = faster, larger = slower
@@ -34,6 +37,7 @@ DoublePerkApply = true                  # Fix NPC perks applying twice when you 
 EquipShoutEventSpam = true              # Fix a bug where the "equip shout" procedure will send a "shout equipped" event even if the shout fails to equip
 GetKeywordItemCount = true              # Fix the condition function "GetKeywordItemCount", which returns broken results in numerous cases
 GHeapLeakDetectionCrash = true          # Fix a crash where scaleform attempts to report a memory leak but the code doesnt exist in Skyrim's build
+GlobalTime = true                       # Fixes game systems that are affected by game time instead of real time
 LipSync = true                          # Fix a bug causing lip sync to desync. Same as LE bug fix.
 MemoryAccessErrors = true               # Fix a handful of out-of-bounds or use-after-free bugs. Required for experimental memory patches.
 MO5STypo = true                         # Fix a typo preventing the game from loading MO5S (1st person female alternate texture set) entries in ARMA forms
@@ -48,14 +52,12 @@ VerticalLookSensitivity = true          # Make vertical look sensitivity not tie
 WeaponBlockScaling = true               # Fix weapon blocking so it correctly scales off of the blocking actor's weapon
 
 [Warnings]
-DupeAddonNodes = true                   # Warns if there are two or more addon nodes (ADDN) with the same node index in your load order
+DupeAddonNodes = false                  # Warns if there are two or more addon nodes (ADDN) with the same node index in your load order
 RefHandleLimit = true                   # Warns when you are close to the reference handle limit at main menu and after loading a save
 RefrMainMenuLimit = 800000              # Handle count to warn at on main menu
 RefrLoadedGameLimit = 1000000           # Handle count to warn at after loading a save game
 
 [Experimental]
-MemoryManager = false                   # Disables Skyrim's memory manager in favor of standard allocation (Use OS Allocators), can help with ILS
-UseTBBMalloc = true                     # Uses TBBMalloc instead of standard allocators, only active if MemoryManager is true
 SaveGameMaxSize = false                 # Expands the maximum uncompressed size of a save game from 64 MB to 128 MB# can fix "crash on save" issue in long-runnning saves
 
 # DO NOT USE THIS IT IS FOR SPECIFIC TESTING ONLY

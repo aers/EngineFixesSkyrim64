@@ -3,17 +3,17 @@
 namespace patches
 {
     typedef void (*UpdateBlockVisibility_)(RE::BGSDistantTreeBlock* data);
-    REL::Offset<UpdateBlockVisibility_> UpdateBlockVisibility_orig(UpdateBlockVisibility_orig_offset);
+    REL::Relocation<UpdateBlockVisibility_> UpdateBlockVisibility_orig{ UpdateBlockVisibility_orig_offset };
 
     typedef uint16_t (*Float2Half_)(float f);
-    REL::Offset<Float2Half_> Float2Half(Float2Half_offset);
+    REL::Relocation<Float2Half_> Float2Half{ Float2Half_offset };
 
-    typedef RE::TESForm* (*_LookupFormByID)(uint32_t id);
-    REL::Offset<_LookupFormByID> LookupFormByID(LookupFormByID_offset);
+    typedef RE::TESForm* (*_LookupFormByID)(std::uint32_t id);
+    REL::Relocation<_LookupFormByID> LookupFormByID{ LookupFormByID_offset };
 
-    tbb::concurrent_hash_map<uint32_t, RE::TESObjectREFR*> referencesFormCache;
+    tbb::concurrent_hash_map<std::uint32_t, RE::TESObjectREFR*> referencesFormCache;
 
-    void InvalidateCachedForm(uint32_t FormId)
+    void InvalidateCachedForm(std::uint32_t FormId)
     {
         referencesFormCache.erase(FormId & 0x00FFFFFF);
     }
@@ -24,21 +24,19 @@ namespace patches
         {
             for (auto& instance : group->instances)
             {
-                const uint32_t maskedFormId = instance.id & 0x00FFFFFF;
+                const std::uint32_t maskedFormId = instance.id & 0x00FFFFFF;
 
                 RE::TESObjectREFR* refrObject = nullptr;
 
                 decltype(referencesFormCache)::accessor accessor;
 
                 if (referencesFormCache.find(accessor, maskedFormId))
-                {
                     refrObject = accessor->second;
-                }
                 else
                 {
                     // Find first valid tree object by ESP/ESM load order
                     auto dataHandler = RE::TESDataHandler::GetSingleton();
-                    for (uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
+                    for (std::uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
                     {
                         RE::TESForm* form = LookupFormByID((i << 24) | maskedFormId);
                         if (form)
@@ -93,7 +91,7 @@ namespace patches
                         fullyHidden = true;
                 }
 
-                const uint16_t halfFloat = Float2Half(alpha);
+                const std::uint16_t halfFloat = Float2Half(alpha);
 
                 if (instance.alpha != halfFloat)
                 {
@@ -115,12 +113,12 @@ namespace patches
 
     bool PatchTreeLODReferenceCaching()
     {
-        _VMESSAGE("- Tree LOD Reference Caching -");
+        logger::trace("- Tree LOD Reference Caching -"sv);
 
-        _VMESSAGE("detouring UpdateLODAlphaFade");
-        auto trampoline = SKSE::GetTrampoline();
-        trampoline->Write6Branch(UpdateBlockVisibility_orig.address(), unrestricted_cast<std::uintptr_t>(hk_UpdateBlockVisibility));
-        _VMESSAGE("success");
+        logger::trace("detouring UpdateLODAlphaFade"sv);
+        auto& trampoline = SKSE::GetTrampoline();
+        trampoline.write_branch<6>(UpdateBlockVisibility_orig.address(), reinterpret_cast<std::uintptr_t>(hk_UpdateBlockVisibility));
+        logger::trace("success"sv);
 
         return true;
     }
