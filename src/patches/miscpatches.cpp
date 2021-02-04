@@ -161,7 +161,7 @@ namespace patches
             return false;
         }
 
-        const auto maxStdio = reinterpret_cast<decltype(&_setmaxstdio)>(GetProcAddress(crtStdioModule, "_setmaxstdio"))(2048);
+        const auto maxStdio = reinterpret_cast<decltype(&_setmaxstdio)>(GetProcAddress(crtStdioModule, "_setmaxstdio"))(8192);
 
         logger::trace(FMT_STRING("max stdio set to {}"), maxStdio);
 
