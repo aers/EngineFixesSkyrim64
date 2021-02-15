@@ -384,6 +384,41 @@ namespace fixes
         return true;
     }
 
+    class CombatDialoguePatch
+    {
+    public:
+        static void Install()
+        {
+            REL::Relocation<std::uintptr_t> target(REL::ID{ 43571 });
+            SKSE::GetTrampoline().write_call<5>(target.address() + 0x135, &Patch);
+        }
+
+    private:
+        static constexpr std::uint32_t LostToNormal = 63;
+        static constexpr std::uint32_t CombatToNormal = 61;
+
+        static void Patch(float a_unk1, RE::Actor* a_thisActor, RE::Actor* a_target, std::uint32_t a_unk4, std::uint32_t a_eventType, std::uint64_t a_unk6, void* a_unk7)
+        {
+            if (a_eventType == LostToNormal && a_target->IsDead())
+            {
+                a_eventType = CombatToNormal;
+            }
+
+            REL::Relocation<decltype(&Patch)> func(REL::ID{ 43467 });
+            return func(a_unk1, a_thisActor, a_target, a_unk4, a_eventType, a_unk6, a_unk7);
+        }
+    };
+
+    bool PatchCombatDialogue()
+    {
+        logger::trace("- combat dialogue fix -"sv);
+
+        CombatDialoguePatch::Install();
+
+        logger::trace("success"sv);
+        return true;
+    }
+
     class ConjurationEnchantAbsorbsPatch
     {
     public:

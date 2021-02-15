@@ -31,6 +31,7 @@ BSLightingShaderParallaxBug = true      # Fixes a bug causing the parallax techn
 BSTempEffectNiRTTI = true               # Fixes a bug where the NiRTTI for this object is not set properly
 CalendarSkipping = true                 # Fix a bug where the game calendar effectively skips a year if you fast travel too far between 20:00 and 23:99 in-game
 CellInit = true                         # Fixes a rare crash where a form does not get converted from an id to a pointer
+CombatDialogue = true                   # Fix a bug that causes the NPCs to use LostToNormal dialogue instead of CombatToNormal after killing their target
 ConjurationEnchantAbsorbs = true        # Fix bug where spell absorption triggers on enchanted items using conjuration summons
 CreateArmorNodeNullptrCrash = true      # Fix typo that may cause a crash somewhere in CreateArmorNode
 DoublePerkApply = true                  # Fix NPC perks applying twice when you load a game

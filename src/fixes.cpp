@@ -34,6 +34,9 @@ namespace fixes
         if (*config::fixCreateArmorNodeNullptrCrash)
             PatchCreateArmorNodeNullptrCrash();
 
+        if (*config::fixCombatDialogue)
+            PatchCombatDialogue();
+
         if (*config::fixConjurationEnchantAbsorbs)
             PatchConjurationEnchantAbsorbs();
 

@@ -42,6 +42,7 @@ public:
     static inline bSetting fixCalendarSkipping{ "Fixes", "CalendarSkipping", true };
     static inline bSetting fixCellInit{ "Fixes", "CellInit", true };
     static inline bSetting fixCreateArmorNodeNullptrCrash{ "Fixes", "CreateArmorNodeNullptrCrash", true };
+    static inline bSetting fixCombatDialogue{ "Fixes", "CombatDialogue", true };
     static inline bSetting fixConjurationEnchantAbsorbs{ "Fixes", "ConjurationEnchantAbsorbs", true };
     static inline bSetting fixDoublePerkApply{ "Fixes", "DoublePerkApply", true };
     static inline bSetting fixEquipShoutEventSpam{ "Fixes", "EquipShoutEventSpam", true };
