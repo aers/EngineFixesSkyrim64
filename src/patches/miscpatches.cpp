@@ -153,9 +153,10 @@ namespace patches
     {
         logger::trace("- max stdio -"sv);
 
-        const auto handle = GetModuleHandle(L"API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
+        const auto handle = GetModuleHandleW(L"API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
         const auto proc = handle ?
-            reinterpret_cast<decltype(&_setmaxstdio)>(GetProcAddress(handle, "_setmaxstdio")) : nullptr;
+            reinterpret_cast<decltype(&_setmaxstdio)>(GetProcAddress(handle, "_setmaxstdio")) :
+            nullptr;
 
         if (!proc) {
             logger::trace("crt stdio module not found, failed"sv);
