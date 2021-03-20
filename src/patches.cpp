@@ -13,7 +13,7 @@ namespace patches
         if (*config::patchFormCaching)
             PatchFormCaching();
 
-        if (*config::patchMaxStdio)
+        if (*config::patchMaxStdio != -1)
             PatchMaxStdio();
 
         if (*config::patchRegularQuicksaves)

@@ -18,7 +18,7 @@ public:
     static inline bSetting patchDisableChargenPrecache{ "Patches", "DisableChargenPrecache", false };
     static inline bSetting patchEnableAchievementsWithMods{ "Patches", "EnableAchievementsWithMods", true };
     static inline bSetting patchFormCaching{ "Patches", "FormCaching", true };
-    static inline bSetting patchMaxStdio{ "Patches", "MaxStdio", true };
+    static inline iSetting patchMaxStdio{ "Patches", "MaxStdio", -1 };
     static inline bSetting patchMemoryManager{ "Patches", "MemoryManager", true };
     static inline bSetting patchRegularQuicksaves{ "Patches", "RegularQuicksaves", false };
     static inline bSetting patchSafeExit{ "Patches", "SafeExit", true };
