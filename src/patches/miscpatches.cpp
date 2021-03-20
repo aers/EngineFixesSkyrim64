@@ -153,17 +153,17 @@ namespace patches
     {
         logger::trace("- max stdio -"sv);
 
-        const HMODULE crtStdioModule = GetModuleHandleW(L"API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
+        const auto handle = GetModuleHandle(L"API-MS-WIN-CRT-STDIO-L1-1-0.DLL");
+        const auto proc = handle ?
+            reinterpret_cast<decltype(&_setmaxstdio)>(GetProcAddress(handle, "_setmaxstdio")) : nullptr;
 
-        if (!crtStdioModule)
-        {
+        if (!proc) {
             logger::trace("crt stdio module not found, failed"sv);
             return false;
         }
 
-        const auto maxStdio = reinterpret_cast<decltype(&_setmaxstdio)>(GetProcAddress(crtStdioModule, "_setmaxstdio"))(2048);
-
-        logger::trace(FMT_STRING("max stdio set to {}"), maxStdio);
+        const auto result = proc(static_cast<int>(*config::patchMaxStdio));
+        logger::trace("max stdio set to {}"sv, result);
 
         *(void**)&VC140_fopen_s = (std::uintptr_t*)SKSE::PatchIAT(hk_fopen_s, "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "fopen_s");
         *(void**)&VC140_wfopen_s = (std::uintptr_t*)SKSE::PatchIAT(hk_wfopen_s, "API-MS-WIN-CRT-STDIO-L1-1-0.DLL", "_wfopen_s");
