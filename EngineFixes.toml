@@ -8,14 +8,14 @@ CleanSKSECosaves = false                # Delete SKSE cosaves that have no match
 DisableChargenPrecache = false          # "Precache Killer", same patch that is already in RaceMenu
 EnableAchievementsWithMods = true       # Enables achievements with mods active
 FormCaching = true                      # Attempts to speed up the global form table by caching recently used forms (SSE Fixes)
-MaxStdio = -1	                        # Sets the maximum number of open file handles (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
+MaxStdio = -1                           # Sets the maximum number of open file handles (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
 MemoryManager = true                    # Replaces Skyrim's global allocator
 RegularQuicksaves = false               # Makes quick saves into regular saves
 SafeExit = true                         # Prevent the game from hanging while shutting down
 SaveAddedSoundCategories = true         # Save sound categories added by mods
 ScaleformAllocator = true               # Replaces the scaleform allocator
 ScrollingDoesntSwitchPOV = false        # Disables swapping between 1st/3rd person when using scroll to zoom, making it require manual swapping
-SleepWaitTime = false                   # Modifies how long it takes an hour to pass when sleeping/waiting. 
+SleepWaitTime = false                   # Modifies how long it takes an hour to pass when sleeping/waiting.
 SleepWaitTimeModifier = 0.3             # 1.0 = default, smaller = faster, larger = slower
 TreeLODReferenceCaching = true          # Speeds up the slow Tree LOD function. Requires FormCaching to be active. (SSE Fixes)
 WaterflowAnimation = true               # Decouple water flow animation speed from in-game timescale and use our setting instead
@@ -26,7 +26,7 @@ ArcheryDownwardAiming = true            # Fix a bug where arrows don't fire prop
 AnimationLoadSignedCrash = true         # Fix a misplaced use of a signed value. Should allow to load more animations before CTD
 BethesdaNetCrash = true                 # Fix the game crashing on startup if you live in a city or country with special characters in the name
 BSLightingAmbientSpecular = true        # Fix bug where lighting template Directional Ambient Specular & Fresnel Power are sent to BSLighting shader incorrectly
-BSLightingShaderForceAlphaTest = true   # Forces alpha test flag on when NiAlphaProperty/AlphaTest true. Fixes object LOD reflections. 
+BSLightingShaderForceAlphaTest = true   # Forces alpha test flag on when NiAlphaProperty/AlphaTest true. Fixes object LOD reflections.
 BSLightingShaderParallaxBug = true      # Fixes a bug causing the parallax technique to break if specular is not also set
 BSTempEffectNiRTTI = true               # Fixes a bug where the NiRTTI for this object is not set properly
 CalendarSkipping = true                 # Fix a bug where the game calendar effectively skips a year if you fast travel too far between 20:00 and 23:99 in-game
@@ -61,4 +61,4 @@ RefrLoadedGameLimit = 1000000           # Handle count to warn at after loading 
 SaveGameMaxSize = false                 # Expands the maximum uncompressed size of a save game from 64 MB to 128 MB# can fix "crash on save" issue in long-runnning saves
 
 # DO NOT USE THIS IT IS FOR SPECIFIC TESTING ONLY
-TreatAllModsAsMasters = false           # Loads all mods as if they are masters. 
+TreatAllModsAsMasters = false           # Loads all mods as if they are masters.
