@@ -58,6 +58,9 @@ namespace fixes
         if (*config::fixMemoryAccessErrors)
             PatchMemoryAccessErrors();
 
+        if (*config::fixMusicOverlap)
+            PatchMusicOverlap();
+
         if (*config::fixMO5STypo)
             PatchMO5STypo();
 
