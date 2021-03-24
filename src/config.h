@@ -50,6 +50,7 @@ public:
     static inline bSetting fixGlobalTime{ "Fixes", "GlobalTime", true };
     static inline bSetting fixLipSync{ "Fixes", "LipSync", true };
     static inline bSetting fixMemoryAccessErrors{ "Fixes", "MemoryAccessErrors", true };
+    static inline bSetting fixMusicOverlap{ "Fixes", "MusicOverlap", true };
     static inline bSetting fixMO5STypo{ "Fixes", "MO5STypo", true };
     static inline bSetting fixNullProcessCrash{ "Fixes", "NullProcessCrash", true };
     static inline bSetting fixPerkFragmentIsRunning{ "Fixes", "PerkFragmentIsRunning", true };

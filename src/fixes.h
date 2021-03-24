@@ -23,6 +23,7 @@ namespace fixes
     bool PatchGlobalTime();
     bool PatchLipSync();
     bool PatchMemoryAccessErrors();
+    bool PatchMusicOverlap();
     bool PatchMO5STypo();
     bool PatchNullProcessCrash();
     bool PatchPerkFragmentIsRunning();

@@ -749,6 +749,26 @@ namespace fixes
         return true;
     }
 
+    class MusicOverlapPatch
+    {
+    public:
+        static void Install()
+        {
+            REL::Relocation<std::uintptr_t> target(REL::ID{ 20700 });
+            REL::safe_write(target.address() + 0x22, std::uint16_t(0x9090));
+        }
+    };
+
+    bool PatchMusicOverlap()
+    {
+        logger::trace("- music overlap fix -"sv);
+
+        MusicOverlapPatch::Install();
+
+        logger::trace("success"sv);
+        return true;
+    }
+
     class MO5STypoPatch
     {
     public:

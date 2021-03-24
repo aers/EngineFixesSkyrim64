@@ -40,6 +40,7 @@ GHeapLeakDetectionCrash = true          # Fix a crash where scaleform attempts t
 GlobalTime = true                       # Fixes game systems that are affected by game time instead of real time
 LipSync = true                          # Fix a bug causing lip sync to desync. Same as LE bug fix.
 MemoryAccessErrors = true               # Fix a handful of out-of-bounds or use-after-free bugs. Required for experimental memory patches.
+MusicOverlap = true                     # Fix a bug where multiple music track is playing at the same time
 MO5STypo = true                         # Fix a typo preventing the game from loading MO5S (1st person female alternate texture set) entries in ARMA forms
 NullProcessCrash = true                 # Fix a couple cases where the game can crash when checking the equipped weapons of an actor without an AI process
 PerkFragmentIsRunning = true            # Fix crash if the IsRunning function of a Perk Fragment is called on a non-Actor form
