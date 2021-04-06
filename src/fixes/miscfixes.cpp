@@ -1311,7 +1311,6 @@ namespace fixes
         logger::trace(FMT_STRING("- workaround for crash in ShadowSceneNode::unk_{:X} -"), fid.offset());
 
         const uint8_t *crashaddr = (uint8_t*)(uintptr_t)(faddr + 22);
-        atchShadowSceneNodeNullptrCrash()
         /*
                         mov     rax,qword ptr [rdx]
         ... some movs ...
