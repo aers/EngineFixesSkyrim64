@@ -18,6 +18,7 @@ namespace fixes
     bool PatchCreateArmorNodeNullptrCrash();
     bool PatchDoublePerkApply();
     bool PatchEquipShoutEventSpam();
+    bool PatchFaceGenMorphDataHeadNullptrCrash();
     bool PatchGetKeywordItemCount();
     bool PatchGHeapLeakDetectionCrash();
     bool PatchGlobalTime();
@@ -28,6 +29,7 @@ namespace fixes
     bool PatchPerkFragmentIsRunning();
     bool PatchRemovedSpellBook();
     bool PatchSaveScreenshots();
+    bool PatchShadowSceneNodeNullptrCrash();
     bool PatchSlowTimeCameraMovement();
     bool PatchTorchLandscape();
     bool PatchTreeReflections();
