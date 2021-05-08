@@ -55,6 +55,9 @@ namespace fixes
         if (*config::fixGlobalTime)
             PatchGlobalTime();
 
+        if (*config::fixInitializeHitDataNullptrCrash)
+            PatchInitializeHitDataNullptrCrash();
+
         if (*config::fixLipSync)
             PatchLipSync();
 

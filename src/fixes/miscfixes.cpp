@@ -1488,4 +1488,77 @@ namespace fixes
         logger::trace("success"sv);
         return true;
     }
+
+    // Fixes crash on weapon swing impact when the weapon loses some associated data just before HitData::InitializeHitData() is called.
+    // Possibly a disarm caused by an on-hit triggered perk or spell effect?
+    bool PatchInitializeHitDataNullptrCrash()
+    {
+        /* HitData::InitializeHitData() aka sub_140742850 in version 1.5.97
+        ... part of the function setup ...
+        00007FF74208285E 4D 8B F9                  mov  r15,r9  <---- This is weapon. fine if it's NULL
+        00007FF742082861 49 8B E8                  mov  rbp,r8
+        00007FF742082864 48 8B FA                  mov  rdi,rdx
+        00007FF742082867 48 8B D9                  mov  rbx,rcx
+        [...]
+        00007FF7420828A9 4D 85 FF                  test r15,r15
+        00007FF7420828AC 74 09                 +-- je   00007FF7420828B7
+        00007FF7420828AE 49 8B 0F              |   mov  rcx,qword ptr [r15]    <--- This is weapon->object and may load rcx == 0
+        00007FF7420828B1 80 79 1A 29           |   cmp  byte ptr [rcx+1Ah],29h <--- Crashes here when rcx == 0
+        00007FF7420828B5 74 07                 |   je   00007FF7420828BE
+        00007FF7420828B7 48 8B 0D AA CF 7B 02  +-> mov  rcx,qword ptr [7FF74483F868h]
+
+        The code checks for r15 != NULL but forgets to check the loaded pointer before dereferencing.
+        Patch near the entry point of the function to make sure nothing similar happens further down somewhere.
+        The fix is equivalent to inserting this at the start of the function (thanks Nukem):
+          if (weapon && !weapon->object)
+              weapon = nullptr;
+        */
+
+        logger::trace("- fix for crash in HitData::InitializeHitData -"sv);
+
+        const uint64_t faddr = REL::ID(42832).address();
+        const uint8_t *locMovR15 = unrestricted_cast<const uint8_t*>(faddr + 14);
+        //                        mov r15,r9          mov rbp,r8 (replicated in the trampoline code below)
+        const char expected[] = { 0x4D, 0x8B, 0xF9,   0x49, 0x8B, 0xE8 };
+        if(std::memcmp(locMovR15, expected, sizeof(expected)))
+            return false;
+
+        const uint8_t *locNext = locMovR15 + sizeof(expected);
+
+        struct Patch : Xbyak::CodeGenerator
+        {
+            Patch(uintptr_t continueAt)
+            {
+                Xbyak::Label out;
+                // At the point where this is injected we're still moving function parameters into the correct registers.
+                // The function uses weapon as r15, but it's passed to the function in r9.
+                // So we clear r15 and only move r9 there if it's safe to do so.
+                xor_(r15, r15);
+                test(r9, r9);
+                jz(out);
+                mov(rbx, qword[r9]); // rbx is free to clobber at this point since there was a 'push rbx' before
+                test(rbx, rbx);
+                cmovnz(r15, r9); // keep weapon only if weapon->object != NULL
+                L(out);
+                mov(rbp, r8); // Restore this from where the trampoline jump was placed
+                jmp(ptr[rip]);
+                dq(continueAt);
+            }
+        };
+        Patch code(unrestricted_cast<uintptr_t>(locNext));
+        code.ready();
+
+        logger::trace("installing fix"sv);
+        auto& trampoline = SKSE::GetTrampoline();
+        if (!trampoline.write_branch<5>(unrestricted_cast<uintptr_t>(locMovR15), trampoline.allocate(code)))
+            return false;
+
+        // The trampoline jump needs 5 bytes but the 2 patched instructions are 6 bytes long so there's 1 byte left.
+        // This byte is never executed, but in order to make disassemblers happy make it a nop.
+        REL::safe_fill(unrestricted_cast<uintptr_t>(locMovR15 + 5), 0x90, sizeof(expected) - 5);
+
+        logger::trace("success"sv);
+        return true;
+    }
+
 }

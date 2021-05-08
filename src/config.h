@@ -49,6 +49,7 @@ public:
     static inline bSetting fixGetKeywordItemCount{ "Fixes", "GetKeywordItemCount", true };
     static inline bSetting fixGHeapLeakDetectionCrash{ "Fixes", "GHeapLeakDetectionCrash", true };
     static inline bSetting fixGlobalTime{ "Fixes", "GlobalTime", true };
+    static inline bSetting fixInitializeHitDataNullptrCrash{ "Fixes", "InitializeHitDataNullptrCrash", true };
     static inline bSetting fixLipSync{ "Fixes", "LipSync", true };
     static inline bSetting fixMemoryAccessErrors{ "Fixes", "MemoryAccessErrors", true };
     static inline bSetting fixMO5STypo{ "Fixes", "MO5STypo", true };

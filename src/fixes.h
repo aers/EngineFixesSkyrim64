@@ -22,6 +22,7 @@ namespace fixes
     bool PatchGetKeywordItemCount();
     bool PatchGHeapLeakDetectionCrash();
     bool PatchGlobalTime();
+    bool PatchInitializeHitDataNullptrCrash();
     bool PatchLipSync();
     bool PatchMemoryAccessErrors();
     bool PatchMO5STypo();
