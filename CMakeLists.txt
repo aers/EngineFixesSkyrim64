@@ -6,9 +6,11 @@ macro(set_from_environment VARIABLE)
 	endif ()
 endmacro()
 
+include(cmake/version.cmake)
+
 project(
 	EngineFixes
-	VERSION 5.6.1
+	VERSION ${VERSION}
 	LANGUAGES CXX
 )
 
