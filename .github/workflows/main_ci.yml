@@ -16,6 +16,7 @@ on:
   workflow_dispatch:
 
 env:
+  BOOST_MINOR: '74'
   BUILD_TYPE: Release
   VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg-cache
 
@@ -27,6 +28,19 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: 'true'
+
+      - name: Cache Boost
+        uses: actions/cache@v2
+        id: boost-cache
+        env:
+          cache-name: boost-cache
+        with:
+          path: C:\local\boost_1_${{ env.BOOST_MINOR }}_0
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.BOOST_MINOR }}
+
+      - name: Install Boost
+        if: ${{ steps.boost-cache.outputs.cache-hit != 'true' }}
+        run: choco install boost-msvc-14.2 -y
 
       - name: Setup vcpkg
         run: |
