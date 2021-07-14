@@ -29,19 +29,6 @@ jobs:
         with:
           submodules: 'true'
 
-      - name: Cache Boost
-        uses: actions/cache@v2
-        id: boost-cache
-        env:
-          cache-name: boost-cache
-        with:
-          path: C:\local\boost_1_${{ env.BOOST_MINOR }}_0
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.BOOST_MINOR }}
-
-      - name: Install Boost
-        if: ${{ steps.boost-cache.outputs.cache-hit != 'true' }}
-        run: choco install boost-msvc-14.2 -y
-
       - name: Setup vcpkg
         run: |
           mkdir -p ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
