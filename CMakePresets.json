@@ -1,0 +1,89 @@
+{
+  "configurePresets": [
+    {
+      "binaryDir": "build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        },
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG": {
+          "type": "BOOL",
+          "value": "OFF"
+        }
+      },
+      "errors": {
+        "deprecated": true
+      },
+      "hidden": true,
+      "name": "cmake-dev",
+      "warnings": {
+        "deprecated": true,
+        "dev": true
+      }
+    },
+    {
+      "environment": {
+        "CXXFLAGS": "/MP /W4 /WX /external:anglebrackets /external:W0 $penv{CXXFLAGS}"
+      },
+      "generator": "Visual Studio 16 2019",
+      "hidden": true,
+      "name": "vs2019"
+    },
+    {
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": {
+          "type": "STRING",
+          "value": "$env{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        }
+      },
+      "hidden": true,
+      "name": "vcpkg"
+    },
+    {
+      "cacheVariables": {
+        "Boost_USE_STATIC_LIBS": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "Boost_USE_STATIC_RUNTIME": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "CMAKE_MSVC_RUNTIME_LIBRARY": {
+          "type": "STRING",
+          "value": "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+        },
+        "VCPKG_OVERLAY_PORTS": {
+          "type": "STRING",
+          "value": "${sourceDir}/cmake/ports"
+        },
+        "VCPKG_OVERLAY_TRIPLETS": {
+          "type": "STRING",
+          "value": "${sourceDir}/cmake/triplets"
+        },
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-windows-custom"
+        }
+      },
+      "hidden": true,
+      "name": "windows"
+    },
+    {
+      "description": "VS2019/Windows/VCPkg",
+      "inherits": [
+        "cmake-dev",
+        "vcpkg",
+        "vs2019",
+        "windows"
+      ],
+      "name": "vs2019-windows-vcpkg"
+    }
+  ],
+  "version": 2
+}
