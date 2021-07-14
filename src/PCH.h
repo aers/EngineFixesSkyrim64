@@ -84,9 +84,9 @@
 
 using namespace std::literals;
 
-using SKSE::util::adjust_pointer;
-using SKSE::util::not_null;
-using SKSE::util::unrestricted_cast;
+using SKSE::stl::adjust_pointer;
+using SKSE::stl::not_null;
+using SKSE::stl::unrestricted_cast;
 
 namespace logger = SKSE::log;
 

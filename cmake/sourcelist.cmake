@@ -1,15 +1,18 @@
-set(sources ${sources}
-	src/fixes.cpp
-	src/main.cpp
-	src/patches.cpp
+set(SOURCES
 	src/PCH.cpp
-	src/utils.cpp
-	src/warnings.cpp
+	src/PCH.h
+	src/config.h
+	src/fixes.cpp
+	src/fixes.h
 	src/fixes/doubleperkapply.cpp
 	src/fixes/globaltime.cpp
 	src/fixes/miscfixes.cpp
 	src/fixes/savescreenshots.cpp
 	src/fixes/shaderfixes.cpp
+	src/main.cpp
+	src/offsets.h
+	src/patches.cpp
+	src/patches.h
 	src/patches/formcaching.cpp
 	src/patches/memorymanager.cpp
 	src/patches/miscpatches.cpp
@@ -17,5 +20,9 @@ set(sources ${sources}
 	src/patches/saveaddedsoundcategories.cpp
 	src/patches/scaleformallocator.cpp
 	src/patches/treelodreferencecaching.cpp
+	src/utils.cpp
+	src/utils.h
+	src/warnings.cpp
+	src/warnings.h
 	src/warnings/miscwarnings.cpp
 )
