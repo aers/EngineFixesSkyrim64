@@ -3,8 +3,6 @@
   "version-string": "1",
   "dependencies": [
     "autotoml",
-    "boost-regex",
-    "boost-stl-interfaces",
     "spdlog",
     "tbb",
     "xbyak"
