@@ -59,12 +59,12 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/vcpkg.json', 'vcpkg-version.txt') }}
 
       - name: Configure CMake
-        run: cmake --preset vs2019-windows-vcpkg -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCOPY_BUILD=OFF
+        run: cmake --preset vs2019-windows-vcpkg -DCOPY_BUILD=OFF
 
       - name: Build
         run: |
-          cmake --build build
-          cmake --build build --target archive
+          cmake --build build --config ${{ env.BUILD_TYPE }}
+          cmake --build build --target archive --config ${{ env.BUILD_TYPE }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
