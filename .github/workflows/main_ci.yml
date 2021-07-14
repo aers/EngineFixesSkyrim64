@@ -5,6 +5,7 @@ on:
     branches: [ master ]
     paths:
       - '.github/workflows/main_ci.yml'
+      - 'cmake/sourcelist.cmake'
       - 'cmake/Version.h.in'
       - 'cmake/version.rc.in'
       - 'src/**'
