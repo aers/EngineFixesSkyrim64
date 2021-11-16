@@ -43,6 +43,9 @@ namespace fixes
         if (*config::fixEquipShoutEventSpam)
             PatchEquipShoutEventSpam();
 
+        if (*config::fixFaceGenMorphDataHeadNullptrCrash)
+            PatchFaceGenMorphDataHeadNullptrCrash();
+
         if (*config::fixGetKeywordItemCount)
             PatchGetKeywordItemCount();
 
@@ -51,6 +54,9 @@ namespace fixes
 
         if (*config::fixGlobalTime)
             PatchGlobalTime();
+
+        if (*config::fixInitializeHitDataNullptrCrash)
+            PatchInitializeHitDataNullptrCrash();
 
         if (*config::fixLipSync)
             PatchLipSync();
@@ -72,6 +78,9 @@ namespace fixes
 
         if (*config::fixRemovedSpellBook)
             PatchRemovedSpellBook();
+
+        if (*config::fixShadowSceneNodeNullptrCrash)
+            PatchShadowSceneNodeNullptrCrash();
 
         if (*config::fixSlowTimeCameraMovement)
             PatchSlowTimeCameraMovement();

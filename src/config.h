@@ -45,9 +45,11 @@ public:
     static inline bSetting fixConjurationEnchantAbsorbs{ "Fixes", "ConjurationEnchantAbsorbs", true };
     static inline bSetting fixDoublePerkApply{ "Fixes", "DoublePerkApply", true };
     static inline bSetting fixEquipShoutEventSpam{ "Fixes", "EquipShoutEventSpam", true };
+    static inline bSetting fixFaceGenMorphDataHeadNullptrCrash{ "Fixes", "FaceGenMorphDataHeadNullptrCrash", true };
     static inline bSetting fixGetKeywordItemCount{ "Fixes", "GetKeywordItemCount", true };
     static inline bSetting fixGHeapLeakDetectionCrash{ "Fixes", "GHeapLeakDetectionCrash", true };
     static inline bSetting fixGlobalTime{ "Fixes", "GlobalTime", true };
+    static inline bSetting fixInitializeHitDataNullptrCrash{ "Fixes", "InitializeHitDataNullptrCrash", true };
     static inline bSetting fixLipSync{ "Fixes", "LipSync", true };
     static inline bSetting fixMemoryAccessErrors{ "Fixes", "MemoryAccessErrors", true };
     static inline bSetting fixMusicOverlap{ "Fixes", "MusicOverlap", true };
@@ -56,6 +58,7 @@ public:
     static inline bSetting fixPerkFragmentIsRunning{ "Fixes", "PerkFragmentIsRunning", true };
     static inline bSetting fixRemovedSpellBook{ "Fixes", "RemovedSpellBook", true };
     static inline bSetting fixSaveScreenshots{ "Fixes", "SaveScreenshots", true };
+    static inline bSetting fixShadowSceneNodeNullptrCrash{ "Fixes", "ShadowSceneNodeNullptrCrash", true };
     static inline bSetting fixSlowTimeCameraMovement{ "Fixes", "SlowTimeCameraMovement", true };
     static inline bSetting fixTorchLandscape{ "Fixes", "TorchLandscape", true };
     static inline bSetting fixTreeReflections{ "Fixes", "TreeReflections", true };

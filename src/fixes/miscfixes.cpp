@@ -1320,4 +1320,265 @@ namespace fixes
         logger::trace("success"sv);
         return true;
     }
+
+    bool PatchShadowSceneNodeNullptrCrash()
+    {
+        // written for 1.5.97 but should be compatible
+
+        // sub_1412BACA0
+        const REL::ID fid(99708);
+        const uint64_t faddr = fid.address();
+        logger::trace(FMT_STRING("- workaround for crash in ShadowSceneNode::unk_{:X} -"), fid.offset());
+
+        const uint8_t *crashaddr = (uint8_t*)(uintptr_t)(faddr + 22);
+        /*
+                        mov     rax,qword ptr [rdx]
+        ... some movs ...
+        FF 50 18        call    qword ptr [rax+18h] // <--- crashes here because rax == 0
+        84 C0           test    al, al
+        74 ??           jz      short loc_1412BACD3
+        */
+
+        static const uint8_t expected[] = { 0xFF, 0x50, 0x18, 0x84, 0xC0, 0x74 };
+        if(std::memcmp((const void*)crashaddr, expected, sizeof(expected)))
+        {
+            logger::trace("Code is not as expected, skipping patch"sv);
+            return false;
+        }
+
+        const int8_t disp8 = crashaddr[sizeof(expected)]; // jz short displacement (should be 0x16)
+        const uint8_t *jmpdstZero    = crashaddr + sizeof(expected) + disp8 + 1;
+        const uint8_t *jmpdstNonZero = crashaddr + sizeof(expected) + 1;
+
+        struct Code : Xbyak::CodeGenerator
+        {
+            Code(std::uintptr_t contNonzeroAddr, std::uintptr_t contZeroAddr)
+            {
+                Xbyak::Label contAddrLbl, zeroLbl, zeroAddrLbl;
+
+                // check for NULL
+                test(rax, rax);
+                jz(zeroLbl);
+
+                // original instructions minus jz short
+                db(expected, sizeof(expected) - 1);
+
+                jz(zeroLbl);
+                jmp(ptr[rip + contAddrLbl]);
+                L(zeroLbl);
+                jmp(ptr[rip + zeroAddrLbl]);
+
+                L(contAddrLbl);
+                dq(contNonzeroAddr);
+                L(zeroAddrLbl);
+                dq(contZeroAddr);
+            }
+        };
+
+        Code code(unrestricted_cast<std::uintptr_t>(jmpdstNonZero), unrestricted_cast<std::uintptr_t>(jmpdstZero));
+        code.ready();
+
+        logger::trace("installing fix"sv);
+        auto& trampoline = SKSE::GetTrampoline();
+        if (!trampoline.write_branch<5>(unrestricted_cast<std::uintptr_t>(crashaddr), trampoline.allocate(code)))
+            return false;
+
+        logger::trace("success"sv);
+        return true;
+    }
+
+    bool PatchFaceGenMorphDataHeadNullptrCrash()
+    {
+        // written for 1.5.97 but should be compatible
+
+        logger::trace("- fix for crash in FaceGenMorphDataHead -"sv);
+        // loc_1403D68E0
+        /*
+        .....
+        .text:00000001403D690D        xor     r15d, r15d
+        .text:00000001403D6910        test    rdx, rdx           // rdx == 0 causes the first crash in a few instructions
+        .text:00000001403D6913    +-- jz      short loc_1403D6929
+        .text:00000001403D6915    |   lea     rdx, unk_142F07D08 // <-- rdx != 0, this is the good case and
+        .text:00000001403D691C    |   mov     rcx, rax           //      we want to continue here if everything is well
+        .text:00000001403D691F    |   call    sub_140C60AD0
+        .text:00000001403D6924    |   mov     rbx, rax         // <--- This sometimes has rax == 0 -> second possibility how rbx ends up as 0
+        .text:00000001403D6927  +-|-- jmp     short loc_1403D692C
+        .text:00000001403D6929  | +-->mov     rbx, r15         // <--- if this is executed it'll crash on the next line since r15 is 0 here
+        .text:00000001403D692C  +---> mov     eax, [rbx+24h]
+        .text:00000001403D692F        comiss  xmm6, cs:dword_14152259C
+        .text:00000001403D6936        jb      loc_1403D6D1F  // ---> This jumps to the function stack restore + return point
+        */
+        // What can we do here? There are two ways for rbx to end up NULL,
+        // so we need to move the last mov followed by comiss into the trampoline
+        // and wrap that into a check for rbx != 0.
+        // The 'mov rbx, r15' is also weird. Only the lower 32 bits of r15 are guaranteed to be 0,
+        // but then rbx is used as an address. So it's probably better to replace that instruction
+        // with 'xor ebx, ebx' to make sure our inserted check will catch it in all cases.
+
+        // TODO: There is probably a cleaner way to patch this without moving a float constant into the trampoline, but this is tested and works ok
+
+        const uint64_t faddr = REL::ID(26343).address();
+
+        // check that test rdx,rdx and jz short are there
+        uint8_t *testrdx = (uint8_t*)(uintptr_t)(faddr + 0x30);
+        static const uint8_t expectedTestRdxJz[] = { 0x48, 0x85, 0xD2, 0x74 };
+        if(std::memcmp(testrdx, expectedTestRdxJz, sizeof(expectedTestRdxJz)))
+            return false;
+
+        // Where does the jz short go?
+        const int8_t disp8 = testrdx[sizeof(expectedTestRdxJz)]; // jz short displacement (should be 0x14)
+              uint8_t *jmpdstZero = testrdx + sizeof(expectedTestRdxJz) + disp8 + 1;
+        const uint8_t *jmpdstNonZero = testrdx + sizeof(expectedTestRdxJz) + 1; // success case
+
+        // Is the zero case jump target 'mov rbx, r15'? (This is patched later)
+        static const uint8_t expectedMovRbx[] = { 0x49, 0x8B, 0xDF };
+        if(std::memcmp(jmpdstZero, expectedMovRbx, sizeof(expectedMovRbx)))
+            return false;
+
+        // Find the where to insert the trampoline jump and where the jump to the exit is
+        uint8_t *pUnsafeMov = jmpdstZero + sizeof(expectedMovRbx); // this is the mov that potentially causes a crash
+        if(pUnsafeMov[0] != 0x8B)
+            return false;
+
+        static const uint8_t copysize = 3; // mov -- can't just copy the comiss because it uses a relative address :<
+        const uint8_t *jbExit = pUnsafeMov + copysize + 7; // + comiss
+
+        // Make sure jb => exit is there as expected
+        static const uint8_t expectedJB[] = { 0x0f, 0x82 };
+        if(std::memcmp(jbExit, expectedJB, sizeof(expectedJB)))
+            return false;
+
+        // Get the jump offset
+        int32_t jbOffs = *(int32_t*)(jbExit + sizeof(expectedJB));
+
+        // Figure out where the function exit location is
+        const uint8_t *nextInst = jbExit + 2 + sizeof(int32_t);
+        const uint8_t *exitLoc = nextInst + jbOffs;
+
+        struct Code : Xbyak::CodeGenerator
+        {
+            Code(const uint8_t *originalcode, std::uintptr_t pContLoc, std::uintptr_t pExitLoc) : Xbyak::CodeGenerator()
+            {
+                Xbyak::Label zeroLbl, fltConstL;
+
+                test(rbx, rbx);
+                jz(zeroLbl);
+
+                db(originalcode, copysize); // the unsafe mov
+                comiss(xmm6, ptr[rip + fltConstL]);
+
+                jmp(ptr[rip]);
+                dq(pContLoc);
+
+                L(zeroLbl);
+                jmp(ptr[rip]);
+                dq(pExitLoc);
+
+                L(fltConstL);
+                dd(0x0BF800000); // -1.0f
+            }
+        };
+
+        Code code(pUnsafeMov, unrestricted_cast<std::uintptr_t>(jbExit), unrestricted_cast<std::uintptr_t>(exitLoc));
+        code.ready();
+
+        logger::trace("installing fix"sv);
+        auto& trampoline = SKSE::GetTrampoline();
+        if (!trampoline.write_branch<5>(unrestricted_cast<std::uintptr_t>(pUnsafeMov), trampoline.allocate(code)))
+            return false;
+
+        // nop out the rest of the original code so that the diasm/debugger is less confused
+        static const uint8_t nop5[] = { 0x90, 0x90, 0x90, 0x90, 0x90 };
+        REL::safe_write(uintptr_t(pUnsafeMov) + 5, nop5, sizeof(nop5));
+
+        // Fix rbx clear (3 bytes to cover)
+        struct Patch : Xbyak::CodeGenerator
+        {
+            Patch()
+            {
+                xor_(ebx, ebx); // 2 bytes
+                nop();          // 1 byte
+            }
+        };
+        Patch patch;
+        patch.ready();
+        assert(patch.getSize() == 3);
+        REL::safe_write((uintptr_t)jmpdstZero, patch.getCode(), 3);
+
+        logger::trace("success"sv);
+        return true;
+    }
+
+    // Fixes crash on weapon swing impact when the weapon loses some associated data just before HitData::InitializeHitData() is called.
+    // Possibly a disarm caused by an on-hit triggered perk or spell effect?
+    bool PatchInitializeHitDataNullptrCrash()
+    {
+        /* HitData::InitializeHitData() aka sub_140742850 in version 1.5.97
+        ... part of the function setup ...
+        00007FF74208285E 4D 8B F9                  mov  r15,r9  <---- This is weapon. fine if it's NULL
+        00007FF742082861 49 8B E8                  mov  rbp,r8
+        00007FF742082864 48 8B FA                  mov  rdi,rdx
+        00007FF742082867 48 8B D9                  mov  rbx,rcx
+        [...]
+        00007FF7420828A9 4D 85 FF                  test r15,r15
+        00007FF7420828AC 74 09                 +-- je   00007FF7420828B7
+        00007FF7420828AE 49 8B 0F              |   mov  rcx,qword ptr [r15]    <--- This is weapon->object and may load rcx == 0
+        00007FF7420828B1 80 79 1A 29           |   cmp  byte ptr [rcx+1Ah],29h <--- Crashes here when rcx == 0
+        00007FF7420828B5 74 07                 |   je   00007FF7420828BE
+        00007FF7420828B7 48 8B 0D AA CF 7B 02  +-> mov  rcx,qword ptr [7FF74483F868h]
+
+        The code checks for r15 != NULL but forgets to check the loaded pointer before dereferencing.
+        Patch near the entry point of the function to make sure nothing similar happens further down somewhere.
+        The fix is equivalent to inserting this at the start of the function (thanks Nukem):
+          if (weapon && !weapon->object)
+              weapon = nullptr;
+        */
+
+        logger::trace("- fix for crash in HitData::InitializeHitData -"sv);
+
+        const uint64_t faddr = REL::ID(42832).address();
+        const uint8_t *locMovR15 = unrestricted_cast<const uint8_t*>(faddr + 14);
+        //                        mov r15,r9          mov rbp,r8 (replicated in the trampoline code below)
+        const char expected[] = { 0x4D, 0x8B, 0xF9,   0x49, 0x8B, 0xE8 };
+        if(std::memcmp(locMovR15, expected, sizeof(expected)))
+            return false;
+
+        const uint8_t *locNext = locMovR15 + sizeof(expected);
+
+        struct Patch : Xbyak::CodeGenerator
+        {
+            Patch(uintptr_t continueAt)
+            {
+                Xbyak::Label out;
+                // At the point where this is injected we're still moving function parameters into the correct registers.
+                // The function uses weapon as r15, but it's passed to the function in r9.
+                // So we clear r15 and only move r9 there if it's safe to do so.
+                xor_(r15, r15);
+                test(r9, r9);
+                jz(out);
+                mov(rbx, qword[r9]); // rbx is free to clobber at this point since there was a 'push rbx' before
+                test(rbx, rbx);
+                cmovnz(r15, r9); // keep weapon only if weapon->object != NULL
+                L(out);
+                mov(rbp, r8); // Restore this from where the trampoline jump was placed
+                jmp(ptr[rip]);
+                dq(continueAt);
+            }
+        };
+        Patch code(unrestricted_cast<uintptr_t>(locNext));
+        code.ready();
+
+        logger::trace("installing fix"sv);
+        auto& trampoline = SKSE::GetTrampoline();
+        if (!trampoline.write_branch<5>(unrestricted_cast<uintptr_t>(locMovR15), trampoline.allocate(code)))
+            return false;
+
+        // The trampoline jump needs 5 bytes but the 2 patched instructions are 6 bytes long so there's 1 byte left.
+        // This byte is never executed, but in order to make disassemblers happy make it a nop.
+        REL::safe_fill(unrestricted_cast<uintptr_t>(locMovR15 + 5), 0x90, sizeof(expected) - 5);
+
+        logger::trace("success"sv);
+        return true;
+    }
+
 }
