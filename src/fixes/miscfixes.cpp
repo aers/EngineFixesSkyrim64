@@ -1427,8 +1427,7 @@ namespace fixes
 
         // Where does the jz short go?
         const int8_t disp8 = testrdx[sizeof(expectedTestRdxJz)]; // jz short displacement (should be 0x14)
-              uint8_t *jmpdstZero = testrdx + sizeof(expectedTestRdxJz) + disp8 + 1;
-        const uint8_t *jmpdstNonZero = testrdx + sizeof(expectedTestRdxJz) + 1; // success case
+        uint8_t *jmpdstZero = testrdx + sizeof(expectedTestRdxJz) + disp8 + 1;
 
         // Is the zero case jump target 'mov rbx, r15'? (This is patched later)
         static const uint8_t expectedMovRbx[] = { 0x49, 0x8B, 0xDF };
@@ -1539,7 +1538,7 @@ namespace fixes
         const uint64_t faddr = REL::ID(42832).address();
         const uint8_t *locMovR15 = unrestricted_cast<const uint8_t*>(faddr + 14);
         //                        mov r15,r9          mov rbp,r8 (replicated in the trampoline code below)
-        const char expected[] = { 0x4D, 0x8B, 0xF9,   0x49, 0x8B, 0xE8 };
+        const uint8_t expected[] = { 0x4D, 0x8B, 0xF9,   0x49, 0x8B, 0xE8 };
         if(std::memcmp(locMovR15, expected, sizeof(expected)))
             return false;
 
