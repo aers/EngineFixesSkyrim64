@@ -2,21 +2,18 @@
 
 namespace fixes
 {
-    const std::uint32_t regular_save = 0xF0000080;
-    const std::uint32_t load_last_save = 0xD0000100;
-
-    std::uint32_t edi_saved;
+    std::uint32_t esi_saved;
 
     // 0 = none, 1 = BGSSaveManager::ProcessEvents, 2 = open menu
     std::uint8_t screenshot_requested_location = 0;
 
-    REL::Relocation<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset, 0x163 };
-    REL::Relocation<std::uintptr_t> MenuSave_RequestScreenshot{ MenuSave_RequestScreenshot_hook_offset, 0x56A };
-    REL::Relocation<std::uintptr_t> ScreenshotJnz{ Screenshot_Jnz_hook_offset, 0x23A };
-    REL::Relocation<std::uintptr_t> RenderTargetHook_1{ Render_Target_Hook_1_offset, 0x365 };
-    REL::Relocation<std::uintptr_t> RenderTargetHook_2{ Render_Target_Hook_2_offset, 0x3EA };
-    REL::Relocation<std::uintptr_t> SaveScreenshotRequestedDword{ g_RequestSaveScreenshot_offset };
-    REL::Relocation<std::uintptr_t> ScreenshotRenderOrigJnz{ Screenshot_Render_Orig_jnz_offset, 0x4D5 };
+    REL::Relocation<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ offsets::SaveScreenshots::BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0x1C6 };
+    REL::Relocation<std::uintptr_t> MenuSave_RequestScreenshot{ offsets::SaveScreenshots::MenuSave_RequestScreenshot.address() + 0x5D0 };
+    REL::Relocation<std::uintptr_t> SaveScreenshotRequestedDword{ offsets::SaveScreenshots::g_RequestSaveScreenshot };
+    REL::Relocation<std::uintptr_t> ScreenshotJnz{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x17D };
+    REL::Relocation<std::uintptr_t> RenderTargetHook_1{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x294 };
+    REL::Relocation<std::uintptr_t> RenderTargetHook_2{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x307 };
+    REL::Relocation<std::uintptr_t> ScreenshotRenderOrigJnz{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x3B1 };
 
     bool PatchSaveScreenshots()
     {
@@ -51,7 +48,7 @@ namespace fixes
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0xD);
+                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0xA);
                     }
                 };
 
@@ -80,7 +77,7 @@ namespace fixes
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0xD);
+                        dq(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0xA);
                     }
                 };
 
@@ -135,11 +132,13 @@ namespace fixes
                 {
                     ScreenshotRender_Code()
                     {
-                        // .text:00000001412AEDAA                 test    dil, dil
-                        // .text:00000001412AEDAD                 jnz     ScreenshotRenderOrigJnz
-                        // .text:00000001412AEDB3                 mov     edi, 2Ah
-                        // .text:00000001412AEDB8                 mov     rax, [rbp + 1F0h]
-                        // .text:00000001412AEDBF                 cmp     byte ptr[rax + 18h], 0
+                        /*
+                        * .text:00000001413BD81D                 test    dil, dil
+                        * .text:00000001413BD820                 jnz     loc_1413BDA51
+                        * .text:00000001413BD826                 mov     rcx, [rbx+1F0h]
+                        * .text:00000001413BD82D                 mov     esi, 2Ah ; '*'
+                        * .text:00000001413BD832                 cmp     [rcx+18h], dil
+                        */
 
                         push(rax);
                         mov(rax, (uintptr_t)&screenshot_requested_location);
@@ -153,9 +152,9 @@ namespace fixes
                         test(dil, dil);
                         jnz("ORIG_JNZ");
                         L("SKIP_JNZ");
-                        mov(edi, 0x2A);
-                        mov(rax, ptr[rbp + 0x1F0]);
-                        cmp(byte[rax + 0x18], 0);
+                        mov(rcx, ptr[rbx + 0x1F0]);
+                        mov(esi, 0x2A);
+                        cmp(byte[rcx + 0x18], dil);
                         jmp("JMP_OUT");
 
                         L("FROM_MENU");  // use flicker version of fix here, all we need to do is skip jnz and rely on other patches
@@ -165,8 +164,8 @@ namespace fixes
                         L("FROM_PROCESSEVENT");  // use menu version of fix here
                         mov(byte[rax], 0);       // screenshot request processed disable code for future iterations
                         pop(rax);
-                        mov(edi, 0x2A);  // menu version of fix
-                        cmp(byte[rbp + 0x211], 0);
+                        mov(esi, 0x2A);  // menu version of fix
+                        cmp(byte[rbx + 0x211], 0);
                         jmp("JMP_OUT");
 
                         L("JMP_OUT");
@@ -196,25 +195,24 @@ namespace fixes
                     {
                         Xbyak::Label screenRequested;
 
-                        // .text:00000001412AEED5                 mov     r9d, 4Bh
-                        // .text:00000001412AEEDB                 mov     r8d, edi
+                        // .text:00000001413BD934                 mov     r8d, esi
+                        // .text:00000001413BD937                 mov     rcx, rbx
                         push(rax);
                         mov(rax, (uintptr_t)&screenshot_requested_location);
                         cmp(byte[rax], 2);
                         jne("ORIG");
-                        mov(rax, (uintptr_t)&edi_saved);
-                        mov(dword[rax], edi);
+                        mov(rax, (uintptr_t)&esi_saved);
+                        mov(dword[rax], esi);
                         mov(edi, 1);
 
                         L("ORIG");
                         pop(rax);
-                        mov(r9d, 0x4B);
-                        mov(r8d, edi);
+                        mov(r8d, esi);
+                        mov(rcx, rbx);
 
                         jmp(ptr[rip]);
-                        //.text:00000001412AEEDE                 mov     rdx, [rax + 110h]
-                        // 12AEED5+0x9
-                        dq(RenderTargetHook_1.address() + 0x9);
+                        // .text:00000001413BD93A                 lea     edx, [r9-29h]
+                        dq(RenderTargetHook_1.address() + 0x6);
                     }
                 };
 
@@ -232,15 +230,15 @@ namespace fixes
                 {
                     RenderTargetHook_2_Code()
                     {
-                        // .text:00000001412AEF5A                 mov     [rbp+218h], rax
+                        // .text:00000001413BD9A7                 mov     [rbx+218h], rax
                         mov(ptr[rbp + 0x218], rax);
                         push(rax);
                         mov(rax, (uintptr_t)&screenshot_requested_location);
                         cmp(byte[rax], 2);
                         jne("ORIG");
                         mov(byte[rax], 0);
-                        mov(rax, (uintptr_t)&edi_saved);
-                        mov(edi, dword[rax]);
+                        mov(rax, (uintptr_t)&esi_saved);
+                        mov(esi, dword[rax]);
 
                         L("ORIG");
                         pop(rax);

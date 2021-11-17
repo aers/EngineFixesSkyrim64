@@ -1,5 +1,64 @@
 #pragma once
 
+namespace offsets
+{
+    namespace Common
+    {
+        constexpr REL::Offset g_SecondsSinceLastFrame_RealTime(0x30064CC);
+    }
+
+    // fixes
+    namespace DoublePerkApply
+    {
+        // 48 85 D2 74 7C 48 89 5C 24 ?
+        constexpr REL::Offset QueueApplyPerk(0x5EA9E0);
+        // E8 ? ? ? ? 48 8B 03 48 8B CB FF 90 ? ? ? ? 80 3D ? ? ? ? ?
+        constexpr REL::Offset Handle_Add_Rf(0x6A9860);
+        // 40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 C7 85 ? ? ? ? ? ? ? ? 0F 29 B4 24 ? ? ? ?
+        constexpr REL::Offset BSTaskPool_HandleTask(0x5EAE40);
+        // 48 85 D2 74 7C 48 89 5C 24 ?
+        constexpr REL::Offset Unknown_Add_Function(0x5EA9E0);
+        // 48 83 EC 38 48 83 79 ? ? 74 2B
+        constexpr REL::Offset Next_Formid_Get_Hook(0x6A9810);
+        // 48 89 6C 24 ? 57 41 56 41 57 48 83 EC 40 8B 41 70
+        constexpr REL::Offset Do_Handle_Hook(0x34EAC0);
+        // 48 83 EC 38 48 85 D2 74 23
+        constexpr REL::Offset Do_Add_Hook(0x34EF30);
+    }
+
+    namespace GlobalTime
+    {
+        constexpr std::array todo = {
+            REL::Offset(0x8843C0 + 0xB70), // BookMenu::vf4
+            REL::Offset(0x8ECDB0 + 0x1BE) // SleepWaitMenu::vf4
+        };
+    }
+
+    namespace SaveScreenshots
+    {
+        // E8 ? ? ? ? 33 C9 E8 ? ? ? ? 88 1D ? ? ? ?
+        constexpr REL::Offset BGSSaveLoadManager_ProcessEvents_RequestScreenshot(0x5AAD20);
+        // E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8D 3D ? ? ? ? 
+        constexpr REL::Offset MenuSave_RequestScreenshot(0x5D7CB0);
+        constexpr REL::Offset g_RequestSaveScreenshot(0x2FD3640);
+        // E8 ? ? ? ? 45 8B FD EB 20
+        constexpr REL::Offset ScreenshotRenderFunction(0x13BD6A0);
+        /*
+        // Save Screenshots
+// 84 C0 75 26 E8 ? ? ? ?  + 0x9
+constexpr REL::ID BGSSaveLoadManager_ProcessEvents_RequestScreenshot_hook_offset(34862);
+constexpr REL::ID MenuSave_RequestScreenshot_hook_offset(35556);
+// 41 89 5d 00 40 84 ff 0f 85 + 0x8
+constexpr REL::ID Screenshot_Jnz_hook_offset(99023);
+constexpr REL::ID Screenshot_Render_Orig_jnz_offset(99023);
+// + 0x128 from screenshot_jnz
+constexpr REL::ID Render_Target_Hook_1_offset(99023);
+// + 0x85
+constexpr REL::ID Render_Target_Hook_2_offset(99023);
+constexpr REL::ID g_RequestSaveScreenshot_offset(517224);
+*/
+    }
+}
 // Patches
 
 // E8 ? ? ? ? 84 DB 74 24 -> +0x230
@@ -57,24 +116,6 @@ constexpr REL::ID UnkGameLoopDword_offset(523662);
 constexpr REL::ID WaterShader_ReadTimer_Hook_offset(100602);
 
 // Fixes
-
-// Double Perk Apply
-// 48 85 D2 74 7C 48 89 5C 24 ?
-constexpr REL::ID QueueApplyPerk_offset(36007);
-// E8 ? ? ? ? B2 01 48 8B 0D ? ? ? ? E8 ? ? ? ? 48 8B 0D ? ? ? ? -> +0xA
-constexpr REL::ID Handle_Add_Rf_offset(38967);
-// 44 0F B6 47 ? 48 8B D3 E8 ? ? ? ?
-constexpr REL::ID Switch_Function_movzx_offset(36016);
-// 41 0F B6 F9 48 8B C2
-constexpr REL::ID Unknown_Add_Function_movzx_offset(36007);
-// +0x2C
-constexpr REL::ID Unknown_Add_Function_movzx2_offset(36007);
-// E8 ? ? ? ? 48 8D 35 ? ? ? ? 48 89 5C 24 ? -> +0x12 -> +0x1B
-constexpr REL::ID Next_Formid_Get_Hook_offset(38966);
-// called just after switch function movzx above, +0x1B
-constexpr REL::ID Do_Handle_Hook_offset(23353);
-// 74 1B 0F B6 42 08
-constexpr REL::ID Do_Add_Hook_offset(23359);
 
 // Save Screenshots
 // 84 C0 75 26 E8 ? ? ? ?  + 0x9

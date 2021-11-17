@@ -5,15 +5,15 @@ namespace fixes
     std::uint32_t next_formid;
 
     typedef void (*_QueueApplyPerk)(RE::TaskQueueInterface* thisPtr, RE::Actor* actor, RE::BGSPerk* perk, std::int8_t oldRank, std::int8_t newRank);
-    REL::Relocation<_QueueApplyPerk> QueueApplyPerk{ QueueApplyPerk_offset };
+    REL::Relocation<_QueueApplyPerk> QueueApplyPerk{ offsets::DoublePerkApply::QueueApplyPerk };
     typedef void (*_HandleAddRf)(std::int64_t apm);
-    REL::Relocation<_HandleAddRf> HandleAddRf{ Handle_Add_Rf_offset };
-    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ Switch_Function_movzx_offset, 0x1C4E };
-    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx1{ Unknown_Add_Function_movzx_offset, 0x1A };
-    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx2{ Unknown_Add_Function_movzx2_offset, 0x46 };
-    REL::Relocation<std::uintptr_t> NextFormIdGetHook{ Next_Formid_Get_Hook_offset, 0x1B };
-    REL::Relocation<std::uintptr_t> DoHandleHook{ Do_Handle_Hook_offset, 0x1B };
-    REL::Relocation<std::uintptr_t> DoAddHook{ Do_Add_Hook_offset, 0x11 };
+    REL::Relocation<_HandleAddRf> HandleAddRf{ offsets::DoublePerkApply::Handle_Add_Rf };
+    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ offsets::DoublePerkApply::BSTaskPool_HandleTask.address() + 0x2164 };
+    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx1{ offsets::DoublePerkApply::Unknown_Add_Function.address() + 0x1A };
+    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx2{ offsets::DoublePerkApply::Unknown_Add_Function.address() + 0x46 };
+    REL::Relocation<std::uintptr_t> NextFormIdGetHook{ offsets::DoublePerkApply::Next_Formid_Get_Hook.address() + 0x1B };
+    REL::Relocation<std::uintptr_t> DoHandleHook{ offsets::DoublePerkApply::Do_Handle_Hook.address() + 0x11 };
+    REL::Relocation<std::uintptr_t> DoAddHook{ offsets::DoublePerkApply::Do_Add_Hook.address() + 0x11 };
 
     void do_add(RE::Actor* actorPtr, RE::BGSPerk* perkPtr, std::int8_t newRank)
     {
@@ -117,35 +117,34 @@ namespace fixes
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
 
-                    // enter 33891B
-                    // .text:000000014033891B                 add     rcx, 60h
-                    add(rcx, 0x60);
-                    // .text:000000014033891F                 movzx   ebp, r9b
+                    // enter 34EAD1
+                    // .text:000000014034EAD1                 movzx   ebp, r9b
                     movzx(ebp, r9b);
-                    // .text:0000000140338923                 movzx   r14d, r8b
-                    mov(r14d, r8d);  // preserve val
+                    // .text:000000014034EAD5                 movzx   r14d, r8b
+                    mov(r14d, r8d); // preserve val
+                    // .text:000000014034EAD9                 mov     rdi, rdx
+                    mov(rdi, rdx);
+                    // .text:000000014034EADC                 mov     r15, rcx
+                    mov(r15, rcx);
 
                     // call do_handle
-
-                    push(rdx);  // save rdx+rcx
-                    push(rcx);
+                    push(rcx); // preserve rcx
                     mov(edx, r14d);  // val
-                    mov(rcx, rsi);   // actorPtr
+                    mov(rcx, rdi);   // actorPtr
                     sub(rsp, 0x20);  // parameter stack space
                                      //void do_handle(int64_t actorPtr, uint32_t val)
                     call(ptr[rip + funcLabel]);
                     add(rsp, 0x20);
                     pop(rcx);
-                    pop(rdx);
 
-                    // exit 338927
+                    // exit 34EADF
                     jmp(ptr[rip + retnLabel]);
 
                     L(funcLabel);
                     dq(doHandleAddr);
 
                     L(retnLabel);
-                    dq(DoHandleHook.address() + 0x8);
+                    dq(DoHandleHook.address() + 0xE);
                 }
             };
 
