@@ -2,7 +2,7 @@
 
 namespace patches
 {
-    REL::Relocation<float*> FrameTimer_WithSlowTime{ g_FrameTimer_SlowTime_offset };
+    REL::Relocation<float*> FrameTimer_WithSlowTime{ offsets::Common::g_SecondsSinceLastFrame_WorldTime };
 
     // +0x252
     REL::Relocation<std::uintptr_t> GameLoop_Hook{ GameLoop_Hook_offset, 0x252 };

@@ -7,13 +7,13 @@ namespace fixes
     // 0 = none, 1 = BGSSaveManager::ProcessEvents, 2 = open menu
     std::uint8_t screenshot_requested_location = 0;
 
-    REL::Relocation<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ offsets::SaveScreenshots::BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address() + 0x1C6 };
-    REL::Relocation<std::uintptr_t> MenuSave_RequestScreenshot{ offsets::SaveScreenshots::MenuSave_RequestScreenshot.address() + 0x5D0 };
+    REL::Relocation<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ offsets::SaveScreenshots::BGSSaveLoadManager_ProcessEvents_RequestScreenshot };
+    REL::Relocation<std::uintptr_t> MenuSave_RequestScreenshot{ offsets::SaveScreenshots::MenuSave_RequestScreenshot };
     REL::Relocation<std::uintptr_t> SaveScreenshotRequestedDword{ offsets::SaveScreenshots::g_RequestSaveScreenshot };
-    REL::Relocation<std::uintptr_t> ScreenshotJnz{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x17D };
-    REL::Relocation<std::uintptr_t> RenderTargetHook_1{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x294 };
-    REL::Relocation<std::uintptr_t> RenderTargetHook_2{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x307 };
-    REL::Relocation<std::uintptr_t> ScreenshotRenderOrigJnz{ offsets::SaveScreenshots::ScreenshotRenderFunction.address() + 0x3B1 };
+    REL::Relocation<std::uintptr_t> ScreenshotJnz{ offsets::SaveScreenshots::ScreenshotRenderFunction_Jnz };
+    REL::Relocation<std::uintptr_t> RenderTargetHook_1{ offsets::SaveScreenshots::ScreenshotRenderFunction_RenderTargetHook1 };
+    REL::Relocation<std::uintptr_t> RenderTargetHook_2{ offsets::SaveScreenshots::ScreenshotRenderFunction_RenderTargetHook2};
+    REL::Relocation<std::uintptr_t> ScreenshotRenderOrigJnz{ offsets::SaveScreenshots::ScreenshotRenderFunction_OrigJnz };
 
     bool PatchSaveScreenshots()
     {

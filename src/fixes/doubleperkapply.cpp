@@ -8,12 +8,12 @@ namespace fixes
     REL::Relocation<_QueueApplyPerk> QueueApplyPerk{ offsets::DoublePerkApply::QueueApplyPerk };
     typedef void (*_HandleAddRf)(std::int64_t apm);
     REL::Relocation<_HandleAddRf> HandleAddRf{ offsets::DoublePerkApply::Handle_Add_Rf };
-    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ offsets::DoublePerkApply::BSTaskPool_HandleTask.address() + 0x2164 };
-    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx1{ offsets::DoublePerkApply::Unknown_Add_Function.address() + 0x1A };
-    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx2{ offsets::DoublePerkApply::Unknown_Add_Function.address() + 0x46 };
-    REL::Relocation<std::uintptr_t> NextFormIdGetHook{ offsets::DoublePerkApply::Next_Formid_Get_Hook.address() + 0x1B };
-    REL::Relocation<std::uintptr_t> DoHandleHook{ offsets::DoublePerkApply::Do_Handle_Hook.address() + 0x11 };
-    REL::Relocation<std::uintptr_t> DoAddHook{ offsets::DoublePerkApply::Do_Add_Hook.address() + 0x11 };
+    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ offsets::DoublePerkApply::BSTaskPool_HandleTask };
+    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx1{ offsets::DoublePerkApply::Unknown_Add_Function_Movzx1 };
+    REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx2{ offsets::DoublePerkApply::Unknown_Add_Function_Movzx2 };
+    REL::Relocation<std::uintptr_t> NextFormIdGetHook{ offsets::DoublePerkApply::Next_Formid_Get_Hook };
+    REL::Relocation<std::uintptr_t> DoHandleHook{ offsets::DoublePerkApply::Do_Handle_Hook };
+    REL::Relocation<std::uintptr_t> DoAddHook{ offsets::DoublePerkApply::Do_Add_Hook };
 
     void do_add(RE::Actor* actorPtr, RE::BGSPerk* perkPtr, std::int8_t newRank)
     {

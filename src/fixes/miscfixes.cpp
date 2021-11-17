@@ -1110,7 +1110,7 @@ namespace fixes
             };
 
             REL::Relocation<std::uintptr_t> hookTarget{ REL::ID(49978), 0x71 };
-            REL::Relocation<float*> noSlowFrameTimer{ REL::ID(523661) };
+            REL::Relocation<float*> noSlowFrameTimer { offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
 
@@ -1160,7 +1160,7 @@ namespace fixes
             };
 
             REL::Relocation<std::uintptr_t> hookTarget{ REL::ID(32370), 0x5F };
-            REL::Relocation<float*> noSlowFrameTimer{ REL::ID(523661) };
+            REL::Relocation<float*> noSlowFrameTimer{ offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
 
@@ -1210,7 +1210,7 @@ namespace fixes
             };
 
             REL::Relocation<std::uintptr_t> hookTarget{ REL::ID(49839), 0x5F };
-            REL::Relocation<float*> noSlowFrameTimer{ REL::ID(523661) };
+            REL::Relocation<float*> noSlowFrameTimer{ offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
 

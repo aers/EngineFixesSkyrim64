@@ -28,10 +28,10 @@ namespace fixes
     };
 
     typedef void (*_BSBatchRenderer_SetupAndDrawPass)(BSRenderPass* pass, std::uint32_t technique, bool alphaTest, std::uint32_t renderFlags);
-    REL::Relocation<_BSBatchRenderer_SetupAndDrawPass*> BSBatchRenderer_SetupAndDrawPass_origLoc{ BSBatchRenderer_SetupAndDrawPass_offset };
+    REL::Relocation<_BSBatchRenderer_SetupAndDrawPass*> BSBatchRenderer_SetupAndDrawPass_origLoc{ offsets::ShaderFixes::BSBatchRenderer_SetupAndDrawPass };
     _BSBatchRenderer_SetupAndDrawPass BSBatchRenderer_SetupAndDrawPass_Orig;
 
-    REL::Relocation<std::uintptr_t> BSLightingShader_vtbl{ BSLightingShader_vtbl_offset };
+    REL::Relocation<std::uintptr_t> BSLightingShader_vtbl{ offsets::ShaderFixes::BSLightingShader_vtbl };
 
     std::uint32_t RAW_FLAG_RIM_LIGHTING = 1 << 11;
     std::uint32_t RAW_FLAG_DO_ALPHA_TEST = 1 << 20;
@@ -64,14 +64,15 @@ namespace fixes
             {
                 BSBatchRenderer_SetupAndDrawPass_Code()
                 {
-                    // 131F810
-                    mov(ptr[rsp + 0x10], rbx);
-                    mov(ptr[rsp + 0x18], rbp);
-                    // 131F81A
+                    // 142F580
+                    mov(rax, rsp);
+                    push(rdi);
+                    push(r12);
+                    // 142F586
 
                     // exit
                     jmp(ptr[rip]);
-                    dq(BSBatchRenderer_SetupAndDrawPass_origLoc.address() + 0xA);
+                    dq(BSBatchRenderer_SetupAndDrawPass_origLoc.address() + 0x6);
                 }
             };
 
@@ -88,7 +89,7 @@ namespace fixes
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> BSLightingShader_SetupGeometry_ParallaxFixHookLoc{ offset_BSLightingShader_SetupGeometry_ParallaxTechniqueFix, 0x577 };
+    REL::Relocation<std::uintptr_t> BSLightingShader_SetupGeometry_ParallaxFixHookLoc{ offsets::ShaderFixes::BSLightingShader_SetupGeometry_ParallaxTechniqueLoc };
 
     bool PatchBSLightingShaderSetupGeometryParallax()
     {
@@ -99,16 +100,17 @@ namespace fixes
                 BSLightingShader_SetupGeometry_Parallax_Code()
                 {
                     // orig code
-                    and_(eax, 0x21C00);
-                    cmovnz(edx, r8d);
+                    test(eax, 0x21C00);
+                    mov(r9d, 1);
+                    cmovnz(ecx, r9d);
 
                     // new code
-                    cmp(ebx, 0x3);    // technique ID = PARALLAX
-                    cmovz(edx, r8d);  // set eye update true
+                    cmp(dword[rbp+0x1D0-0x210], 0x3);     // technique ID = PARALLAX
+                    cmovz(ecx, r9d);  // set eye update true
 
                     // jmp out
                     jmp(ptr[rip]);
-                    dq(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.address() + 0x9);
+                    dq(BSLightingShader_SetupGeometry_ParallaxFixHookLoc.address() + 0xF);
                 };
             };
 
