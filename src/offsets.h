@@ -9,6 +9,13 @@ namespace offsets
     }
 
     // fixes
+    namespace BSLightingAmbientSpecular
+    {
+        constexpr REL::Offset BSLightingShader_SetupMaterial_AmbientSpecular(0x1417AF0 + 0x8CF);  // BSLightingShader_vf4
+        constexpr REL::Offset g_AmbientSpecularAndFresnel(0x1EA2F1C); // referenced at above location
+        constexpr REL::Offset BSLightingShader_SetupGeometry_AddAmbientSpecular(0x1418820 + 0x1271); // BSLightingShader_vf6
+    }
+
     namespace DoublePerkApply
     {
         // 48 85 D2 74 7C 48 89 5C 24 ?

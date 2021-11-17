@@ -130,9 +130,9 @@ namespace fixes
             constexpr std::uint8_t nop = 0x90;
             constexpr std::size_t length = 0x20;
 
-            REL::Relocation<std::uintptr_t> addAmbientSpecularToSetupGeometry{ REL::ID(100565), 0xBAD };
-            REL::Relocation<std::uintptr_t> ambientSpecularAndFresnel{ REL::ID(513256) };
-            REL::Relocation<std::uintptr_t> disableSetupMaterialAmbientSpecular{ REL::ID(100563), 0x713 };
+            REL::Relocation<std::uintptr_t> addAmbientSpecularToSetupGeometry{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupGeometry_AddAmbientSpecular };
+            REL::Relocation<std::uintptr_t> ambientSpecularAndFresnel{ offsets::BSLightingAmbientSpecular::g_AmbientSpecularAndFresnel };
+            REL::Relocation<std::uintptr_t> disableSetupMaterialAmbientSpecular{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupMaterial_AmbientSpecular };
 
             for (std::size_t i = 0; i < length; ++i)
                 REL::safe_write(disableSetupMaterialAmbientSpecular.address() + i, nop);
@@ -153,9 +153,9 @@ namespace fixes
                     push(rdx);
                     mov(rax, a_ambientSpecularAndFresnel);  // xmmword_1E3403C
                     movups(xmm0, ptr[rax]);
-                    mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]);  // PixelShader
+                    mov(rax, qword[rsp + 0x2D0 - 0x260 + 0x10]);  // PixelShader
                     movzx(edx, byte[rax + 0x46]);                 // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
-                    mov(rax, ptr[r15 + 8]);                       // m_PerGeometry buffer (copied from SetupGeometry)
+                    mov(rax, ptr[rdi + 8]);                       // m_PerGeometry buffer (copied from SetupGeometry)
                     movups(ptr[rax + rdx * 4], xmm0);             // m_PerGeometry buffer offset 0x6
                     pop(rdx);
                     pop(rax);
@@ -163,7 +163,7 @@ namespace fixes
                     L(jmpOut);
                     test(dword[r13 + 0x94], 0x200);
                     jmp(ptr[rip]);
-                    dq(a_addAmbientSpecularToSetupGeometry + 11);
+                    dq(a_addAmbientSpecularToSetupGeometry + 0xB);
                 }
             };
 
