@@ -231,7 +231,7 @@ namespace fixes
                     RenderTargetHook_2_Code()
                     {
                         // .text:00000001413BD9A7                 mov     [rbx+218h], rax
-                        mov(ptr[rbp + 0x218], rax);
+                        mov(ptr[rbx + 0x218], rax);
                         push(rax);
                         mov(rax, (uintptr_t)&screenshot_requested_location);
                         cmp(byte[rax], 2);

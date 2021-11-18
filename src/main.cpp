@@ -45,12 +45,21 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 bool CheckVersion(const REL::Version& a_version)
 {
-    const auto success = a_version >= SKSE::RUNTIME_1_5_39;
+    const auto success = a_version == SKSE::RUNTIME_1_6_318;
     if (!success)
         logger::critical("Unsupported runtime version {}"sv, a_version.string());
 
     return success;
 }
+
+extern "C" __declspec(dllexport) constexpr auto SKSEPlugin_Version = []() {
+    SKSE::PluginVersionData v{};
+    v.pluginVersion = Version::MAJOR;
+    v.PluginName("EngineFixes plugin"sv);
+    v.AuthorName("aers"sv);
+    v.CompatibleVersions({ SKSE::RUNTIME_1_6_318 });
+    return v;
+}();
 
 extern "C" void DLLEXPORT APIENTRY Initialize()
 {
@@ -85,6 +94,8 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
 
     logger::info("Engine Fixes v{}.{}.{}"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
+    logger::info("{}"sv, SKSEPlugin_Version.pluginVersion);
+
     if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"s))
         logger::info("loaded config successfully"sv);
     else
@@ -96,27 +107,14 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
 
     SKSE::AllocTrampoline(1 << 11);
 
-    patches::Preload();
-}
-
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface* a_skse, SKSE::PluginInfo* a_info)
-{
-    // populate info structure
-    a_info->infoVersion = SKSE::PluginInfo::kVersion;
-    a_info->name = "EngineFixes plugin";
-    a_info->version = Version::MAJOR;
-
-    if (a_skse->IsEditor())
+    if (*config::verboseLogging)
     {
-        logger::critical("loaded in editor, marking as incompatible"sv);
-        return false;
+        logger::info("enabling verbose logging"sv);
+        spdlog::set_level(spdlog::level::trace);
+        spdlog::flush_on(spdlog::level::trace);
     }
 
-    const auto ver = a_skse->RuntimeVersion();
-    if (!CheckVersion(ver))
-        return false;
-
-    return true;
+    patches::Preload();
 }
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
@@ -126,13 +124,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     const auto messaging = SKSE::GetMessagingInterface();
     if (!messaging->RegisterListener("SKSE", MessageHandler))
         return false;
-
-    if (*config::verboseLogging)
-    {
-        logger::info("enabling verbose logging"sv);
-        spdlog::set_level(spdlog::level::trace);
-        spdlog::flush_on(spdlog::level::trace);
-    }
 
     logger::info("beginning pre-load patches"sv);
 

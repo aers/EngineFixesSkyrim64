@@ -4,14 +4,13 @@ namespace patches
 {
     REL::Relocation<float*> FrameTimer_WithSlowTime{ offsets::Common::g_SecondsSinceLastFrame_WorldTime };
 
-    // +0x252
-    REL::Relocation<std::uintptr_t> GameLoop_Hook{ GameLoop_Hook_offset, 0x252 };
-    REL::Relocation<std::uint32_t*> UnkGameLoopDword{ UnkGameLoopDword_offset };
+    REL::Relocation<std::uintptr_t> Main_Update_Hook{ offsets::WaterflowAnimation::Main_Update.address() + 0x26B };
+    REL::Relocation<std::uint32_t*> ApplicationRunTime{ offsets::WaterflowAnimation::g_ApplicationRunTime };
 
     // 5th function in??_7BSWaterShader@@6B@ vtbl
     // F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
     // loads TIMER_DEFAULT which is a timer representing the GameHour in seconds
-    REL::Relocation<std::uintptr_t> WaterShader_ReadTimer_Hook{ WaterShader_ReadTimer_Hook_offset, 0x4A9 };
+    REL::Relocation<std::uintptr_t> WaterShader_ReadTimer_Hook{ offsets::WaterflowAnimation::WaterShader_SetupMaterial.address() + 0x4BC };
 
     float timer = 8 * 3600;  // Game timer inits to 8 AM
 
@@ -34,39 +33,26 @@ namespace patches
                 {
                     Xbyak::Label retnLabel;
                     Xbyak::Label funcLabel;
-                    Xbyak::Label unkDwordLabel;
+                    Xbyak::Label applicationRunTimeLabel;
 
-                    // enter 5B36F2
-                    // some people were crashing and while I'm pretty sure the registers dont need to be saved looking at the function in question, this was just a check to see if that was the problem
-                    // (it wasnt)
-                    /*
-                    sub(rsp, 0x20);
-                    vmovdqu(ptr[rsp], xmm0);
-                    vmovdqu(ptr[rsp + 0x10], xmm1);
-                    push(rax);*/
                     sub(rsp, 0x20);
                     call(ptr[rip + funcLabel]);
                     add(rsp, 0x20);
-                    /*
-                    pop(rax);
-                    vmovdqu(xmm1, ptr[rsp + 0x10]);
-                    vmovdqu(xmm0, ptr[rsp]);
-                    add(rsp, 0x20);*/
-                    // .text:00000001405B36F2                 mov     edx, cs : dword_142F92950
-                    mov(rdx, ptr[rip + unkDwordLabel]);
+
+                    // orig code
+                    mov(rdx, ptr[rip + applicationRunTimeLabel]);
                     mov(edx, dword[rdx]);
 
-                    // exit 5B36F8
                     jmp(ptr[rip + retnLabel]);
 
                     L(funcLabel);
                     dq(uintptr_t(update_timer));
 
                     L(retnLabel);
-                    dq(GameLoop_Hook.address() + 0x6);
+                    dq(Main_Update_Hook.address() + 0x6);
 
-                    L(unkDwordLabel);
-                    dq(UnkGameLoopDword.address());
+                    L(applicationRunTimeLabel);
+                    dq(ApplicationRunTime.address());
                 }
             };
 
@@ -74,7 +60,7 @@ namespace patches
             code.ready();
 
             auto& trampoline = SKSE::GetTrampoline();
-            trampoline.write_branch<6>(GameLoop_Hook.address(), trampoline.allocate(code));
+            trampoline.write_branch<6>(Main_Update_Hook.address(), trampoline.allocate(code));
         }
         logger::trace("replacing water flow timer with our timer..."sv);
         {
@@ -86,11 +72,11 @@ namespace patches
                     Xbyak::Label timerLabel;
 
                     // enter 130DFD9
-                    // .text:000000014130DFD9                 movss   xmm1, cs:TIMER_DEFAULT
-                    // .text:000000014130DFE1                 movss   dword ptr[rdx + rax * 4 + 0Ch], xmm1
+                    // .text:000000014141CE5C                 movss   xmm0, cs:dword_141EA2E40
+                    // .text:000000014141CE64                 movss   dword ptr [r10+rax*4+0Ch], xmm0
                     mov(r9, ptr[rip + timerLabel]);  // r9 is safe to use, unused again until .text:000000014130E13C                 mov     r9, r12
-                    movss(xmm1, dword[r9]);
-                    movss(dword[rdx + rax * 4 + 0xC], xmm1);
+                    movss(xmm0, dword[r9]);
+                    movss(dword[r10 + rax * 4 + 0xC], xmm0);
 
                     // exit 130DFE7
                     jmp(ptr[rip + retnLabel]);
@@ -163,6 +149,9 @@ namespace patches
             return false;
         }
 
+        if (*config::patchMaxStdio > 8192)
+            *config::patchMaxStdio = 8192;
+
         const auto result = proc(static_cast<int>(*config::patchMaxStdio));
         logger::trace("max stdio set to {}"sv, result);
 
@@ -173,8 +162,8 @@ namespace patches
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType{ QuickSaveLoadHandler_HandleEvent_SaveType_offset, 0x68 };
-    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType{ QuickSaveLoadHandler_HandleEvent_LoadType_offset, 0x9B };
+    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType{ offsets::RegularQuicksaves::QuickSaveLoadHandler_ProcessButton.address() + 0x68 };
+    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType{ offsets::RegularQuicksaves::QuickSaveLoadHandler_ProcessButton.address() + 0x9B };
 
     bool PatchRegularQuicksaves()
     {
@@ -188,7 +177,7 @@ namespace patches
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> AchievementModsEnabledFunction{ AchievementModsEnabledFunction_offset };
+    REL::Relocation<std::uintptr_t> AchievementModsEnabledFunction{ offsets::AchievementsWithMods::AchievementModsEnabledFunction };
 
     bool PatchEnableAchievementsWithMods()
     {
@@ -216,16 +205,11 @@ namespace patches
     public:
         static void Install()
         {
-            constexpr std::array ids = {
-                static_cast<std::uint64_t>(51507),
-                static_cast<std::uint64_t>(51509),
-            };
-
             constexpr std::uint8_t RET = 0xC3;
 
-            for (const auto& id : ids)
+            for (const auto& offset : offsets::DisableChargenPrecache::todo)
             {
-                REL::Relocation<std::uintptr_t> target{ REL::ID(id) };
+                REL::Relocation<std::uintptr_t> target{ offset };
                 REL::safe_write(target.address(), RET);
             }
         }
@@ -241,45 +225,8 @@ namespace patches
         return true;
     }
 
-    bool loadSet = false;
-
-    bool hk_TESFile_IsMaster(RE::TESFile* modInfo)
-    {
-        if (loadSet)
-            return true;
-
-        std::uintptr_t returnAddr = (std::uintptr_t)(_ReturnAddress()) - REL::Module::get().base();
-
-        if (returnAddr == 0x16E11E)
-        {
-            loadSet = true;
-            logger::info("load order finished"sv);
-            auto dhnl = RE::TESDataHandler::GetSingleton();
-            for (auto& mod : dhnl->compiledFileCollection.files)
-            {
-                mod->recordFlags |= RE::TESFile::RecordFlag::kMaster;
-            }
-            return true;
-        }
-
-        return (modInfo->recordFlags & RE::TESFile::RecordFlag::kMaster) != RE::TESFile::RecordFlag::kNone;
-    }
-
-    REL::Relocation<std::uintptr_t> TESFile_IsMaster{ TESFile_IsMaster_offset };
-
-    bool PatchTreatAllModsAsMasters()
-    {
-        logger::trace("- treat all mods as masters -"sv);
-        MessageBoxW(nullptr, L"WARNING: You have the treat all mods as masters patch enabled. I hope you know what you're doing!", L"Engine Fixes for Skyrim Special Edition", MB_OK);
-        auto& trampoline = SKSE::GetTrampoline();
-        trampoline.write_branch<6>(TESFile_IsMaster.address(), reinterpret_cast<std::uintptr_t>(hk_TESFile_IsMaster));
-        logger::trace("success"sv);
-
-        return true;
-    }
-
-    REL::Relocation<std::uintptr_t> FirstPersonState_DontSwitchPOV{ FirstPersonState_DontSwitchPOV_offset, 0x43 };
-    REL::Relocation<std::uintptr_t> ThirdPersonState_DontSwitchPOV{ ThirdPersonState_DontSwitchPOV_offset, 0x1E8 };
+    REL::Relocation<std::uintptr_t> FirstPersonState_DontSwitchPOV{ offsets::ScrollingDoesntSwitchPOV::FirstPersonState_PlayerInputHandler_ProcessButton.address() + 0x43 };
+    REL::Relocation<std::uintptr_t> ThirdPersonState_DontSwitchPOV{ offsets::ScrollingDoesntSwitchPOV::ThirdPersonState_PlayerInputHandler_ProcessButton.address() + 0x1F7 };
 
     bool PatchScrollingDoesntSwitchPOV()
     {
@@ -296,7 +243,7 @@ namespace patches
         logger::trace("- sleep wait time -"sv);
         {
             constexpr std::uint8_t NOP{ 0x90 };
-            REL::Relocation<std::uintptr_t> target{ REL::ID(51614), 0x1CE };
+            REL::Relocation<std::uintptr_t> target{ offsets::SleepWaitTime::SleepWaitMenu_vf4.address() + 0x1D0 };
 
             struct SleepWaitTime_Code : Xbyak::CodeGenerator
             {
@@ -329,9 +276,9 @@ namespace patches
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> Win32FileType_CopyToBuffer{ Win32FileType_CopyToBuffer_offset, 0x14 };
-    REL::Relocation<std::uintptr_t> Win32FileType_ctor{ Win32FileType_ctor_offset, 0x14E };
-    REL::Relocation<std::uintptr_t> ScrapHeap_GetMaxSize{ ScrapHeap_GetMaxSize_offset, 0x4 };
+    REL::Relocation<std::uintptr_t> Win32FileType_CopyToBuffer{ offsets::SaveGameMaxSize::Win32FileType_CopyToBuffer.address() + 0x1A };
+    REL::Relocation<std::uintptr_t> Win32FileType_ctor{ offsets::SaveGameMaxSize::Win32FileType_Ctor.address() + 0x20E };
+    REL::Relocation<std::uintptr_t> ScrapHeap_GetMaxSize{ offsets::SaveGameMaxSize::ScrapHeap_GetMaxSize.address() + 0x4 };
 
     bool PatchSaveGameMaxSize()
     {

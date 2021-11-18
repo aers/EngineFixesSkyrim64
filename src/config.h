@@ -73,7 +73,6 @@ public:
 
     // Experimental
     static inline bSetting experimentalSaveGameMaxSize{ "Experimental", "SaveGameMaxSize", false };
-    static inline bSetting experimentalTreatAllModsAsMasters{ "Experimental", "TreatAllModsAsMasters", false };
 
     static bool load_config(const std::string& a_path)
     {

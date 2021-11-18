@@ -37,9 +37,6 @@ namespace patches
         if (*config::experimentalSaveGameMaxSize)
             PatchSaveGameMaxSize();
 
-        if (*config::experimentalTreatAllModsAsMasters)
-            PatchTreatAllModsAsMasters();
-
         return true;
     }
 

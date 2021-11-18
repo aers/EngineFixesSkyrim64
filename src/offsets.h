@@ -9,6 +9,20 @@ namespace offsets
     }
 
     // patches
+    namespace AchievementsWithMods
+    {
+        // 48 83 EC 28 C6 44 24 ? ?
+        constexpr REL::Offset AchievementModsEnabledFunction(0x179A40);
+    }
+
+    namespace DisableChargenPrecache
+    {
+        constexpr std::array todo = {
+            REL::Offset(0x8E2AA0), // PreCache - 48 83 EC 48 48 8B 0D ? ? ? ? 48 85 C9 
+            REL::Offset(0x8E2D30) // PreCacheClear - E8 ? ? ? ? E8 ? ? ? ? C6 87 ? ? ? ? ? 
+         };
+    }
+
     namespace FormCaching
     {
         // E8 ? ? ? ? 48 8B DD
@@ -55,10 +69,15 @@ namespace offsets
         // E8 ? ? ? ? 48 8B 06 49 23 C7
         constexpr REL::Offset ScrapHeap_RemoveFreeBlock(0xC28CF0);
         // FF 41 78 
-        constexpr REL::Offset ScrapHeap_SetKeepPages(0xC28AB00);
+        constexpr REL::Offset ScrapHeap_SetKeepPages(0xC28AB0);
         // vtable ref
         constexpr REL::Offset ScrapHeap_Dtor(0xC282D0);
-    }   
+    }
+
+    namespace RegularQuicksaves
+    {
+        constexpr REL::Offset QuickSaveLoadHandler_ProcessButton(0x8D9F60); // vf5
+    }
 
     namespace SafeExit
     {
@@ -70,11 +89,30 @@ namespace offsets
         constexpr REL::Offset INIPrefSettingCollection_vtbl(0x162A5D8);
         constexpr REL::Offset BGSSoundCategory_BSISoundCategory_vtbl(0x166E898);
     }
+    
+    namespace SaveGameMaxSize
+    {
+        constexpr REL::Offset Win32FileType_CopyToBuffer(0x146C530); // vf18
+        constexpr REL::Offset Win32FileType_Ctor(0x146B1B0); // vtbl cref
+        // E8 ? ? ? ? 8B D0 4C 8B CB
+        constexpr REL::Offset ScrapHeap_GetMaxSize(0x5BCF70);
+    }
 
     namespace ScaleFormAllocator
     {
         // E8 ? ? ? ? 48 89 05 ? ? ? ? 48 8B 0D ? ? ? ? E8 ? ? ? ? 48 83 3D ? ? ? ? ? 75 13
         constexpr REL::Offset ScaleFormManager_Init(0xF106D0);
+    }
+
+    namespace ScrollingDoesntSwitchPOV
+    {
+        constexpr REL::Offset FirstPersonState_PlayerInputHandler_ProcessButton(0x873650); // vf4
+        constexpr REL::Offset ThirdPersonState_PlayerInputHandler_ProcessButton(0x87BD00);
+    }
+
+    namespace SleepWaitTime
+    {
+        constexpr REL::Offset SleepWaitMenu_vf4(0x8ECDB0);
     }
 
     namespace TreeLodReferenceCaching
@@ -85,11 +123,20 @@ namespace offsets
         constexpr REL::Offset Float2Half(0xD7A7C0);
     }
 
+    namespace WaterflowAnimation
+    {
+        // 48 8B C4 55 41 54 41 55 41 56 41 57 48 81 EC ? ? ? ? 48 C7 84 24 ? ? ? ? ? ? ? ? 48 89 58 08 48 89 70 10 48 89 78 18 48 8D 6C 24 ? 48 83 E5 C0 4C 8B E1
+        constexpr REL::Offset Main_Update(0x5D9F50);
+        constexpr REL::Offset g_ApplicationRunTime(0x30064D0);
+
+        constexpr REL::Offset WaterShader_SetupMaterial(0x141C9A0); // BSWaterShader_vf4
+    }
+
     // fixes
     namespace AnimationLoadSignedCrash
     {
         // E8 ? ? ? ? 90 48 83 C4 58 C3 32 C0
-        constexpr REL::Offset Movsx(0x930B8B930 + 0xAA);
+        constexpr REL::Offset Movsx(0xB8B930 + 0xAA);
     }
 
     namespace ArcheryDownwardAiming
@@ -110,7 +157,7 @@ namespace offsets
         // these are all the callsites for function at 40 53 48 81 EC ? ? ? ? 48 8B 41 30
         constexpr std::array todo = {
             REL::Offset(0x15E820 + 0xE2),
-            REL::Offset(0x5D95F0 + 0x266),
+            REL::Offset(0x5D9F50 + 0x266),
             REL::Offset(0x5DAC80 + 0x3A),
             REL::Offset(0x6C5840 + 0x282),
             REL::Offset(0x6CA780 + 0x78)
@@ -250,8 +297,8 @@ namespace offsets
     namespace ShaderFixes
     {
         // E8 ? ? ? ? 49 8B 8E ? ? ? ? 40 B6 01
-        constexpr REL::Offset BSBatchRenderer_SetupAndDrawPass(0x14142F580);
-        constexpr REL::Offset BSLightingShader_vtbl(0x14196FFA0);
+        constexpr REL::Offset BSBatchRenderer_SetupAndDrawPass(0x142F580);
+        constexpr REL::Offset BSLightingShader_vtbl(0x196FFA0);
         // 48 8B C4 44 89 40 18 48 89 50 10 48 89 48 08 55 53 
         constexpr REL::Offset BSLightingShader_SetupGeometry_ParallaxTechniqueLoc(0x1418820 + 0xB5D);
     }
@@ -298,60 +345,19 @@ namespace offsets
         // E8 ? ? ? ? 48 8B CF E8 ? ? ? ? 8B 03
         constexpr REL::Offset FuncBase(0x76FAE0);
     }
+
+    // Warnings
+    namespace DuplicateAddonNodeIndex
+    {
+        constexpr REL::Offset BGSAddonNode_vtbl(0x16444F0);
+
+        // E8 ? ? ? ? E9 ? ? ? ? 4C 8D 9C 24 ? ? ? ? 49 8B 5B 10
+        constexpr REL::Offset Unk_DataReload_Func(0x5DCD70); // DetectSignOut vtbl
+    }
+
+    namespace RefrHandleLimit
+    {
+        // 48 83 EC 38 33 D2 48 8D 0D ? ? ? ? (ctor)
+        constexpr REL::Offset g_RefrHandleArray(0x1F5EF10);
+    }
 }
-// Patches
-
-// Enable Achievements With Mods
-// 48 83 EC 28 C6 44 24 ? ?
-constexpr REL::ID AchievementModsEnabledFunction_offset(13647);
-
-// Regular Quicksaves
-// QuickSaveLoadHandler::HandleEvent  = vtbl 5
-constexpr REL::ID QuickSaveLoadHandler_HandleEvent_SaveType_offset(51402);  // F0000200
-constexpr REL::ID QuickSaveLoadHandler_HandleEvent_LoadType_offset(51402);  // D0000400
-
-// Scrolling Doesn't Switch POV
-// FirstPersonState::PlayerInputHandler::sub_4
-// 48 39 08 75 0B
-constexpr REL::ID FirstPersonState_DontSwitchPOV_offset(49800);
-// TPS
-// 74 35 48 8B 0D ? ? ? ? E8 ? ? ? ? 84 C0
-constexpr REL::ID ThirdPersonState_DontSwitchPOV_offset(49970);
-
-// Waterflow
-// E8 ? ? ? ? 84 DB 74 24 -> +0x252
-constexpr REL::ID GameLoop_Hook_offset(35565);
-constexpr REL::ID UnkGameLoopDword_offset(523662);
-// 5th function in ??_7BSWaterShader@@6B@ vtbl
-// F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
-constexpr REL::ID WaterShader_ReadTimer_Hook_offset(100602);
-
-
-// Warnings
-
-// Dupe Addon Node index
-constexpr REL::ID vtbl_BGSAddonNode_LoadForm_offset(233357);
-
-// E8 ? ? ? ? E9 ? ? ? ? 4C 8D 9C 24 80 00 00 00
-constexpr REL::ID Unk_DataReload_Func_offset(35593);
-
-constexpr REL::ID Call1_Unk_DataReload_func_offset(35551);
-
-// E8 ? ? ? ? 33 C9 E8 ? ? ? ? 84 C0
-constexpr REL::ID Call2_Unk_DataReload_func_offset(35589);
-
-// Refr Handle Limit
-// LookupRefrPtrByHandle uses this
-constexpr REL::ID g_RefrHandleArray_offset(514478);
-
-// Experimental
-
-// BB ? ? ? ? 4C 8B FA
-constexpr REL::ID Win32FileType_CopyToBuffer_offset(101985);
-// C6 83 ? ? ? ? ? BA ? ? ? ? ->
-constexpr REL::ID Win32FileType_ctor_offset(101962);
-// E8 ? ? ? ? 8B D0 4C 8B CB ->
-constexpr REL::ID ScrapHeap_GetMaxSize_offset(35203);
-
-// E8 ? ? ? ? 0F B6 D0 EB 02
-constexpr REL::ID TESFile_IsMaster_offset(13913);

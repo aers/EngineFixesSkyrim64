@@ -63,6 +63,3 @@ RefrLoadedGameLimit = 1000000           # Handle count to warn at after loading 
 
 [Experimental]
 SaveGameMaxSize = false                 # Expands the maximum uncompressed size of a save game from 64 MB to 128 MB# can fix "crash on save" issue in long-runnning saves
-
-# DO NOT USE THIS IT IS FOR SPECIFIC TESTING ONLY
-TreatAllModsAsMasters = false           # Loads all mods as if they are masters.

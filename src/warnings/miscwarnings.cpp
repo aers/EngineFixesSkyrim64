@@ -6,10 +6,8 @@ namespace warnings
     std::unordered_map<std::uint32_t, RE::BGSAddonNode*> nodeMap;
 
     typedef bool (*_BGSAddonNode_LoadForm)(RE::BGSAddonNode* addonNode, RE::TESFile* modInfo);
-    REL::Relocation<_BGSAddonNode_LoadForm*> vtbl_BGSAddonNode_LoadForm{ vtbl_BGSAddonNode_LoadForm_offset, 0x8 * 0x6 };
+    REL::Relocation<_BGSAddonNode_LoadForm*> vtbl_BGSAddonNode_LoadForm{ offsets::DuplicateAddonNodeIndex::BGSAddonNode_vtbl.address() + 0x8 * 0x6 };
     _BGSAddonNode_LoadForm orig_BGSAddonNode_LoadForm;
-
-    REL::Relocation<std::uint32_t*> g_RefrHandleArray{ g_RefrHandleArray_offset };
 
     bool hk_BGSAddonNode_LoadForm(RE::BGSAddonNode* addonNode, RE::TESFile* modInfo)
     {
@@ -48,7 +46,7 @@ namespace warnings
     void Hook_Main_Unk(void* a_this)
     {
         typedef void _Main_Unk_t(void* a_this);
-        static REL::Relocation<_Main_Unk_t*> orig_Fn{ Unk_DataReload_Func_offset };
+        static REL::Relocation<_Main_Unk_t*> orig_Fn{ offsets::DuplicateAddonNodeIndex::Unk_DataReload_Func };
 
         orig_Fn(a_this);
 
@@ -64,15 +62,17 @@ namespace warnings
         orig_BGSAddonNode_LoadForm = *vtbl_BGSAddonNode_LoadForm;
         REL::safe_write(vtbl_BGSAddonNode_LoadForm.address(), reinterpret_cast<std::uintptr_t>(&hk_BGSAddonNode_LoadForm));
 
-        REL::Relocation<std::uintptr_t> call1_Main_Unk{ Call1_Unk_DataReload_func_offset, 0x163 };
+        REL::Relocation<std::uintptr_t> call1_Main_Unk{ offsets::SafeExit::WinMain.address() + 0x1A4 };
         trampoline.write_call<5>(call1_Main_Unk.address(), reinterpret_cast<std::uintptr_t>(&Hook_Main_Unk));
 
-        REL::Relocation<std::uintptr_t> call2_Main_Unk{ Call2_Unk_DataReload_func_offset, 0xD };
+        REL::Relocation<std::uintptr_t> call2_Main_Unk{ offsets::WaterflowAnimation::Main_Update.address() + 0xA2F };
         trampoline.write_call<5>(call2_Main_Unk.address(), reinterpret_cast<std::uintptr_t>(&Hook_Main_Unk));
 
         logger::trace("- hooked -"sv);
         return true;
     }
+
+    REL::Relocation<std::uint32_t*> g_RefrHandleArray{ offsets::RefrHandleLimit::g_RefrHandleArray };
 
     void WarnActiveRefrHandleCount(std::uint32_t warnCount)
     {
