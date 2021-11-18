@@ -1,3 +1,5 @@
+#include "offsets.h"
+
 namespace
 {
     void Shutdown()
@@ -8,9 +10,9 @@ namespace
 
     void Install()
     {
-        REL::Relocation<std::uintptr_t> target{ REL::ID(35545) };
+        REL::Relocation<std::uintptr_t> target{ offsets::SafeExit::WinMain };
         auto& trampoline = SKSE::GetTrampoline();
-        trampoline.write_call<5>(target.address() + 0x35, Shutdown);  // Main::Shutdown
+        trampoline.write_call<5>(target.address() + 0x1AE, Shutdown);  // Main::Shutdown
     }
 }
 

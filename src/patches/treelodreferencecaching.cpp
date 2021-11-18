@@ -3,13 +3,13 @@
 namespace patches
 {
     typedef void (*UpdateBlockVisibility_)(RE::BGSDistantTreeBlock* data);
-    REL::Relocation<UpdateBlockVisibility_> UpdateBlockVisibility_orig{ UpdateBlockVisibility_orig_offset };
+    REL::Relocation<UpdateBlockVisibility_> UpdateBlockVisibility_orig{ offsets::TreeLodReferenceCaching::UpdateBlockVisibility };
 
     typedef uint16_t (*Float2Half_)(float f);
-    REL::Relocation<Float2Half_> Float2Half{ Float2Half_offset };
+    REL::Relocation<Float2Half_> Float2Half{ offsets::TreeLodReferenceCaching::Float2Half };
 
     typedef RE::TESForm* (*_LookupFormByID)(std::uint32_t id);
-    REL::Relocation<_LookupFormByID> LookupFormByID{ LookupFormByID_offset };
+    REL::Relocation<_LookupFormByID> LookupFormByID{ offsets::FormCaching::LookupFormByID };
 
     tbb::concurrent_hash_map<std::uint32_t, RE::TESObjectREFR*> referencesFormCache;
 

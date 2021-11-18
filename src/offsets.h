@@ -8,6 +8,83 @@ namespace offsets
         constexpr REL::Offset g_SecondsSinceLastFrame_RealTime(0x30064CC);
     }
 
+    // patches
+    namespace FormCaching
+    {
+        // E8 ? ? ? ? 48 8B DD
+        constexpr REL::Offset LookupFormByID(0x19F110);
+        constexpr REL::Offset GlobaFormTable(0x1F5E498);
+        constexpr REL::Offset GlobalFormTableLock(0x1F5E928);
+
+        // E8 ? ? ? ? 48 8B 0D ? ? ? ? 48 85 C9 74 08 48 8B D3
+        constexpr REL::Offset UnkFormFunc0(0x19F590);
+        // E8 ? ? ? ? 90 48 8B CD E8 ? ? ? ? 90 EB 07
+        constexpr REL::Offset UnkFormFunc1(0x1A0BE0);
+        // E8 ? ? ? ? 40 B5 01 49 8B CD
+        constexpr REL::Offset UnkFormFunc2(0x1A17E0);
+    }
+
+    namespace MemoryManager
+    {
+        // E8 ? ? ? ? 48 89 6E 68
+        constexpr REL::Offset AutoScrapBuffer_Ctor(0xC26BF0);
+        // E8 ? ? ? ? 8D 53 18
+        constexpr REL::Offset AutoScrapBuffer_Dtor(0xC26C80);
+
+        // E8 ? ? ? ? 0F B6 53 20
+        constexpr REL::Offset MemoryManager_Allocate(0xC26F00);
+        constexpr REL::Offset MemoryManager_ReAllocate(0xC27150);
+        constexpr REL::Offset MemoryManager_DeAllocate(0xC27350);
+
+        // E8 ? ? ? ? 48 63 FF 
+        constexpr REL::Offset MemoryManager_Init(0xC274C0);
+
+        constexpr REL::Offset ScrapHeap_vtbl(0x184C230);
+
+        constexpr REL::Offset ScrapHeap_ctor(0xC28190);
+        // E8 ? ? ? ? 44 0F B7 F5 
+        constexpr REL::Offset ScrapHeap_Allocate(0xC28310);
+        // E8 ? ? ? ? 45 89 77 0C
+        constexpr REL::Offset ScrapHeap_DeAllocate(0xC28910);
+        // 40 53 48 83 EC 20 83 79 78 00 
+        constexpr REL::Offset ScrapHeap_Clean(0xC28AD0);
+        // FF 49 78
+        constexpr REL::Offset ScrapHeap_ClearKeepPages(0xC28AC0);
+        // E8 ? ? ? ? 49 8B 44 24 ? 48 3B F0
+        constexpr REL::Offset ScrapHeap_InsertFreeBlock(0xC28BF0);
+        // E8 ? ? ? ? 48 8B 06 49 23 C7
+        constexpr REL::Offset ScrapHeap_RemoveFreeBlock(0xC28CF0);
+        // FF 41 78 
+        constexpr REL::Offset ScrapHeap_SetKeepPages(0xC28AB00);
+        // vtable ref
+        constexpr REL::Offset ScrapHeap_Dtor(0xC282D0);
+    }   
+
+    namespace SafeExit
+    {
+        constexpr REL::Offset WinMain(0x5D29F0);
+    }
+
+    namespace SaveAddedSoundCategories
+    {
+        constexpr REL::Offset INIPrefSettingCollection_vtbl(0x162A5D8);
+        constexpr REL::Offset BGSSoundCategory_BSISoundCategory_vtbl(0x166E898);
+    }
+
+    namespace ScaleFormAllocator
+    {
+        // E8 ? ? ? ? 48 89 05 ? ? ? ? 48 8B 0D ? ? ? ? E8 ? ? ? ? 48 83 3D ? ? ? ? ? 75 13
+        constexpr REL::Offset ScaleFormManager_Init(0xF106D0);
+    }
+
+    namespace TreeLodReferenceCaching
+    {
+        // 4C 8B DC 41 55 48 83 EC 70
+        constexpr REL::Offset UpdateBlockVisibility(0x4C2020);
+        // E8 ? ? ? ? 66 89 04 37
+        constexpr REL::Offset Float2Half(0xD7A7C0);
+    }
+
     // fixes
     namespace AnimationLoadSignedCrash
     {
@@ -228,20 +305,6 @@ namespace offsets
 // 48 83 EC 28 C6 44 24 ? ?
 constexpr REL::ID AchievementModsEnabledFunction_offset(13647);
 
-// Form Caching
-constexpr REL::ID LookupFormByID_offset(14461);
-constexpr REL::ID GlobalFormTableLock_offset(514360);
-constexpr REL::ID GlobalFormTable_offset(514351);
-
-// E8 ? ? ? ? 90 83 05 ? ? ? ? ? ->
-constexpr REL::ID UnkFormFunc1_offset(14471);
-// E8 ? ? ? ? 84 C0 75 36 48 8B CD ->
-constexpr REL::ID UnkFormFunc2_offset(14515);
-// E8 ? ? ? ? 40 B5 01 49 8B CD ->
-constexpr REL::ID UnkFormFunc3_offset(14514);
-// E8 ? ? ? ? 48 8D 84 24 ? ? ? ? 48 89 44 24 ? 48 8D 44 24 ? 48 89 44 24 ? 4C 8D 4F 14 -> +0xC4 ->
-constexpr REL::ID UnkFormFunc4_offset(14537);
-
 // Regular Quicksaves
 // QuickSaveLoadHandler::HandleEvent  = vtbl 5
 constexpr REL::ID QuickSaveLoadHandler_HandleEvent_SaveType_offset(51402);  // F0000200
@@ -254,12 +317,6 @@ constexpr REL::ID FirstPersonState_DontSwitchPOV_offset(49800);
 // TPS
 // 74 35 48 8B 0D ? ? ? ? E8 ? ? ? ? 84 C0
 constexpr REL::ID ThirdPersonState_DontSwitchPOV_offset(49970);
-
-// Tree LOD Reference Caching
-// E8 ? ? ? ? EB 0F 48 8B 43 18 ->
-constexpr REL::ID UpdateBlockVisibility_orig_offset(30839);
-// E8 ? ? ? ? 66 89 47 04 ->
-constexpr REL::ID Float2Half_offset(74491);
 
 // Waterflow
 // E8 ? ? ? ? 84 DB 74 24 -> +0x252

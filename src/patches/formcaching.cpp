@@ -7,24 +7,20 @@ namespace patches
 
     tbb::concurrent_hash_map<std::uint32_t, RE::TESForm*> globalFormCacheMap[256];
 
-    REL::Relocation<RE::BSReadWriteLock*> GlobalFormTableLock{ GlobalFormTableLock_offset };
-    REL::Relocation<RE::BSTHashMap<std::uint32_t, RE::TESForm*>**> GlobalFormTable{ GlobalFormTable_offset };
+    REL::Relocation<RE::BSReadWriteLock*> GlobalFormTableLock{ offsets::FormCaching::GlobalFormTableLock };
+    REL::Relocation<RE::BSTHashMap<std::uint32_t, RE::TESForm*>**> GlobalFormTable{ offsets::FormCaching::GlobaFormTable };
 
     typedef void (*UnknownFormFunction0_)(__int64 form, bool a2);
-    REL::Relocation<UnknownFormFunction0_> origFunc0HookAddr{ UnkFormFunc1_offset };
+    REL::Relocation<UnknownFormFunction0_> origFunc0HookAddr{ offsets::FormCaching::UnkFormFunc0 };
     UnknownFormFunction0_ origFunc0;
 
-    typedef __int64 (*UnknownFormFunction1_)(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64* a5);
-    REL::Relocation<UnknownFormFunction1_> origFunc1HookAddr{ UnkFormFunc2_offset };
+    typedef __int64 (*UnknownFormFunction1_)(__int64 a1, DWORD* formId, __int64* a3);
+    REL::Relocation<UnknownFormFunction1_> origFunc1HookAddr{ offsets::FormCaching::UnkFormFunc1 };
     UnknownFormFunction1_ origFunc1;
 
-    typedef __int64 (*UnknownFormFunction2_)(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64** a5);
-    REL::Relocation<UnknownFormFunction2_> origFunc2HookAddr{ UnkFormFunc3_offset };
+    typedef __int64 (*UnknownFormFunction2_)(__int64 a1, DWORD* formId, __int64* a3);
+    REL::Relocation<UnknownFormFunction2_> origFunc2HookAddr{ offsets::FormCaching::UnkFormFunc2 };
     UnknownFormFunction2_ origFunc2;
-
-    typedef __int64 (*UnknownFormFunction3_)(__int64 a1, __int64 a2, int a3, __int64 a4);
-    REL::Relocation<UnknownFormFunction3_> origFunc3HookAddr{ UnkFormFunc4_offset };
-    UnknownFormFunction3_ origFunc3;
 
     void UpdateFormCache(std::uint32_t FormId, RE::TESForm* Value, bool Invalidate)
     {
@@ -73,25 +69,18 @@ namespace patches
         return formPointer;
     }
 
-    __int64 UnknownFormFunction3(__int64 a1, __int64 a2, int a3, __int64 a4)
-    {
-        UpdateFormCache(*(std::uint32_t*)a4, nullptr, true);
-
-        return origFunc3(a1, a2, a3, a4);
-    }
-
-    __int64 UnknownFormFunction2(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64** a5)
+    __int64 UnknownFormFunction2(__int64 a1, DWORD* formId, __int64* a3)
     {
         UpdateFormCache(*formId, nullptr, true);
 
-        return origFunc2(a1, a2, a3, formId, a5);
+        return origFunc2(a1, formId, a3);
     }
 
-    __int64 UnknownFormFunction1(__int64 a1, __int64 a2, int a3, DWORD* formId, __int64* a5)
+    __int64 UnknownFormFunction1(__int64 a1, DWORD* formId, __int64* a3)
     {
         UpdateFormCache(*formId, nullptr, true);
 
-        return origFunc1(a1, a2, a3, formId, a5);
+        return origFunc1(a1, formId, a3);
     }
 
     void UnknownFormFunction0(__int64 form, bool a2)
@@ -105,7 +94,7 @@ namespace patches
     {
         logger::trace("- form caching -"sv);
 
-        REL::Relocation<std::uint32_t*> LookupFormByID{ REL::ID(14461) };
+        REL::Relocation<std::uint32_t*> LookupFormByID{ offsets::FormCaching::LookupFormByID };
         if (*LookupFormByID != 0x83485740)
         {
             logger::trace("sse fixes is installed and enabled. aborting form cache patch."sv);
@@ -160,12 +149,10 @@ namespace patches
                 {
                     Xbyak::Label retnLabel;
 
-                    // 196070
-                    push(rdi);
-                    push(r14);
-                    push(r15);
-                    sub(rsp, 0x20);
-                    // 19607A
+                    // 1A0BE0
+                    mov(ptr[rsp + 0x10], rbx);
+                    mov(ptr[rsp + 0x18], rbp);
+                    // 1A0BEA
 
                     // exit
                     jmp(ptr[rip + retnLabel]);
@@ -192,11 +179,10 @@ namespace patches
                 {
                     Xbyak::Label retnLabel;
 
-                    // 195DA0
+                    // 1A17E0
                     mov(ptr[rsp + 0x10], rbx);
-                    push(rsi);
-                    sub(rsp, 0x20);
-                    // 195DAA
+                    mov(ptr[rsp + 0x18], rsi);
+                    // 1A17EA
 
                     // exit
                     jmp(ptr[rip + retnLabel]);
@@ -216,37 +202,6 @@ namespace patches
                 reinterpret_cast<std::uintptr_t>(UnknownFormFunction2));
         }
 
-        {
-            struct UnknownFormFunction3_Code : Xbyak::CodeGenerator
-            {
-                UnknownFormFunction3_Code()
-                {
-                    Xbyak::Label retnLabel;
-
-                    // 196960
-                    push(rbp);
-                    push(rsi);
-                    push(r14);
-                    sub(rsp, 0x20);
-                    // 196969
-
-                    // exit
-                    jmp(ptr[rip + retnLabel]);
-
-                    L(retnLabel);
-                    dq(origFunc3HookAddr.address() + 0x9);
-                }
-            };
-
-            UnknownFormFunction3_Code code;
-            code.ready();
-
-            auto& trampoline = SKSE::GetTrampoline();
-            origFunc3 = reinterpret_cast<UnknownFormFunction3_>(trampoline.allocate(code));
-            trampoline.write_branch<6>(
-                origFunc3HookAddr.address(),
-                reinterpret_cast<std::uintptr_t>(UnknownFormFunction3));
-        }
         logger::trace("done"sv);
 
         logger::trace("success"sv);

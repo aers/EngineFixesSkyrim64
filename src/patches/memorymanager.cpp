@@ -1,5 +1,7 @@
 #include "version.h"
 
+#include "offsets.h"
+
 namespace
 {
     std::byte* g_trash{ nullptr };  // a dumb workaround for reads from/writes to zero size allocations
@@ -31,14 +33,14 @@ namespace
     {
         void Ctor()
         {
-            REL::Relocation<std::uintptr_t> target{ REL::ID(66853), 0x1D };
+            REL::Relocation<std::uintptr_t> target{ offsets::MemoryManager::AutoScrapBuffer_Ctor.address() + 0x1D };
             constexpr std::size_t size = 0x32 - 0x1D;
             REL::safe_fill(target.address(), REL::NOP, size);
         }
 
         void Dtor()
         {
-            REL::Relocation<std::uintptr_t> base{ REL::ID(66854) };
+            REL::Relocation<std::uintptr_t> base{ offsets::MemoryManager::AutoScrapBuffer_Dtor };
 
             {
                 struct Patch :
@@ -108,16 +110,16 @@ namespace
 
         void ReplaceAllocRoutines()
         {
-            using tuple_t = std::tuple<std::uint64_t, std::size_t, void*>;
+            using tuple_t = std::tuple<REL::Offset, std::size_t, void*>;
             const std::array todo{
-                tuple_t{ 66859, 0x248, &Allocate },
-                tuple_t{ 66861, 0x114, &Deallocate },
-                tuple_t{ 66860, 0xA7, &Reallocate },
+                tuple_t{ offsets::MemoryManager::MemoryManager_Allocate, 0x248, &Allocate },
+                tuple_t{ offsets::MemoryManager::MemoryManager_DeAllocate, 0x114, &Deallocate },
+                tuple_t{ offsets::MemoryManager::MemoryManager_ReAllocate, 0x1F6, &Reallocate },
             };
 
-            for (const auto& [id, size, func] : todo)
+            for (const auto& [offset, size, func] : todo)
             {
-                REL::Relocation<std::uintptr_t> target{ REL::ID(id) };
+                REL::Relocation<std::uintptr_t> target{ offset };
                 REL::safe_fill(target.address(), REL::INT3, size);
                 asm_jump(target.address(), size, reinterpret_cast<std::uintptr_t>(func));
             }
@@ -125,8 +127,8 @@ namespace
 
         void StubInit()
         {
-            REL::Relocation<std::uintptr_t> target{ REL::ID(66862) };
-            REL::safe_fill(target.address(), REL::INT3, 0x9E);
+            REL::Relocation<std::uintptr_t> target{ offsets::MemoryManager::MemoryManager_Init };
+            REL::safe_fill(target.address(), REL::INT3, 0x1A7);
             REL::safe_write(target.address(), REL::RET);
         }
 
@@ -151,7 +153,7 @@ namespace
         RE::ScrapHeap* Ctor(RE::ScrapHeap* a_this)
         {
             std::memset(a_this, 0, sizeof(RE::ScrapHeap));
-            reinterpret_cast<std::uintptr_t*>(a_this)[0] = REL::ID(285161).address();
+            reinterpret_cast<std::uintptr_t*>(a_this)[0] = offsets::MemoryManager::ScrapHeap_vtbl.address();
             return a_this;
         }
 
@@ -163,16 +165,16 @@ namespace
 
         void WriteHooks()
         {
-            using tuple_t = std::tuple<std::uint64_t, std::size_t, void*>;
+            using tuple_t = std::tuple<REL::Offset, std::size_t, void*>;
             const std::array todo{
-                tuple_t{ 66884, 0x607, &Allocate },
-                tuple_t{ 66885, 0x143, &Deallocate },
-                tuple_t{ 66882, 0x12B, &Ctor },
+                tuple_t{ offsets::MemoryManager::ScrapHeap_Allocate, 0x5E7, &Allocate },
+                tuple_t{ offsets::MemoryManager::ScrapHeap_DeAllocate, 0x13E, &Deallocate },
+                tuple_t{ offsets::MemoryManager::ScrapHeap_ctor, 0x13A, &Ctor },
             };
 
-            for (const auto& [id, size, func] : todo)
+            for (const auto& [offset, size, func] : todo)
             {
-                REL::Relocation<std::uintptr_t> target{ REL::ID(id) };
+                REL::Relocation<std::uintptr_t> target{ offset };
                 REL::safe_fill(target.address(), REL::INT3, size);
                 asm_jump(target.address(), size, reinterpret_cast<std::uintptr_t>(func));
             }
@@ -180,19 +182,19 @@ namespace
 
         void WriteStubs()
         {
-            using tuple_t = std::tuple<std::uint64_t, std::size_t>;
+            using tuple_t = std::tuple<REL::Offset, std::size_t>;
             const std::array todo{
-                tuple_t{ 66891, 0xC3 },   // Clean
-                tuple_t{ 66890, 0x8 },    // ClearKeepPages
-                tuple_t{ 66894, 0xF6 },   // InsertFreeBlock
-                tuple_t{ 66895, 0x183 },  // RemoveFreeBlock
-                tuple_t{ 66889, 0x4 },    // SetKeepPages
-                tuple_t{ 66883, 0x32 },   // dtor
+                tuple_t{ offsets::MemoryManager::ScrapHeap_Clean, 0xBA },           // Clean
+                tuple_t{ offsets::MemoryManager::ScrapHeap_ClearKeepPages, 0x8 },   // ClearKeepPages
+                tuple_t{ offsets::MemoryManager::ScrapHeap_InsertFreeBlock, 0xF6 }, // InsertFreeBlock
+                tuple_t{ offsets::MemoryManager::ScrapHeap_RemoveFreeBlock, 0x185 },  // RemoveFreeBlock
+                tuple_t{ offsets::MemoryManager::ScrapHeap_SetKeepPages, 0x4 },    // SetKeepPages
+                tuple_t{ offsets::MemoryManager::ScrapHeap_Dtor, 0x32 },   // dtor
             };
 
-            for (const auto& [id, size] : todo)
+            for (const auto& [offset, size] : todo)
             {
-                REL::Relocation<std::uintptr_t> target{ REL::ID(id) };
+                REL::Relocation<std::uintptr_t> target{ offset };
                 REL::safe_fill(target.address(), REL::INT3, size);
                 REL::safe_write(target.address(), REL::RET);
             }

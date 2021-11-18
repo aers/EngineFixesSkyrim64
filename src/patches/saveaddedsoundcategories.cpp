@@ -99,7 +99,7 @@ namespace patches
                 if (vol)
                 {
                     logger::trace(FMT_STRING("setting volume for formid {:08X}"), soundCategory->formID);
-                    const REL::Relocation<bool (**)(RE::BSISoundCategory*, float)> SetVolume{ REL::ID(236602), 0x8 * 0x3 };
+                    const REL::Relocation<bool (**)(RE::BSISoundCategory*, float)> SetVolume{ offsets::SaveAddedSoundCategories::BGSSoundCategory_BSISoundCategory_vtbl.address() + 0x8 * 0x3 };
                     (*SetVolume)(soundCategory, static_cast<float>(vol->get()));
                 }
             }
@@ -118,7 +118,7 @@ namespace patches
         {}
 
         logger::trace("hooking vtbls"sv);
-        REL::Relocation<std::uintptr_t> vtbl{ REL::ID(230546) };  // INIPrefSettingCollection
+        REL::Relocation<std::uintptr_t> vtbl{ offsets::SaveAddedSoundCategories::INIPrefSettingCollection_vtbl };  // INIPrefSettingCollection
         orig_INIPrefSettingCollection_Unlock = vtbl.write_vfunc(0x6, hk_INIPrefSettingCollection_Unlock);
         logger::trace("success"sv);
         return true;

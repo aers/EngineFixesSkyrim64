@@ -1,5 +1,7 @@
 #pragma once
 
+#include "offsets.h"
+
 namespace
 {
     class CustomAllocator :
@@ -79,7 +81,7 @@ namespace
 
     void Install()
     {
-        REL::Relocation<std::uintptr_t> target{ REL::ID(80300), 0xED };
+        REL::Relocation<std::uintptr_t> target{ offsets::ScaleFormAllocator::ScaleFormManager_Init.address() + 0x170};
         auto& trampoline = SKSE::GetTrampoline();
         Init::hook = trampoline.write_call<5>(target.address(), Init::thunk);
     }
@@ -89,7 +91,7 @@ namespace patches
 {
     bool PatchScaleformAllocator()
     {
-        logger::trace("- scalform allocator patch -"sv);
+        logger::trace("- scaleform allocator patch -"sv);
 
         Install();
 
