@@ -37,8 +37,8 @@ namespace fixes
         if (*config::fixConjurationEnchantAbsorbs)
             PatchConjurationEnchantAbsorbs();
 
-        if (*config::fixDoublePerkApply)
-            PatchDoublePerkApply();
+        //if (*config::fixDoublePerkApply)
+        //    PatchDoublePerkApply();
 
         if (*config::fixEquipShoutEventSpam)
             PatchEquipShoutEventSpam();
