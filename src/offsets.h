@@ -9,11 +9,52 @@ namespace offsets
     }
 
     // fixes
+    namespace AnimationLoadSignedCrash
+    {
+        // E8 ? ? ? ? 90 48 83 C4 58 C3 32 C0
+        constexpr REL::Offset Movsx(0x930B8B930 + 0xAA);
+    }
+
+    namespace ArcheryDownwardAiming
+    {
+        // E8 ? ? ? ? 8B 83 ? ? ? ? C1 E8 12 A8 01 74 3F 
+        constexpr REL::Offset MoveFunctionCall(0x771400 + 0x434);
+    }
+
     namespace BSLightingAmbientSpecular
     {
         constexpr REL::Offset BSLightingShader_SetupMaterial_AmbientSpecular(0x1417AF0 + 0x8CF);  // BSLightingShader_vf4
         constexpr REL::Offset g_AmbientSpecularAndFresnel(0x1EA2F1C); // referenced at above location
         constexpr REL::Offset BSLightingShader_SetupGeometry_AddAmbientSpecular(0x1418820 + 0x1271); // BSLightingShader_vf6
+    }
+
+    namespace CalendarSkipping
+    {
+        // these are all the callsites for function at 40 53 48 81 EC ? ? ? ? 48 8B 41 30
+        constexpr std::array todo = {
+            REL::Offset(0x15E820 + 0xE2),
+            REL::Offset(0x5D95F0 + 0x266),
+            REL::Offset(0x5DAC80 + 0x3A),
+            REL::Offset(0x6C5840 + 0x282),
+            REL::Offset(0x6CA780 + 0x78)
+        };
+    }
+
+    namespace CellInit
+    {
+        // E8 ? ? ? ? EB 37 48 8B 07
+        constexpr REL::Offset TESObjectCELL_GetLocation_ExtraDataList_GetLocation_Call(0x27EAB0 + 0x114);
+    }
+
+    namespace ConjurationEnchantAbsorbs
+    {
+        constexpr REL::Offset EnchantmentItem_vtbl(0x161B920);
+    }
+
+    namespace CreateArmorNodeNullPtr
+    {
+        // E8 ? ? ? ? 48 8B F0 41 FF C6
+        constexpr REL::Offset SubFunction_PatchLocation(0x1D6740 + 0x51B);  // mov     esi, edi
     }
 
     namespace DoublePerkApply
@@ -36,12 +77,82 @@ namespace offsets
         constexpr REL::Offset Do_Add_Hook(0x34EF30 + 0x11);
     }
 
+    namespace EquipShoutEventSpam
+    {
+        // E8 ? ? ? ? 4C 8B 4C 24 ? 44 8B C7
+        constexpr REL::Offset FuncBase(0x6582C0);
+    }
+
+    namespace FaceGenMorphDataHeadNullptr
+    {
+        // 48 8B C4 57 41 56 41 57 48 83 EC 70 48 C7 40 ? ? ? ? ? 48 89 58 08 48 89 68 10 48 89 70 18 0F 29 70 D8 0F 28 F2
+        constexpr REL::Offset FuncBase(0x3EE7D0);
+    }
+
+    namespace GHeapLeakDetectionCrash
+    {
+        // E8 ? ? ? ? 48 8B 07 33 D2 48 8B CF FF 10
+        constexpr REL::Offset FuncBase(0x104B480);
+    }
+
     namespace GlobalTime
     {
         constexpr std::array todo = {
             REL::Offset(0x8843C0 + 0xB70), // BookMenu::vf4
             REL::Offset(0x8ECDB0 + 0x1BE) // SleepWaitMenu::vf4
         };
+    }
+
+    namespace InitializeHitDataNullptr
+    {
+        // E8 ? ? ? ? 8B 9C 24 ? ? ? ? C1 EB 05
+        constexpr REL::Offset FuncBase(0x76EDB0);
+    }
+
+    namespace LipSync
+    {
+        // 40 53 41 57 48 83 EC 38 44 8B 51 04
+        constexpr REL::Offset FuncBase(0x1FCDB0);
+    }
+
+    namespace MemoryAccessErrors
+    {
+        constexpr REL::Offset BSLightingShaderMaterialSnow_vtbl(0x1968EC0);
+        constexpr REL::Offset BSLightingShader_SetupMaterial(0x1417AF0); // BSLightingShader::vf4
+
+        constexpr REL::Offset BGSShaderParticleGeometryData_vtbl(0x1657868);
+
+        constexpr REL::Offset BSShadowDirectionalLight_vf16(0x144D9F0);
+    }
+
+    namespace MO5STypo
+    {
+        // E8 ? ? ? ? E9 ? ? ? ? 81 F9 ? ? ? ? 7F 57
+        constexpr REL::Offset FuncBase(0x1A6750);
+    }
+
+    namespace MusicOverlap
+    {
+        constexpr REL::Offset BGSMusicType_BSIMusicType_DoFinish(0x2DFC30); // BSIMusicType vtbl in BGSMusicType vf3
+    }
+    
+    namespace NullProcessCrash
+    {
+        // 48 83 EC 40 48 C7 44 24 ? ? ? ? ? 48 89 5C 24 ? 48 89 74 24 ? 48 8B DA 48 8B F1 48 85 D2
+        constexpr REL::Offset FuncBase1(0x65DCA0);
+        // E8 ? ? ? ? 41 0F B6 EE 
+        constexpr REL::Offset FuncBase2(0x7EA1C0);
+    }
+    
+    namespace PerkFragmentIsRunning
+    {
+        // 48 89 5C 24 ? 57 48 83 EC 20 33 FF 49 8B D9 49 89 39 48 85 C9 74 08 80 79 1A 3E 48 0F 44 F9 48 8B CF
+        constexpr REL::Offset FuncBase(0x2EF830); // ref "%s is running" string
+    }
+
+    namespace RemovedSpellBook
+    {
+        constexpr REL::Offset TESObjectBOOK_vtbl(0x1650998);
     }
 
     namespace SaveScreenshots
@@ -61,10 +172,54 @@ namespace offsets
 
     namespace ShaderFixes
     {
+        // E8 ? ? ? ? 49 8B 8E ? ? ? ? 40 B6 01
         constexpr REL::Offset BSBatchRenderer_SetupAndDrawPass(0x14142F580);
         constexpr REL::Offset BSLightingShader_vtbl(0x14196FFA0);
-        
+        // 48 8B C4 44 89 40 18 48 89 50 10 48 89 48 08 55 53 
         constexpr REL::Offset BSLightingShader_SetupGeometry_ParallaxTechniqueLoc(0x1418820 + 0xB5D);
+    }
+
+    namespace ShadowSceneNodeNullPtr
+    {
+        constexpr REL::Offset FuncBase(0x13DDD20);
+    }
+
+    namespace SlowTimeCameraMovement
+    {
+        // 40 53 48 83 EC 70 F3 0F 10 51 ? 
+        constexpr std::uintptr_t ThirdPersonState_UpdateDelayedParameters = 0x87C810;
+
+        constexpr std::array todo = {
+            REL::Offset(ThirdPersonState_UpdateDelayedParameters + 0x2F),
+            REL::Offset(ThirdPersonState_UpdateDelayedParameters + 0xA1),
+            REL::Offset(ThirdPersonState_UpdateDelayedParameters + 0x1BA),
+            REL::Offset(0x87C3A0 + 0x268), // E8 ? ? ? ? 48 8B 43 38 48 85 C0 74 27
+            REL::Offset(0x87CE50 + 0x17) // E8 ? ? ? ? 48 8D 4B 4C
+        };
+    }
+
+    namespace TorchLandscape
+    {
+        // E8 ? ? ? ? 48 8B 5C 24 ? 41 8B 46 18
+        constexpr REL::Offset AddLightCall(0x22D490 + 0x530);
+    }
+
+    namespace TreeReflections
+    {
+        constexpr REL::Offset BSDistantTreeShader_vf2_PatchLocation(0x1428220 + 0x35);
+    }
+
+    namespace VerticalLookSensitivity
+    {
+        constexpr REL::Offset ThirdPersonState_HandleLookInput(0x87CAE0 + 0x65); // vf15
+        constexpr REL::Offset DragonCameraState_HandleLookInput(0x512D80 + 0x53); // vf15
+        constexpr REL::Offset HorseCameraState_HandleLookInput(0x8752C0 + 0x53); // vf15
+    }
+
+    namespace WeaponBlockScaling
+    {
+        // E8 ? ? ? ? 48 8B CF E8 ? ? ? ? 8B 03
+        constexpr REL::Offset FuncBase(0x76FAE0);
     }
 }
 // Patches
@@ -114,11 +269,6 @@ constexpr REL::ID UnkGameLoopDword_offset(523662);
 // F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
 constexpr REL::ID WaterShader_ReadTimer_Hook_offset(100602);
 
-// Fixes
-
-// Calendar Skipping
-// E8 ? ? ? ? F6 87 DC 0B 00 00 01
-constexpr REL::ID Calendar_AdvanceTime_call_offset(35402);
 
 // Warnings
 

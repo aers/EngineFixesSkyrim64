@@ -8,7 +8,7 @@ namespace fixes
         static void Install()
         {
             // Change "BF" to "B7"
-            REL::Relocation<std::uintptr_t> target{ REL::ID(64198), 0x91 };
+            const REL::Relocation<std::uintptr_t> target{ offsets::AnimationLoadSignedCrash::Movsx };
             REL::safe_write(target.address(), std::uint8_t{ 0xB7 });
         }
     };
@@ -28,18 +28,18 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(42852) };
+            const REL::Relocation<std::uintptr_t> moveFuncCallAddr{ offsets::ArcheryDownwardAiming::MoveFunctionCall };
             auto& trampoline = SKSE::GetTrampoline();
-            _Move = trampoline.write_call<5>(funcBase.address() + 0x3E9, Move);
+            _Move = trampoline.write_call<5>(moveFuncCallAddr.address(), Move);
         }
 
     private:
         static void Move(RE::Projectile* a_this, /*const*/ RE::NiPoint3& a_from, const RE::NiPoint3& a_to)
         {
-            auto refShooter = a_this->shooter.get();
+            const auto refShooter = a_this->shooter.get();
             if (refShooter && refShooter->Is(RE::FormType::ActorCharacter))
             {
-                auto akShooter = static_cast<RE::Actor*>(refShooter.get());
+                const auto akShooter = static_cast<RE::Actor*>(refShooter.get());
                 [[maybe_unused]] RE::NiPoint3 direction;
                 akShooter->GetEyeVector(a_from, direction, true);
             }
@@ -130,9 +130,9 @@ namespace fixes
             constexpr std::uint8_t nop = 0x90;
             constexpr std::size_t length = 0x20;
 
-            REL::Relocation<std::uintptr_t> addAmbientSpecularToSetupGeometry{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupGeometry_AddAmbientSpecular };
-            REL::Relocation<std::uintptr_t> ambientSpecularAndFresnel{ offsets::BSLightingAmbientSpecular::g_AmbientSpecularAndFresnel };
-            REL::Relocation<std::uintptr_t> disableSetupMaterialAmbientSpecular{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupMaterial_AmbientSpecular };
+            const REL::Relocation<std::uintptr_t> addAmbientSpecularToSetupGeometry{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupGeometry_AddAmbientSpecular };
+            const REL::Relocation<std::uintptr_t> ambientSpecularAndFresnel{ offsets::BSLightingAmbientSpecular::g_AmbientSpecularAndFresnel };
+            const REL::Relocation<std::uintptr_t> disableSetupMaterialAmbientSpecular{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupMaterial_AmbientSpecular };
 
             for (std::size_t i = 0; i < length; ++i)
                 REL::safe_write(disableSetupMaterialAmbientSpecular.address() + i, nop);
@@ -191,8 +191,8 @@ namespace fixes
     {
         logger::trace("- BSTempEffect NiRTTI fix -");
 
-        REL::Relocation<RE::NiRTTI*> rttiBSTempEffect{ RE::BSTempEffect::Ni_RTTI };
-        REL::Relocation<RE::NiRTTI*> rttiNiObject{ RE::NiObject::Ni_RTTI };
+        const REL::Relocation<RE::NiRTTI*> rttiBSTempEffect{ RE::BSTempEffect::Ni_RTTI };
+        const REL::Relocation<RE::NiRTTI*> rttiNiObject{ RE::NiObject::Ni_RTTI };
         rttiBSTempEffect->baseRTTI = rttiNiObject.get();
 
         logger::trace("success");
@@ -204,18 +204,10 @@ namespace fixes
     public:
         static void Install()
         {
-            std::array targets{
-                std::make_pair(13183, 0xE2),
-                std::make_pair(35565, 0x24D),
-                std::make_pair(35567, 0x3A),
-                std::make_pair(39373, 0x2B1),
-                std::make_pair(39410, 0x78),
-            };
-
             auto& trampoline = SKSE::GetTrampoline();
-            for (const auto& [id, offset] : targets)
+            for (const auto& offset : offsets::CalendarSkipping::todo)
             {
-                REL::Relocation<std::uintptr_t> target{ REL::ID(id), offset };
+                REL::Relocation<std::uintptr_t> target{ offset };
                 _Update = trampoline.write_call<5>(target.address(), Update);
             }
         }
@@ -257,8 +249,8 @@ namespace fixes
         static void Install()
         {
             auto& trampoline = SKSE::GetTrampoline();
-            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(18474) };
-            _GetLocation = trampoline.write_call<5>(funcBase.address() + 0x110, GetLocation);
+            REL::Relocation<std::uintptr_t> callLoc{ offsets::CellInit::TESObjectCELL_GetLocation_ExtraDataList_GetLocation_Call };
+            _GetLocation = trampoline.write_call<5>(callLoc.address(), GetLocation);
         }
 
     private:
@@ -289,12 +281,13 @@ namespace fixes
         return true;
     }
 
-    // TODO: cleanup
-    // Patch for 1.5.97 but should be version-independent
     bool PatchCreateArmorNodeNullptrCrash()
     {
         logger::trace("- CreateArmorNode subfunction crash fix -"sv);
 
+        /*
+        Since we're hardcoding the version currently these checks are unneeded.
+        
         // sub_1401CAFB0
         const std::uint64_t faddr = REL::ID(15535).address();
 
@@ -304,7 +297,7 @@ namespace fixes
         .text:00000001401CB538                 mov     esi, ebx
         .text:00000001401CB53A                 test    r12, r12
         .text:00000001401CB53D                 jz      short loc_1401CB5B6 // <-- this jump needs to be patched but the operand is too small to fit
-        */
+        
         static const std::uint8_t expected1[] = {
             0x8B, 0xF3,        // mov     esi, ebx
             0x4D, 0x85, 0xE4,  // test    r12, r12
@@ -326,7 +319,7 @@ namespace fixes
         .text:00000001401CB5B6                 mov     rdi, [r12+130h] // <-- this is where the crash happens, because r12 == 0
         .text:00000001401CB5BE                 test    rdi, rdi
         .text:00000001401CB5C1                 jz      loc_1401CB751 // <-- This is the location we want to jump to when test r12,r12 fails
-        */
+        
 
         const void* const loc2p = loc1end + disp8;
         const std::ptrdiff_t offs2 = (std::uintptr_t)loc2p - faddr;
@@ -351,13 +344,28 @@ namespace fixes
 
         std::int32_t disp2 = *unrestricted_cast<std::int32_t*>(((const std::uint8_t*)loc2p) + sizeof(expected2));
         const std::uint8_t* const target = loc2end + disp2;
+        */
 
         struct Code : Xbyak::CodeGenerator
         {
-            Code(std::uintptr_t a_contAddr, std::uintptr_t a_patchedAddr)
+            Code(std::uintptr_t patchOffset)
             {
                 Xbyak::Label patchedJmpLbl, contLbl, zeroLbl;
+                
+                // original instructions
+                mov(esi, edi);
+                test(r12, r12);
+                jz(zeroLbl);
+                jmp(ptr[rip + contLbl]);
+                L(zeroLbl);
+                jmp(ptr[rip + patchedJmpLbl]);
 
+                L(contLbl);
+                dq(patchOffset + 0x7);
+                L(patchedJmpLbl);
+                dq(patchOffset + 0x21F);
+
+                /*
                 // original instructions minus jz short
                 db(expected1, sizeof(expected1) - 1);
 
@@ -370,14 +378,17 @@ namespace fixes
                 dq(a_contAddr);
                 L(patchedJmpLbl);
                 dq(a_patchedAddr);
+                */
             }
         };
 
-        Code code(unrestricted_cast<std::uintptr_t>(loc1end), unrestricted_cast<std::uintptr_t>(target));
+        REL::Relocation<std::uintptr_t> patchLoc{ offsets::CreateArmorNodeNullPtr::SubFunction_PatchLocation };
+
+        Code code(patchLoc.address());
         code.ready();
 
         auto& trampoline = SKSE::GetTrampoline();
-        if (!trampoline.write_branch<5>(unrestricted_cast<std::uintptr_t>(loc1p), trampoline.allocate(code)))
+        if (!trampoline.write_branch<5>(patchLoc.address(), trampoline.allocate(code)))
             return false;
 
         logger::trace("success"sv);
@@ -389,7 +400,7 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> vtbl{ REL::ID(228570) };
+            REL::Relocation<std::uintptr_t> vtbl{ offsets::ConjurationEnchantAbsorbs::EnchantmentItem_vtbl };
             _DisallowsAbsorbReflection = vtbl.write_vfunc(0x5E, DisallowsAbsorbReflection);
         }
 
@@ -426,16 +437,16 @@ namespace fixes
     public:
         static void Install()
         {
-            constexpr std::uintptr_t BRANCH_OFF = 0x17A;
-            constexpr std::uintptr_t SEND_EVENT_BEGIN = 0x18A;
-            constexpr std::uintptr_t SEND_EVENT_END = 0x236;
+            constexpr std::uintptr_t BRANCH_OFF = 0x13D;
+            constexpr std::uintptr_t SEND_EVENT_BEGIN = 0x149;
+            constexpr std::uintptr_t SEND_EVENT_END = 0x1C7;
             constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, selectedPower);
             constexpr std::uint32_t BRANCH_SIZE = 5;
             constexpr std::uint32_t CODE_CAVE_SIZE = 16;
             constexpr std::uint32_t DIFF = CODE_CAVE_SIZE - BRANCH_SIZE;
             constexpr std::uint8_t NOP = 0x90;
 
-            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(37821) };
+            REL::Relocation<std::uintptr_t> funcBase{ offsets::EquipShoutEventSpam::FuncBase };
 
             struct Patch : Xbyak::CodeGenerator
             {
@@ -445,12 +456,12 @@ namespace fixes
                     Xbyak::Label exitIP;
                     Xbyak::Label sendEvent;
 
-                    // r14 = Actor*
+                    // rbp = Actor*
                     // rdi = TESShout*
 
-                    cmp(ptr[r14 + EQUIPPED_SHOUT], rdi);  // if (actor->equippedShout != shout)
+                    cmp(ptr[rbp + EQUIPPED_SHOUT], rdi);  // if (actor->equippedShout != shout)
                     je(exitLbl);
-                    mov(ptr[r14 + EQUIPPED_SHOUT], rdi);  // actor->equippedShout = shout;
+                    mov(ptr[rbp + EQUIPPED_SHOUT], rdi);  // actor->equippedShout = shout;
                     test(rdi, rdi);                       // if (shout)
                     jz(exitLbl);
                     jmp(ptr[rip + sendEvent]);
@@ -578,7 +589,7 @@ namespace fixes
             constexpr std::size_t END = 0x5C;
             constexpr std::uint8_t NOP = 0x90;
 
-            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(85757) };
+            REL::Relocation<std::uintptr_t> funcBase{ offsets::GHeapLeakDetectionCrash::FuncBase };
             for (std::size_t i = START; i < END; ++i)
                 REL::safe_write(funcBase.address() + i, NOP);
         }
@@ -600,15 +611,15 @@ namespace fixes
         static void Install()
         {
             constexpr std::array offsets{
-                0x1E,
-                0x3A,
-                0x9A,
-                0xD8
+                0x27,
+                0x67,
+                0xF4,
+                0x126
             };
 
             constexpr std::uint8_t JMP = 0xEB;
 
-            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(16023) };
+            REL::Relocation<std::uintptr_t> funcBase{ offsets::LipSync::FuncBase };
             for (auto& offset : offsets)
                 REL::safe_write(funcBase.address() + offset, JMP);  // jns -> jmp
         }
@@ -675,10 +686,10 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> vtbl{ REL::ID(304565) };
-            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(100563) };
-            std::uintptr_t hook = funcBase.address() + 0x4E0;
-            std::uintptr_t exit = funcBase.address() + 0x5B6;
+            REL::Relocation<std::uintptr_t> vtbl{ offsets::MemoryAccessErrors::BSLightingShaderMaterialSnow_vtbl };
+            REL::Relocation<std::uintptr_t> funcBase{ offsets::MemoryAccessErrors::BSLightingShader_SetupMaterial };
+            std::uintptr_t hook = funcBase.address() + 0x6A6;
+            std::uintptr_t exit = funcBase.address() + 0x77D;
             Patch patch(vtbl.address(), hook, exit);
             patch.ready();
 
@@ -692,8 +703,9 @@ namespace fixes
         {
             logger::trace("patching BGSShaderParticleGeometryData limit"sv);
 
-            REL::Relocation<std::uintptr_t> vtbl{ REL::ID(234671) };
+            REL::Relocation<std::uintptr_t> vtbl{ offsets::MemoryAccessErrors::BGSShaderParticleGeometryData_vtbl };
             _Load = vtbl.write_vfunc(0x6, Load);
+            
         }
 
         static void PatchUseAfterFree()
@@ -716,8 +728,8 @@ namespace fixes
             Patch patch;
             patch.ready();
 
-            REL::Relocation<std::uintptr_t> target{ REL::ID(101499) };
-            REL::safe_write(target.address() + 0x1AFD, stl::span{ patch.getCode(), patch.getSize() });
+            REL::Relocation<std::uintptr_t> target{ offsets::MemoryAccessErrors::BSShadowDirectionalLight_vf16 };
+            REL::safe_write(target.address() + 0x1BED, stl::span{ patch.getCode(), patch.getSize() });
         }
 
         // BGSShaderParticleGeometryData::Load
@@ -754,8 +766,8 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> target(REL::ID{ 20700 });
-            REL::safe_write(target.address() + 0x22, std::uint16_t(0x9090));
+            REL::Relocation<std::uintptr_t> target( offsets::MusicOverlap::BGSMusicType_BSIMusicType_DoFinish );
+            REL::safe_write(target.address() + 0x19, std::uint16_t(0x9090));
         }
     };
 
@@ -777,8 +789,8 @@ namespace fixes
             constexpr std::uint8_t BYTE = 0x35;
 
             // Change "D" to "5"
-            REL::Relocation<std::uintptr_t> typo{ REL::ID(14653) };
-            REL::safe_write(typo.address() + 0x83, BYTE);
+            REL::Relocation<std::uintptr_t> typo{ offsets::MO5STypo::FuncBase };
+            REL::safe_write(typo.address() + 0x8D, BYTE);
         }
     };
 
@@ -800,13 +812,13 @@ namespace fixes
             auto& trampoline = SKSE::GetTrampoline();
 
             {
-                REL::Relocation<std::uintptr_t> funcBase{ REL::ID(37943) };
+                REL::Relocation<std::uintptr_t> funcBase{ offsets::NullProcessCrash::FuncBase1 };
                 trampoline.write_call<5>(funcBase.address() + 0x6C, GetEquippedLeftHand);
                 trampoline.write_call<5>(funcBase.address() + 0x9C, GetEquippedRightHand);
             }
 
             {
-                REL::Relocation<std::uintptr_t> funcBase{ REL::ID(46074) };
+                REL::Relocation<std::uintptr_t> funcBase{ offsets::NullProcessCrash::FuncBase2 };
                 trampoline.write_call<5>(funcBase.address() + 0x47, GetEquippedLeftHand);
                 trampoline.write_call<5>(funcBase.address() + 0x56, GetEquippedRightHand);
             }
@@ -839,7 +851,7 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> funcBase{ REL::ID(21119) };
+            REL::Relocation<std::uintptr_t> funcBase{ offsets::PerkFragmentIsRunning::FuncBase };
             auto& trampoline = SKSE::GetTrampoline();
             trampoline.write_call<5>(funcBase.address() + 0x22, IsRunning);
         }
@@ -866,7 +878,7 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> vtbl{ REL::ID(234122) };
+            REL::Relocation<std::uintptr_t> vtbl{ offsets::RemovedSpellBook::TESObjectBOOK_vtbl };
             _LoadGame = vtbl.write_vfunc(0xF, LoadGame);
         }
 
@@ -911,17 +923,9 @@ namespace fixes
         {
             logger::trace("patching camera movement to use frame timer that ignores slow time"sv);
 
-            constexpr std::array targets{
-                std::make_pair(49977, 0x2F),
-                std::make_pair(49977, 0x96),
-                std::make_pair(49977, 0x1FD),
-                std::make_pair(49980, 0xBA),
-                std::make_pair(49981, 0x17)
-            };
-
-            for (const auto& [id, offset] : targets)
+            for (const auto& offset : offsets::SlowTimeCameraMovement::todo)
             {
-                REL::Relocation<std::int16_t*> target{ REL::ID(id), offset };
+                REL::Relocation<std::int16_t*> target{ offset };
                 REL::safe_write<std::uint16_t>(target.address(), *target + 0x4);
             }
         }
@@ -942,7 +946,7 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> target{ REL::ID(17208), 0x52D };
+            REL::Relocation<std::uintptr_t> target{ offsets::TorchLandscape::AddLightCall };
 
             struct Patch : Xbyak::CodeGenerator
             {
@@ -950,7 +954,7 @@ namespace fixes
                 {
                     Xbyak::Label f;
 
-                    mov(r9, rdi);
+                    mov(r9, rsi);
                     jmp(ptr[rip + f]);
 
                     L(f);
@@ -1020,8 +1024,8 @@ namespace fixes
                     // if (bUseEarlyZ)
                     // .text:0000000141318C50                 cmp     cs:bUseEarlyZ, r13b
                     // need 6 bytes to branch jmp so enter here
-                    // enter 1318C57
-                    // .text:0000000141318C57                 jz      short loc_141318C5D
+                    // enter 1428255
+                    // .text:0000000141428255                 jz      short loc_14142825B
                     jnz("CONDITION_MET");
                     // edi = v3
                     // if (v3 == 0)
@@ -1039,7 +1043,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> target{ REL::ID(100771), 0x37 };
+            REL::Relocation<std::uintptr_t> target{ offsets::TreeReflections::BSDistantTreeShader_vf2_PatchLocation };
             Patch patch(target.address());
             patch.ready();
 
@@ -1084,22 +1088,24 @@ namespace fixes
                     Xbyak::Label magicLabel;
                     Xbyak::Label timerLabel;
 
-                    // enter 850D81
+                    // enter 87CB45
                     // r8 is unused
-                    //.text:0000000140850D81                 movss   xmm4, cs:frame_timer_without_slow
+                    // .text:000000014087CB45 mulss xmm3, cs:g_SecondsSinceLastFrame_RealTime
                     // use magic instead
                     mov(r8, ptr[rip + magicLabel]);
-                    movss(xmm4, dword[r8]);
-                    //.text:0000000140850D89                 movaps  xmm3, xmm4
+                    mulss(xmm3, dword[r8]);
+                    // .text:000000014087CB4D mulss xmm2, xmm1
+                    mulss(xmm2, xmm1);
+                    // .text:000000014087CB51 mulss xmm2, cs:g_SecondsSinceLastFrame_RealTime
                     // use timer
                     mov(r8, ptr[rip + timerLabel]);
-                    movss(xmm3, dword[r8]);
+                    mulss(xmm2, dword[r8]);
 
-                    // exit 850D8C
+                    // exit 87CB59
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(a_hookTarget + 0xB);
+                    dq(a_hookTarget + 0x14);
 
                     L(magicLabel);
                     dq(uintptr_t(&MAGIC));
@@ -1109,7 +1115,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> hookTarget{ REL::ID(49978), 0x71 };
+            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::ThirdPersonState_HandleLookInput };
             REL::Relocation<float*> noSlowFrameTimer { offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
@@ -1126,6 +1132,7 @@ namespace fixes
         {
             logger::trace("patching dragon camera state..."sv);
 
+
             struct Patch : Xbyak::CodeGenerator
             {
                 Patch(std::uintptr_t a_hookTarget, std::uintptr_t a_frameTimer)
@@ -1134,22 +1141,24 @@ namespace fixes
                     Xbyak::Label magicLabel;
                     Xbyak::Label timerLabel;
 
-                    // enter 850D81
+                    // enter 87CB45
                     // r8 is unused
-                    //.text:0000000140850D81                 movss   xmm4, cs:frame_timer_without_slow
+                    // .text:000000014087CB45 mulss xmm3, cs:g_SecondsSinceLastFrame_RealTime
                     // use magic instead
                     mov(r8, ptr[rip + magicLabel]);
-                    movss(xmm4, dword[r8]);
-                    //.text:0000000140850D89                 movaps  xmm3, xmm4
+                    mulss(xmm3, dword[r8]);
+                    // .text:000000014087CB4D mulss xmm2, xmm1
+                    mulss(xmm2, xmm1);
+                    // .text:000000014087CB51 mulss xmm2, cs:g_SecondsSinceLastFrame_RealTime
                     // use timer
                     mov(r8, ptr[rip + timerLabel]);
-                    movss(xmm3, dword[r8]);
+                    mulss(xmm2, dword[r8]);
 
-                    // exit 850D8C
+                    // exit 87CB59
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(a_hookTarget + 0xB);
+                    dq(a_hookTarget + 0x14);
 
                     L(magicLabel);
                     dq(uintptr_t(&MAGIC));
@@ -1159,7 +1168,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> hookTarget{ REL::ID(32370), 0x5F };
+            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::DragonCameraState_HandleLookInput };
             REL::Relocation<float*> noSlowFrameTimer{ offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
@@ -1176,6 +1185,7 @@ namespace fixes
         {
             logger::trace("patching horse camera state..."sv);
 
+
             struct Patch : Xbyak::CodeGenerator
             {
                 Patch(std::uintptr_t a_hookTarget, std::uintptr_t a_frameTimer)
@@ -1184,22 +1194,24 @@ namespace fixes
                     Xbyak::Label magicLabel;
                     Xbyak::Label timerLabel;
 
-                    // enter 850D81
+                    // enter 87CB45
                     // r8 is unused
-                    //.text:0000000140850D81                 movss   xmm4, cs:frame_timer_without_slow
+                    // .text:000000014087CB45 mulss xmm3, cs:g_SecondsSinceLastFrame_RealTime
                     // use magic instead
                     mov(r8, ptr[rip + magicLabel]);
-                    movss(xmm4, dword[r8]);
-                    //.text:0000000140850D89                 movaps  xmm3, xmm4
+                    mulss(xmm3, dword[r8]);
+                    // .text:000000014087CB4D mulss xmm2, xmm1
+                    mulss(xmm2, xmm1);
+                    // .text:000000014087CB51 mulss xmm2, cs:g_SecondsSinceLastFrame_RealTime
                     // use timer
                     mov(r8, ptr[rip + timerLabel]);
-                    movss(xmm3, dword[r8]);
+                    mulss(xmm2, dword[r8]);
 
-                    // exit 850D8C
+                    // exit 87CB59
                     jmp(ptr[rip + retnLabel]);
 
                     L(retnLabel);
-                    dq(a_hookTarget + 0xB);
+                    dq(a_hookTarget + 0x14);
 
                     L(magicLabel);
                     dq(uintptr_t(&MAGIC));
@@ -1209,7 +1221,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> hookTarget{ REL::ID(49839), 0x5F };
+            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::HorseCameraState_HandleLookInput };
             REL::Relocation<float*> noSlowFrameTimer{ offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
@@ -1241,11 +1253,11 @@ namespace fixes
         static void Install()
         {
             constexpr std::uint8_t NOP = 0x90;
-            constexpr std::size_t START = 0x3B8;
-            constexpr std::size_t END = 0x3D1;
+            constexpr std::size_t START = 0x3A2;
+            constexpr std::size_t END = 0x3B9;
             constexpr std::size_t CAVE_SIZE = END - START;
 
-            REL::Relocation<std::uintptr_t> target{ REL::ID(42842), START };
+            REL::Relocation<std::uintptr_t> target{ offsets::WeaponBlockScaling::FuncBase.address() + START };
 
             struct Patch : Xbyak::CodeGenerator
             {
@@ -1256,7 +1268,7 @@ namespace fixes
                     mov(rcx, rbx);
                     mov(rdx, a_func);
                     call(rdx);
-                    movaps(xmm8, xmm0);
+                    movaps(xmm7, xmm0);
                 }
             };
 
@@ -1326,9 +1338,8 @@ namespace fixes
         // written for 1.5.97 but should be compatible
 
         // sub_1412BACA0
-        const REL::ID fid(99708);
-        const uint64_t faddr = fid.address();
-        logger::trace(FMT_STRING("- workaround for crash in ShadowSceneNode::unk_{:X} -"), fid.offset());
+        const uint64_t faddr = offsets::ShadowSceneNodeNullPtr::FuncBase.address();
+        logger::trace(FMT_STRING("- workaround for crash in ShadowSceneNode::unk_{:X} -"), offsets::ShadowSceneNodeNullPtr::FuncBase.offset());
 
         const uint8_t *crashaddr = (uint8_t*)(uintptr_t)(faddr + 22);
         /*
@@ -1417,7 +1428,7 @@ namespace fixes
 
         // TODO: There is probably a cleaner way to patch this without moving a float constant into the trampoline, but this is tested and works ok
 
-        const uint64_t faddr = REL::ID(26343).address();
+        const uint64_t faddr = offsets::FaceGenMorphDataHeadNullptr::FuncBase.address();
 
         // check that test rdx,rdx and jz short are there
         uint8_t *testrdx = (uint8_t*)(uintptr_t)(faddr + 0x30);
@@ -1512,6 +1523,9 @@ namespace fixes
     // Possibly a disarm caused by an on-hit triggered perk or spell effect?
     bool PatchInitializeHitDataNullptrCrash()
     {
+        // 1.6.318+ NOTE: uses rdi instead of r15, the rest is identical
+        // comments are not updated
+
         /* HitData::InitializeHitData() aka sub_140742850 in version 1.5.97
         ... part of the function setup ...
         00007FF74208285E 4D 8B F9                  mov  r15,r9  <---- This is weapon. fine if it's NULL
@@ -1535,10 +1549,10 @@ namespace fixes
 
         logger::trace("- fix for crash in HitData::InitializeHitData -"sv);
 
-        const uint64_t faddr = REL::ID(42832).address();
+        const uint64_t faddr = offsets::InitializeHitDataNullptr::FuncBase.address();
         const uint8_t *locMovR15 = unrestricted_cast<const uint8_t*>(faddr + 14);
         //                        mov r15,r9          mov rbp,r8 (replicated in the trampoline code below)
-        const uint8_t expected[] = { 0x4D, 0x8B, 0xF9,   0x49, 0x8B, 0xE8 };
+        const uint8_t expected[] = { 0x49, 0x8B, 0xF9,   0x49, 0x8B, 0xE8 };
         if(std::memcmp(locMovR15, expected, sizeof(expected)))
             return false;
 
@@ -1552,12 +1566,12 @@ namespace fixes
                 // At the point where this is injected we're still moving function parameters into the correct registers.
                 // The function uses weapon as r15, but it's passed to the function in r9.
                 // So we clear r15 and only move r9 there if it's safe to do so.
-                xor_(r15, r15);
+                xor_(rdi, rdi);
                 test(r9, r9);
                 jz(out);
                 mov(rbx, qword[r9]); // rbx is free to clobber at this point since there was a 'push rbx' before
                 test(rbx, rbx);
-                cmovnz(r15, r9); // keep weapon only if weapon->object != NULL
+                cmovnz(rdi, r9); // keep weapon only if weapon->object != NULL
                 L(out);
                 mov(rbp, r8); // Restore this from where the trampoline jump was placed
                 jmp(ptr[rip]);
