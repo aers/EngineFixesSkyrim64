@@ -15,8 +15,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
             CleanSKSECosaves();
 
         // patch post load so ini settings are loaded
-        //if (*config::fixSaveScreenshots)
-        //    fixes::PatchSaveScreenshots();
+        if (*config::fixSaveScreenshots)
+            fixes::PatchSaveScreenshots();
 
         if (*config::warnRefHandleLimit)
             warnings::WarnActiveRefrHandleCount(static_cast<std::uint32_t>(*config::warnRefrMainMenuLimit));

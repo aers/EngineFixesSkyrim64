@@ -164,6 +164,7 @@ namespace fixes
                         L("FROM_PROCESSEVENT");  // use menu version of fix here
                         mov(byte[rax], 0);       // screenshot request processed disable code for future iterations
                         pop(rax);
+                        mov(rcx, ptr[rbx + 0x1F0]);
                         mov(esi, 0x2A);  // menu version of fix
                         cmp(byte[rbx + 0x211], 0);
                         jmp("JMP_OUT");
@@ -203,7 +204,7 @@ namespace fixes
                         jne("ORIG");
                         mov(rax, (uintptr_t)&esi_saved);
                         mov(dword[rax], esi);
-                        mov(edi, 1);
+                        mov(esi, 1);
 
                         L("ORIG");
                         pop(rax);

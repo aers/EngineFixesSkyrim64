@@ -284,7 +284,7 @@ namespace offsets
         // E8 ? ? ? ? 33 C9 E8 ? ? ? ? 88 1D ? ? ? ?
         constexpr REL::Offset BGSSaveLoadManager_ProcessEvents_RequestScreenshot(0x5AAD20 + 0x1C6);
         // E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8D 3D ? ? ? ? 
-        constexpr REL::Offset MenuSave_RequestScreenshot(0x5D7CB0 + 0x5D0);
+        constexpr REL::Offset MenuSave_RequestScreenshot(0x5D7CB0 + 0x5D6);
         constexpr REL::Offset g_RequestSaveScreenshot(0x2FD3640);
         // E8 ? ? ? ? 45 8B FD EB 20
         constexpr std::uintptr_t ScreenshotRenderFunction = 0x13BD6A0;
