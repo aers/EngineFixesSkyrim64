@@ -8,7 +8,7 @@ namespace fixes
     REL::Relocation<_QueueApplyPerk> QueueApplyPerk{ offsets::DoublePerkApply::QueueApplyPerk };
     typedef void (*_HandleAddRf)(std::int64_t apm);
     REL::Relocation<_HandleAddRf> HandleAddRf{ offsets::DoublePerkApply::Handle_Add_Rf };
-    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ offsets::DoublePerkApply::BSTaskPool_HandleTask };
+    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ offsets::DoublePerkApply::BSTaskPool_HandleTask_Movzx };
     REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx1{ offsets::DoublePerkApply::Unknown_Add_Function_Movzx1 };
     REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx2{ offsets::DoublePerkApply::Unknown_Add_Function_Movzx2 };
     REL::Relocation<std::uintptr_t> NextFormIdGetHook{ offsets::DoublePerkApply::Next_Formid_Get_Hook };

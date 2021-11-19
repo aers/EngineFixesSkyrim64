@@ -188,7 +188,7 @@ namespace offsets
         // E8 ? ? ? ? 48 8B 03 48 8B CB FF 90 ? ? ? ? 80 3D ? ? ? ? ?
         constexpr REL::Offset Handle_Add_Rf(0x6A9860);
         // 40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 C7 85 ? ? ? ? ? ? ? ? 0F 29 B4 24 ? ? ? ?
-        constexpr REL::Offset BSTaskPool_HandleTask(0x5EAE40 + 0x2164);
+        constexpr REL::Offset BSTaskPool_HandleTask_Movzx(0x5EAE40 + 0x2164);
         // 48 85 D2 74 7C 48 89 5C 24 ?
         constexpr std::uintptr_t Unknown_Add_Function = 0x5EA9E0;
         constexpr REL::Offset Unknown_Add_Function_Movzx1(Unknown_Add_Function + 0x1A);
