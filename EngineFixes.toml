@@ -8,7 +8,8 @@ CleanSKSECosaves = false                # Delete SKSE cosaves that have no match
 DisableChargenPrecache = false          # "Precache Killer", same patch that is already in RaceMenu
 EnableAchievementsWithMods = true       # Enables achievements with mods active
 FormCaching = true                      # Attempts to speed up the global form table by caching recently used forms (SSE Fixes)
-MaxStdio = -1                           # Sets the maximum number of open file handles (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
+MaxStdio = 2048                         # Sets the maximum number of open file handles, preventing the game from running out with large plugin counts (fixes false save corruption)
+                                        # You may set this higher than 2048 (max 8192) on an updated Windows 10 or Windows 11
 MemoryManager = true                    # Replaces Skyrim's global allocator
 RegularQuicksaves = false               # Makes quick saves into regular saves
 SafeExit = true                         # Prevent the game from hanging while shutting down
