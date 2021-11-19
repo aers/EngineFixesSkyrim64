@@ -127,7 +127,7 @@ if(COPY_BUILD)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" ${Skyrim64Path}/Data/SKSE/Plugins/
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" ${Skyrim64Path}/Data/SKSE/Plugins/
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}_preload.txt" ${Skyrim64Path}/Data/SKSE/Plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}_SNCT.txt" ${Skyrim64Path}/Data/SKSE/Plugins/
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}_SNCT.toml" ${Skyrim64Path}/Data/SKSE/Plugins/
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.toml" ${Skyrim64Path}/Data/SKSE/Plugins/
         )
     else()

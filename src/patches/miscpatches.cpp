@@ -163,6 +163,9 @@ namespace patches
             return false;
         }
 
+        if (*config::patchMaxStdio > 8192)
+            *config::patchMaxStdio = 8192;
+
         const auto result = proc(static_cast<int>(*config::patchMaxStdio));
         logger::trace("max stdio set to {}"sv, result);
 
