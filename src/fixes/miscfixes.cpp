@@ -442,7 +442,7 @@ namespace fixes
             constexpr std::uintptr_t SEND_EVENT_END = 0x1C7;
             constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, selectedPower);
             constexpr std::uint32_t BRANCH_SIZE = 5;
-            constexpr std::uint32_t CODE_CAVE_SIZE = 16;
+            constexpr std::uint32_t CODE_CAVE_SIZE = 12;
             constexpr std::uint32_t DIFF = CODE_CAVE_SIZE - BRANCH_SIZE;
             constexpr std::uint8_t NOP = 0x90;
 
