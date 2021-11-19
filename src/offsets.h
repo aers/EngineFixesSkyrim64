@@ -314,7 +314,7 @@ namespace offsets
         constexpr std::uintptr_t ThirdPersonState_UpdateDelayedParameters = 0x87C810;
 
         constexpr std::array todo = {
-            REL::Offset(ThirdPersonState_UpdateDelayedParameters + 0x2F),
+            REL::Offset(ThirdPersonState_UpdateDelayedParameters + 0x3F),
             REL::Offset(ThirdPersonState_UpdateDelayedParameters + 0xA1),
             REL::Offset(ThirdPersonState_UpdateDelayedParameters + 0x1BA),
             REL::Offset(0x87C3A0 + 0x268), // E8 ? ? ? ? 48 8B 43 38 48 85 C0 74 27
