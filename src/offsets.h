@@ -257,7 +257,7 @@ namespace offsets
 
     namespace MusicOverlap
     {
-        constexpr REL::Offset BGSMusicType_BSIMusicType_DoFinish(0x2DFC30); // BSIMusicType vtbl in BGSMusicType vf3
+        constexpr REL::Offset BGSMusicType_BSIMusicType_vtbl(0x166DF08); // BSIMusicType vtbl in BGSMusicType 
     }
     
     namespace NullProcessCrash

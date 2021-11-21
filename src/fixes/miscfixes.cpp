@@ -766,8 +766,14 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> target( offsets::MusicOverlap::BGSMusicType_BSIMusicType_DoFinish );
-            REL::safe_write(target.address() + 0x19, std::uint16_t(0x9090));
+            REL::Relocation<std::uintptr_t> vtbl( offsets::MusicOverlap::BGSMusicType_BSIMusicType_vtbl );
+            vtbl.write_vfunc(0x3, DoFinish);
+        }
+
+        static void DoFinish(RE::BSIMusicType* a_this, bool a_immediate)
+        {
+            a_this->tracks[a_this->currentTrackIndex]->DoFinish(a_immediate, std::max(a_this->fadeTime, 4.0f));
+            a_this->typeStatus = static_cast<RE::BSIMusicType::MUSIC_STATUS>(a_this->tracks[a_this->currentTrackIndex]->GetMusicStatus());
         }
     };
 

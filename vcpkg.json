@@ -7,6 +7,7 @@
     "boost-stl-interfaces",
     "spdlog",
     "tbb",
-    "xbyak"
+    "xbyak",
+    "rsm-binary-io"
   ]
 }
