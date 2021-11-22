@@ -89,7 +89,7 @@ namespace fixes
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> BSLightingShader_SetupGeometry_ParallaxFixHookLoc{ offsets::ShaderFixes::BSLightingShader_SetupGeometry_ParallaxTechniqueLoc };
+    REL::Relocation<std::uintptr_t> BSLightingShader_SetupGeometry_ParallaxFixHookLoc{ offsets::ShaderFixes::BSLightingShader_SetupGeometry_ParallaxTechniqueLoc, 0xB5D };
 
     bool PatchBSLightingShaderSetupGeometryParallax()
     {

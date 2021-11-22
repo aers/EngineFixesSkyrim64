@@ -4,13 +4,13 @@ namespace patches
 {
     REL::Relocation<float*> FrameTimer_WithSlowTime{ offsets::Common::g_SecondsSinceLastFrame_WorldTime };
 
-    REL::Relocation<std::uintptr_t> Main_Update_Hook{ offsets::WaterflowAnimation::Main_Update.address() + 0x26B };
+    REL::Relocation<std::uintptr_t> Main_Update_Hook{ offsets::WaterflowAnimation::Main_Update, 0x26B };
     REL::Relocation<std::uint32_t*> ApplicationRunTime{ offsets::WaterflowAnimation::g_ApplicationRunTime };
 
     // 5th function in??_7BSWaterShader@@6B@ vtbl
     // F3 0F 10 0D ? ? ? ? F3 0F 11 4C 82 ?
     // loads TIMER_DEFAULT which is a timer representing the GameHour in seconds
-    REL::Relocation<std::uintptr_t> WaterShader_ReadTimer_Hook{ offsets::WaterflowAnimation::WaterShader_SetupMaterial.address() + 0x4BC };
+    REL::Relocation<std::uintptr_t> WaterShader_ReadTimer_Hook{ offsets::WaterflowAnimation::WaterShader_SetupMaterial, 0x4BC };
 
     float timer = 8 * 3600;  // Game timer inits to 8 AM
 
@@ -162,8 +162,8 @@ namespace patches
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType{ offsets::RegularQuicksaves::QuickSaveLoadHandler_ProcessButton.address() + 0x68 };
-    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType{ offsets::RegularQuicksaves::QuickSaveLoadHandler_ProcessButton.address() + 0x9B };
+    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_SaveType{ offsets::RegularQuicksaves::QuickSaveLoadHandler_ProcessButton, 0x68 };
+    REL::Relocation<std::uintptr_t> QuickSaveLoadHandler_HandleEvent_LoadType{ offsets::RegularQuicksaves::QuickSaveLoadHandler_ProcessButton, 0x9B };
 
     bool PatchRegularQuicksaves()
     {
@@ -225,8 +225,8 @@ namespace patches
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> FirstPersonState_DontSwitchPOV{ offsets::ScrollingDoesntSwitchPOV::FirstPersonState_PlayerInputHandler_ProcessButton.address() + 0x43 };
-    REL::Relocation<std::uintptr_t> ThirdPersonState_DontSwitchPOV{ offsets::ScrollingDoesntSwitchPOV::ThirdPersonState_PlayerInputHandler_ProcessButton.address() + 0x1F7 };
+    REL::Relocation<std::uintptr_t> FirstPersonState_DontSwitchPOV{ offsets::ScrollingDoesntSwitchPOV::FirstPersonState_PlayerInputHandler_ProcessButton, 0x43 };
+    REL::Relocation<std::uintptr_t> ThirdPersonState_DontSwitchPOV{ offsets::ScrollingDoesntSwitchPOV::ThirdPersonState_PlayerInputHandler_ProcessButton, 0x1F7 };
 
     bool PatchScrollingDoesntSwitchPOV()
     {
@@ -243,7 +243,7 @@ namespace patches
         logger::trace("- sleep wait time -"sv);
         {
             constexpr std::uint8_t NOP{ 0x90 };
-            REL::Relocation<std::uintptr_t> target{ offsets::SleepWaitTime::SleepWaitMenu_vf4.address() + 0x1D0 };
+            REL::Relocation<std::uintptr_t> target{ offsets::SleepWaitTime::SleepWaitMenu_vf4, 0x1D0 };
 
             struct SleepWaitTime_Code : Xbyak::CodeGenerator
             {
@@ -276,9 +276,9 @@ namespace patches
         return true;
     }
 
-    REL::Relocation<std::uintptr_t> Win32FileType_CopyToBuffer{ offsets::SaveGameMaxSize::Win32FileType_CopyToBuffer.address() + 0x1A };
-    REL::Relocation<std::uintptr_t> Win32FileType_ctor{ offsets::SaveGameMaxSize::Win32FileType_Ctor.address() + 0x20E };
-    REL::Relocation<std::uintptr_t> ScrapHeap_GetMaxSize{ offsets::SaveGameMaxSize::ScrapHeap_GetMaxSize.address() + 0x4 };
+    REL::Relocation<std::uintptr_t> Win32FileType_CopyToBuffer{ offsets::SaveGameMaxSize::Win32FileType_CopyToBuffer, 0x1A };
+    REL::Relocation<std::uintptr_t> Win32FileType_ctor{ offsets::SaveGameMaxSize::Win32FileType_Ctor, 0x20E };
+    REL::Relocation<std::uintptr_t> ScrapHeap_GetMaxSize{ offsets::SaveGameMaxSize::ScrapHeap_GetMaxSize, 0x4 };
 
     bool PatchSaveGameMaxSize()
     {

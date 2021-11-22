@@ -26,14 +26,6 @@
         "dev": true
       }
     },
-    {
-      "environment": {
-        "CXXFLAGS": "/MP /W4 /WX /external:anglebrackets /external:W0 $penv{CXXFLAGS}"
-      },
-      "generator": "Visual Studio 16 2019",
-      "hidden": true,
-      "name": "vs2019"
-    },
 	{
       "environment": {
         "CXXFLAGS": "/MP /W4 /WX /external:anglebrackets /external:W0 $penv{CXXFLAGS}"
@@ -81,16 +73,6 @@
       },
       "hidden": true,
       "name": "windows"
-    },
-    {
-      "description": "VS2019/Windows/VCPkg",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "vs2019",
-        "windows"
-      ],
-      "name": "vs2019-windows-vcpkg"
     },
 	{
       "description": "VS2022/Windows/VCPkg",

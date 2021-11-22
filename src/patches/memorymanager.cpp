@@ -33,7 +33,7 @@ namespace
     {
         void Ctor()
         {
-            REL::Relocation<std::uintptr_t> target{ offsets::MemoryManager::AutoScrapBuffer_Ctor.address() + 0x1D };
+            REL::Relocation<std::uintptr_t> target{ offsets::MemoryManager::AutoScrapBuffer_Ctor, 0x1D };
             constexpr std::size_t size = 0x32 - 0x1D;
             REL::safe_fill(target.address(), REL::NOP, size);
         }
@@ -110,7 +110,7 @@ namespace
 
         void ReplaceAllocRoutines()
         {
-            using tuple_t = std::tuple<REL::Offset, std::size_t, void*>;
+            using tuple_t = std::tuple<REL::ID, std::size_t, void*>;
             const std::array todo{
                 tuple_t{ offsets::MemoryManager::MemoryManager_Allocate, 0x248, &Allocate },
                 tuple_t{ offsets::MemoryManager::MemoryManager_DeAllocate, 0x114, &Deallocate },
@@ -165,7 +165,7 @@ namespace
 
         void WriteHooks()
         {
-            using tuple_t = std::tuple<REL::Offset, std::size_t, void*>;
+            using tuple_t = std::tuple<REL::ID, std::size_t, void*>;
             const std::array todo{
                 tuple_t{ offsets::MemoryManager::ScrapHeap_Allocate, 0x5E7, &Allocate },
                 tuple_t{ offsets::MemoryManager::ScrapHeap_DeAllocate, 0x13E, &Deallocate },
@@ -182,7 +182,7 @@ namespace
 
         void WriteStubs()
         {
-            using tuple_t = std::tuple<REL::Offset, std::size_t>;
+            using tuple_t = std::tuple<REL::ID, std::size_t>;
             const std::array todo{
                 tuple_t{ offsets::MemoryManager::ScrapHeap_Clean, 0xBA },           // Clean
                 tuple_t{ offsets::MemoryManager::ScrapHeap_ClearKeepPages, 0x8 },   // ClearKeepPages

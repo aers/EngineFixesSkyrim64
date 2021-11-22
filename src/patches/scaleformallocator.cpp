@@ -81,7 +81,7 @@ namespace
 
     void Install()
     {
-        REL::Relocation<std::uintptr_t> target{ offsets::ScaleFormAllocator::ScaleFormManager_Init.address() + 0x170};
+        REL::Relocation<std::uintptr_t> target{ offsets::ScaleFormAllocator::ScaleFormManager_Init, 0x170};
         auto& trampoline = SKSE::GetTrampoline();
         Init::hook = trampoline.write_call<5>(target.address(), Init::thunk);
     }

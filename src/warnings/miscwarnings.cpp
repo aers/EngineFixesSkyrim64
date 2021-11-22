@@ -62,10 +62,10 @@ namespace warnings
         orig_BGSAddonNode_LoadForm = *vtbl_BGSAddonNode_LoadForm;
         REL::safe_write(vtbl_BGSAddonNode_LoadForm.address(), reinterpret_cast<std::uintptr_t>(&hk_BGSAddonNode_LoadForm));
 
-        REL::Relocation<std::uintptr_t> call1_Main_Unk{ offsets::SafeExit::WinMain.address() + 0x1A4 };
+        REL::Relocation<std::uintptr_t> call1_Main_Unk{ offsets::SafeExit::WinMain, 0x1A4 };
         trampoline.write_call<5>(call1_Main_Unk.address(), reinterpret_cast<std::uintptr_t>(&Hook_Main_Unk));
 
-        REL::Relocation<std::uintptr_t> call2_Main_Unk{ offsets::WaterflowAnimation::Main_Update.address() + 0xA2F };
+        REL::Relocation<std::uintptr_t> call2_Main_Unk{ offsets::WaterflowAnimation::Main_Update, 0xA2F };
         trampoline.write_call<5>(call2_Main_Unk.address(), reinterpret_cast<std::uintptr_t>(&Hook_Main_Unk));
 
         logger::trace("- hooked -"sv);

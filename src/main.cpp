@@ -52,12 +52,13 @@ bool CheckVersion(const REL::Version& a_version)
     return success;
 }
 
-extern "C" __declspec(dllexport) constexpr auto SKSEPlugin_Version = []() {
+extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
     SKSE::PluginVersionData v{};
     v.pluginVersion = Version::MAJOR;
-    v.PluginName("EngineFixes plugin"sv);
+    v.PluginName(Version::NAME);
     v.AuthorName("aers"sv);
-    v.CompatibleVersions({ SKSE::RUNTIME_1_6_318 });
+    v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
+    v.UsesAddressLibrary(true);
     return v;
 }();
 
@@ -94,8 +95,6 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
 
     logger::info("Engine Fixes v{}.{}.{}"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
-    logger::info("{}"sv, SKSEPlugin_Version.pluginVersion);
-
     if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"s))
         logger::info("loaded config successfully"sv);
     else
@@ -105,7 +104,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
     if (!CheckVersion(ver))
         return;
 
-    SKSE::AllocTrampoline(1 << 11);
+    SKSE::AllocTrampoline(1 << 12);
 
     if (*config::verboseLogging)
     {

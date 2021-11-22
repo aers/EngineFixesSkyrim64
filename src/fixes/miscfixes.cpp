@@ -8,7 +8,7 @@ namespace fixes
         static void Install()
         {
             // Change "BF" to "B7"
-            const REL::Relocation<std::uintptr_t> target{ offsets::AnimationLoadSignedCrash::Movsx };
+            const REL::Relocation<std::uintptr_t> target{ offsets::AnimationLoadSignedCrash::Movsx, 0xAA };
             REL::safe_write(target.address(), std::uint8_t{ 0xB7 });
         }
     };
@@ -28,7 +28,7 @@ namespace fixes
     public:
         static void Install()
         {
-            const REL::Relocation<std::uintptr_t> moveFuncCallAddr{ offsets::ArcheryDownwardAiming::MoveFunctionCall };
+            const REL::Relocation<std::uintptr_t> moveFuncCallAddr{ offsets::ArcheryDownwardAiming::MoveFunctionCall, 0x434 };
             auto& trampoline = SKSE::GetTrampoline();
             _Move = trampoline.write_call<5>(moveFuncCallAddr.address(), Move);
         }
@@ -130,9 +130,9 @@ namespace fixes
             constexpr std::uint8_t nop = 0x90;
             constexpr std::size_t length = 0x20;
 
-            const REL::Relocation<std::uintptr_t> addAmbientSpecularToSetupGeometry{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupGeometry_AddAmbientSpecular };
+            const REL::Relocation<std::uintptr_t> addAmbientSpecularToSetupGeometry{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupGeometry_AddAmbientSpecular, 0x1271 };
             const REL::Relocation<std::uintptr_t> ambientSpecularAndFresnel{ offsets::BSLightingAmbientSpecular::g_AmbientSpecularAndFresnel };
-            const REL::Relocation<std::uintptr_t> disableSetupMaterialAmbientSpecular{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupMaterial_AmbientSpecular };
+            const REL::Relocation<std::uintptr_t> disableSetupMaterialAmbientSpecular{ offsets::BSLightingAmbientSpecular::BSLightingShader_SetupMaterial_AmbientSpecular, 0x8CF };
 
             for (std::size_t i = 0; i < length; ++i)
                 REL::safe_write(disableSetupMaterialAmbientSpecular.address() + i, nop);
@@ -205,9 +205,9 @@ namespace fixes
         static void Install()
         {
             auto& trampoline = SKSE::GetTrampoline();
-            for (const auto& offset : offsets::CalendarSkipping::todo)
+            for (const auto& [id, offset] : offsets::CalendarSkipping::todo)
             {
-                REL::Relocation<std::uintptr_t> target{ offset };
+                REL::Relocation<std::uintptr_t> target{ REL::ID(id), offset };
                 _Update = trampoline.write_call<5>(target.address(), Update);
             }
         }
@@ -249,7 +249,7 @@ namespace fixes
         static void Install()
         {
             auto& trampoline = SKSE::GetTrampoline();
-            REL::Relocation<std::uintptr_t> callLoc{ offsets::CellInit::TESObjectCELL_GetLocation_ExtraDataList_GetLocation_Call };
+            REL::Relocation<std::uintptr_t> callLoc{ offsets::CellInit::TESObjectCELL_GetLocation_ExtraDataList_GetLocation_Call, 0x114 };
             _GetLocation = trampoline.write_call<5>(callLoc.address(), GetLocation);
         }
 
@@ -382,7 +382,7 @@ namespace fixes
             }
         };
 
-        REL::Relocation<std::uintptr_t> patchLoc{ offsets::CreateArmorNodeNullPtr::SubFunction_PatchLocation };
+        REL::Relocation<std::uintptr_t> patchLoc{ offsets::CreateArmorNodeNullPtr::SubFunction_PatchLocation, 0x51B };
 
         Code code(patchLoc.address());
         code.ready();
@@ -929,9 +929,9 @@ namespace fixes
         {
             logger::trace("patching camera movement to use frame timer that ignores slow time"sv);
 
-            for (const auto& offset : offsets::SlowTimeCameraMovement::todo)
+            for (const auto& [id, offset] : offsets::SlowTimeCameraMovement::todo)
             {
-                REL::Relocation<std::int16_t*> target{ offset };
+                REL::Relocation<std::int16_t*> target { REL::ID(id) , offset };
                 REL::safe_write<std::uint16_t>(target.address(), *target + 0x4);
             }
         }
@@ -952,7 +952,7 @@ namespace fixes
     public:
         static void Install()
         {
-            REL::Relocation<std::uintptr_t> target{ offsets::TorchLandscape::AddLightCall };
+            REL::Relocation<std::uintptr_t> target{ offsets::TorchLandscape::AddLightCall, 0x530 };
 
             struct Patch : Xbyak::CodeGenerator
             {
@@ -1049,7 +1049,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> target{ offsets::TreeReflections::BSDistantTreeShader_vf2_PatchLocation };
+            REL::Relocation<std::uintptr_t> target{ offsets::TreeReflections::BSDistantTreeShader_vf2_PatchLocation, 0x35 };
             Patch patch(target.address());
             patch.ready();
 
@@ -1121,7 +1121,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::ThirdPersonState_HandleLookInput };
+            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::ThirdPersonState_HandleLookInput, 0x65 };
             REL::Relocation<float*> noSlowFrameTimer { offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
@@ -1174,7 +1174,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::DragonCameraState_HandleLookInput };
+            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::DragonCameraState_HandleLookInput, 0x53 };
             REL::Relocation<float*> noSlowFrameTimer{ offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
@@ -1227,7 +1227,7 @@ namespace fixes
                 }
             };
 
-            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::HorseCameraState_HandleLookInput };
+            REL::Relocation<std::uintptr_t> hookTarget{ offsets::VerticalLookSensitivity::HorseCameraState_HandleLookInput, 0x53 };
             REL::Relocation<float*> noSlowFrameTimer{ offsets::Common::g_SecondsSinceLastFrame_RealTime };
             Patch patch(hookTarget.address(), noSlowFrameTimer.address());
             patch.ready();
