@@ -49,7 +49,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/vcpkg.json', 'vcpkg-version.txt') }}
 
       - name: Configure CMake
-        run: cmake --preset vs2019-windows-vcpkg -DCOPY_BUILD=OFF
+        run: cmake --preset vs2022-windows-vcpkg -DCOPY_BUILD=OFF
 
       - name: Build
         run: |
