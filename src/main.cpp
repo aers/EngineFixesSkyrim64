@@ -45,7 +45,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 bool CheckVersion(const REL::Version& a_version)
 {
-    const auto success = a_version == SKSE::RUNTIME_1_6_318;
+    const auto success = a_version >= SKSE::RUNTIME_1_6_317;
     if (!success)
         logger::critical("Unsupported runtime version {}"sv, a_version.string());
 
@@ -104,7 +104,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
     if (!CheckVersion(ver))
         return;
 
-    SKSE::AllocTrampoline(1 << 12);
+    SKSE::AllocTrampoline(1 << 11);
 
     if (*config::verboseLogging)
     {
