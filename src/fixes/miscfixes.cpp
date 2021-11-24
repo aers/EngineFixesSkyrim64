@@ -1581,4 +1581,45 @@ namespace fixes
         return true;
     }
 
+    class ClimateLoadPatch
+    {
+    public:
+        static void Install()
+        {
+            const auto todo = std::array{
+                std::make_pair(25675, 0x124),
+                std::make_pair(34736, 0x100)
+            };
+            
+            for (const auto& [id, offset] : todo)
+            {
+                REL::Relocation<std::uintptr_t> funcBase{ REL::ID(id), offset };
+                auto& trampoline = SKSE::GetTrampoline();
+                _LoadGame = trampoline.write_call<5>(funcBase.address(), LoadGame);
+            }
+
+            REL::safe_fill(SetCurrentClimate.address() + 0x95, 0x90, 0x5);
+        }
+
+    private:
+        static void LoadGame(RE::Sky* a_this, RE::BGSLoadGameBuffer* a_loadGameBuffer)
+        {
+            _LoadGame(a_this, a_loadGameBuffer);
+            SetCurrentClimate(a_this, a_this->currentClimate, true);
+        }
+
+        static inline REL::Relocation<decltype(LoadGame)> _LoadGame;
+
+        typedef void (*_SetCurrentClimate)(RE::Sky* a_this, RE::TESClimate* a_climate, bool a_forceSet);
+        static inline REL::Relocation<_SetCurrentClimate> SetCurrentClimate{ REL::ID(25692) };
+    };
+
+    bool PatchClimateLoad()
+    {
+        logger::trace("-- climate load patch --"sv);
+        ClimateLoadPatch::Install();
+        logger::trace("success"sv);
+        return true;
+    }
+
 }

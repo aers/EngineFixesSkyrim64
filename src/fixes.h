@@ -14,6 +14,7 @@ namespace fixes
     bool PatchBSTempEffectNiRTTI();
     bool PatchCalendarSkipping();
     bool PatchCellInit();
+    bool PatchClimateLoad();
     bool PatchConjurationEnchantAbsorbs();
     bool PatchCreateArmorNodeNullptrCrash();
     bool PatchDoublePerkApply();

@@ -31,6 +31,9 @@ namespace fixes
         if (*config::fixCellInit)
             PatchCellInit();
 
+        if (*config::fixClimateLoad)
+            PatchClimateLoad();
+
         if (*config::fixCreateArmorNodeNullptrCrash)
             PatchCreateArmorNodeNullptrCrash();
 
