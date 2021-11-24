@@ -1597,8 +1597,6 @@ namespace fixes
                 auto& trampoline = SKSE::GetTrampoline();
                 _LoadGame = trampoline.write_call<5>(funcBase.address(), LoadGame);
             }
-
-            REL::safe_fill(SetCurrentClimate.address() + 0x95, 0x90, 0x5);
         }
 
     private:
