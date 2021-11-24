@@ -8,8 +8,7 @@ CleanSKSECosaves = false                # Delete SKSE cosaves that have no match
 DisableChargenPrecache = false          # "Precache Killer", same patch that is already in RaceMenu
 EnableAchievementsWithMods = true       # Enables achievements with mods active
 FormCaching = true                      # Attempts to speed up the global form table by caching recently used forms (SSE Fixes)
-MaxStdio = 2048                         # Sets the maximum number of open file handles, preventing the game from running out with large plugin counts (fixes false save corruption)
-                                        # You may set this higher than 2048 (max 8192) on an updated Windows 10 or Windows 11
+MaxStdio = 2048                         # Sets the maximum number of open file handles (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
 MemoryManager = true                    # Replaces Skyrim's global allocator
 RegularQuicksaves = false               # Makes quick saves into regular saves
 SafeExit = true                         # Prevent the game from hanging while shutting down
@@ -32,6 +31,7 @@ BSLightingShaderParallaxBug = true      # Fixes a bug causing the parallax techn
 BSTempEffectNiRTTI = true               # Fixes a bug where the NiRTTI for this object is not set properly
 CalendarSkipping = true                 # Fix a bug where the game calendar effectively skips a year if you fast travel too far between 20:00 and 23:99 in-game
 CellInit = true                         # Fixes a rare crash where a form does not get converted from an id to a pointer
+ClimateLoad = true                      # Fix a bug where the game fails to properly apply sunrise and sunset data from Climate records if you load a saved game in an interior
 ConjurationEnchantAbsorbs = true        # Fix bug where spell absorption triggers on enchanted items using conjuration summons
 CreateArmorNodeNullptrCrash = true      # Fix typo that may cause a crash somewhere in CreateArmorNode
 DoublePerkApply = true                  # Fix NPC perks applying twice when you load a game
@@ -64,3 +64,6 @@ RefrLoadedGameLimit = 1000000           # Handle count to warn at after loading 
 
 [Experimental]
 SaveGameMaxSize = false                 # Expands the maximum uncompressed size of a save game from 64 MB to 128 MB# can fix "crash on save" issue in long-runnning saves
+
+# DO NOT USE THIS IT IS FOR SPECIFIC TESTING ONLY
+TreatAllModsAsMasters = false           # Loads all mods as if they are masters.

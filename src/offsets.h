@@ -170,6 +170,16 @@ namespace offsets
         constexpr REL::ID TESObjectCELL_GetLocation_ExtraDataList_GetLocation_Call(18905);
     }
 
+    namespace ClimateLoad
+    {
+        const auto todo = std::array{
+            std::make_pair(26218, 0x1A0),
+            std::make_pair(35642, 0x241)
+        };
+
+        constexpr REL::ID SetCurrentClimate(26239);
+    }
+
     namespace ConjurationEnchantAbsorbs
     {
         constexpr REL::ID EnchantmentItem_vtbl(186389);

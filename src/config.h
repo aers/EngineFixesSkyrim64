@@ -41,6 +41,7 @@ public:
     static inline bSetting fixBSTempEffectNiRTTI{ "Fixes", "BSTempEffectNiRTTI", true };
     static inline bSetting fixCalendarSkipping{ "Fixes", "CalendarSkipping", true };
     static inline bSetting fixCellInit{ "Fixes", "CellInit", true };
+    static inline bSetting fixClimateLoad{ "Fixes", "ClimateLoad", true };
     static inline bSetting fixCreateArmorNodeNullptrCrash{ "Fixes", "CreateArmorNodeNullptrCrash", true };
     static inline bSetting fixConjurationEnchantAbsorbs{ "Fixes", "ConjurationEnchantAbsorbs", true };
     static inline bSetting fixDoublePerkApply{ "Fixes", "DoublePerkApply", true };
