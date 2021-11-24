@@ -1603,13 +1603,10 @@ namespace fixes
         static void LoadGame(RE::Sky* a_this, RE::BGSLoadGameBuffer* a_loadGameBuffer)
         {
             _LoadGame(a_this, a_loadGameBuffer);
-            SetCurrentClimate(a_this, a_this->currentClimate, true);
+            a_this->flags &= 0x7E00;
         }
 
         static inline REL::Relocation<decltype(LoadGame)> _LoadGame;
-
-        typedef void (*_SetCurrentClimate)(RE::Sky* a_this, RE::TESClimate* a_climate, bool a_forceSet);
-        static inline REL::Relocation<_SetCurrentClimate> SetCurrentClimate{ REL::ID(25692) };
     };
 
     bool PatchClimateLoad()
