@@ -1586,16 +1586,24 @@ namespace fixes
     public:
         static void Install()
         {
-            const auto todo = std::array{
-                std::make_pair(25675, 0x124),
-                std::make_pair(34736, 0x100)
-            };
-            
-            for (const auto& [id, offset] : todo)
+            auto& trampoline = SKSE::GetTrampoline();
+
             {
-                REL::Relocation<std::uintptr_t> funcBase{ REL::ID(id), offset };
-                auto& trampoline = SKSE::GetTrampoline();
-                _LoadGame = trampoline.write_call<5>(funcBase.address(), LoadGame);
+                const auto todo = std::array{
+                    std::make_pair(25675, 0x124),
+                    std::make_pair(34736, 0x100)
+                };
+
+                for (const auto& [id, offset] : todo)
+                {
+                    REL::Relocation<std::uintptr_t> target{ REL::ID(id), offset };
+                    _LoadGame = trampoline.write_call<5>(target.address(), LoadGame);
+                }
+            }
+
+            {
+                REL::Relocation<std::uintptr_t> target{ REL::ID(39391), 0x319 };
+                _SetClimate = trampoline.write_call<5>(target.address(), SetClimate);
             }
         }
 
@@ -1603,10 +1611,17 @@ namespace fixes
         static void LoadGame(RE::Sky* a_this, RE::BGSLoadGameBuffer* a_loadGameBuffer)
         {
             _LoadGame(a_this, a_loadGameBuffer);
-            a_this->flags &= 0x7E00;
+            a_this->flags |= 0x7E00; 
+        }
+
+        static void SetClimate(RE::Sky* a_this, RE::TESClimate* a_climate, bool a_force)
+        {
+            _SetClimate(a_this, a_climate, a_force);
+            a_this->flags |= 0x7E00;
         }
 
         static inline REL::Relocation<decltype(LoadGame)> _LoadGame;
+        static inline REL::Relocation<decltype(SetClimate)> _SetClimate;
     };
 
     bool PatchClimateLoad()
