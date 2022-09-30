@@ -62,8 +62,14 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
     return v;
 }();
 
+bool initialized = false;
+
 extern "C" void DLLEXPORT APIENTRY Initialize()
 {
+    if (initialized)
+        return;
+    initialized = true;
+
 #ifdef _DEBUG
     while (!IsDebuggerPresent())
     {
@@ -123,6 +129,9 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
     const auto messaging = SKSE::GetMessagingInterface();
     if (!messaging->RegisterListener("SKSE", MessageHandler))
         return false;
+
+    if (!GetModuleHandleA("steam_api64.dll"))
+        Initialize();
 
     logger::info("beginning pre-load patches"sv);
 
