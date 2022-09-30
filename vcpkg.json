@@ -2,6 +2,7 @@
   "name": "enginefixes",
   "version-string": "1",
   "dependencies": [
+    "tomlplusplus",
     "autotoml",
     "boost-regex",
     "boost-stl-interfaces",
@@ -9,5 +10,9 @@
     "tbb",
     "xbyak",
     "rsm-binary-io"
+  ],
+  "builtin-baseline": "9259a0719d94c402aae2ab7975bc096afdec15df",
+  "overrides": [
+    { "name": "tomlplusplus", "version": "2.3.0" }
   ]
 }
