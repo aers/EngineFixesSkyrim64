@@ -198,7 +198,10 @@ namespace offsets
         // E8 ? ? ? ? 48 8B 03 48 8B CB FF 90 ? ? ? ? 80 3D ? ? ? ? ?
         constexpr REL::ID Handle_Add_Rf(40027);
         // 40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 C7 85 ? ? ? ? ? ? ? ? 0F 29 B4 24 ? ? ? ?
+        
+        // Function modified in 1.6.629+, shift offset 1 byte
         constexpr REL::ID BSTaskPool_HandleTask_Movzx(36991);
+         
         // 48 85 D2 74 7C 48 89 5C 24 ?
         constexpr REL::ID Unknown_Add_Function(36982);
         // 48 83 EC 38 48 83 79 ? ? 74 2B
@@ -290,6 +293,7 @@ namespace offsets
     namespace SaveScreenshots
     {
         // E8 ? ? ? ? 33 C9 E8 ? ? ? ? 88 1D ? ? ? ?
+        // Function modified in 1.6.629+, unaffected
         constexpr REL::ID BGSSaveLoadManager_ProcessEvents_RequestScreenshot(35772);
         // E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8D 3D ? ? ? ? 
         constexpr REL::ID MenuSave_RequestScreenshot(36555);
