@@ -6,9 +6,9 @@ namespace fixes
 
     typedef void (*_QueueApplyPerk)(RE::TaskQueueInterface* thisPtr, RE::Actor* actor, RE::BGSPerk* perk, std::int8_t oldRank, std::int8_t newRank);
     REL::Relocation<_QueueApplyPerk> QueueApplyPerk{ offsets::DoublePerkApply::QueueApplyPerk };
-    typedef void (*_HandleAddRf)(std::int64_t apm);
+    typedef void (*_HandleAddRf)(RE::AIProcess* apm);
     REL::Relocation<_HandleAddRf> HandleAddRf{ offsets::DoublePerkApply::Handle_Add_Rf };
-    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ offsets::DoublePerkApply::BSTaskPool_HandleTask_Movzx, 0x2164 };
+    REL::Relocation<std::uintptr_t> SwitchFunctionMovzx{ offsets::DoublePerkApply::BSTaskPool_HandleTask_Movzx, 0x2165 };
     REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx1{ offsets::DoublePerkApply::Unknown_Add_Function, 0x1A };
     REL::Relocation<std::uintptr_t> UnknownAddFuncMovzx2{ offsets::DoublePerkApply::Unknown_Add_Function, 0x46 };
     REL::Relocation<std::uintptr_t> NextFormIdGetHook{ offsets::DoublePerkApply::Next_Formid_Get_Hook, 0x1B };
@@ -31,15 +31,15 @@ namespace fixes
         QueueApplyPerk(RE::TaskQueueInterface::GetSingleton(), actorPtr, perkPtr, oldRank, newRank);
     }
 
-    void do_handle(std::int64_t actorPtr, std::uint32_t val)
+    void do_handle(RE::Actor* actorPtr, std::uint32_t val)
     {
         bool shouldClear = (val & 0x100) != 0;
 
         if (shouldClear)
         {
-            std::int64_t apm = *((std::int64_t*)(actorPtr + 0xF0));  // actorprocessmanager 0xF0 in SSE Actor
-            if (apm != 0)
-                HandleAddRf(apm);
+        // actorprocessmanager 0xF0 in SSE Actor
+            if (actorPtr->currentProcess)
+                HandleAddRf(actorPtr->currentProcess);
         }
     }
 
