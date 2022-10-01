@@ -53,9 +53,6 @@ namespace offsets
         // E8 ? ? ? ? 48 63 FF
         constexpr REL::ID MemoryManager_Init(68121);
 
-        constexpr REL::ID MemoryManager_msize1(68100);
-        constexpr REL::ID MemoryManager_msize2(68116);
-
         constexpr REL::ID ScrapHeap_vtbl(236607);
 
         constexpr REL::ID ScrapHeap_ctor(68142);
@@ -196,20 +193,11 @@ namespace offsets
 
     namespace DoublePerkApply
     {
-        // 48 85 D2 74 7C 48 89 5C 24 ?
-        constexpr REL::ID QueueApplyPerk(36982);
-        // E8 ? ? ? ? 48 8B 03 48 8B CB FF 90 ? ? ? ? 80 3D ? ? ? ? ?
-        constexpr REL::ID Handle_Add_Rf(40027);
-        // 40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 C7 85 ? ? ? ? ? ? ? ? 0F 29 B4 24 ? ? ? ?
-        constexpr REL::ID BSTaskPool_HandleTask_Movzx(36991);
-        // 48 85 D2 74 7C 48 89 5C 24 ?
-        constexpr REL::ID Unknown_Add_Function(36982);
-        // 48 83 EC 38 48 83 79 ? ? 74 2B
-        constexpr REL::ID Next_Formid_Get_Hook(40026);
-        // 48 89 6C 24 ? 57 41 56 41 57 48 83 EC 40 8B 41 70
-        constexpr REL::ID Do_Handle_Hook(23822);
-        // 48 83 EC 38 48 85 D2 74 23
-        constexpr REL::ID Do_Add_Hook(23829);
+        constexpr REL::ID BGSPerk_ApplyPerk(23822);
+        constexpr REL::ID Actor_RemoveBasePerks(37704);
+        constexpr REL::ID Actor_vtbl(207511);
+        constexpr REL::ID Character_vtbl(207886);
+        constexpr REL::ID PlayerCharacter_vtbl(208040);
     }
 
     namespace EquipShoutEventSpam

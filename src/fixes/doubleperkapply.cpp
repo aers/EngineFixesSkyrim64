@@ -5,20 +5,20 @@ namespace fixes
     void ApplyPerk(RE::BGSPerk* a_perk, RE::Actor* a_perkOwner, std::uint8_t a_removeRank, std::uint8_t a_applyRank)
     {
         using func_t = decltype(&ApplyPerk);
-        REL::Relocation<func_t> func{ REL::ID(23822) };
+        REL::Relocation<func_t> func{ offsets::DoublePerkApply::BGSPerk_ApplyPerk };
         return func(a_perk, a_perkOwner, a_removeRank, a_applyRank);
     }
 
     void RemoveBasePerks(RE::Actor* a_actor)
     {
         using func_t = decltype(&RemoveBasePerks);
-        REL::Relocation<func_t> func{ REL::ID(37704) };
+        REL::Relocation<func_t> func{ offsets::DoublePerkApply::Actor_RemoveBasePerks };
         return func(a_actor);
     }
 
-    REL::Relocation<std::uintptr_t> Actor_ApplyBasePerks{ REL::ID(207511) };
-    REL::Relocation<std::uintptr_t> Character_ApplyBasePerks{ REL::ID(207886) };
-    REL::Relocation<std::uintptr_t> PlayerCharacter_ApplyBasePerks{ REL::ID(208040) };
+    REL::Relocation<std::uintptr_t> Actor_ApplyBasePerks{ offsets::DoublePerkApply::Actor_vtbl };
+    REL::Relocation<std::uintptr_t> Character_ApplyBasePerks{ offsets::DoublePerkApply::Character_vtbl };
+    REL::Relocation<std::uintptr_t> PlayerCharacter_ApplyBasePerks{ offsets::DoublePerkApply::PlayerCharacter_vtbl };
 
     void ApplyBasePerksActorImplementation(RE::Actor* a_actor)
     {
