@@ -5,14 +5,14 @@ namespace fixes
     void ApplyPerk(RE::BGSPerk* a_perk, RE::Actor* a_perkOwner, std::uint8_t a_removeRank, std::uint8_t a_applyRank)
     {
         using func_t = decltype(&ApplyPerk);
-        REL::Relocation<func_t> func{ REL::ID() };
+        REL::Relocation<func_t> func{ REL::ID(23822) };
         return func(a_perk, a_perkOwner, a_removeRank, a_applyRank);
     }
 
     void RemoveBasePerks(RE::Actor* a_actor)
     {
         using func_t = decltype(&RemoveBasePerks);
-        REL::Relocation<func_t> func{ REL::ID() };
+        REL::Relocation<func_t> func{ REL::ID(37704) };
         return func(a_actor);
     }
 
