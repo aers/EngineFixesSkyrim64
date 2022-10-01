@@ -32,6 +32,7 @@ endif()
 
 add_compile_definitions(
 	SKSE_SUPPORT_XBYAK
+	SKYRIM_SUPPORT_AE
     _UNICODE
     UNICODE
 )

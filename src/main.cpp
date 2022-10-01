@@ -58,7 +58,8 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
     v.PluginName(Version::NAME);
     v.AuthorName("aers"sv);
     v.CompatibleVersions({ SKSE::RUNTIME_1_6_629 });
-    v.UsesAddressLibrary(true);
+    v.UsesAddressLibrary();
+    v.UsesUpdatedStructs();
     return v;
 }();
 
@@ -131,7 +132,15 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
         return false;
 
     if (!GetModuleHandleA("steam_api64.dll"))
-        Initialize();
+    {
+        REL::Version oldSKSEVersion{ 2, 2, 2 };
+        if (a_skse->SKSEVersion() == oldSKSEVersion.pack())
+        {
+            Initialize();
+            logger::info("applied workaround for SKSE GOG loader (2.2.2)"sv);
+        }
+
+    }
 
     logger::info("beginning pre-load patches"sv);
 
