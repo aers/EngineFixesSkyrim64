@@ -9,5 +9,12 @@
     "tbb",
     "xbyak",
     "rsm-binary-io"
+  ],
+  "builtin-baseline": "5f144173006dbeea7b9cb017775675606666a207",
+  "overrides": [
+    {
+      "name": "tbb",
+      "version-string": "2020_U3"
+    }
   ]
 }
