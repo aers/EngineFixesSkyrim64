@@ -141,6 +141,36 @@ namespace
         }
     }
 
+    namespace msize
+    {
+        std::size_t msize_wrapper(void* a_ptr)
+        {
+            return scalable_msize(a_ptr);
+        }
+
+        void WriteHooks()
+        {
+            using tuple_t = std::tuple<REL::ID, std::ptrdiff_t>;
+            const std::array todo{
+                tuple_t{ offsets::MemoryManager::MemoryManager_msize1, 0x12F },
+                tuple_t{ offsets::MemoryManager::MemoryManager_msize2, 0x173 },
+            };
+
+            for (const auto& [addr, offset] : todo)
+            {
+                REL::Relocation<std::uintptr_t> target{ addr, offset };
+
+                auto& trampoline = SKSE::GetTrampoline();
+                trampoline.write_call<6>(target.address(), msize_wrapper);
+            }
+        }
+
+        void Install()
+        {
+            WriteHooks();
+        }
+    }
+
     namespace ScrapHeap
     {
         void* Allocate(RE::ScrapHeap*, std::size_t a_size, std::size_t a_alignment)
@@ -218,6 +248,7 @@ namespace patches
 
         AutoScrapBuffer::Install();
         MemoryManager::Install();
+        msize::Install();
         ScrapHeap::Install();
 
         logger::trace("success"sv);
