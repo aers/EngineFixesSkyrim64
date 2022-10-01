@@ -139,6 +139,19 @@ namespace
         }
     }
 
+    namespace msize
+    {
+        std::size_t hk_msize(void* a_ptr)
+        {
+            return scalable_msize(a_ptr);
+        }
+
+        void Install()
+        {
+            SKSE::PatchIAT(hk_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
+        }
+    }
+
     namespace ScrapHeap
     {
         void* Allocate(RE::ScrapHeap*, std::size_t a_size, std::size_t a_alignment)
@@ -216,6 +229,7 @@ namespace patches
 
         AutoScrapBuffer::Install();
         MemoryManager::Install();
+        msize::Install();
         ScrapHeap::Install();
 
         logger::trace("success"sv);
