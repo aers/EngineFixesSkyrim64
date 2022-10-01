@@ -10,7 +10,7 @@
     "xbyak",
     "rsm-binary-io"
   ],
-  "builtin-baseline": "5f144173006dbeea7b9cb017775675606666a207",
+  "builtin-baseline": "57d3194e702a2959e86a6748999ad71fc24f7922",
   "overrides": [
     {
       "name": "tbb",
