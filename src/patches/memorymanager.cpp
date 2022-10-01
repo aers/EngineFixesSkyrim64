@@ -141,29 +141,14 @@ namespace
 
     namespace msize
     {
-        std::size_t msize_wrapper(void* a_ptr)
+        std::size_t hk_msize(void* a_ptr)
         {
             return scalable_msize(a_ptr);
         }
 
-        void WriteHooks()
-        {
-            using tuple_t = std::tuple<std::uint64_t, std::ptrdiff_t, std::size_t>;
-            const std::array todo{
-                tuple_t{ 66849, 0x111, 0x7 },
-            };
-
-            for (const auto& [id, offset, size] : todo)
-            {
-                REL::Relocation<std::uintptr_t> target{ REL::ID(id), offset };
-                REL::safe_fill(target.address(), REL::INT3, size);
-                asm_jump(target.address(), size, reinterpret_cast<std::uintptr_t>(msize_wrapper));
-            }
-        }
-
         void Install()
         {
-            WriteHooks();
+            SKSE::PatchIAT(hk_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
         }
     }
 
