@@ -45,7 +45,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 bool CheckVersion(const REL::Version& a_version)
 {
-    const auto success = a_version >= SKSE::RUNTIME_1_6_317;
+    const auto success = a_version >= SKSE::RUNTIME_1_6_629;
     if (!success)
         logger::critical("Unsupported runtime version {}"sv, a_version.string());
 
@@ -59,6 +59,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
     v.AuthorName("aers"sv);
     v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
     v.UsesAddressLibrary(true);
+    v.UsesStructsPost629(true);
     return v;
 }();
 

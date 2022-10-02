@@ -1,9 +1,17 @@
 {
-  "name": "autotoml",
-  "version-string": "1",
-  "homepage": "https://github.com/Ryan-rsm-McKenzie/AutoTOML",
-  "license": "MIT",
-  "dependencies": [
-    "tomlplusplus"
-  ]
+	"name": "autotoml",
+	"version-string": "2021-12-18",
+	"homepage": "https://github.com/shad0wshayd3/AutoTOML",
+	"license": "MIT",
+	"dependencies": [
+		"tomlplusplus",
+		{
+			"name": "vcpkg-cmake",
+			"host": true
+		},
+		{
+			"name": "vcpkg-cmake-config",
+			"host": true
+		}
+	]
 }

@@ -18,8 +18,8 @@ namespace offsets
     namespace DisableChargenPrecache
     {
         constexpr std::array todo = {
-            REL::ID(52369), // PreCache - 48 83 EC 48 48 8B 0D ? ? ? ? 48 85 C9 
-            REL::ID(52381) // PreCacheClear - E8 ? ? ? ? E8 ? ? ? ? C6 87 ? ? ? ? ? 
+            REL::ID(52369), // PreCache - 48 83 EC 48 48 8B 0D ? ? ? ? 48 85 C9
+            REL::ID(52381) // PreCacheClear - E8 ? ? ? ? E8 ? ? ? ? C6 87 ? ? ? ? ?
          };
     }
 
@@ -50,17 +50,17 @@ namespace offsets
         constexpr REL::ID MemoryManager_ReAllocate(68116);
         constexpr REL::ID MemoryManager_DeAllocate(68117);
 
-        // E8 ? ? ? ? 48 63 FF 
+        // E8 ? ? ? ? 48 63 FF
         constexpr REL::ID MemoryManager_Init(68121);
 
         constexpr REL::ID ScrapHeap_vtbl(236607);
 
         constexpr REL::ID ScrapHeap_ctor(68142);
-        // E8 ? ? ? ? 44 0F B7 F5 
+        // E8 ? ? ? ? 44 0F B7 F5
         constexpr REL::ID ScrapHeap_Allocate(68144);
         // E8 ? ? ? ? 45 89 77 0C
         constexpr REL::ID ScrapHeap_DeAllocate(68146);
-        // 40 53 48 83 EC 20 83 79 78 00 
+        // 40 53 48 83 EC 20 83 79 78 00
         constexpr REL::ID ScrapHeap_Clean(68152);
         // FF 49 78
         constexpr REL::ID ScrapHeap_ClearKeepPages(68151);
@@ -68,7 +68,7 @@ namespace offsets
         constexpr REL::ID ScrapHeap_InsertFreeBlock(68155);
         // E8 ? ? ? ? 48 8B 06 49 23 C7
         constexpr REL::ID ScrapHeap_RemoveFreeBlock(68156);
-        // FF 41 78 
+        // FF 41 78
         constexpr REL::ID ScrapHeap_SetKeepPages(68150);
         // vtable ref
         constexpr REL::ID ScrapHeap_Dtor(68143);
@@ -89,7 +89,7 @@ namespace offsets
         constexpr REL::ID INIPrefSettingCollection_vtbl(187227);
         constexpr REL::ID BGSSoundCategory_BSISoundCategory_vtbl(191093);
     }
-    
+
     namespace SaveGameMaxSize
     {
         constexpr REL::ID Win32FileType_CopyToBuffer(109378); // vf18
@@ -141,7 +141,7 @@ namespace offsets
 
     namespace ArcheryDownwardAiming
     {
-        // E8 ? ? ? ? 8B 83 ? ? ? ? C1 E8 12 A8 01 74 3F 
+        // E8 ? ? ? ? 8B 83 ? ? ? ? C1 E8 12 A8 01 74 3F
         constexpr REL::ID MoveFunctionCall(44027);
     }
 
@@ -193,20 +193,11 @@ namespace offsets
 
     namespace DoublePerkApply
     {
-        // 48 85 D2 74 7C 48 89 5C 24 ?
-        constexpr REL::ID QueueApplyPerk(36982);
-        // E8 ? ? ? ? 48 8B 03 48 8B CB FF 90 ? ? ? ? 80 3D ? ? ? ? ?
-        constexpr REL::ID Handle_Add_Rf(40027);
-        // 40 55 53 56 57 41 54 41 55 41 56 41 57 48 8D AC 24 ? ? ? ? 48 81 EC ? ? ? ? 48 C7 85 ? ? ? ? ? ? ? ? 0F 29 B4 24 ? ? ? ?
-        constexpr REL::ID BSTaskPool_HandleTask_Movzx(36991);
-        // 48 85 D2 74 7C 48 89 5C 24 ?
-        constexpr REL::ID Unknown_Add_Function(36982);
-        // 48 83 EC 38 48 83 79 ? ? 74 2B
-        constexpr REL::ID Next_Formid_Get_Hook(40026);
-        // 48 89 6C 24 ? 57 41 56 41 57 48 83 EC 40 8B 41 70
-        constexpr REL::ID Do_Handle_Hook(23822);
-        // 48 83 EC 38 48 85 D2 74 23
-        constexpr REL::ID Do_Add_Hook(23829);
+        constexpr REL::ID BGSPerk_ApplyPerk(23822);
+        constexpr REL::ID Actor_RemoveBasePerks(37704);
+        constexpr REL::ID Actor_vtbl(207511);
+        constexpr REL::ID Character_vtbl(207886);
+        constexpr REL::ID PlayerCharacter_vtbl(208040);
     }
 
     namespace EquipShoutEventSpam
@@ -265,17 +256,17 @@ namespace offsets
 
     namespace MusicOverlap
     {
-        constexpr REL::ID BGSMusicType_BSIMusicType_vtbl(191051); // BSIMusicType vtbl in BGSMusicType 
+        constexpr REL::ID BGSMusicType_BSIMusicType_vtbl(191051); // BSIMusicType vtbl in BGSMusicType
     }
-    
+
     namespace NullProcessCrash
     {
         // 48 83 EC 40 48 C7 44 24 ? ? ? ? ? 48 89 5C 24 ? 48 89 74 24 ? 48 8B DA 48 8B F1 48 85 D2
         constexpr REL::ID FuncBase1(38899);
-        // E8 ? ? ? ? 41 0F B6 EE 
+        // E8 ? ? ? ? 41 0F B6 EE
         constexpr REL::ID FuncBase2(47338);
     }
-    
+
     namespace PerkFragmentIsRunning
     {
         // 48 89 5C 24 ? 57 48 83 EC 20 33 FF 49 8B D9 49 89 39 48 85 C9 74 08 80 79 1A 3E 48 0F 44 F9 48 8B CF
@@ -291,7 +282,7 @@ namespace offsets
     {
         // E8 ? ? ? ? 33 C9 E8 ? ? ? ? 88 1D ? ? ? ?
         constexpr REL::ID BGSSaveLoadManager_ProcessEvents_RequestScreenshot(35772);
-        // E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8D 3D ? ? ? ? 
+        // E8 ? ? ? ? 48 8B 05 ? ? ? ? 48 8D 3D ? ? ? ?
         constexpr REL::ID MenuSave_RequestScreenshot(36555);
         constexpr REL::ID g_RequestSaveScreenshot(403755);
         // E8 ? ? ? ? 45 8B FD EB 20
@@ -303,7 +294,7 @@ namespace offsets
         // E8 ? ? ? ? 49 8B 8E ? ? ? ? 40 B6 01
         constexpr REL::ID BSBatchRenderer_SetupAndDrawPass(107644);
         constexpr REL::ID BSLightingShader_vtbl(255053);
-        // 48 8B C4 44 89 40 18 48 89 50 10 48 89 48 08 55 53 
+        // 48 8B C4 44 89 40 18 48 89 50 10 48 89 48 08 55 53
         constexpr REL::ID BSLightingShader_SetupGeometry_ParallaxTechniqueLoc(107300);
     }
 
@@ -315,7 +306,7 @@ namespace offsets
     namespace SlowTimeCameraMovement
     {
         constexpr std::array todo = {
-            std::make_pair(50913, 0x3F), // 40 53 48 83 EC 70 F3 0F 10 51 ? 
+            std::make_pair(50913, 0x3F), // 40 53 48 83 EC 70 F3 0F 10 51 ?
             std::make_pair(50913, 0xA1),
             std::make_pair(50913, 0x1BA),
             std::make_pair(50911, 0x268), // E8 ? ? ? ? 48 8B 43 38 48 85 C0 74 27

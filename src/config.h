@@ -88,7 +88,7 @@ public:
                     setting->load(table);
                 } catch (const std::exception& e)
                 {
-                    logger::warn(e.what());
+                    logger::warn(fmt::runtime(e.what()));
                 }
             }
         } catch (const toml::parse_error& e)
@@ -99,7 +99,7 @@ public:
                 << "\':\n"
                 << e.description()
                 << "\n  (" << e.source().begin << ")\n";
-            logger::error(ss.str());
+            logger::error(fmt::runtime(ss.str()));
             return false;
         }
 
