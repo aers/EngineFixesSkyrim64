@@ -47,13 +47,13 @@ namespace fixes
         {
             for (std::uint32_t i = 0; i < perkRankArray->perkCount; i++)
             {
-                auto* perk = perkRankArray->perks->perk;
+                auto* perk = perkRankArray->perks[i].perk;
                 if (!perk)
                 {
                     continue;
                 }
 
-                ApplyPerk(perk, a_actor, 0, perkRankArray->perks->currentRank);
+                ApplyPerk(perk, a_actor, 0, perkRankArray->perks[i].currentRank);
             }
         }
     }
