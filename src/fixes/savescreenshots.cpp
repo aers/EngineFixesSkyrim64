@@ -8,7 +8,7 @@ namespace fixes
     std::uint8_t screenshot_requested_location = 0;
 
     REL::Relocation<std::uintptr_t> BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ offsets::SaveScreenshots::BGSSaveLoadManager_ProcessEvents_RequestScreenshot, 0x1C6 };
-    REL::Relocation<std::uintptr_t> MenuSave_RequestScreenshot{ offsets::SaveScreenshots::MenuSave_RequestScreenshot, 0x5D6 };
+    REL::Relocation<std::uintptr_t> MenuSave_RequestScreenshot{ offsets::SaveScreenshots::MenuSave_RequestScreenshot, 0x5D5 };
     REL::Relocation<std::uintptr_t> SaveScreenshotRequestedDword{ offsets::SaveScreenshots::g_RequestSaveScreenshot };
     REL::Relocation<std::uintptr_t> ScreenshotJnz{ offsets::SaveScreenshots::ScreenshotRenderFunction, 0x17D };
     REL::Relocation<std::uintptr_t> RenderTargetHook_1{ offsets::SaveScreenshots::ScreenshotRenderFunction, 0x294 };
