@@ -12,7 +12,7 @@ namespace offsets
     namespace AchievementsWithMods
     {
         // 48 83 EC 28 C6 44 24 ? ?
-        constexpr REL::ID AchievementModsEnabledFunction(13755);
+        constexpr REL::ID AchievementModsEnabledFunction(441528);
     }
 
     namespace DisableChargenPrecache

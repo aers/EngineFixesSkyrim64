@@ -181,6 +181,11 @@ namespace patches
 
     bool PatchEnableAchievementsWithMods()
     {
+        if(!REL::make_pattern<"48 83 EC 28 C6 44 24 ?? ??">().match(AchievementModsEnabledFunction.address())) {
+            logger::error("AchievementModsEnabled patch can't be activated, invalid address");
+            return false;
+        }
+
         logger::trace("- enable achievements with mods -"sv);
         // Xbyak is used here to generate the ASM to use instead of just doing it by hand
         struct Patch : Xbyak::CodeGenerator
