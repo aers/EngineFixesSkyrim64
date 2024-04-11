@@ -5,6 +5,8 @@
 #include "version.h"
 #include "warnings.h"
 
+inline constexpr REL::Version RUNTIME_1_6_1170(1, 6, 1170, 0);
+
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
     switch (a_msg->type)
@@ -45,7 +47,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 
 bool CheckVersion(const REL::Version& a_version)
 {
-    const auto success = a_version >= SKSE::RUNTIME_1_6_629;
+    const auto success = a_version >= RUNTIME_1_6_1170;
     if (!success)
         logger::critical("Unsupported runtime version {}"sv, a_version.string());
 
@@ -57,7 +59,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
     v.pluginVersion = Version::MAJOR;
     v.PluginName(Version::NAME);
     v.AuthorName("aers"sv);
-    v.CompatibleVersions({ SKSE::RUNTIME_LATEST });
+    v.CompatibleVersions({ RUNTIME_1_6_1170 });
     v.UsesAddressLibrary(true);
     v.UsesStructsPost629(true);
     return v;
