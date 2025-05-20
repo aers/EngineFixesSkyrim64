@@ -442,7 +442,9 @@ namespace fixes
             constexpr std::uintptr_t BRANCH_OFF = 0x13D;
             constexpr std::uintptr_t SEND_EVENT_BEGIN = 0x149;
             constexpr std::uintptr_t SEND_EVENT_END = 0x1C7;
-            constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, GetActorRuntimeData().selectedPower);
+            // TODO: runtime independent EQUIPPED_SHOUT
+            constexpr std::size_t EQUIPPED_SHOUT = 0xE8 + offsetof(RE::Actor::ACTOR_RUNTIME_DATA, selectedPower);  // > SSE_1_6_629 TO
+            //constexpr std::size_t EQUIPPED_SHOUT = 0xE0 + offsetof(RE::Actor::ACTOR_RUNTIME_DATA, selectedPower);  // < SSE_1_6_629
             constexpr std::uint32_t BRANCH_SIZE = 5;
             constexpr std::uint32_t CODE_CAVE_SIZE = 12;
             constexpr std::uint32_t DIFF = CODE_CAVE_SIZE - BRANCH_SIZE;
