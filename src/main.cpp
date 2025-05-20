@@ -60,8 +60,8 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
     v.PluginName(Version::NAME);
     v.AuthorName("aers"sv);
     v.CompatibleVersions({ RUNTIME_1_6_1170 });
-    v.UsesAddressLibrary(true);
-    v.UsesStructsPost629(true);
+    v.UsesAddressLibrary();
+    v.UsesNoStructs();
     return v;
 }();
 
@@ -121,7 +121,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
 
 extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
-    SKSE::Init(a_skse);
+    SKSE::Init(a_skse, false);
 
     const auto messaging = SKSE::GetMessagingInterface();
     if (!messaging->RegisterListener("SKSE", MessageHandler))

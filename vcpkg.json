@@ -3,6 +3,10 @@
   "version-string": "1",
   "dependencies": [
     "autotoml",
+    "directxtk",
+    "directxtex",
+    "rapidcsv",
+    "catch2",
     "boost-regex",
     "boost-stl-interfaces",
     "spdlog",

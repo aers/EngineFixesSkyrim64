@@ -1,5 +1,7 @@
 #include "fixes.h"
 
+#undef GetObject
+
 namespace fixes
 {
     class AnimationLoadSignedCrashPatch
@@ -36,7 +38,7 @@ namespace fixes
     private:
         static void Move(RE::Projectile* a_this, /*const*/ RE::NiPoint3& a_from, const RE::NiPoint3& a_to)
         {
-            const auto refShooter = a_this->shooter.get();
+            const auto refShooter = a_this->GetProjectileRuntimeData().shooter.get();
             if (refShooter && refShooter->Is(RE::FormType::ActorCharacter))
             {
                 const auto akShooter = static_cast<RE::Actor*>(refShooter.get());
@@ -440,7 +442,7 @@ namespace fixes
             constexpr std::uintptr_t BRANCH_OFF = 0x13D;
             constexpr std::uintptr_t SEND_EVENT_BEGIN = 0x149;
             constexpr std::uintptr_t SEND_EVENT_END = 0x1C7;
-            constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, selectedPower);
+            constexpr std::size_t EQUIPPED_SHOUT = offsetof(RE::Actor, GetActorRuntimeData().selectedPower);
             constexpr std::uint32_t BRANCH_SIZE = 5;
             constexpr std::uint32_t CODE_CAVE_SIZE = 12;
             constexpr std::uint32_t DIFF = CODE_CAVE_SIZE - BRANCH_SIZE;
@@ -772,7 +774,7 @@ namespace fixes
 
         static void DoFinish(RE::BSIMusicType* a_this, bool a_immediate)
         {
-            a_this->tracks[a_this->currentTrackIndex]->DoFinish(a_immediate, std::max(a_this->fadeTime, 4.0f));
+            a_this->tracks[a_this->currentTrackIndex]->DoFinish(a_immediate, std::max<float>(a_this->fadeTime, 4.0f));
             a_this->typeStatus = static_cast<RE::BSIMusicType::MUSIC_STATUS>(a_this->tracks[a_this->currentTrackIndex]->GetMusicStatus());
         }
     };
@@ -1300,7 +1302,7 @@ namespace fixes
 
         static RE::TESObjectWEAP* GetWeaponData(RE::Actor* a_actor)
         {
-            const auto proc = a_actor->currentProcess;
+            const auto proc = a_actor->GetActorRuntimeData().currentProcess;
             if (!proc || !proc->middleHigh)
             {
                 return nullptr;
@@ -1617,7 +1619,14 @@ namespace fixes
         static void LoadGame(RE::Sky* a_this, RE::BGSLoadGameBuffer* a_loadGameBuffer)
         {
             _LoadGame(a_this, a_loadGameBuffer);
-            a_this->flags |= 0x7E00;
+            a_this->flags.set(
+                RE::Sky::Flags::kUpdateSunriseBegin, 
+                RE::Sky::Flags::kUpdateSunriseEnd, 
+                RE::Sky::Flags::kUpdateSunsetBegin, 
+                RE::Sky::Flags::kUpdateSunsetEnd, 
+                RE::Sky::Flags::kUpdateColorsSunriseBegin, 
+                RE::Sky::Flags::kUpdateColorsSunsetEnd
+            );
         }
 
         static inline REL::Relocation<decltype(LoadGame)> _LoadGame;

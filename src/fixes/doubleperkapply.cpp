@@ -24,7 +24,7 @@ namespace fixes
     {
         RemoveBasePerks(a_actor);
 
-        auto* currentProcess = a_actor->currentProcess;
+        auto* currentProcess = a_actor->GetActorRuntimeData().currentProcess;
         if (!currentProcess)
         {
             return;
