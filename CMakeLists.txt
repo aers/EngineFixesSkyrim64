@@ -18,9 +18,9 @@ add_compile_definitions(SKYRIM)
 set(CommonLibPath "external/CommonLibSSE-NG")
 set(CommonLibName "CommonLibSSE")
 set(GameVersion "Skyrim")
-add_subdirectory(${CommonLibPath} ${CommonLibName} EXCLUDE_FROM_ALL)
 
 find_package(spdlog CONFIG REQUIRED)
+find_package(AutoTOML REQUIRED CONFIG)
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.h.in"
@@ -59,6 +59,8 @@ find_package(TBB
 	CONFIG
 )
 find_package(xbyak REQUIRED CONFIG)
+
+add_subdirectory(${CommonLibPath} ${CommonLibName} EXCLUDE_FROM_ALL)
 
 include(cmake/sourcelist.cmake)
 
@@ -99,6 +101,7 @@ target_include_directories(
 target_link_libraries(
 	${PROJECT_NAME}
 	PRIVATE
+		AutoTOML::AutoTOML
 		Boost::regex
 		CommonLibSSE::CommonLibSSE
 		TBB::tbb
