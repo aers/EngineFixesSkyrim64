@@ -19,9 +19,6 @@ set(CommonLibPath "external/CommonLibSSE-NG")
 set(CommonLibName "CommonLibSSE")
 set(GameVersion "Skyrim")
 
-find_package(spdlog CONFIG REQUIRED)
-find_package(AutoTOML REQUIRED CONFIG)
-
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.h.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/include/Version.h"
@@ -44,6 +41,10 @@ add_compile_definitions(
     UNICODE
 )
 
+add_subdirectory(${CommonLibPath} ${CommonLibName} EXCLUDE_FROM_ALL)
+
+find_package(spdlog CONFIG REQUIRED)
+find_package(AutoTOML REQUIRED CONFIG)
 find_package(Boost
 	MODULE
 	REQUIRED
@@ -59,8 +60,6 @@ find_package(TBB
 	CONFIG
 )
 find_package(xbyak REQUIRED CONFIG)
-
-add_subdirectory(${CommonLibPath} ${CommonLibName} EXCLUDE_FROM_ALL)
 
 include(cmake/sourcelist.cmake)
 
