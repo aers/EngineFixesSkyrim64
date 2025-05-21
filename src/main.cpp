@@ -114,6 +114,7 @@ extern "C" void DLLEXPORT APIENTRY Initialize()
         logger::info("enabling verbose logging"sv);
         spdlog::set_level(spdlog::level::trace);
         spdlog::flush_on(spdlog::level::trace);
+        spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%L] [%t] %g(%#): %v"s);
     }
 
     patches::Preload();
