@@ -79,7 +79,7 @@ namespace fixes
     {
         ApplyBasePerksActorImplementation(a_player);
 
-        for (auto* addedPerkRank : a_player->addedPerks)
+        for (auto* addedPerkRank : a_player->GetPlayerRuntimeData().addedPerks)
         {
             auto* perk = addedPerkRank->perk;
 
