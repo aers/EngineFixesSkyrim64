@@ -61,7 +61,7 @@ extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
     v.AuthorName("aers"sv);
     v.CompatibleVersions({ RUNTIME_1_6_1170 });
     v.UsesAddressLibrary();
-    v.UsesNoStructs();
+    v.UsesUpdatedStructs();
     return v;
 }();
 
