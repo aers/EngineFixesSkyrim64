@@ -742,11 +742,11 @@ namespace fixes
             const bool retVal = _Load(a_this, a_file);
 
             // the game doesn't allow more than 10 here
-            if (a_this->data.size() >= 12)
+            if (a_this->GetRuntimeData().data.size() >= 12)
             {
-                const auto particleDensity = a_this->data[11];
+                const auto particleDensity = a_this->GetRuntimeData().data[11];
                 if (particleDensity.f > 10.0)
-                    a_this->data[11].f = 10.0f;
+                    a_this->GetRuntimeData().data[11].f = 10.0f;
             }
 
             return retVal;

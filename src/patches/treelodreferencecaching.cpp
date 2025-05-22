@@ -75,7 +75,7 @@ namespace patches
                             const auto fadeNode = obj3D->AsFadeNode();
                             if (fadeNode)
                             {
-                                alpha = 1.0f - fadeNode->currentFade;
+                                alpha = 1.0f - fadeNode->GetRuntimeData().currentFade;
                                 if (alpha <= 0.0f)
                                     fullyHidden = true;
                             }
