@@ -48,7 +48,14 @@ namespace patches
             if (globalFormCacheMap[masterId].find(accessor, baseId))
             {
                 formPointer = accessor->second;
-                return formPointer;
+
+                if (formPointer->GetFormID() != FormId) {
+                    logger::trace("debug hk_GetFormByID FormId = {:08X}, but formPointer->GetFormID() = {:08X}"sv, FormId, formPointer->GetFormID());
+                }
+                else
+                {
+                    return formPointer;
+                }
             }
         }
 

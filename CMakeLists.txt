@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.30)
 
 macro(set_from_environment VARIABLE)
 	if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
@@ -45,12 +45,7 @@ add_subdirectory(${CommonLibPath} ${CommonLibName} EXCLUDE_FROM_ALL)
 
 find_package(spdlog CONFIG REQUIRED)
 find_package(AutoTOML REQUIRED CONFIG)
-find_package(Boost
-	MODULE
-	REQUIRED
-	COMPONENTS
-		regex
-)
+find_package(boost_regex CONFIG REQUIRED)
 find_package(TBB
 	REQUIRED
 	CONFIG
