@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.30)
 
 macro(set_from_environment VARIABLE)
 	if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
@@ -13,6 +13,11 @@ project(
 	VERSION ${VERSION}
 	LANGUAGES CXX
 )
+
+add_compile_definitions(SKYRIM)
+set(CommonLibPath "external/CommonLibSSE-NG")
+set(CommonLibName "CommonLibSSE")
+set(GameVersion "Skyrim")
 
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.h.in"
@@ -36,15 +41,11 @@ add_compile_definitions(
     UNICODE
 )
 
-add_subdirectory(external/CommonLibSSE CommonLibSSE)
+add_subdirectory(${CommonLibPath} ${CommonLibName} EXCLUDE_FROM_ALL)
 
+find_package(spdlog CONFIG REQUIRED)
 find_package(AutoTOML REQUIRED CONFIG)
-find_package(Boost
-	MODULE
-	REQUIRED
-	COMPONENTS
-		regex
-)
+find_package(boost_regex CONFIG REQUIRED)
 find_package(TBB
 	REQUIRED
 	CONFIG
@@ -81,7 +82,7 @@ add_library(
 target_compile_features(
 	${PROJECT_NAME}
 	PRIVATE
-		cxx_std_20
+		cxx_std_23
 )
 
 target_include_directories(
