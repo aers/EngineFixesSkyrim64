@@ -1,139 +1,53 @@
-#include "config.h"
-#include "fixes.h"
-#include "patches.h"
-#include "utils.h"
-#include "version.h"
-#include "warnings.h"
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/msvc_sink.h>
+#include <spdlog/spdlog.h>
 
-inline constexpr REL::Version RUNTIME_1_6_1170(1, 6, 1170, 0);
+#include "settings.h"
 
-void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
-{
-    switch (a_msg->type)
-    {
-    case SKSE::MessagingInterface::kDataLoaded:
-        logger::info("beginning post-load patches"sv);
-        if (*config::cleanSKSECosaves)
-            CleanSKSECosaves();
+#include "Patches/patches.h"
 
-        // patch post load so ini settings are loaded
-        if (*config::fixSaveScreenshots)
-            fixes::PatchSaveScreenshots();
+void OpenLog() {
+	auto path = SKSE::log::log_directory();
 
-        if (*config::warnRefHandleLimit)
-            warnings::WarnActiveRefrHandleCount(static_cast<std::uint32_t>(*config::warnRefrMainMenuLimit));
+	if (!path)
+		return;
 
-        if (*config::patchSaveAddedSoundCategories)
-            patches::LoadVolumes();
+	*path /= "EngineFixes.log";
 
-        if (*config::fixTreeReflections)
-            fixes::PatchTreeReflections();
+	std::vector<spdlog::sink_ptr> sinks{
+		std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true),
+		std::make_shared<spdlog::sinks::msvc_sink_mt>()
+	};
 
-        logger::trace("clearing node map"sv);
-        warnings::ClearNodeMap();
-
-        logger::info("post-load patches complete"sv);
-
-        break;
-    case SKSE::MessagingInterface::kPostLoadGame:
-        if (*config::warnRefHandleLimit)
-            warnings::WarnActiveRefrHandleCount(static_cast<std::uint32_t>(*config::warnRefrLoadedGameLimit));
-
-        break;
-    default:
-        break;
-    }
-}
-
-bool CheckVersion(const REL::Version& a_version)
-{
-    const auto success = a_version >= RUNTIME_1_6_1170;
-    if (!success)
-        logger::critical("Unsupported runtime version {}"sv, a_version.string());
-
-    return success;
-}
-
-extern "C" DLLEXPORT constinit auto SKSEPlugin_Version = []() {
-    SKSE::PluginVersionData v{};
-    v.pluginVersion = Version::MAJOR;
-    v.PluginName(Version::NAME);
-    v.AuthorName("aers"sv);
-    v.CompatibleVersions({ RUNTIME_1_6_1170 });
-    v.UsesAddressLibrary(true);
-    v.UsesStructsPost629(true);
-    return v;
-}();
-
-extern "C" void DLLEXPORT APIENTRY Initialize()
-{
-#ifdef _DEBUG
-    while (!IsDebuggerPresent())
-    {
-    }
-#endif
+	auto logger = std::make_shared<spdlog::logger>("global", sinks.begin(), sinks.end());
 
 #ifndef NDEBUG
-    auto sink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+	logger->set_level(spdlog::level::debug);
+	logger->flush_on(spdlog::level::debug);
 #else
-    auto path = logger::log_directory();
-    if (!path)
-        stl::report_and_fail("failed to get standard log path"sv);
-
-    *path /= "EngineFixes.log"sv;
-    auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true);
+	logger->set_level(spdlog::level::info);
+	logger->flush_on(spdlog::level::info);
 #endif
 
-    auto log = std::make_shared<spdlog::logger>("global log"s, std::move(sink));
+	spdlog::set_default_logger(std::move(logger));
+	spdlog::set_pattern("[%Y-%m-%d %T.%e][%-16s:%-4#][%L]: %v");
 
-#ifndef NDEBUG
-    log->set_level(spdlog::level::trace);
-#else
-    log->set_level(spdlog::level::info);
-    log->flush_on(spdlog::level::warn);
-#endif
+	REX::INFO("EngineFixes PreLoad");
 
-    spdlog::set_default_logger(std::move(log));
-    spdlog::set_pattern("%g(%#): [%^%l%$] %v"s);
-
-    logger::info("Engine Fixes v{}.{}.{}"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
-
-    if (config::load_config("Data/SKSE/Plugins/EngineFixes.toml"s))
-        logger::info("loaded config successfully"sv);
-    else
-        logger::warn("config load failed, using default config"sv);
-
-    const auto ver = REL::Module::get().version();
-    if (!CheckVersion(ver))
-        return;
-
-    SKSE::AllocTrampoline(1 << 11);
-
-    if (*config::verboseLogging)
-    {
-        logger::info("enabling verbose logging"sv);
-        spdlog::set_level(spdlog::level::trace);
-        spdlog::flush_on(spdlog::level::trace);
-    }
-
-    patches::Preload();
+	Patches::PreLoad();
 }
 
-extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+extern "C" __declspec(dllexport) void __stdcall Initialize() {
+	OpenLog();
+}
+
+SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* a_skse)
 {
-    SKSE::Init(a_skse);
+	SKSE::Init(a_skse, false);
 
-    const auto messaging = SKSE::GetMessagingInterface();
-    if (!messaging->RegisterListener("SKSE", MessageHandler))
-        return false;
+	REX::INFO("EngineFixes v{} SKSE Load", SKSE::GetPluginVersion());
 
-    logger::info("beginning pre-load patches"sv);
+	Settings::Load();
 
-    patches::PatchAll();
-    fixes::PatchAll();
-    warnings::PatchAll();
-
-    logger::info("pre-load patches complete"sv);
-
-    return true;
+	return true;
 }
