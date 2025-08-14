@@ -2,7 +2,13 @@
 
 namespace Settings
 {
-	namespace MemoryManager {
+    namespace Patches
+    {
+        static REX::INI::Bool bFormCaching("Patches", "bFormCaching", true);
+    }
+
+	namespace MemoryManager
+    {
 		static REX::INI::Bool bOverrideCRTAllocator( "MemoryManager", "bOverrideCRTAllocator", true );
 		static REX::INI::Bool bOverrideGlobalMemoryManager( "MemoryManager", "bOverrideGlobalMemoryManager", true );
 	}

@@ -34,6 +34,8 @@ void OpenLog() {
 
 	REX::INFO("EngineFixes PreLoad");
 
+    Settings::Load();
+
 	Patches::PreLoad();
 }
 
@@ -47,7 +49,7 @@ SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* a_skse)
 
 	REX::INFO("EngineFixes v{} SKSE Load", SKSE::GetPluginVersion());
 
-	Settings::Load();
+    Patches::Load();
 
 	return true;
 }

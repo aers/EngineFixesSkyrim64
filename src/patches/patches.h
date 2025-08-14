@@ -2,4 +2,5 @@
 
 namespace Patches {
     void PreLoad();
+    void Load();
 }

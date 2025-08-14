@@ -28,13 +28,15 @@ set_config("commonlib_xbyak", true)
 
 -- third parties
 add_requires("vcpkg::safetyhook", {alias="safetyhook"})
+add_requires("vcpkg::zydis", {alias="zydis"})
 add_requires("vcpkg::mimalloc", {alias="mimalloc"})
+add_requires("vcpkg::gtl", {alias="gtl"})
 
 -- targets
 target("EngineFixes")
     -- add dependencies to target
     add_deps("commonlibsse")
-    add_packages("safetyhook", "mimalloc")
+    add_packages("safetyhook", "zydis", "mimalloc", "gtl")
 
     -- add commonlibsse plugin
     add_rules("commonlibsse.plugin", {
@@ -48,3 +50,6 @@ target("EngineFixes")
     add_headerfiles("src/**.h")
     add_includedirs("src")
     set_pcxxheader("src/pch.h")
+
+    add_installfiles("EngineFixes.ini", {prefixdir = "SKSE/Plugins"})
+    add_installfiles("EngineFixes_preload.txt", {prefixdir = "SKSE/Plugins"})

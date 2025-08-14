@@ -27,10 +27,16 @@
             },
             version = "v1.15.3"
         },
+        ["vcpkg::gtl#31fecfc4"] = {
+            version = "latest"
+        },
         ["vcpkg::mimalloc#31fecfc4"] = {
             version = "latest"
         },
         ["vcpkg::safetyhook#31fecfc4"] = {
+            version = "latest"
+        },
+        ["vcpkg::zydis#31fecfc4"] = {
             version = "latest"
         },
         ["xbyak#31fecfc4"] = {
