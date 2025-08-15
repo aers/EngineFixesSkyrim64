@@ -51,6 +51,6 @@ namespace Patches::MemoryManager {
     inline void Install() {
         detail::Install();
 
-        REX::INFO("installed global memory manager override patch");
+        REX::INFO("installed global memory manager override patch"sv);
     }
 }

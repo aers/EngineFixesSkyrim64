@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tree_lod_reference_caching.h"
+
 #include <gtl/phmap.hpp>
 
 namespace Patches::FormCaching
@@ -22,6 +24,7 @@ namespace Patches::FormCaching
                 const std::uint32_t baseId = (a_self->GetFormID() & 0x00FFFFFF);
 
                 g_formCache[masterId].erase(baseId);
+                TreeLodReferenceCaching::detail::RemoveCachedForm(baseId);
             }
 
             return g_hk_RemoveFromDataStructures.call(a_self, a_force);
@@ -35,6 +38,7 @@ namespace Patches::FormCaching
             const std::uint32_t baseId = (*a_formIdPtr & 0x00FFFFFF);
 
             g_formCache[masterId].erase(baseId);
+            TreeLodReferenceCaching::detail::RemoveCachedForm(baseId);
 
             return g_hk_RemoveAt.call<std::uint64_t>(a_self, a_formIdPtr, a_prevValueFunctor);
         }
@@ -74,6 +78,6 @@ namespace Patches::FormCaching
     {
         detail::ReplaceFormMapFunctions();
 
-        REX::INFO("installed form caching patch");
+        REX::INFO("installed form caching patch"sv);
     }
 }

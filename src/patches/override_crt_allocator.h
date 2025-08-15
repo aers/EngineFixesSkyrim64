@@ -9,6 +9,6 @@ namespace Patches::OverrideCRTAllocator {
         REL::PatchIAT(mi_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
         REL::PatchIAT(mi_malloc_aligned, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
 
-        REX::INFO("installed CRT allocator override patch");
+        REX::INFO("installed CRT allocator override patch"sv);
     }
 }

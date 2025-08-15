@@ -4,7 +4,11 @@ namespace Settings
 {
     namespace Patches
     {
+        static REX::INI::Bool bDisableChargenPrecache("Patches", "DisableChargenPrecache", false);
+        static REX::INI::Bool bEnableAchievementsWithMods("Patches", "EnableAchievementsWithMods", true);
         static REX::INI::Bool bFormCaching("Patches", "bFormCaching", true);
+        static REX::INI::I32 bMaxStdIO("Patches", "bMaxStdIO", 8192);
+        static REX::INI::Bool bTreeLodReferenceCaching("Patches", "bTreeLodReferenceCaching", true);
     }
 
 	namespace MemoryManager

@@ -32,7 +32,7 @@ void OpenLog() {
 	spdlog::set_default_logger(std::move(logger));
 	spdlog::set_pattern("[%Y-%m-%d %T.%e][%-16s:%-4#][%L]: %v");
 
-	REX::INFO("EngineFixes PreLoad");
+	REX::INFO("EngineFixes PreLoad"sv);
 
     Settings::Load();
 
@@ -47,7 +47,7 @@ SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* a_skse)
 {
 	SKSE::Init(a_skse, false);
 
-	REX::INFO("EngineFixes v{} SKSE Load", SKSE::GetPluginVersion());
+	REX::INFO("EngineFixes v{} SKSE Load"sv, SKSE::GetPluginVersion());
 
     Patches::Load();
 
