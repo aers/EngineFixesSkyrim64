@@ -31,12 +31,13 @@ add_requires("vcpkg::safetyhook", {alias="safetyhook"})
 add_requires("vcpkg::zydis", {alias="zydis"})
 add_requires("vcpkg::mimalloc", {alias="mimalloc"})
 add_requires("vcpkg::gtl", {alias="gtl"})
+add_requires("vcpkg::boost-regex", {alias="boost-regex"})
 
 -- targets
 target("EngineFixes")
     -- add dependencies to target
     add_deps("commonlibsse")
-    add_packages("safetyhook", "zydis", "mimalloc", "gtl")
+    add_packages("safetyhook", "zydis", "mimalloc", "gtl", "boost-regex")
 
     -- add commonlibsse plugin
     add_rules("commonlibsse.plugin", {

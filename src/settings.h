@@ -2,6 +2,12 @@
 
 namespace Settings
 {
+    namespace General
+    {
+        static REX::INI::Bool bVerboseLogging("General", "bVerboseLogging", false);
+        static REX::INI::Bool bCleanSKSECoSaves("General", "bCleanSKSECoSaves", false);
+    }
+
     namespace Fixes
     {
         static REX::INI::Bool bMemoryAccessErrors("Fixes", "bMemoryAccessErrors", true);
@@ -12,12 +18,17 @@ namespace Settings
         static REX::INI::Bool bDisableChargenPrecache("Patches", "DisableChargenPrecache", false);
         static REX::INI::Bool bEnableAchievementsWithMods("Patches", "EnableAchievementsWithMods", true);
         static REX::INI::Bool bFormCaching("Patches", "bFormCaching", true);
-        static REX::INI::I32 bMaxStdIO("Patches", "bMaxStdIO", 8192);
+        static REX::INI::I32 iMaxStdIO("Patches", "bMaxStdIO", 8192);
+        static REX::INI::Bool bMemoryManager("Patches", "bMemoryManager", true);
         static REX::INI::Bool bRegularQuicksaves("Patches", "bRegularQuicksaves", false);
         static REX::INI::Bool bSafeExit("Patches", "bSafeExit", true);
         static REX::INI::Bool bSaveAddedSoundCategories("Patches", "bSaveAddedSoundCategories", true);
         static REX::INI::Bool bScrollingDoesntSwitchPOV("Patches", "bScrollingDoesntSwitchPOV", false);
+        static REX::INI::Bool bSleepWaitTime("Patches", "bSleepWaitTime", false);
+        static REX::INI::F32 fSleepWaitTimeModifier("Patches", "bSleepWaitTimeModifier", 0.3f);
         static REX::INI::Bool bTreeLodReferenceCaching("Patches", "bTreeLodReferenceCaching", true);
+        static REX::INI::Bool bWaterflowAnimation("Patches", "bWaterflowAnimation", true);
+        static REX::INI::F32 fWaterflowSpeed("Patches", "bWaterflowSpeed", 20.0f);
     }
 
 	namespace MemoryManager

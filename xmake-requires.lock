@@ -27,6 +27,9 @@
             },
             version = "v1.15.3"
         },
+        ["vcpkg::boost-regex#31fecfc4"] = {
+            version = "latest"
+        },
         ["vcpkg::gtl#31fecfc4"] = {
             version = "latest"
         },

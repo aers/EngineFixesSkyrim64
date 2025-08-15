@@ -4,6 +4,8 @@
 
 #include "settings.h"
 
+#include "clean_cosaves.h"
+
 #include "fixes/fixes.h"
 
 #include "Patches/patches.h"
@@ -16,6 +18,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
     switch (a_msg->type)
     {
     case SKSE::MessagingInterface::kDataLoaded:
+        if (Settings::General::bCleanSKSECoSaves)
+            Util::CoSaves::Clean();
         if (Settings::Patches::bSaveAddedSoundCategories)
             Patches::SaveAddedSoundCategories::LoadVolumes();
         break;
@@ -45,8 +49,8 @@ void OpenLog() {
 	logger->set_level(spdlog::level::debug);
 	logger->flush_on(spdlog::level::debug);
 #else
-	logger->set_level(spdlog::level::trace);
-	logger->flush_on(spdlog::level::trace);
+	logger->set_level(spdlog::level::info);
+	logger->flush_on(spdlog::level::info);
 #endif
 
 	spdlog::set_default_logger(std::move(logger));
@@ -69,6 +73,12 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     trampoline.create(1 << 11);
 
     Settings::Load();
+
+    if (Settings::General::bVerboseLogging)
+    {
+        spdlog::set_level(spdlog::level::trace);
+        spdlog::flush_on(spdlog::level::trace);
+    }
 
     Patches::PreLoad();
 

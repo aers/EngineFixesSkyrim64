@@ -12,7 +12,7 @@ namespace Patches::MaxStdIO
         if (proc != nullptr) {
             const auto get = reinterpret_cast<decltype(&_getmaxstdio)>(REX::W32::GetProcAddress(handle, "_getmaxstdio"));
             const auto old = get();
-            const auto result = proc(Settings::Patches::bMaxStdIO);
+            const auto result = proc(Settings::Patches::iMaxStdIO.GetValue());
             if (get)
                 REX::INFO("set max stdio to {} from {}"sv, result, old);
             else

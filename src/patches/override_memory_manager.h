@@ -38,6 +38,9 @@ namespace Patches::OverrideMemoryManager {
 
             target.write_fill(REL::INT3, 0x1A7);
             target.write(REL::RET);
+
+            REL::Relocation<std::uint32_t*> initFence { REL::ID(400190) };
+            *initFence = 2;
         }
 
         inline void Install() {
