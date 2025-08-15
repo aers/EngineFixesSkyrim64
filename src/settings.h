@@ -8,13 +8,18 @@ namespace Settings
         static REX::INI::Bool bEnableAchievementsWithMods("Patches", "EnableAchievementsWithMods", true);
         static REX::INI::Bool bFormCaching("Patches", "bFormCaching", true);
         static REX::INI::I32 bMaxStdIO("Patches", "bMaxStdIO", 8192);
+        static REX::INI::Bool bRegularQuicksaves("Patches", "bRegularQuicksaves", false);
+        static REX::INI::Bool bSafeExit("Patches", "bSafeExit", true);
+        static REX::INI::Bool bSaveAddedSoundCategories("Patches", "bSaveAddedSoundCategories", true);
         static REX::INI::Bool bTreeLodReferenceCaching("Patches", "bTreeLodReferenceCaching", true);
     }
 
 	namespace MemoryManager
     {
-		static REX::INI::Bool bOverrideCRTAllocator( "MemoryManager", "bOverrideCRTAllocator", true );
-		static REX::INI::Bool bOverrideGlobalMemoryManager( "MemoryManager", "bOverrideGlobalMemoryManager", true );
+		static REX::INI::Bool bOverrideCRTAllocator( "MemoryManager", "bOverrideCRTAllocator", true);
+		static REX::INI::Bool bOverrideGlobalMemoryManager( "MemoryManager", "bOverrideGlobalMemoryManager", true);
+        static REX::INI::Bool bOverrideScrapHeap("MemoryManager", "bOverrideScrapHeap", true);
+        static REX::INI::Bool bOverrideScaleformAllocator( "MemoryManager", "bOverrideScaleformAllocator", true);
 	}
 
 	static void Load()

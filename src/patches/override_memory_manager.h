@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Patches::MemoryManager {
+namespace Patches::OverrideMemoryManager {
     namespace detail {
         inline std::byte* g_Trash { nullptr };
 
@@ -49,6 +49,8 @@ namespace Patches::MemoryManager {
     }
 
     inline void Install() {
+        detail::g_Trash = new std::byte[1u << 10]{ static_cast<std::byte>(0) };
+
         detail::Install();
 
         REX::INFO("installed global memory manager override patch"sv);

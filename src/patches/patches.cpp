@@ -6,6 +6,11 @@
 #include "max_stdio.h"
 #include "override_crt_allocator.h"
 #include "override_memory_manager.h"
+#include "override_scaleform_allocator.h"
+#include "override_scrapheap.h"
+#include "regular_quicksaves.h"
+#include "safe_exit.h"
+#include "save_added_sound_categories.h"
 #include "tree_lod_reference_caching.h"
 
 namespace Patches {
@@ -14,7 +19,16 @@ namespace Patches {
             OverrideCRTAllocator::Install();
 
         if (Settings::MemoryManager::bOverrideGlobalMemoryManager)
-            MemoryManager::Install();
+            OverrideMemoryManager::Install();
+
+        if (Settings::MemoryManager::bOverrideScrapHeap)
+            OverrideScrapHeap::Install();
+
+        if (Settings::MemoryManager::bOverrideScaleformAllocator)
+            OverrideScaleformAllocator::Install();
+
+        if (Settings::Patches::bSafeExit)
+            SafeExit::Install();
     }
 
     void Load()
@@ -30,6 +44,12 @@ namespace Patches {
 
         if (Settings::Patches::bMaxStdIO > 512)
             MaxStdIO::Install();
+
+        if (Settings::Patches::bRegularQuicksaves)
+            RegularQuicksaves::Install();
+
+        if (Settings::Patches::bSaveAddedSoundCategories)
+            SaveAddedSoundCategories::Install();
 
         if (Settings::Patches::bFormCaching && Settings::Patches::bTreeLodReferenceCaching)
             TreeLodReferenceCaching::Install();

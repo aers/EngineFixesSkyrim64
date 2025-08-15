@@ -6,7 +6,6 @@
 #include <SKSE/SKSE.h>
 #include <REX/REX/INI.h>
 
-
 #define WIN32_LEAN_AND_MEAN
 
 #define NOGDICAPMASKS
@@ -29,7 +28,7 @@
 #define NOGDI
 #define NOKERNEL
 #define NOUSER
-#define NONLS
+// #define NONLS
 #define NOMB
 #define NOMEMMGR
 #define NOMETAFILE
@@ -48,6 +47,8 @@
 #define NOPROFILER
 #define NODEFERWINDOWPOS
 #define NOMCX
+
+#include "windows.h"
 
 #include <xbyak/xbyak.h>
 

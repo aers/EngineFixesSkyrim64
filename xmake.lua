@@ -52,4 +52,5 @@ target("EngineFixes")
     set_pcxxheader("src/pch.h")
 
     add_installfiles("EngineFixes.ini", {prefixdir = "SKSE/Plugins"})
+    add_installfiles("EngineFixes_SNCT.ini", {prefixdir = "SKSE/Plugins"})
     add_installfiles("EngineFixes_preload.txt", {prefixdir = "SKSE/Plugins"})
