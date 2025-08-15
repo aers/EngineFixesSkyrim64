@@ -2,6 +2,11 @@
 
 namespace Settings
 {
+    namespace Fixes
+    {
+        static REX::INI::Bool bMemoryAccessErrors("Fixes", "bMemoryAccessErrors", true);
+    }
+
     namespace Patches
     {
         static REX::INI::Bool bDisableChargenPrecache("Patches", "DisableChargenPrecache", false);
@@ -11,6 +16,7 @@ namespace Settings
         static REX::INI::Bool bRegularQuicksaves("Patches", "bRegularQuicksaves", false);
         static REX::INI::Bool bSafeExit("Patches", "bSafeExit", true);
         static REX::INI::Bool bSaveAddedSoundCategories("Patches", "bSaveAddedSoundCategories", true);
+        static REX::INI::Bool bScrollingDoesntSwitchPOV("Patches", "bScrollingDoesntSwitchPOV", false);
         static REX::INI::Bool bTreeLodReferenceCaching("Patches", "bTreeLodReferenceCaching", true);
     }
 

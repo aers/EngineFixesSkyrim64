@@ -4,6 +4,8 @@
 
 #include "settings.h"
 
+#include "fixes/fixes.h"
+
 #include "Patches/patches.h"
 #include "Patches/save_added_sound_categories.h"
 
@@ -18,7 +20,6 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
             Patches::SaveAddedSoundCategories::LoadVolumes();
         break;
     case SKSE::MessagingInterface::kPostLoadGame:
-
         break;
     default:
         break;
@@ -96,6 +97,7 @@ SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* a_skse)
         return false;
     }
 
+    Fixes::Load();
     Patches::Load();
 
 	return true;

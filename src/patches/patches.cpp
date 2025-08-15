@@ -11,6 +11,7 @@
 #include "regular_quicksaves.h"
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
+#include "scrolling_doesnt_switch_pov.h"
 #include "tree_lod_reference_caching.h"
 
 namespace Patches {
@@ -50,6 +51,9 @@ namespace Patches {
 
         if (Settings::Patches::bSaveAddedSoundCategories)
             SaveAddedSoundCategories::Install();
+
+        if (Settings::Patches::bScrollingDoesntSwitchPOV)
+            ScrollingDoesntSwitchPOV::Install();
 
         if (Settings::Patches::bFormCaching && Settings::Patches::bTreeLodReferenceCaching)
             TreeLodReferenceCaching::Install();
