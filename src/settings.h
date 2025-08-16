@@ -10,6 +10,12 @@ namespace Settings
 
     namespace Fixes
     {
+        static REX::INI::Bool bArcheryDownwardAiming("Fixes", "bArcheryDownwardAiming", true);
+        static REX::INI::Bool bAnimationLoadSignedCrash("Fixes", "bAnimationLoadSignedCrash", true);
+        static REX::INI::Bool bBethesdaNetCrash("Fixes", "bBethesdaNetCrash", true);
+        static REX::INI::Bool bBSLightingAmbientSpecular("Fixes", "bBSLightingAmbientSpecular", true);
+        static REX::INI::Bool bBSLightingShaderForceAlphaTest("Fixes", "bBSLightingShaderForceAlphaTest", true);
+        static REX::INI::Bool bBSLightingShaderParallaxBug("Fixes", "bBSLightingShaderParallaxBug", true);
         static REX::INI::Bool bMemoryAccessErrors("Fixes", "bMemoryAccessErrors", true);
     }
 
