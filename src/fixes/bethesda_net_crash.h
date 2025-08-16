@@ -49,6 +49,6 @@ namespace Fixes::BethesdaNetCrash
     {
         REL::PatchIAT(detail::hk_wcsrtombs_s, "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
 
-        REX::INFO("installed bethesda net crash fix");
+        REX::INFO("installed bethesda net crash fix"sv);
     }
 }

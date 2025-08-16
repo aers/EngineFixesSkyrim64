@@ -31,6 +31,6 @@ namespace Fixes::BSLightingShaderParallaxBug
         auto& trampoline = REL::GetTrampoline();
         trampoline.write_jmp<6>(target.address(), trampoline.allocate(p));
 
-        REX::INFO("installed bslightingshader parallax bug fix");
+        REX::INFO("installed bslightingshader parallax bug fix"sv);
     }
 }

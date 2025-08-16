@@ -16,6 +16,13 @@ namespace Settings
         static REX::INI::Bool bBSLightingAmbientSpecular("Fixes", "bBSLightingAmbientSpecular", true);
         static REX::INI::Bool bBSLightingShaderForceAlphaTest("Fixes", "bBSLightingShaderForceAlphaTest", true);
         static REX::INI::Bool bBSLightingShaderParallaxBug("Fixes", "bBSLightingShaderParallaxBug", true);
+        static REX::INI::Bool bBSTempEffectNiRTTI("Fixes", "bBSTempEffectNiRTTI", true);
+        static REX::INI::Bool bCalendarSkipping("Fixes", "bCalendarSkipping", true);
+        static REX::INI::Bool bCellInit("Fixes", "bCellInit", true);
+        static REX::INI::Bool bClimateLoad("Fixes", "bClimateLoad", true);
+        static REX::INI::Bool bConjurationEnchantAbsorbs("Fixes", "bConjurationEnchantAbsorbs", true);
+        static REX::INI::Bool bCreateArmorNodeNullPtrCrash("Fixes", "bCreateArmorNodeNullPtrCrash", true);
+        static REX::INI::Bool bDoublePerkApply("Fixes", "bDoublePerkApply", true);
         static REX::INI::Bool bMemoryAccessErrors("Fixes", "bMemoryAccessErrors", true);
     }
 

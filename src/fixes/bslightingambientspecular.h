@@ -49,7 +49,7 @@ namespace Fixes::BSLightingAmbientSpecular
         auto& trampoline = REL::GetTrampoline();
         trampoline.write_jmp<5>(geometryTarget.address(), trampoline.allocate(p));
 
-        REX::INFO("installed BSLightingAmbientSpecular fix");
+        REX::INFO("installed BSLightingAmbientSpecular fix"sv);
 
     }
 }

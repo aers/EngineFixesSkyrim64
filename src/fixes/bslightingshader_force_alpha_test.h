@@ -36,6 +36,6 @@ namespace Fixes::BSLightingShaderForceAlphaTest
         REL::Relocation target { REL::ID(107644) };
         detail::g_hk_BSBatchRenderer_SetupAndDrawPass = safetyhook::create_inline(target.address(), detail::BSBatchRenderer_SetupAndDrawPass);
 
-        REX::INFO("installed bslightingshader force alpha test fix");
+        REX::INFO("installed bslightingshader force alpha test fix"sv);
     }
 }

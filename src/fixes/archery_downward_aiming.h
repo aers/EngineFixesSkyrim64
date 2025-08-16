@@ -16,18 +16,18 @@ namespace Fixes::ArcheryDownwardAiming
                     akShooter->GetEyeVector(a_from, direction, true);
                 }
 
-                g_MoveOrig(a_self, a_from, a_to);
+                _Move(a_self, a_from, a_to);
             }
 
-            static inline REL::Relocation<decltype(Move)> g_MoveOrig;
+            static inline REL::Relocation<decltype(Move)> _Move;
         };
     }
 
     inline void Install()
     {
         REL::Relocation target { REL::ID(44027), 0x434 };
-        detail::Projectile::g_MoveOrig = target.write_call<5>(detail::Projectile::Move);
+        detail::Projectile::_Move = target.write_call<5>(detail::Projectile::Move);
 
-        REX::INFO("installed archery downward aiming fix");
+        REX::INFO("installed archery downward aiming fix"sv);
     }
 }

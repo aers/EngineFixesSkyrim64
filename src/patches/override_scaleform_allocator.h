@@ -10,6 +10,6 @@ namespace Patches::OverrideScaleformAllocator
     inline void Install()
     {
         detail::Install();
-        REX::INFO("installed override scaleform allocator patch");
+        REX::INFO("installed override scaleform allocator patch"sv);
     }
 }
