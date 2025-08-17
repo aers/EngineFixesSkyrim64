@@ -24,6 +24,7 @@ set_policy("package.requires_lock", true)
 set_config("skyrim_ae", true)
 
 set_config("commonlib_ini", true)
+set_config("commonlib_toml", true)
 set_config("commonlib_xbyak", true)
 
 -- third parties
@@ -52,6 +53,6 @@ target("EngineFixes")
     add_includedirs("src")
     set_pcxxheader("src/pch.h")
 
-    add_installfiles("EngineFixes.ini", {prefixdir = "SKSE/Plugins"})
+    add_installfiles("EngineFixes.toml", {prefixdir = "SKSE/Plugins"})
     add_installfiles("EngineFixes_SNCT.ini", {prefixdir = "SKSE/Plugins"})
     add_installfiles("EngineFixes_preload.txt", {prefixdir = "SKSE/Plugins"})

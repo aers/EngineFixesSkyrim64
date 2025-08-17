@@ -78,6 +78,8 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     {
         spdlog::set_level(spdlog::level::trace);
         spdlog::flush_on(spdlog::level::trace);
+
+        REX::TRACE("enabled verbose logging"sv);
     }
 
     Patches::PreLoad();

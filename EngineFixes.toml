@@ -17,25 +17,36 @@ bCellInit = true                                # fixes a rare crash where a for
 bClimateLoad = true                             # fixes a bug where the game fails to properly apply sunrise and sunset data from Climate records if you load a saved game in an interior
 bConjurationEnchantAbsorbs = true               # fixes a bug where spell absorption triggers on enchanted items using conjuration summons
 bCreateArmorNodeNullPtrCrash = true             # fixes typo that may cause a crash somewhere in CreateArmorNode
-bDoublePerkApply = true                         #fixes NPC perks applying twice when you load a game
+bDoublePerkApply = true                         # fixes NPC perks applying twice when you load a game
+bEquipShoutEventSpam = true                     # fixes a bug where the "equip shout" procedure will send a "shout equipped" event even if the shout fails to equip
+bFaceGenMorphDataHeadNullPtrCrash = true        # fixes a crash in face morphing, possibly related to decapitations
+bGetKeywordItemCount = true                     # fixes the condition function "GetKeywordItemCount", which returns broken results sometimes
+bGHeapLeakDetectionCrash = true                 # fixes a crash where scaleform attempts to report a memory leak but the code doesn't exist in Skyrim's build
+bGlobalTime = true                              # fixes game systems that are affected by game time instead of real time, including old slow time camera movement fix
+bInitializeHitDataNullPtrCrash = true           # fixes a crash on melee hit that unequipped the weapon at the same time
+bLipSync = true                                 # fixes a bug causing lip sync to desync
 bMemoryAccessErrors = true                      # fixes miscellaneous errors that are obscured by Skyrim's default allocator
+bMO5STypo = true                                # fixes a typo preventing the game from loading MO5S entries in ARMA forms
+bMusicOverlap = true                            # fixes a bug where multiple music tracks are playing at the same time
+bNullProcessCrash = true                        # fixes a couple cases where the game can crash when checking the equipped weapons of ana ctor without an AI process
 
 # contains optional game patches
 [Patches]
 bDisableChargenPrecache = false                 # disables pre-caching of chargen, unnecessary with RaceMenu installed
 bEnableAchievementsWithMods = true              # enables achievements with mods active
 bFormCaching = true                             # attempts to speedup form lookups
-bMaxStdIO = 8192                                # sets the maximum number of open file handles (max value: 8192), allowing loading of more plugins
+iMaxStdIO = 8192                                # sets the maximum number of open file handles (max value: 8192), allowing loading of more plugins
 bMemoryManager = true                           # enables MemoryManager patches below
 bRegularQuicksaves = false                      # makes quicksaves into regular saves
 bSafeExit = true                                # prevent the game from hanging when shutting down
 bSaveAddedSoundCategories = true                # save the volume of sound categories added by mods
+iSaveGameMaxSize = 128                          # expands the maximum uncompressed size of a save game from 64 MB to a configurable size (MB), game default = 64 MB, only go as high as you need!
 bScrollingDoesntSwitchPOV = false               # disables swapping between 1st/3rd person when using mousewheel scroll to zoom
 bSleepWaitTime = false                          # modifies how long it takes an hour to pass when sleeping/waiting
-bSleepWaitTimeModifier = 0.3                    # 1.0 = default, smaller = faster, larger = slower
+fSleepWaitTimeModifier = 0.3                    # 1.0 = default, smaller = faster, larger = slower
 bTreeLodReferenceCaching = true                 # requires form caching to be enabled. speeds up a tree LOD function that slows down proportionate to the number of plugins loaded
 bWaterflowAnimation = true                      # decouple waterflow speed from in-game timescale
-bWaterflowSpeed = 20.0                          # 20.0 = default, smaller = slower, larger = faster
+fWaterflowSpeed = 20.0                          # 20.0 = default, smaller = slower, larger = faster
 
 # this section is only enabled if bMemoryManager in Patches is enabled
 [MemoryManager]

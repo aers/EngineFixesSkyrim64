@@ -11,6 +11,7 @@
 #include "regular_quicksaves.h"
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
+#include "save_game_max_size.h"
 #include "scrolling_doesnt_switch_pov.h"
 #include "sleep_wait_time.h"
 #include "tree_lod_reference_caching.h"
@@ -56,6 +57,9 @@ namespace Patches {
 
         if (Settings::Patches::bSaveAddedSoundCategories)
             SaveAddedSoundCategories::Install();
+
+        if (Settings::Patches::iSaveGameMaxSize != 64)
+            SaveGameMaxSize::Install();
 
         if (Settings::Patches::bScrollingDoesntSwitchPOV)
             ScrollingDoesntSwitchPOV::Install();

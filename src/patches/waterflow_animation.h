@@ -22,6 +22,6 @@ namespace Patches::WaterflowAnimation
     {
         detail::PatchWaterflowAnimation();
 
-        REX::INFO("installed waterflow animation patch"sv);
+        REX::INFO("installed waterflow animation patch"sv, Settings::Patches::fWaterflowSpeed.GetValue());
     }
 }

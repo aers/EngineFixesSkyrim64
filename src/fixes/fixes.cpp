@@ -13,7 +13,17 @@
 #include "conjuration_enchant_absorbs.h"
 #include "create_armor_node_nullptr_crash.h"
 #include "double_perk_apply.h"
+#include "equip_shout_event_spam.h"
+#include "facegen_morphdatahead_nullptr_crash.h"
+#include "get_keyword_item_count.h"
+#include "gheap_leak_detection_crash.h"
+#include "global_time.h"
+#include "initialize_hit_data_nullptr_crash.h"
+#include "lip_sync.h"
 #include "memory_access_errors.h"
+#include "mo5s_typo.h"
+#include "music_overlap.h"
+#include "null_process_crash.h"
 
 namespace Fixes
 {
@@ -58,7 +68,37 @@ namespace Fixes
         if (Settings::Fixes::bDoublePerkApply)
             DoublePerkApply::Install();
 
+        if (Settings::Fixes::bEquipShoutEventSpam)
+            EquipShoutEventSpam::Install();
+
+        if (Settings::Fixes::bFaceGenMorphDataHeadNullPtrCrash)
+            FaceGenMorphDataHeadNullPtrCrash::Install();
+
+        if (Settings::Fixes::bGetKeywordItemCount)
+            GetKeywordItemCount::Install();
+
+        if (Settings::Fixes::bGHeapLeakDetectionCrash)
+            GHeapLeakDetectionCrash::Install();
+
+        if (Settings::Fixes::bGlobalTime)
+            GlobalTime::Install();
+
+        if (Settings::Fixes::bInitializeHitDataNullPtrCrash)
+            InitializeHitDataNullPtrCrash::Install();
+
+        if (Settings::Fixes::bLipSync)
+            LipSync::Install();
+
         if (Settings::Fixes::bMemoryAccessErrors)
             MemoryAccessErrors::Install();
+
+        if (Settings::Fixes::bMO5STypo)
+            MO5STypo::Install();
+
+        if (Settings::Fixes::bMusicOverlap)
+            MusicOverlap::Install();
+
+        if (Settings::Fixes::bNullProcessCrash)
+            NullProcessCrash::Install();
     }
 }

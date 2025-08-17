@@ -27,6 +27,14 @@
             },
             version = "v1.15.3"
         },
+        ["toml11#31fecfc4"] = {
+            repo = {
+                branch = "master",
+                commit = "365bac96a291d1829f6cb03ba85916bcb586df26",
+                url = "https://gitlab.com/tboox/xmake-repo.git"
+            },
+            version = "v4.4.0"
+        },
         ["vcpkg::boost-regex#31fecfc4"] = {
             version = "latest"
         },
