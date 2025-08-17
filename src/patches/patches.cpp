@@ -1,13 +1,14 @@
 #include "patches.h"
 
+#include "allocators.h"
 #include "disable_chargen_precache.h"
 #include "enable_achievements.h"
 #include "form_caching.h"
 #include "max_stdio.h"
-#include "override_crt_allocator.h"
-#include "override_memory_manager.h"
-#include "override_scaleform_allocator.h"
-#include "override_scrapheap.h"
+// #include "override_crt_allocator.h"
+// #include "override_memory_manager.h"
+// #include "override_scaleform_allocator.h"
+// #include "override_scrapheap.h"
 #include "regular_quicksaves.h"
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
@@ -21,17 +22,18 @@ namespace Patches {
     void PreLoad() {
         if (Settings::Patches::bMemoryManager)
         {
-            if (Settings::MemoryManager::bOverrideCRTAllocator)
-                OverrideCRTAllocator::Install();
-
-            if (Settings::MemoryManager::bOverrideGlobalMemoryManager)
-                OverrideMemoryManager::Install();
-
-            if (Settings::MemoryManager::bOverrideScrapHeap)
-                OverrideScrapHeap::Install();
-
-            if (Settings::MemoryManager::bOverrideScaleformAllocator)
-                OverrideScaleformAllocator::Install();
+            Allocators::Install();
+            // if (Settings::MemoryManager::bOverrideCRTAllocator)
+            //     OverrideCRTAllocator::Install();
+            //
+            // if (Settings::MemoryManager::bOverrideGlobalMemoryManager)
+            //     OverrideMemoryManager::Install();
+            //
+            // if (Settings::MemoryManager::bOverrideScrapHeap)
+            //     OverrideScrapHeap::Install();
+            //
+            // if (Settings::MemoryManager::bOverrideScaleformAllocator)
+            //     OverrideScaleformAllocator::Install();
         }
 
         if (Settings::Patches::bSafeExit)

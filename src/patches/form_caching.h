@@ -8,7 +8,8 @@ namespace Patches::FormCaching
 {
     namespace detail
     {
-        using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESForm*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, mi_stl_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
+        //using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESForm*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, mi_stl_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
+        using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESForm*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, std::allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
 
         inline HashMap g_formCache[256];
 

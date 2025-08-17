@@ -34,6 +34,13 @@ namespace Settings
         static REX::TOML::Bool bMO5STypo("Fixes", "bMO5STypo", true);
         static REX::TOML::Bool bMusicOverlap("Fixes", "bMusicOverlap", true);
         static REX::TOML::Bool bNullProcessCrash("Fixes", "bNullProcessCrash", true);
+        static REX::TOML::Bool bPerkFragmentIsRunning("Fixes", "bPerkFragmentIsRunning", true);
+        static REX::TOML::Bool bRemovedSpellBook("Fixes", "bRemovedSpellBook", true);
+        static REX::TOML::Bool bShadowSceneNodeNullPtrCrash("Fixes", "bShadowSceneNodeNullPtrCrash", true);
+        static REX::TOML::Bool bTorchLandscape("Fixes", "bTorchLandscape", true);
+        static REX::TOML::Bool bTreeReflections("Fixes", "bTreeReflections", true);
+        static REX::TOML::Bool bVerticalLookSensitivity("Fixes", "bVerticalLookSensitivity", true);
+        static REX::TOML::Bool bWeaponBlockScaling("Fixes", "bWeaponBlockScaling", true);
     }
 
     namespace Patches

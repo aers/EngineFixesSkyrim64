@@ -22,7 +22,7 @@ namespace Patches::EnableAchievementsWithMods
 
         detail::Patch p;
         p.ready();
-        target.write(std::span(p.getCode<const std::byte*>(), p.getSize()));
+        target.write(std::span{ p.getCode<const std::byte*>(), p.getSize()});
 
         REX::INFO("installed enable achievements with mods patch");
     }

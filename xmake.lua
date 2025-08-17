@@ -31,6 +31,7 @@ set_config("commonlib_xbyak", true)
 add_requires("vcpkg::safetyhook", {alias="safetyhook"})
 add_requires("vcpkg::zydis", {alias="zydis"})
 add_requires("vcpkg::mimalloc", {alias="mimalloc"})
+-- add_requires("vcpkg::tbb", {alias="tbb"})
 add_requires("vcpkg::gtl", {alias="gtl"})
 add_requires("vcpkg::boost-regex", {alias="boost-regex"})
 

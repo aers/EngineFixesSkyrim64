@@ -24,6 +24,13 @@
 #include "mo5s_typo.h"
 #include "music_overlap.h"
 #include "null_process_crash.h"
+#include "perk_fragment_is_running.h"
+#include "removed_spellbook.h"
+#include "shadowscenenode_nullptr_crash.h"
+#include "torch_landscape.h"
+#include "tree_reflections.h"
+#include "vertical_look_sensitivity.h"
+#include "weapon_block_scaling.h"
 
 namespace Fixes
 {
@@ -100,5 +107,26 @@ namespace Fixes
 
         if (Settings::Fixes::bNullProcessCrash)
             NullProcessCrash::Install();
+
+        if (Settings::Fixes::bPerkFragmentIsRunning)
+            PerkFragmentIsRunning::Install();
+
+        if (Settings::Fixes::bRemovedSpellBook)
+            RemovedSpellBook::Install();
+
+        if (Settings::Fixes::bShadowSceneNodeNullPtrCrash)
+            ShadowSceneNodeNullPtrCrash::Install();
+
+        if (Settings::Fixes::bTorchLandscape)
+            TorchLandscape::Install();
+
+        if (Settings::Fixes::bTreeReflections)
+            TreeReflections::Install();
+
+        if (Settings::Fixes::bVerticalLookSensitivity)
+            VerticalLookSensitivity::Install();
+
+        if (Settings::Fixes::bWeaponBlockScaling)
+            WeaponBlockScaling::Install();
     }
 }

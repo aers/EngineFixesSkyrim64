@@ -9,7 +9,8 @@ namespace Patches::TreeLodReferenceCaching
         typedef uint16_t (*Float2Half_)(float f);
         inline REL::Relocation<Float2Half_> Float2Half{ REL::ID(76217) };
 
-        using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESObjectREFR*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, mi_stl_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
+        //using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESObjectREFR*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, mi_stl_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
+        using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESObjectREFR*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, std::allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
 
         inline HashMap g_treeReferenceCache;
 

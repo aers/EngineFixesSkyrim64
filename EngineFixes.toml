@@ -29,6 +29,13 @@ bMemoryAccessErrors = true                      # fixes miscellaneous errors tha
 bMO5STypo = true                                # fixes a typo preventing the game from loading MO5S entries in ARMA forms
 bMusicOverlap = true                            # fixes a bug where multiple music tracks are playing at the same time
 bNullProcessCrash = true                        # fixes a couple cases where the game can crash when checking the equipped weapons of ana ctor without an AI process
+bPerkFragmentIsRunning = true                   # fixes a crash if the IsRunning function of a perk fragment is called on a non-actor form
+bRemovedSpellBook = true                        # fixes a crash where learning a spell from a book that is later removed in another plugin causes a crash in the inventory
+bShadowSceneNodeNullPtrCrash = true             # fixes a crash in shadowscenenode
+bTorchLandscape = true                          # fixes a bug where torches sometimes don't light the landscape
+bTreeReflections = true                         # fixes tree LOD reflection alpha
+bVerticalLookSensitivity = true                 # fixes vertical look sensitivity being tied to framerate
+bWeaponBlockScaling = true                      # fixes weapon blocking so it correctly scales off of the blocking actor's weapon
 
 # contains optional game patches
 [Patches]

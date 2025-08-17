@@ -97,7 +97,7 @@ namespace Fixes::MemoryAccessErrors
             patch.ready();
 
             REL::Relocation target{ REL::ID(108496), 0x1BED };
-            target.write(std::span{ patch.getCode(), patch.getSize() });
+            target.write(std::span{ patch.getCode<const std::byte*>(), patch.getSize() });
         }
     }
 
