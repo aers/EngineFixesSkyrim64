@@ -17,6 +17,6 @@ namespace Patches::SaveAddedSoundCategories
         const REL::Relocation unlock { REL::ID(75944) };
         detail::g_hk_INIPrefSettingCollection_Unlock = safetyhook::create_inline(unlock.address(), detail::INIPrefSettingCollection_Unlock);
 
-        REX::INFO("installed save added sound category volumes patch"sv);
+        logger::info("installed save added sound category volumes patch"sv);
     }
 }

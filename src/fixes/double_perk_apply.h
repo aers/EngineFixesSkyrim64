@@ -116,6 +116,6 @@ namespace Fixes::DoublePerkApply
         characterVtbl.write_vfunc(0x101, detail::ApplyBasePerksActor);
         playerCharacterVtbl.write_vfunc(0x101, detail::ApplyBasePerksPlayerCharacter);
 
-        REX::INFO("installed double perk apply fix"sv);
+        logger::info("installed double perk apply fix"sv);
     }
 }

@@ -17,6 +17,6 @@ namespace Fixes::MusicOverlap
         REL::Relocation vtbl { RE::BGSMusicType::VTABLE[1] };
         vtbl.write_vfunc(0x3, detail::DoFinish);
 
-        REX::INFO("installed music overlap fix"sv);
+        logger::info("installed music overlap fix"sv);
     }
 }

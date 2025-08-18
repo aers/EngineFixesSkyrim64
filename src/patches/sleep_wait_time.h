@@ -12,7 +12,7 @@ namespace Patches::SleepWaitTime
 
                 push(rax);
 
-                mov(rax, REX::UNRESTRICTED_CAST<std::uintptr_t>(std::addressof(VAL)));
+                mov(rax, SKSE::stl::unrestricted_cast<std::uintptr_t>(std::addressof(VAL)));
                 comiss(xmm0, ptr[rax]);
 
                 pop(rax);
@@ -29,9 +29,9 @@ namespace Patches::SleepWaitTime
             Patch p(target.address(), Settings::Patches::fSleepWaitTimeModifier.GetValue());
             p.ready();
 
-            auto& trampoline = REL::GetTrampoline();
-            trampoline.write_jmp<6>(target.address(), trampoline.allocate(p));
-            REL::WriteSafeData<uint8_t>(target.address() + 0x6, REL::NOP);
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(target.address(), trampoline.allocate(p));
+            REL::safe_write<uint8_t>(target.address() + 0x6, REL::NOP);
         }
     }
 
@@ -39,6 +39,6 @@ namespace Patches::SleepWaitTime
     {
         detail::Install();
 
-        REX::INFO("installed sleep wait timer patch"sv);
+        logger::info("installed sleep wait timer patch"sv);
     }
 }

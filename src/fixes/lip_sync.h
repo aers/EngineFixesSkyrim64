@@ -17,9 +17,9 @@ namespace Fixes::LipSync
 
         for (auto& offset : offsets)
         {
-            REL::WriteSafeData(targetBase.address() + offset, JMP);
+            REL::safe_write(targetBase.address() + offset, JMP);
         }
 
-        REX::INFO("installed lip sync fix"sv);
+        logger::info("installed lip sync fix"sv);
     }
 }

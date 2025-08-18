@@ -38,29 +38,39 @@ namespace Patches::TreeLodReferenceCaching
                         }
                     }
                     // otherwise try cache then scan all files
-                    else if (!g_treeReferenceCache.if_contains(baseId, [&objectReference](const HashMap::value_type& v) { objectReference = v.second; }))
+                    else
                     {
-                        // Find first valid tree object by ESP/ESM load order
-                        const auto dataHandler = RE::TESDataHandler::GetSingleton();
-                        for (std::uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
                         {
-                            if (RE::TESForm* form = FormCaching::detail::TESDataHandler_GetForm(i << 24 | baseId))
-                                objectReference = form->AsReference();
-                            if (objectReference)
-                            {
-                                if (const auto baseObj = objectReference->GetBaseObject())
-                                {
-                                    // if object is a tree we found a valid reference
-                                    if (HasTreeLod(baseObj))
-                                        break;
-                                }
+                            HashMap::const_accessor a;
+
+                            if (g_treeReferenceCache.find(a, baseId)) {
+                                objectReference = a->second;
                             }
-                            // continue searching if it wasn't a tree
-                            objectReference = nullptr;
                         }
 
-                        // Insert even if it's a null pointer
-                        g_treeReferenceCache.try_emplace_l(baseId, [&objectReference](HashMap::value_type& v) { v.second = objectReference; }, objectReference);
+                        if (!objectReference) {
+                            // Find first valid tree object by ESP/ESM load order
+                            const auto dataHandler = RE::TESDataHandler::GetSingleton();
+                            for (std::uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
+                            {
+                                if (RE::TESForm* form = FormCaching::detail::TESDataHandler_GetForm(i << 24 | baseId))
+                                    objectReference = form->AsReference();
+                                if (objectReference)
+                                {
+                                    if (const auto baseObj = objectReference->GetBaseObject())
+                                    {
+                                        // if object is a tree we found a valid reference
+                                        if (HasTreeLod(baseObj))
+                                            break;
+                                    }
+                                }
+                                // continue searching if it wasn't a tree
+                                objectReference = nullptr;
+                            }
+
+                            // Insert even if it's a null pointer
+                            g_treeReferenceCache.emplace(baseId, objectReference);
+                        }
                     }
 
                     // update visibility

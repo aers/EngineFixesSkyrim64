@@ -69,8 +69,8 @@ namespace Fixes::WeaponBlockScaling
 
         target.write(std::span { p.getCode<const std::byte*>(), p.getSize()} );
 
-        REL::WriteSafeFill(target.address() + p.getSize(), REL::NOP, 0x17 - p.getSize());
+        REL::safe_fill(target.address() + p.getSize(), REL::NOP, 0x17 - p.getSize());
 
-        REX::INFO("installed weapon block scaling fix"sv);
+        logger::info("installed weapon block scaling fix"sv);
     }
 }

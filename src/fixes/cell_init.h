@@ -8,7 +8,7 @@ namespace Fixes::CellInit
         {
             static RE::BGSLocation* GetLocation(const RE::ExtraDataList* a_self)
             {
-                const auto cell = REX::ADJUST_POINTER<RE::TESObjectCELL>(a_self, -0x48);
+                const auto cell = SKSE::stl::adjust_pointer<RE::TESObjectCELL>(a_self, -0x48);
                 auto loc = _GetLocation(a_self);
                 if (!cell->IsInitialized())
                 {
@@ -29,6 +29,6 @@ namespace Fixes::CellInit
         REL::Relocation target { REL::ID(18905), 0x114 };
         detail::ExtraDataList::_GetLocation = target.write_call<5>(detail::ExtraDataList::GetLocation);
 
-        REX::INFO("installed cell init fix"sv);
+        logger::info("installed cell init fix"sv);
     }
 }

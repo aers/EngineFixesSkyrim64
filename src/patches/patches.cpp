@@ -5,10 +5,6 @@
 #include "enable_achievements.h"
 #include "form_caching.h"
 #include "max_stdio.h"
-// #include "override_crt_allocator.h"
-// #include "override_memory_manager.h"
-// #include "override_scaleform_allocator.h"
-// #include "override_scrapheap.h"
 #include "regular_quicksaves.h"
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
@@ -20,59 +16,48 @@
 
 namespace Patches {
     void PreLoad() {
-        if (Settings::Patches::bMemoryManager)
+        if (Settings::Patches::bMemoryManager.GetValue())
         {
             Allocators::Install();
-            // if (Settings::MemoryManager::bOverrideCRTAllocator)
-            //     OverrideCRTAllocator::Install();
-            //
-            // if (Settings::MemoryManager::bOverrideGlobalMemoryManager)
-            //     OverrideMemoryManager::Install();
-            //
-            // if (Settings::MemoryManager::bOverrideScrapHeap)
-            //     OverrideScrapHeap::Install();
-            //
-            // if (Settings::MemoryManager::bOverrideScaleformAllocator)
-            //     OverrideScaleformAllocator::Install();
         }
 
-        if (Settings::Patches::bSafeExit)
+        if (Settings::Patches::bSafeExit.GetValue())
             SafeExit::Install();
     }
 
     void Load()
     {
-        if (Settings::Patches::bDisableChargenPrecache)
+        if (Settings::Patches::bDisableChargenPrecache.GetValue())
             DisableChargenPrecache::Install();
 
-        if (Settings::Patches::bEnableAchievementsWithMods)
+        if (Settings::Patches::bEnableAchievementsWithMods.GetValue())
             EnableAchievementsWithMods::Install();
 
-        if (Settings::Patches::bFormCaching)
+        if (Settings::Patches::bFormCaching.GetValue())
             FormCaching::Install();
 
-        if (Settings::Patches::iMaxStdIO > 512)
+        if (Settings::Patches::iMaxStdIO.GetValue() > 512)
             MaxStdIO::Install();
 
-        if (Settings::Patches::bRegularQuicksaves)
+        if (Settings::Patches::bRegularQuicksaves.GetValue())
             RegularQuicksaves::Install();
 
-        if (Settings::Patches::bSaveAddedSoundCategories)
+        if (Settings::Patches::bSaveAddedSoundCategories.GetValue())
             SaveAddedSoundCategories::Install();
 
-        if (Settings::Patches::iSaveGameMaxSize != 64)
+        if (Settings::Patches::iSaveGameMaxSize.GetValue() != 64)
             SaveGameMaxSize::Install();
 
-        if (Settings::Patches::bScrollingDoesntSwitchPOV)
+        if (Settings::Patches::bScrollingDoesntSwitchPOV.GetValue())
             ScrollingDoesntSwitchPOV::Install();
 
-        if (Settings::Patches::bSleepWaitTime)
+        if (Settings::Patches::bSleepWaitTime.GetValue())
             SleepWaitTime::Install();
 
-        if (Settings::Patches::bFormCaching && Settings::Patches::bTreeLodReferenceCaching)
+        if (Settings::Patches::bFormCaching.GetValue() && Settings::Patches::bTreeLodReferenceCaching.GetValue())
             TreeLodReferenceCaching::Install();
 
-        if (Settings::Patches::bWaterflowAnimation)
+        if (Settings::Patches::bWaterflowAnimation.GetValue())
             WaterflowAnimation::Install();
     }
 }

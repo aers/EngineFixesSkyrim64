@@ -5,6 +5,7 @@
 #include <RE/Skyrim.h>
 #include <SKSE/SKSE.h>
 #include <REX/REX/INI.h>
+#include <REX/REX/TOML.h>
 #include <REX/W32/SHELL32.h>
 #include <REX/W32/OLE32.h>
 
@@ -55,11 +56,15 @@
 #include <ShlObj.h>
 
 #include <xbyak/xbyak.h>
-// #include <tbb/scalable_allocator.h>
-#include <mimalloc.h>
+#include <tbb/scalable_allocator.h>
+#include <tbb/concurrent_hash_map.h>
 #include <safetyhook.hpp>
 #include <boost/regex.hpp>
+
+namespace logger = SKSE::log;
 
 using namespace std::literals;
 
 #include "settings.h"
+
+#include "Version.h"

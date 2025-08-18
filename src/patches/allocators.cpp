@@ -4,8 +4,6 @@ namespace Patches::Allocators
 {
     namespace detail
     {
-        std::byte* g_Trash{ nullptr };
-
         namespace AutoScrapBuffer
         {
             struct Patch final :
@@ -41,7 +39,7 @@ namespace Patches::Allocators
                 }
 
                 {
-                    baseEnd.write(std::uint8_t{ 0x74 });  // jnz -> jz
+                    baseEnd.write<std::uint8_t>(std::uint8_t{ 0x74 });  // jnz -> jz
                 }
             }
 
@@ -54,49 +52,53 @@ namespace Patches::Allocators
 
         namespace GlobalMemoryManager
         {
+            // when the global memory manager has a zero-size allocation it returns scratch memory
+            // replicate this behavior
+            std::byte* g_Trash{ nullptr };
+
             void* Allocate(RE::MemoryManager*, std::size_t a_size, std::uint32_t a_alignment, bool a_alignmentRequired)
             {
-                // if (a_size > 0)
-                //     return a_alignmentRequired ? _aligned_malloc(a_size, a_alignment) : malloc(a_size);
-                // return g_Trash;
-                if (a_size > 0)
-                    return a_alignmentRequired ? mi_malloc_aligned(a_size, a_alignment) : mi_malloc(a_size);
-                return g_Trash;
+                if (a_size == 0) {
+                    //logger::info("alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
+                    return g_Trash;
+                }
+                // void* mem = a_alignmentRequired ? _aligned_malloc(a_size, a_alignment) : malloc(a_size);
+                void* mem = a_alignmentRequired ? scalable_aligned_malloc(a_size, a_alignment) : scalable_malloc(a_size);
+                if (mem == nullptr) {
+                    logger::info("failed to allocate memory, caller address {:x}", reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                }
+                return mem;
             }
 
             void* Reallocate(RE::MemoryManager* a_self, void* a_oldMem, std::size_t a_newSize, std::uint32_t a_alignment, bool a_alignmentRequired)
             {
-                // if (a_oldMem == g_Trash)
-                //     return Allocate(a_self, a_newSize, a_alignment, a_alignmentRequired);
-                // return a_alignmentRequired ? _aligned_realloc(a_oldMem, a_newSize, a_alignment) : realloc(a_oldMem, a_newSize);
+                // if (a_newSize == 0) {
+                //     logger::info("alloc of size {} detected, caller address {:x}", a_newSize, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
+                // }
                 if (a_oldMem == g_Trash)
                     return Allocate(a_self, a_newSize, a_alignment, a_alignmentRequired);
-                return a_alignmentRequired ? mi_realloc_aligned(a_oldMem, a_newSize, a_alignment) : mi_realloc(a_oldMem, a_newSize);
+
+                // void* mem = a_alignmentRequired ? _aligned_realloc(a_oldMem, a_newSize, a_alignment) : realloc(a_oldMem, a_newSize);
+                void* mem = a_alignmentRequired ? scalable_aligned_realloc(a_oldMem, a_newSize, a_alignment) : scalable_realloc(a_oldMem, a_newSize);
+                if (mem == nullptr) {
+                    logger::info("failed to allocate memory, caller address {:x}", reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                }
+                return mem;
             }
 
             void Deallocate(RE::MemoryManager*, void* a_mem, bool a_alignmentRequired)
             {
-                // if (a_mem != g_Trash)
-                // {
+                // if (a_mem != g_Trash) {
                 //     if (a_alignmentRequired)
-                //     {
                 //         _aligned_free(a_mem);
-                //     }
                 //     else
-                //     {
                 //         free(a_mem);
-                //     }
                 // }
-                if (a_mem != g_Trash)
-                {
+                if (a_mem != g_Trash) {
                     if (a_alignmentRequired)
-                    {
-                        mi_free(a_mem);
-                    }
+                        scalable_aligned_free(a_mem);
                     else
-                    {
-                        mi_free(a_mem);
-                    }
+                        scalable_free(a_mem);
                 }
             }
 
@@ -124,6 +126,8 @@ namespace Patches::Allocators
 
             void Install()
             {
+                g_Trash = new std::byte[1u << 10]{ static_cast<std::byte>(0) };
+
                 StubInit();
                 ReplaceAllocRoutines();
                 RE::MemoryManager::GetSingleton()->RegisterMemoryManager();
@@ -133,25 +137,38 @@ namespace Patches::Allocators
 
         namespace ScrapHeap
         {
+            // the scrapheap allocator will never allocate less than 0x10 bytes or less than 0x8 alignment
+            // this prevents any zero-allocs as in the global memory manager
+            // alternatively we could handle this the same way as the global memory manager
             void* Allocate(RE::ScrapHeap*, std::size_t a_size, std::size_t a_alignment)
             {
-                // return a_size > 0 ? _aligned_malloc(a_size, a_alignment) : g_Trash;
-                return a_size > 0 ? mi_malloc_aligned(a_size, a_alignment) : g_Trash;
+                if (a_size < 0x10) {
+                    // logger::info("scrapheap alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
+                    a_size = 0x10;
+                }
+                if (a_alignment < 0x8) {
+                    // logger::info("scrapheap alignment of {} detected, caller address {:x}", a_alignment, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
+                    a_alignment = 0x8;
+                }
+                // void* mem = _aligned_malloc(a_size, a_alignment);
+                void* mem = scalable_aligned_malloc(a_size, a_alignment);
+                if (mem == nullptr) {
+                    logger::info("failed to allocate memory, caller address {:x}", reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                }
+                return mem;
             }
 
             RE::ScrapHeap* Ctor(RE::ScrapHeap* a_self)
             {
                 std::memset(a_self, 0, sizeof(RE::ScrapHeap));
-                REX::EMPLACE_VTABLE(a_self);
+                SKSE::stl::emplace_vtable(a_self);
                 return a_self;
             }
 
             void Deallocate(RE::ScrapHeap*, void* a_mem)
             {
-                // if (a_mem != g_Trash)
-                //    _aligned_free(a_mem);
-                if (a_mem != g_Trash)
-                    mi_free(a_mem);
+                // _aligned_free(a_mem);
+                scalable_aligned_free(a_mem);
             }
 
             void WriteStubs()
@@ -281,34 +298,55 @@ namespace Patches::Allocators
             }
         }
 
+        namespace CRTAllocator
+        {
+            void Install() {
+                // SKSE::PatchIAT(mi_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
+                // SKSE::PatchIAT(mi_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free");
+                // SKSE::PatchIAT(mi_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
+                // SKSE::PatchIAT(mi_usable_size, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
+                // SKSE::PatchIAT(mi_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
+                // SKSE::PatchIAT(mi_malloc_aligned, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
+                SKSE::PatchIAT(scalable_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
+                SKSE::PatchIAT(scalable_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free");
+                SKSE::PatchIAT(scalable_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
+                SKSE::PatchIAT(scalable_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
+                SKSE::PatchIAT(scalable_aligned_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
+                SKSE::PatchIAT(scalable_aligned_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
+
+            }
+        }
+
         void Install()
         {
-            g_Trash = new std::byte[1u << 10]{ static_cast<std::byte>(0) };
-
-            if (Settings::MemoryManager::bOverrideGlobalMemoryManager)
-            {
-                GlobalMemoryManager::Install();
-                REX::INFO("installed global memory manager patch"sv);
-            }
-
-            if (Settings::MemoryManager::bOverrideScrapHeap)
+            if (Settings::MemoryManager::bOverrideScrapHeap.GetValue())
             {
                 AutoScrapBuffer::Install();
                 ScrapHeap::Install();
-                REX::INFO("installed scrapheap patch"sv);
+                logger::info("installed scrapheap patch"sv);
             }
 
-            if (Settings::MemoryManager::bOverrideScaleformAllocator)
+            if (Settings::MemoryManager::bOverrideGlobalMemoryManager.GetValue())
+            {
+                GlobalMemoryManager::Install();
+                logger::info("installed global memory manager patch"sv);
+            }
+
+            if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())
             {
                 ScaleformAllocator::Install();
-                REX::INFO("installed scaleform allocator patch"sv);
+                logger::info("installed scaleform allocator patch"sv);
+            }
+
+            if (Settings::MemoryManager::bOverrideCRTAllocator.GetValue()) {
+                CRTAllocator::Install();
+                logger::info("installed crt allocator patch"sv);
             }
         }
     }
-
     void Install()
     {
         detail::Install();
-        REX::INFO("installed memory manager patches"sv);
+        logger::info("installed memory manager patches"sv);
     }
 }

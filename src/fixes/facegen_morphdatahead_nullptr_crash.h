@@ -49,10 +49,10 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
         detail::Patch p(target.address(), constant.address());
         p.ready();
 
-        auto& trampoline = REL::GetTrampoline();
-        target.write_jmp<5>(trampoline.allocate(p));
+        auto& trampoline = SKSE::GetTrampoline();
+        target.write_branch<5>(trampoline.allocate(p));
 
-        REL::WriteSafeFill(target.address() + 0x5, REL::NOP, 0x5);
+        REL::safe_fill(target.address() + 0x5, REL::NOP, 0x5);
 
         // fix clearing rbx
         REL::Relocation targetRbx { REL::ID(26918), 0x49 };
@@ -61,6 +61,6 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
 
         targetRbx.write(std::span {pRbx.getCode<const std::byte*>(), pRbx.getSize()});
 
-        REX::INFO("installed facegen morphdatahead nullptr crash fix"sv);
+        logger::info("installed facegen morphdatahead nullptr crash fix"sv);
     }
 }

@@ -32,7 +32,7 @@ namespace Fixes::VerticalLookSensitivity
             std::pair(50770, 0x53)
         };
 
-        auto& trampoline = REL::GetTrampoline();
+        auto& trampoline = SKSE::GetTrampoline();
 
         for (auto& [id, offset] : todo)
         {
@@ -41,11 +41,11 @@ namespace Fixes::VerticalLookSensitivity
             detail::Patch p(target.address());
             p.ready();
 
-            target.write_jmp<6>(trampoline.allocate(p));
+            target.write_branch<6>(trampoline.allocate(p));
 
-            REL::WriteSafeFill(target.address() + 0x6, REL::NOP, 0x2);
+            REL::safe_fill(target.address() + 0x6, REL::NOP, 0x2);
         }
 
-        REX::INFO("installed vertical look sensitivity fix"sv);
+        logger::info("installed vertical look sensitivity fix"sv);
     }
 }

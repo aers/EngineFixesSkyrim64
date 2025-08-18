@@ -28,6 +28,6 @@ namespace Fixes::ArcheryDownwardAiming
         REL::Relocation target { REL::ID(44027), 0x434 };
         detail::Projectile::_Move = target.write_call<5>(detail::Projectile::Move);
 
-        REX::INFO("installed archery downward aiming fix"sv);
+        logger::info("installed archery downward aiming fix"sv);
     }
 }

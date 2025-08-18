@@ -17,7 +17,7 @@ namespace Fixes::NullProcessCrash
 
     inline void Install()
     {
-        auto& trampoline = REL::GetTrampoline();
+        auto& trampoline = SKSE::GetTrampoline();
 
         {
             const REL::Relocation<std::uintptr_t> target{ REL::ID(38899) };
@@ -31,6 +31,6 @@ namespace Fixes::NullProcessCrash
             trampoline.write_call<5>(target.address() + 0x56, detail::GetEquippedRightHand);
         }
 
-        REX::INFO("installed null process crash fix");
+        logger::info("installed null process crash fix");
     }
 }

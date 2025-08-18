@@ -48,8 +48,8 @@ namespace Fixes::MemoryAccessErrors
             Patch patch(vtbl.address(), funcHook.address(), funcExit.address());
             patch.ready();
 
-            auto& trampoline = REL::GetTrampoline();
-            trampoline.write_jmp<6>(
+            auto& trampoline = SKSE::GetTrampoline();
+            trampoline.write_branch<6>(
                 funcHook.address(),
                 trampoline.allocate(patch));
 
@@ -107,6 +107,6 @@ namespace Fixes::MemoryAccessErrors
         detail::InstallShaderParticleGeometryDataLimit();
         detail::InstallBSShadowDirectionalLightUseAfterFree();
 
-        REX::INFO("installed misc memory access error fixes"sv);
+        logger::info("installed misc memory access error fixes"sv);
     }
 }

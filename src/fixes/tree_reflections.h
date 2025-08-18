@@ -41,7 +41,7 @@ namespace Fixes::TreeReflections
 
         if (handle)
         {
-            REX::TRACE("enb detected - disabling fix, please use ENB's tree reflection fix instead"sv);
+            logger::trace("enb detected - disabling fix, please use ENB's tree reflection fix instead"sv);
             return;
         }
 
@@ -49,9 +49,9 @@ namespace Fixes::TreeReflections
         detail::Patch p(target.address());
         p.ready();
 
-        auto& trampoline = REL::GetTrampoline();
-        target.write_jmp<6>(trampoline.allocate(p));
+        auto& trampoline = SKSE::GetTrampoline();
+        target.write_branch<6>(trampoline.allocate(p));
 
-        REX::INFO("installed tree lod reflection fix");
+        logger::info("installed tree lod reflection fix");
     }
 }

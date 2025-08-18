@@ -41,11 +41,11 @@ namespace Fixes::EquipShoutEventSpam
         detail::Patch p(target.address());
         p.ready();
 
-        auto& trampoline = REL::GetTrampoline();
-        target.write_jmp<5>(trampoline.allocate(p));
+        auto& trampoline = SKSE::GetTrampoline();
+        target.write_branch<5>(trampoline.allocate(p));
 
-        REL::WriteSafeFill(target.address() + 5, REL::NOP, 7);
+        REL::safe_fill(target.address() + 5, REL::NOP, 7);
 
-        REX::INFO("installed equip shout event spam fix"sv);
+        logger::info("installed equip shout event spam fix"sv);
     }
 }

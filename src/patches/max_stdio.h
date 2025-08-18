@@ -14,11 +14,11 @@ namespace Patches::MaxStdIO
             const auto old = get();
             const auto result = proc(Settings::Patches::iMaxStdIO.GetValue());
             if (get)
-                REX::INFO("set max stdio to {} from {}"sv, result, old);
+                logger::info("set max stdio to {} from {}"sv, result, old);
             else
-                REX::INFO("set max stdio to {}"sv, result);
+                logger::info("set max stdio to {}"sv, result);
         } else {
-            REX::ERROR("failed to install MaxStdIO patch"sv);
+            logger::error("failed to install MaxStdIO patch"sv);
         }
     }
 }

@@ -23,6 +23,6 @@ namespace Fixes::GlobalTime
             target.write(timerOffset);
         }
 
-        REX::INFO("installed global time fix"sv);
+        logger::info("installed global time fix"sv);
     }
 }

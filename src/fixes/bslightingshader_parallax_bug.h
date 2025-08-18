@@ -28,9 +28,9 @@ namespace Fixes::BSLightingShaderParallaxBug
         REL::Relocation target { REL::ID(107300), 0xB5D };
 
         detail::Patch p(target.address());
-        auto& trampoline = REL::GetTrampoline();
-        trampoline.write_jmp<6>(target.address(), trampoline.allocate(p));
+        auto& trampoline = SKSE::GetTrampoline();
+        trampoline.write_branch<6>(target.address(), trampoline.allocate(p));
 
-        REX::INFO("installed bslightingshader parallax bug fix"sv);
+        logger::info("installed bslightingshader parallax bug fix"sv);
     }
 }

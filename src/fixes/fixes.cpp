@@ -36,97 +36,97 @@ namespace Fixes
 {
     void Load()
     {
-        if (Settings::Fixes::bArcheryDownwardAiming)
+        if (Settings::Fixes::bArcheryDownwardAiming.GetValue())
             ArcheryDownwardAiming::Install();
 
-        if (Settings::Fixes::bAnimationLoadSignedCrash)
+        if (Settings::Fixes::bAnimationLoadSignedCrash.GetValue())
             AnimationLoadSignedCrash::Install();
 
-        if (Settings::Fixes::bBethesdaNetCrash)
+        if (Settings::Fixes::bBethesdaNetCrash.GetValue())
             BethesdaNetCrash::Install();
 
-        if (Settings::Fixes::bBSLightingAmbientSpecular)
+        if (Settings::Fixes::bBSLightingAmbientSpecular.GetValue())
             BSLightingAmbientSpecular::Install();
 
-        if (Settings::Fixes::bBSLightingShaderForceAlphaTest)
+        if (Settings::Fixes::bBSLightingShaderForceAlphaTest.GetValue())
             BSLightingShaderForceAlphaTest::Install();
 
-        if (Settings::Fixes::bBSLightingShaderParallaxBug)
+        if (Settings::Fixes::bBSLightingShaderParallaxBug.GetValue())
             BSLightingShaderParallaxBug::Install();
 
-        if (Settings::Fixes::bBSTempEffectNiRTTI)
+        if (Settings::Fixes::bBSTempEffectNiRTTI.GetValue())
             BSTempEffectNiRTTI::Install();
 
-        if (Settings::Fixes::bCalendarSkipping)
+        if (Settings::Fixes::bCalendarSkipping.GetValue())
             CalendarSkipping::Install();
 
-        if (Settings::Fixes::bCellInit)
+        if (Settings::Fixes::bCellInit.GetValue())
             CellInit::Install();
 
-        if (Settings::Fixes::bClimateLoad)
+        if (Settings::Fixes::bClimateLoad.GetValue())
             ClimateLoad::Install();
 
-        if (Settings::Fixes::bConjurationEnchantAbsorbs)
+        if (Settings::Fixes::bConjurationEnchantAbsorbs.GetValue())
             ConjurationEnchantAbsorbs::Install();
 
-        if (Settings::Fixes::bCreateArmorNodeNullPtrCrash)
+        if (Settings::Fixes::bCreateArmorNodeNullPtrCrash.GetValue())
             CreateArmorNodeNullPtrCrash::Install();
 
-        if (Settings::Fixes::bDoublePerkApply)
+        if (Settings::Fixes::bDoublePerkApply.GetValue())
             DoublePerkApply::Install();
 
-        if (Settings::Fixes::bEquipShoutEventSpam)
+        if (Settings::Fixes::bEquipShoutEventSpam.GetValue())
             EquipShoutEventSpam::Install();
 
-        if (Settings::Fixes::bFaceGenMorphDataHeadNullPtrCrash)
+        if (Settings::Fixes::bFaceGenMorphDataHeadNullPtrCrash.GetValue())
             FaceGenMorphDataHeadNullPtrCrash::Install();
 
-        if (Settings::Fixes::bGetKeywordItemCount)
+        if (Settings::Fixes::bGetKeywordItemCount.GetValue())
             GetKeywordItemCount::Install();
 
-        if (Settings::Fixes::bGHeapLeakDetectionCrash)
+        if (Settings::Fixes::bGHeapLeakDetectionCrash.GetValue())
             GHeapLeakDetectionCrash::Install();
 
-        if (Settings::Fixes::bGlobalTime)
+        if (Settings::Fixes::bGlobalTime.GetValue())
             GlobalTime::Install();
 
-        if (Settings::Fixes::bInitializeHitDataNullPtrCrash)
+        if (Settings::Fixes::bInitializeHitDataNullPtrCrash.GetValue())
             InitializeHitDataNullPtrCrash::Install();
 
-        if (Settings::Fixes::bLipSync)
+        if (Settings::Fixes::bLipSync.GetValue())
             LipSync::Install();
 
-        if (Settings::Fixes::bMemoryAccessErrors)
+        if (Settings::Fixes::bMemoryAccessErrors.GetValue())
             MemoryAccessErrors::Install();
 
-        if (Settings::Fixes::bMO5STypo)
+        if (Settings::Fixes::bMO5STypo.GetValue())
             MO5STypo::Install();
 
-        if (Settings::Fixes::bMusicOverlap)
+        if (Settings::Fixes::bMusicOverlap.GetValue())
             MusicOverlap::Install();
 
-        if (Settings::Fixes::bNullProcessCrash)
+        if (Settings::Fixes::bNullProcessCrash.GetValue())
             NullProcessCrash::Install();
 
-        if (Settings::Fixes::bPerkFragmentIsRunning)
+        if (Settings::Fixes::bPerkFragmentIsRunning.GetValue())
             PerkFragmentIsRunning::Install();
 
-        if (Settings::Fixes::bRemovedSpellBook)
+        if (Settings::Fixes::bRemovedSpellBook.GetValue())
             RemovedSpellBook::Install();
 
-        if (Settings::Fixes::bShadowSceneNodeNullPtrCrash)
+        if (Settings::Fixes::bShadowSceneNodeNullPtrCrash.GetValue())
             ShadowSceneNodeNullPtrCrash::Install();
 
-        if (Settings::Fixes::bTorchLandscape)
+        if (Settings::Fixes::bTorchLandscape.GetValue())
             TorchLandscape::Install();
 
-        if (Settings::Fixes::bTreeReflections)
+        if (Settings::Fixes::bTreeReflections.GetValue())
             TreeReflections::Install();
 
-        if (Settings::Fixes::bVerticalLookSensitivity)
+        if (Settings::Fixes::bVerticalLookSensitivity.GetValue())
             VerticalLookSensitivity::Install();
 
-        if (Settings::Fixes::bWeaponBlockScaling)
+        if (Settings::Fixes::bWeaponBlockScaling.GetValue())
             WeaponBlockScaling::Install();
     }
 }

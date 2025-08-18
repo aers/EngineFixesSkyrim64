@@ -13,7 +13,7 @@ namespace Patches::SaveGameMaxSize
 
         if (Settings::Patches::iSaveGameMaxSize.GetValue() > 4095)
         {
-            REX::ERROR("iSaveGameMaxSize of {} is too large"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
+            logger::error("iSaveGameMaxSize of {} is too large"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
             return;
         }
 
@@ -25,6 +25,6 @@ namespace Patches::SaveGameMaxSize
             target.write(sizeBytes);
         }
 
-        REX::INFO("installed save game max size patch"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
+        logger::info("installed save game max size patch"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
     }
 }

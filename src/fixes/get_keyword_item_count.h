@@ -68,7 +68,7 @@ namespace Fixes::GetKeywordItemCount
             command->executeFunction = detail::Execute;
             command->conditionFunction = detail::Eval;
 
-            REX::INFO("installed getkeyworditemcount fix"sv);
+            logger::info("installed getkeyworditemcount fix"sv);
         }
     }
 }

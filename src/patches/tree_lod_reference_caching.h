@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtl/phmap.hpp>
+#include <oneapi/tbb/concurrent_hash_map.h>
 
 namespace Patches::TreeLodReferenceCaching
 {
@@ -10,7 +10,9 @@ namespace Patches::TreeLodReferenceCaching
         inline REL::Relocation<Float2Half_> Float2Half{ REL::ID(76217) };
 
         //using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESObjectREFR*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, mi_stl_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
-        using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESObjectREFR*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, std::allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
+        //using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESObjectREFR*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, tbb::scalable_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
+
+        using HashMap = tbb::concurrent_hash_map<std::uint32_t, RE::TESObjectREFR*>;
 
         inline HashMap g_treeReferenceCache;
 
@@ -32,6 +34,6 @@ namespace Patches::TreeLodReferenceCaching
     {
         detail::Install();
 
-        REX::INFO("installed tree lod reference caching patch"sv);
+        logger::info("installed tree lod reference caching patch"sv);
     }
 }

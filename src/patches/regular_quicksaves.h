@@ -13,6 +13,6 @@ namespace Patches::RegularQuicksaves
         quickSaveLoadHandlerProcessButtonSaveType.write(regular_save);
         quickSaveLoadHandlerProcessButtonLoadType.write(load_last_save);
 
-        REX::INFO("installed regular quicksave patch"sv);
+        logger::info("installed regular quicksave patch"sv);
     }
 }

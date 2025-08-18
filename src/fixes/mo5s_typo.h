@@ -8,6 +8,6 @@ namespace Fixes::MO5STypo
         REL::Relocation target { REL::ID(14827), 0x8D };
         target.write(uint8_t { 0x35 } );
 
-        REX::INFO("installed MO5S typo fix"sv);
+        logger::info("installed MO5S typo fix"sv);
     }
 }

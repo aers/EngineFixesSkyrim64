@@ -33,9 +33,9 @@ namespace Fixes::CreateArmorNodeNullPtrCrash
         detail::Patch p(target.address());
         p.ready();
 
-        auto& trampoline = REL::GetTrampoline();
-        target.write_jmp<5>(trampoline.allocate(p));
+        auto& trampoline = SKSE::GetTrampoline();
+        target.write_branch<5>(trampoline.allocate(p));
 
-        REX::INFO("installed create armor node nullptr crash fix"sv);
+        logger::info("installed create armor node nullptr crash fix"sv);
     }
 }

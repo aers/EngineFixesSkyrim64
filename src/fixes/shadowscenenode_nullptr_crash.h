@@ -38,9 +38,9 @@ namespace Fixes::ShadowSceneNodeNullPtrCrash
         detail::Patch p(target.address());
         p.ready();
 
-        auto& trampoline = REL::GetTrampoline();
-        target.write_jmp<5>(trampoline.allocate(p));
+        auto& trampoline = SKSE::GetTrampoline();
+        target.write_branch<5>(trampoline.allocate(p));
 
-        REX::INFO("installed shadow scene node nullptr crash fix"sv);
+        logger::info("installed shadow scene node nullptr crash fix"sv);
     }
 }

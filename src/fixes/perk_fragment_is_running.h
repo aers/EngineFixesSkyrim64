@@ -15,6 +15,6 @@ namespace Fixes::PerkFragmentIsRunning
         REL::Relocation target { REL::ID(21571), 0x22 };
         target.write_call<5>(detail::IsRunning);
 
-        REX::INFO("installed perk fragment is running fix"sv);
+        logger::info("installed perk fragment is running fix"sv);
     }
 }

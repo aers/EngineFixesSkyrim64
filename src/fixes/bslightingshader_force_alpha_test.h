@@ -16,7 +16,7 @@ namespace Fixes::BSLightingShaderForceAlphaTest
 
         inline void BSBatchRenderer_SetupAndDrawPass(RE::BSRenderPass* a_self, std::uint32_t a_technique, bool a_alphaTest, std::uint32_t a_renderFlags)
         {
-            if (*REX::UNRESTRICTED_CAST<std::uintptr_t*>(a_self->shader) == RE::VTABLE_BSLightingShader[0].address() && a_alphaTest)
+            if (*SKSE::stl::unrestricted_cast<std::uintptr_t*>(a_self->shader) == RE::VTABLE_BSLightingShader[0].address() && a_alphaTest)
             {
                 const auto rawTechnique = a_technique - 0x4800002D;
                 const auto subIndex = (rawTechnique >> 24) & 0x3F;
@@ -36,6 +36,6 @@ namespace Fixes::BSLightingShaderForceAlphaTest
         REL::Relocation target { REL::ID(107644) };
         detail::g_hk_BSBatchRenderer_SetupAndDrawPass = safetyhook::create_inline(target.address(), detail::BSBatchRenderer_SetupAndDrawPass);
 
-        REX::INFO("installed bslightingshader force alpha test fix"sv);
+        logger::info("installed bslightingshader force alpha test fix"sv);
     }
 }

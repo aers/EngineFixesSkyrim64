@@ -13,7 +13,7 @@ namespace Patches::DisableChargenPrecache
         chargenPrecacheClear.write_fill(REL::INT3, 0x8A);
         chargenPrecacheClear.write(REL::RET);
 
-        REX::INFO("installed disable chargen precache patch"sv);
+        logger::info("installed disable chargen precache patch"sv);
 
     }
 }

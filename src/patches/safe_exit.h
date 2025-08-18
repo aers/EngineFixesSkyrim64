@@ -18,6 +18,6 @@ namespace Patches::SafeExit
         REL::Relocation target { REL::ID(36544), 0x1AE };
         target.write_call<5>(detail::Shutdown);
 
-        REX::INFO("installed safe exit patch"sv);
+        logger::info("installed safe exit patch"sv);
     }
 }

@@ -31,6 +31,6 @@ namespace Fixes::ClimateLoad
             detail::Sky::_LoadGame = target.write_call<5>(detail::Sky::LoadGame);
         }
 
-        REX::INFO("installed climate load fix"sv);
+        logger::info("installed climate load fix"sv);
     }
 }

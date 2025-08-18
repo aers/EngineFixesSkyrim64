@@ -44,6 +44,6 @@ namespace Fixes::CalendarSkipping
             detail::Calendar::_Update = target.write_call<5>(detail::Calendar::Update);
         }
 
-        REX::INFO("installed calendar skipping fix"sv);
+        logger::info("installed calendar skipping fix"sv);
     }
 }
