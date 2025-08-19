@@ -10,16 +10,20 @@
 
 bool g_isPreloaded = false;
 
+std::chrono::high_resolution_clock::time_point start;
+
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
-    switch (a_msg->type)
-    {
-    case SKSE::MessagingInterface::kDataLoaded:
+    switch (a_msg->type) {
+    case SKSE::MessagingInterface::kDataLoaded: {
         if (Settings::General::bCleanSKSECoSaves.GetValue())
             Util::CoSaves::Clean();
         if (Settings::Patches::bSaveAddedSoundCategories.GetValue())
             Patches::SaveAddedSoundCategories::LoadVolumes();
+        auto timeElapsed = std::chrono::high_resolution_clock::now() - start;
+        logger::info("time to load {}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
         break;
+    }
     default:
         break;
     }
@@ -40,7 +44,7 @@ void OpenLog() {
 
 	auto logger = std::make_shared<spdlog::logger>("global", sinks.begin(), sinks.end());
 
-#ifdef NDEBUG
+#ifndef NDEBUG
 	logger->set_level(spdlog::level::debug);
 	logger->flush_on(spdlog::level::debug);
 #else
@@ -53,6 +57,7 @@ void OpenLog() {
 }
 
 extern "C" __declspec(dllexport) void __stdcall Initialize() {
+    start = std::chrono::high_resolution_clock::now();
 	OpenLog();
 
     logger::info("EngineFixes PreLoad"sv);

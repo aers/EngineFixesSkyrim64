@@ -56,8 +56,12 @@
 #include <ShlObj.h>
 
 #include <xbyak/xbyak.h>
-#include <tbb/scalable_allocator.h>
-#include <tbb/concurrent_hash_map.h>
+#ifdef USE_TBB
+    #include <tbb/scalable_allocator.h>
+    #include <tbb/concurrent_hash_map.h>
+#else
+    #include <gtl/phmap.hpp>
+#endif
 #include <safetyhook.hpp>
 #include <boost/regex.hpp>
 

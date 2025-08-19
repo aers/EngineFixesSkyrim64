@@ -1,5 +1,7 @@
 #include "allocators.h"
 
+// #include <tbb/memory_pool.h>
+
 namespace Patches::Allocators
 {
     namespace detail
@@ -62,11 +64,17 @@ namespace Patches::Allocators
                     //logger::info("alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                     return g_Trash;
                 }
-                // void* mem = a_alignmentRequired ? _aligned_malloc(a_size, a_alignment) : malloc(a_size);
+#ifdef USE_TBB
                 void* mem = a_alignmentRequired ? scalable_aligned_malloc(a_size, a_alignment) : scalable_malloc(a_size);
+#else
+                void* mem = a_alignmentRequired ? _aligned_malloc(a_size, a_alignment) : malloc(a_size);
+#endif
+
+#ifndef NDEBUG
                 if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}", reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
                 }
+#endif
                 return mem;
             }
 
@@ -77,28 +85,35 @@ namespace Patches::Allocators
                 // }
                 if (a_oldMem == g_Trash)
                     return Allocate(a_self, a_newSize, a_alignment, a_alignmentRequired);
-
-                // void* mem = a_alignmentRequired ? _aligned_realloc(a_oldMem, a_newSize, a_alignment) : realloc(a_oldMem, a_newSize);
+#ifdef USE_TBB
                 void* mem = a_alignmentRequired ? scalable_aligned_realloc(a_oldMem, a_newSize, a_alignment) : scalable_realloc(a_oldMem, a_newSize);
+#else
+                void* mem = a_alignmentRequired ? _aligned_realloc(a_oldMem, a_newSize, a_alignment) : realloc(a_oldMem, a_newSize);
+#endif
+
+#ifndef NDEBUG
                 if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}", reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
                 }
+#endif
                 return mem;
             }
 
             void Deallocate(RE::MemoryManager*, void* a_mem, bool a_alignmentRequired)
             {
-                // if (a_mem != g_Trash) {
-                //     if (a_alignmentRequired)
-                //         _aligned_free(a_mem);
-                //     else
-                //         free(a_mem);
-                // }
                 if (a_mem != g_Trash) {
                     if (a_alignmentRequired)
+#ifdef USE_TBB
                         scalable_aligned_free(a_mem);
+#else
+                        _aligned_free(a_mem);
+#endif
                     else
+#ifdef USE_TBB
                         scalable_free(a_mem);
+#else
+                        free(a_mem);
+#endif
                 }
             }
 
@@ -150,11 +165,16 @@ namespace Patches::Allocators
                     // logger::info("scrapheap alignment of {} detected, caller address {:x}", a_alignment, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                     a_alignment = 0x8;
                 }
-                // void* mem = _aligned_malloc(a_size, a_alignment);
+#ifdef USE_TBB
                 void* mem = scalable_aligned_malloc(a_size, a_alignment);
+#else
+                void* mem = _aligned_malloc(a_size, a_alignment);
+#endif
+#ifndef NDEBUG
                 if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}", reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
                 }
+#endif
                 return mem;
             }
 
@@ -167,8 +187,11 @@ namespace Patches::Allocators
 
             void Deallocate(RE::ScrapHeap*, void* a_mem)
             {
-                // _aligned_free(a_mem);
+#ifdef USE_TBB
                 scalable_aligned_free(a_mem);
+#else
+                _aligned_free(a_mem);
+#endif
             }
 
             void WriteStubs()
@@ -301,18 +324,14 @@ namespace Patches::Allocators
         namespace CRTAllocator
         {
             void Install() {
-                // SKSE::PatchIAT(mi_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
-                // SKSE::PatchIAT(mi_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free");
-                // SKSE::PatchIAT(mi_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
-                // SKSE::PatchIAT(mi_usable_size, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
-                // SKSE::PatchIAT(mi_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
-                // SKSE::PatchIAT(mi_malloc_aligned, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
+#ifdef USE_TBB
                 SKSE::PatchIAT(scalable_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
                 SKSE::PatchIAT(scalable_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free");
                 SKSE::PatchIAT(scalable_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
                 SKSE::PatchIAT(scalable_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
                 SKSE::PatchIAT(scalable_aligned_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
                 SKSE::PatchIAT(scalable_aligned_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
+#endif
 
             }
         }

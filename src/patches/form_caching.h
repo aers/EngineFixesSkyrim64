@@ -2,17 +2,15 @@
 
 #include "tree_lod_reference_caching.h"
 
-#include <oneapi/tbb/concurrent_hash_map.h>
-
-
 namespace Patches::FormCaching
 {
     namespace detail
     {
-        //using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESForm*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, mi_stl_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
-        //using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESForm*, gtl::priv::hash_default_hash<std::uint32_t>, gtl::priv::hash_default_eq<std::uint32_t>, tbb::scalable_allocator<std::pair<const std::uint32_t, RE::TESForm*>>, 4, std::mutex>;
-
+#ifdef USE_TBB
         using HashMap = tbb::concurrent_hash_map<std::uint32_t, RE::TESForm*>;
+#else
+        using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESForm*>;
+#endif
 
         inline HashMap g_formCache[256];
 
@@ -57,9 +55,11 @@ namespace Patches::FormCaching
 
             RE::TESForm* formPointer = *a_valueFunctor;
 
+#ifdef USE_TBB
             g_formCache[masterId].emplace(baseId, formPointer);
-
-            //g_formCache[masterId].try_emplace_l(baseId, [&formPointer](HashMap::value_type& v) { v.second = formPointer; }, formPointer);
+#else
+            g_formCache[masterId].try_emplace_l(baseId, [&formPointer](HashMap::value_type& v) { v.second = formPointer; }, formPointer);
+#endif
 
             return g_hk_SetAt.call<std::uint64_t>(a_self, a_formIdPtr, a_valueFunctor);
         }
