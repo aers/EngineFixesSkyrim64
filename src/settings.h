@@ -36,6 +36,7 @@ namespace Settings
         static REX::TOML::Bool bNullProcessCrash("Fixes", "bNullProcessCrash", true);
         static REX::TOML::Bool bPerkFragmentIsRunning("Fixes", "bPerkFragmentIsRunning", true);
         static REX::TOML::Bool bRemovedSpellBook("Fixes", "bRemovedSpellBook", true);
+        static REX::TOML::Bool bSaveScreenshots("Fixes", "bSaveScreenshots", true);
         static REX::TOML::Bool bShadowSceneNodeNullPtrCrash("Fixes", "bShadowSceneNodeNullPtrCrash", true);
         static REX::TOML::Bool bTorchLandscape("Fixes", "bTorchLandscape", true);
         static REX::TOML::Bool bTreeReflections("Fixes", "bTreeReflections", true);

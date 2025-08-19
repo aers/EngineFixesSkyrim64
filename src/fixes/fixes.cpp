@@ -26,6 +26,7 @@
 #include "null_process_crash.h"
 #include "perk_fragment_is_running.h"
 #include "removed_spellbook.h"
+#include "save_screenshots.h"
 #include "shadowscenenode_nullptr_crash.h"
 #include "torch_landscape.h"
 #include "tree_reflections.h"
@@ -113,6 +114,9 @@ namespace Fixes
 
         if (Settings::Fixes::bRemovedSpellBook.GetValue())
             RemovedSpellBook::Install();
+
+        if (Settings::Fixes::bSaveScreenshots.GetValue())
+            SaveScreenshots::Install();
 
         if (Settings::Fixes::bShadowSceneNodeNullPtrCrash.GetValue())
             ShadowSceneNodeNullPtrCrash::Install();
