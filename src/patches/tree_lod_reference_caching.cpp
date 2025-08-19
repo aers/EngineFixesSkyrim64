@@ -6,12 +6,6 @@ namespace Patches::TreeLodReferenceCaching
 {
     namespace detail
     {
-        inline bool HasTreeLod(const RE::TESBoundObject* a_boundObject)
-        {
-            using STATFlags = RE::TESObjectSTAT::RecordFlags;
-            return a_boundObject->GetFormFlags() & STATFlags::kHasTreeLOD || a_boundObject->Is(RE::FormType::Tree);
-        }
-
         void UpdateBlockVisibility(RE::BGSDistantTreeBlock* data)
         {
             for (auto& group : data->treeGroups)

@@ -108,6 +108,8 @@ namespace Patches::FormCaching
             }, formPointer);
 #endif
 
+            TreeLodReferenceCaching::detail::CheckAndRemoveForm(baseId, formPointer);
+
             return g_hk_SetAt.call<std::uint64_t>(a_self, a_formIdPtr, a_valueFunctor);
         }
 
