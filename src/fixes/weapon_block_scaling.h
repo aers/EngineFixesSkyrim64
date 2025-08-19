@@ -64,7 +64,7 @@ namespace Fixes::WeaponBlockScaling
     {
         REL::Relocation target {REL::ID(44014), 0x3A2};
 
-        detail::Patch p(target.address());
+        detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
         p.ready();
 
         target.write(std::span { p.getCode<const std::byte*>(), p.getSize()} );
