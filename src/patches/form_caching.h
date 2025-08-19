@@ -59,7 +59,7 @@ namespace Patches::FormCaching
             // lookup form in bethesda's map
             formPointer = RE::TESForm::LookupByID(a_formId);
 
-            if (formPointer) {
+            if (formPointer != nullptr) {
 #ifdef USE_TBB
                 g_formCache[masterId].emplace(baseId, formPointer);
 #else
@@ -97,19 +97,21 @@ namespace Patches::FormCaching
 
             RE::TESForm* formPointer = *a_valueFunctor;
 
+            if (formPointer != nullptr) {
 #ifdef USE_TBB
-            HashMap::accessor a;
-            if (!g_formCache[masterId].emplace(a, baseId, formPointer)) {
-                logger::trace("replacing an existing form in form cache"sv);
-                a->second = formPointer;
-            }
-#else
-            g_formCache[masterId].try_emplace_l(baseId, [&formPointer](HashMap::value_type& v) {
+                HashMap::accessor a;
+                if (!g_formCache[masterId].emplace(a, baseId, formPointer)) {
                     logger::trace("replacing an existing form in form cache"sv);
-                    v.second = formPointer; }, formPointer);
+                    a->second = formPointer;
+                }
+#else
+                g_formCache[masterId].try_emplace_l(baseId, [&formPointer](HashMap::value_type& v) {
+                        logger::trace("replacing an existing form in form cache"sv);
+                        v.second = formPointer; }, formPointer);
 #endif
 
-            TreeLodReferenceCaching::detail::CheckAndRemoveForm(baseId, formPointer);
+                TreeLodReferenceCaching::detail::CheckAndRemoveForm(baseId, formPointer);
+            }
 
             return _FormScatterTable_SetAt(a_self, a_formIdPtr, a_valueFunctor, a_unk);
         }
@@ -120,8 +122,8 @@ namespace Patches::FormCaching
         // maybe fix later if it causes issues
         inline void TESDataHandler_ClearData(RE::TESDataHandler* a_self)
         {
-            for (int i = 0; i < 256; i++)
-                g_formCache[i].clear();
+            for (auto & map : g_formCache)
+                map.clear();
 
             TreeLodReferenceCaching::detail::ClearCache();
 
@@ -132,8 +134,8 @@ namespace Patches::FormCaching
 
         inline void TESForm_InitializeFormDataStructures()
         {
-            for (int i = 0; i < 256; i++)
-                g_formCache[i].clear();
+            for (auto & map : g_formCache)
+                map.clear();
 
             TreeLodReferenceCaching::detail::ClearCache();
 
