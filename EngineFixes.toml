@@ -1,69 +1,63 @@
-# Engine Fixes for Skyrim Special Edition
+# Engine Fixes for Skyrim Special Edition 1.6.1170 (Anniversary Edition, newest)
+[General]
+bVerboseLogging = false                         # enable extra log levels
+bCleanSKSECoSaves = false                       # delete SKSE cosaves with no matching saves
 
-[EngineFixes]
-VerboseLogging = false                  # Add extra log messages
-CleanSKSECosaves = false                # Delete SKSE cosaves that have no matching save
-
-[Patches]
-DisableChargenPrecache = false          # "Precache Killer", same patch that is already in RaceMenu
-EnableAchievementsWithMods = true       # Enables achievements with mods active
-FormCaching = true                      # Attempts to speed up the global form table by caching recently used forms (SSE Fixes)
-MaxStdio = 2048                         # Sets the maximum number of open file handles (default 512), preventing the game from running out with large plugin counts (fixes false save corruption)
-MemoryManager = true                    # Replaces Skyrim's global allocator
-RegularQuicksaves = false               # Makes quick saves into regular saves
-SafeExit = true                         # Prevent the game from hanging while shutting down
-SaveAddedSoundCategories = true         # Save sound categories added by mods
-ScaleformAllocator = true               # Replaces the scaleform allocator
-ScrollingDoesntSwitchPOV = false        # Disables swapping between 1st/3rd person when using scroll to zoom, making it require manual swapping
-SleepWaitTime = false                   # Modifies how long it takes an hour to pass when sleeping/waiting.
-SleepWaitTimeModifier = 0.3             # 1.0 = default, smaller = faster, larger = slower
-TreeLODReferenceCaching = true          # Speeds up the slow Tree LOD function. Requires FormCaching to be active. (SSE Fixes)
-WaterflowAnimation = true               # Decouple water flow animation speed from in-game timescale and use our setting instead
-WaterflowSpeed = 20.0                   # 20.0 = default, smaller = slower, larger = faster
-
+# contains bug fixes
 [Fixes]
-ArcheryDownwardAiming = true            # Fix a bug where arrows don't fire properly if you're aiming downward while crouching on a ridge
-AnimationLoadSignedCrash = true         # Fix a misplaced use of a signed value. Should allow to load more animations before CTD
-BethesdaNetCrash = true                 # Fix the game crashing on startup if you live in a city or country with special characters in the name
-BSLightingAmbientSpecular = true        # Fix bug where lighting template Directional Ambient Specular & Fresnel Power are sent to BSLighting shader incorrectly
-BSLightingShaderForceAlphaTest = true   # Forces alpha test flag on when NiAlphaProperty/AlphaTest true. Fixes object LOD reflections.
-BSLightingShaderParallaxBug = true      # Fixes a bug causing the parallax technique to break if specular is not also set
-BSTempEffectNiRTTI = true               # Fixes a bug where the NiRTTI for this object is not set properly
-CalendarSkipping = true                 # Fix a bug where the game calendar effectively skips a year if you fast travel too far between 20:00 and 23:99 in-game
-CellInit = true                         # Fixes a rare crash where a form does not get converted from an id to a pointer
-ClimateLoad = true                      # Fix a bug where the game fails to properly apply sunrise and sunset data from Climate records if you load a saved game in an interior
-ConjurationEnchantAbsorbs = true        # Fix bug where spell absorption triggers on enchanted items using conjuration summons
-CreateArmorNodeNullptrCrash = true      # Fix typo that may cause a crash somewhere in CreateArmorNode
-DoublePerkApply = true                  # Fix NPC perks applying twice when you load a game
-EquipShoutEventSpam = true              # Fix a bug where the "equip shout" procedure will send a "shout equipped" event even if the shout fails to equip
-FaceGenMorphDataHeadNullptrCrash = true # Fix crash in Face morphing, possibly related to decapacitations
-GetKeywordItemCount = true              # Fix the condition function "GetKeywordItemCount", which returns broken results in numerous cases
-GHeapLeakDetectionCrash = true          # Fix a crash where scaleform attempts to report a memory leak but the code doesnt exist in Skyrim's build
-GlobalTime = true                       # Fixes game systems that are affected by game time instead of real time
-InitializeHitDataNullptrCrash = true    # Fixes a crash on melee hit that unequipped the weapon at the same time
-LipSync = true                          # Fix a bug causing lip sync to desync. Same as LE bug fix.
-MemoryAccessErrors = true               # Fix a handful of out-of-bounds or use-after-free bugs. Required for experimental memory patches.
-MusicOverlap = true                     # Fix a bug where multiple music track is playing at the same time
-MO5STypo = true                         # Fix a typo preventing the game from loading MO5S (1st person female alternate texture set) entries in ARMA forms
-NullProcessCrash = true                 # Fix a couple cases where the game can crash when checking the equipped weapons of an actor without an AI process
-PerkFragmentIsRunning = true            # Fix crash if the IsRunning function of a Perk Fragment is called on a non-Actor form
-RemovedSpellBook = true                 # Fix a crash where learning a spell from a book that is later removed in another plugin causes a crash in inventory
-SaveScreenshots = true                  # Fix black save screenshots when TAA is disabled
-ShadowSceneNodeNullptrCrash = true      # Fix crash in ShadowSceneNode
-SlowTimeCameraMovement = true           # Fix camera movement sensitivity during slow time
-TorchLandscape = true                   # Fix a bug where torches sometimes don't light the landscape
-TreeReflections = true                  # Fix tree LOD reflection alpha. ENB contains this fix, but there is no conflict.
-VerticalLookSensitivity = true          # Make vertical look sensitivity not tied to framerate
-WeaponBlockScaling = true               # Fix weapon blocking so it correctly scales off of the blocking actor's weapon
+bArcheryDownwardAiming = true                   # fixes a bug where arrows don't fire properly if you're aiming downward while crouching on a ridge
+bAnimationLoadSignedCrash = true                # fixes a misplaced used of a signed value in animation loading
+bBethesdaNetCrash = true                        # fixes the game crashing on startup if you live somewhere with special characters in the name
+bBSLightingAmbientSpecular = true               # fixes bug where light template Directional Ambient Specular & Fresnel Power are sent to BSLightingShader incorrectly
+bBSLightingShaderForceAlphaTest = true          # fixes object LOD reflections by forcing alpha test flag on when NiAlphaProperty/AlphaTest is true
+bBSLightingShaderParallaxBug = true             # fixes a bug causing the parallax technique to break if specular is not also set
+bBSTempEffectNiRTTI = true                      # fixes a bug where the NiRTTI for this object is not set properly
+bCalendarSkipping = true                        # fixes a bug where the game calendar effectively skips a year if you fast travel too far between 20:00 and 23:99 in-game
+bCellInit = true                                # fixes a rare crash where a form field does not get converted from an id to a pointer
+bClimateLoad = true                             # fixes a bug where the game fails to properly apply sunrise and sunset data from Climate records if you load a saved game in an interior
+bConjurationEnchantAbsorbs = true               # fixes a bug where spell absorption triggers on enchanted items using conjuration summons
+bCreateArmorNodeNullPtrCrash = true             # fixes typo that may cause a crash somewhere in CreateArmorNode
+bDoublePerkApply = true                         # fixes NPC perks applying twice when you load a game
+bEquipShoutEventSpam = true                     # fixes a bug where the "equip shout" procedure will send a "shout equipped" event even if the shout fails to equip
+bFaceGenMorphDataHeadNullPtrCrash = true        # fixes a crash in face morphing, possibly related to decapitations
+bGetKeywordItemCount = true                     # fixes the condition function "GetKeywordItemCount", which returns broken results sometimes
+bGHeapLeakDetectionCrash = true                 # fixes a crash where scaleform attempts to report a memory leak but the code doesn't exist in Skyrim's build
+bGlobalTime = true                              # fixes game systems that are affected by game time instead of real time, including old slow time camera movement fix
+bInitializeHitDataNullPtrCrash = true           # fixes a crash on melee hit that unequipped the weapon at the same time
+bLipSync = true                                 # fixes a bug causing lip sync to desync
+bMemoryAccessErrors = true                      # fixes miscellaneous errors that are obscured by Skyrim's default allocator
+bMO5STypo = true                                # fixes a typo preventing the game from loading MO5S entries in ARMA forms
+bMusicOverlap = true                            # fixes a bug where multiple music tracks are playing at the same time
+bNullProcessCrash = true                        # fixes a couple cases where the game can crash when checking the equipped weapons of ana ctor without an AI process
+bPerkFragmentIsRunning = true                   # fixes a crash if the IsRunning function of a perk fragment is called on a non-actor form
+bRemovedSpellBook = true                        # fixes a crash where learning a spell from a book that is later removed in another plugin causes a crash in the inventory
+bShadowSceneNodeNullPtrCrash = true             # fixes a crash in shadowscenenode
+bTorchLandscape = true                          # fixes a bug where torches sometimes don't light the landscape
+bTreeReflections = true                         # fixes tree LOD reflection alpha
+bVerticalLookSensitivity = true                 # fixes vertical look sensitivity being tied to framerate
+bWeaponBlockScaling = true                      # fixes weapon blocking so it correctly scales off of the blocking actor's weapon
 
-[Warnings]
-DupeAddonNodes = false                  # Warns if there are two or more addon nodes (ADDN) with the same node index in your load order
-RefHandleLimit = true                   # Warns when you are close to the reference handle limit at main menu and after loading a save
-RefrMainMenuLimit = 800000              # Handle count to warn at on main menu
-RefrLoadedGameLimit = 1000000           # Handle count to warn at after loading a save game
+# contains optional game patches
+[Patches]
+bDisableChargenPrecache = false                 # disables pre-caching of chargen, unnecessary with RaceMenu installed
+bEnableAchievementsWithMods = true              # enables achievements with mods active
+bFormCaching = true                             # attempts to speedup form lookups
+iMaxStdIO = 8192                                # sets the maximum number of open file handles (max value: 8192), allowing loading of more plugins
+bMemoryManager = true                           # enables MemoryManager patches below
+bRegularQuicksaves = false                      # makes quicksaves into regular saves
+bSafeExit = true                                # prevent the game from hanging when shutting down
+bSaveAddedSoundCategories = true                # save the volume of sound categories added by mods
+iSaveGameMaxSize = 128                          # expands the maximum uncompressed size of a save game from 64 MB to a configurable size (MB), game default = 64 MB, only go as high as you need!
+bScrollingDoesntSwitchPOV = false               # disables swapping between 1st/3rd person when using mousewheel scroll to zoom
+bSleepWaitTime = false                          # modifies how long it takes an hour to pass when sleeping/waiting
+fSleepWaitTimeModifier = 0.3                    # 1.0 = default, smaller = faster, larger = slower
+bTreeLodReferenceCaching = true                 # requires form caching to be enabled. speeds up a tree LOD function that slows down proportionate to the number of plugins loaded
+bWaterflowAnimation = true                      # decouple waterflow speed from in-game timescale
+fWaterflowSpeed = 20.0                          # 20.0 = default, smaller = slower, larger = faster
 
-[Experimental]
-SaveGameMaxSize = false                 # Expands the maximum uncompressed size of a save game from 64 MB to 128 MB# can fix "crash on save" issue in long-runnning saves
-
-# DO NOT USE THIS IT IS FOR SPECIFIC TESTING ONLY
-TreatAllModsAsMasters = false           # Loads all mods as if they are masters.
+# this section is only enabled if bMemoryManager in Patches is enabled
+[MemoryManager]
+bOverrideCRTAllocator = true                    # overrides default CRT allocator with mimalloc
+bOverrideGlobalMemoryManager = true             # overrides Skyrim's global memory manager with direct malloc/free calls
+bOverrideScrapHeap = true                       # overrides Skyrim's scrap heap with direct malloc/free calls
+bOverrideScaleformAllocator = true              # overrides Skyrim's scaleform allocator with calls to the global memory manager

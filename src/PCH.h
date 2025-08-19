@@ -1,30 +1,19 @@
 #pragma once
 
-#include "RE/Skyrim.h"
-#include "SKSE/SKSE.h"
-
-#include <array>
-#include <cstdlib>
-#include <filesystem>
-#include <fstream>
-#include <memory>
-#include <optional>
-#include <regex>
-#include <span>
-#include <sstream>
-#include <string>
 #include <string_view>
-#include <system_error>
-#include <type_traits>
-#include <unordered_set>
-#include <utility>
-#include <vector>
 
-#define SKSE_CUSTOM_WINDEF
+#include <RE/Skyrim.h>
+#include <SKSE/SKSE.h>
+#include <REX/REX/INI.h>
+#include <REX/REX/TOML.h>
+#include <REX/W32/SHELL32.h>
+#include <REX/W32/OLE32.h>
+
+#define WIN32_LEAN_AND_MEAN
 
 #define NOGDICAPMASKS
 #define NOVIRTUALKEYCODES
-//#define NOWINMESSAGES
+// define NOWINMESSAGES
 #define NOWINSTYLES
 #define NOSYSMETRICS
 #define NOMENUS
@@ -37,17 +26,17 @@
 #define NOATOM
 #define NOCLIPBOARD
 #define NOCOLOR
-//#define NOCTLMGR
+// #define NOCTLMGR
 #define NODRAWTEXT
 #define NOGDI
 #define NOKERNEL
-//#define NOUSER
-//#define NONLS
-//#define NOMB
+// #define NOUSER
+// #define NONLS
+// #define NOMB
 #define NOMEMMGR
 #define NOMETAFILE
 #define NOMINMAX
-//#define NOMSG
+// #define NOMSG
 #define NOOPENFILE
 #define NOSCROLL
 #define NOSERVICE
@@ -62,38 +51,20 @@
 #define NODEFERWINDOWPOS
 #define NOMCX
 
-#include <Windows.h>
+#include "windows.h"
 
 #include <ShlObj.h>
-#include <intrin.h>
 
-#pragma warning(push)
-#include "AutoTOML.hpp"
-
-#include <boost/regex.hpp>
-#include <tbb/concurrent_hash_map.h>
-#include <tbb/scalable_allocator.h>
 #include <xbyak/xbyak.h>
-
-#ifndef NDEBUG
-#include <spdlog/sinks/msvc_sink.h>
-#else
-#include <spdlog/sinks/basic_file_sink.h>
-#endif
-#pragma warning(pop)
-
-using namespace std::literals;
-
-using SKSE::stl::adjust_pointer;
-using SKSE::stl::not_null;
-using SKSE::stl::unrestricted_cast;
+#include <tbb/scalable_allocator.h>
+#include <tbb/concurrent_hash_map.h>
+#include <safetyhook.hpp>
+#include <boost/regex.hpp>
 
 namespace logger = SKSE::log;
 
-namespace stl
-{
-    using SKSE::stl::report_and_fail;
-    using std::span;
-}
+using namespace std::literals;
 
-#define DLLEXPORT __declspec(dllexport)
+#include "settings.h"
+
+#include "Version.h"

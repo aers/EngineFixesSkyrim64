@@ -1,3 +1,14 @@
-/build*
-CMakeUserPresets.json
-.vscode
+# dot folders
+.cache/
+.idea/
+.vs/
+.vscode/
+.xmake/
+
+# folders
+build/
+vs*/
+
+# files
+*.zip
+compile_commands.json

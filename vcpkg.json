@@ -1,20 +1,19 @@
 {
   "name": "enginefixes",
-  "version-string": "1",
+  "version-string": "7.0.0.0",
+  "description": "Engine Fixes for Skyrim AE (1.6.1170)",
+  "homepage": "https://github.com/aers/EngineFixesSkyrim64/",
+  "license": "MIT",
   "dependencies": [
-    "autotoml",
-    "boost-regex",
-    "boost-stl-interfaces",
+    "rsm-binary-io",
     "spdlog",
-    "tbb",
     "xbyak",
-    "rsm-binary-io"
+    "simpleini",
+    "toml11",
+    "safetyhook",
+    "boost-regex",
+    "gtl",
+    "tbb"
   ],
-  "builtin-baseline": "57d3194e702a2959e86a6748999ad71fc24f7922",
-  "overrides": [
-    {
-      "name": "tbb",
-      "version-string": "2020_U3"
-    }
-  ]
+  "builtin-baseline": "4bb07a326d9b9bce3703272a509e5bc25dd9cfd5"
 }

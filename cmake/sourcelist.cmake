@@ -1,28 +1,11 @@
-set(SOURCES
-	src/PCH.cpp
-	src/PCH.h
-	src/config.h
-	src/fixes.cpp
-	src/fixes.h
-	src/fixes/doubleperkapply.cpp
-	src/fixes/globaltime.cpp
-	src/fixes/miscfixes.cpp
-	src/fixes/savescreenshots.cpp
-	src/fixes/shaderfixes.cpp
+set(sources ${sources}
+	src/clean_cosaves.cpp
+	src/fixes/fixes.cpp
 	src/main.cpp
-	src/offsets.h
-	src/patches.cpp
-	src/patches.h
-	src/patches/formcaching.cpp
-	src/patches/memorymanager.cpp
-	src/patches/miscpatches.cpp
-	src/patches/safeexit.cpp
-	src/patches/saveaddedsoundcategories.cpp
-	src/patches/scaleformallocator.cpp
-	src/patches/treelodreferencecaching.cpp
-	src/utils.cpp
-	src/utils.h
-	src/warnings.cpp
-	src/warnings.h
-	src/warnings/miscwarnings.cpp
+	src/patches/allocators.cpp
+	src/patches/form_caching.cpp
+	src/patches/patches.cpp
+	src/patches/save_added_sound_categories.cpp
+	src/patches/tree_lod_reference_caching.cpp
+	src/patches/waterflow_animation.cpp
 )

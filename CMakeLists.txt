@@ -1,169 +1,228 @@
 cmake_minimum_required(VERSION 3.20)
+set(NAME "EngineFixes" CACHE STRING "")
+set(VERSION 7.0.0 CACHE STRING "")
 
+# ---- Options ----
+option(COPY_BUILD "Copy the build output to the Skyrim directory." TRUE)
+
+# ---- Cache build vars ----
 macro(set_from_environment VARIABLE)
-	if (NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
-		set(${VARIABLE} $ENV{${VARIABLE}})
-	endif ()
+    if(NOT DEFINED ${VARIABLE} AND DEFINED ENV{${VARIABLE}})
+        set(${VARIABLE} $ENV{${VARIABLE}})
+    endif()
 endmacro()
 
-include(cmake/version.cmake)
+macro(find_commonlib_path)
+    if(CommonLibName AND NOT ${CommonLibName} STREQUAL "")
+        # Check extern
+        find_path(CommonLibPath
+            include/REL/Relocation.h
+            PATHS external/${CommonLibName}
+            extern/${CommonLibName})
 
+        if(${CommonLibPath} STREQUAL "CommonLibPath-NOTFOUND")
+            # Check path
+            set_from_environment(${CommonLibName}Path)
+            set(CommonLibPath ${${CommonLibName}Path})
+        endif()
+    endif()
+endmacro()
+
+set_from_environment(VCPKG_ROOT)
+
+# Skyrim AE (1.6.1170) only
+add_compile_definitions(SKYRIM_AE)
+add_compile_definitions(SKYRIM_SUPPORT_AE)
+set(CommonLibName "CommonLibSSE")
+set_from_environment(XSE_TES5_MODS_PATH)
+set(SkyrimPath ${XSE_TES5_MODS_PATH})
+set(SkyrimVersion "Skyrim AE")
+set(VERSION ${VERSION})
+
+find_commonlib_path()
+message(
+    STATUS
+    "Building ${NAME} ${VERSION} for ${SkyrimVersion} at ${SkyrimPath} with ${CommonLibName} at ${CommonLibPath}."
+)
+
+if(DEFINED VCPKG_ROOT)
+    set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+    set(VCPKG_TARGET_TRIPLET "x64-windows-static" CACHE STRING "")
+else()
+    message(
+        WARNING
+        "Variable VCPKG_ROOT is not set. Continuing without vcpkg."
+    )
+endif()
+
+set(Boost_USE_STATIC_RUNTIME OFF CACHE BOOL "")
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>" CACHE STRING "")
+
+# ---- Project ----
 project(
-	EngineFixes
-	VERSION ${VERSION}
-	LANGUAGES CXX
+    ${NAME}
+    VERSION ${VERSION}
+    LANGUAGES CXX
 )
 
 configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.h.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/include/Version.h"
-	@ONLY
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Version.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/include/Version.h
+    @ONLY
 )
 
 configure_file(
-	"${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.rc.in"
-	"${CMAKE_CURRENT_BINARY_DIR}/version.rc"
-	@ONLY
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/version.rc.in
+    ${CMAKE_CURRENT_BINARY_DIR}/version.rc
+    @ONLY
 )
 
+# ---- Include guards ----
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
-	message(FATAL_ERROR "in-source builds are not allowed")
+    message(
+        FATAL_ERROR
+        "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
+    )
 endif()
 
+# ---- Globals ----
 add_compile_definitions(
-	SKSE_SUPPORT_XBYAK
-    _UNICODE
-    UNICODE
+    SKSE_SUPPORT_XBYAK
+    REX_OPTION_INI
+    REX_OPTION_TOML
 )
 
-add_subdirectory(external/CommonLibSSE CommonLibSSE)
-
-find_package(AutoTOML REQUIRED CONFIG)
-find_package(Boost
-	MODULE
-	REQUIRED
-	COMPONENTS
-		regex
-)
-find_package(TBB
-	REQUIRED
-	CONFIG
-	COMPONENTS
-		tbb
-		tbbmalloc
-	CONFIG
-)
-find_package(xbyak REQUIRED CONFIG)
-
-include(cmake/sourcelist.cmake)
-
-source_group(
-	TREE ${CMAKE_CURRENT_SOURCE_DIR}
-	FILES ${SOURCES}
-)
-
-source_group(
-	TREE ${CMAKE_CURRENT_BINARY_DIR}
-	FILES ${CMAKE_CURRENT_BINARY_DIR}/include/Version.h
-)
-
-add_library(
-	${PROJECT_NAME}
-	SHARED
-	${SOURCES}
-	${CMAKE_CURRENT_BINARY_DIR}/include/Version.h
-	${CMAKE_CURRENT_BINARY_DIR}/version.rc
-	${PROJECT_NAME}.toml
-	.clang-format
-	.editorconfig
-)
-
-target_compile_features(
-	${PROJECT_NAME}
-	PRIVATE
-		cxx_std_20
-)
-
-target_include_directories(
-	${PROJECT_NAME}
-	PRIVATE
-		${CMAKE_CURRENT_BINARY_DIR}/include
-		${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-target_link_libraries(
-	${PROJECT_NAME}
-	PRIVATE
-		AutoTOML::AutoTOML
-		Boost::regex
-		CommonLibSSE::CommonLibSSE
-		TBB::tbb
-		TBB::tbbmalloc
-		xbyak::xbyak
-)
-
-if (MSVC)
-	target_link_options(
-		${PROJECT_NAME}
-		PRIVATE
-			"$<$<CONFIG:DEBUG>:/INCREMENTAL;/OPT:NOREF;/OPT:NOICF>"
-			"$<$<CONFIG:RELEASE>:/INCREMENTAL:NO;/OPT:REF;/OPT:ICF;/DEBUG:FULL>"
-	)
-endif()
-
-target_precompile_headers(
-	${PROJECT_NAME}
-	PRIVATE
-		src/PCH.h
-)
-
-option(COPY_BUILD "whether we should copy the outputs to the skyrim dir" OFF)
-if(COPY_BUILD)
-    set_from_environment(Skyrim64Path)
-    if (DEFINED Skyrim64Path)
-        add_custom_command(
-            TARGET ${PROJECT_NAME}
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${PROJECT_NAME}>" ${Skyrim64Path}/Data/SKSE/Plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_PDB_FILE:${PROJECT_NAME}>" ${Skyrim64Path}/Data/SKSE/Plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}_preload.txt" ${Skyrim64Path}/Data/SKSE/Plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}_SNCT.toml" ${Skyrim64Path}/Data/SKSE/Plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.toml" ${Skyrim64Path}/Data/SKSE/Plugins/
+if(MSVC)
+    if(NOT ${CMAKE_GENERATOR} STREQUAL "Ninja")
+        add_compile_options(
+            /MP # Build with Multiple Processes
         )
-    else()
-        message(WARNING "Skyrim64Path is not defined: skipping post-build copy")
     endif()
 endif()
 
-set(Python3_FIND_STRATEGY "VERSION")
-find_package(Python3
-	MODULE
-	REQUIRED
-	COMPONENTS
-		Interpreter
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_DEBUG OFF)
+
+set(Boost_USE_STATIC_LIBS ON)
+
+# ---- Dependencies ----
+if(DEFINED CommonLibPath AND NOT ${CommonLibPath} STREQUAL "" AND IS_DIRECTORY ${CommonLibPath})
+    add_subdirectory(${CommonLibPath} ${CommonLibName})
+else()
+    message(
+        FATAL_ERROR
+        "Variable ${CommonLibName}Path is not set."
+    )
+endif()
+
+find_package(TBB CONFIG REQUIRED)
+find_package(safetyhook CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED COMPONENTS regex)
+
+# ---- Add source files ----
+include(cmake/headerlist.cmake)
+include(cmake/sourcelist.cmake)
+
+source_group(
+    TREE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    FILES
+    ${headers}
+    ${sources}
 )
 
-if(TARGET Python3::Interpreter)
-	set(SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/scripts/archive_artifacts.py)
-	set(TARGET_NAME "archive")
+source_group(
+    TREE
+    ${CMAKE_CURRENT_BINARY_DIR}
+    FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/include/Version.h
+)
 
-	add_custom_target(
-		${TARGET_NAME}
-		COMMAND
-			"$<TARGET_FILE:Python3::Interpreter>"
-			"${SCRIPT}"
-			"--dll=$<TARGET_FILE:${PROJECT_NAME}>"
-			"--name=${PROJECT_NAME}"
-			"--out-dir=${TARGET_NAME}"
-			"--pdb=$<TARGET_PDB_FILE:${PROJECT_NAME}>"
-			"--src-dir=${CMAKE_CURRENT_SOURCE_DIR}"
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		VERBATIM
-		SOURCES
-			${SCRIPT}
-	)
+# ---- Create DLL ----
+add_library(
+    ${PROJECT_NAME}
+    SHARED
+    ${headers}
+    ${sources}
+    ${CMAKE_CURRENT_BINARY_DIR}/include/Version.h
+    ${CMAKE_CURRENT_BINARY_DIR}/version.rc
+    .clang-format
+    .editorconfig
+)
 
-	add_dependencies(${TARGET_NAME} ${PROJECT_NAME})
-else()
-	message(WARNING "failed to find python interpreter: skipping archive target")
+target_compile_features(
+    ${PROJECT_NAME}
+    PRIVATE
+    cxx_std_23
+)
+
+target_compile_definitions(
+    ${PROJECT_NAME}
+    PRIVATE
+    _UNICODE
+)
+
+target_include_directories(
+    ${PROJECT_NAME}
+    PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE
+    ${CommonLibName}::${CommonLibName}
+    TBB::tbb
+    TBB::tbbmalloc
+    safetyhook::safetyhook
+    Boost::regex
+)
+
+target_precompile_headers(
+    ${PROJECT_NAME}
+    PRIVATE
+    src/PCH.h
+)
+
+if(MSVC)
+    target_compile_options(
+        ${PROJECT_NAME}
+        PRIVATE
+        /sdl # Enable Additional Security Checks
+        /utf-8 # Set Source and Executable character sets to UTF-8
+        /Zi # Debug Information Format
+
+        /permissive- # Standards conformance
+        /Zc:preprocessor # Enable preprocessor conformance mode
+
+        /wd4200 # nonstandard extension used : zero-sized array in struct/union
+
+        "$<$<CONFIG:DEBUG>:>"
+        "$<$<CONFIG:RELEASE>:/Zc:inline;/JMC-;/Ob3>"
+    )
+
+    target_link_options(
+        ${PROJECT_NAME}
+        PRIVATE
+        "$<$<CONFIG:DEBUG>:/INCREMENTAL;/OPT:NOREF;/OPT:NOICF>"
+        "$<$<CONFIG:RELEASE>:/INCREMENTAL:NO;/OPT:REF;/OPT:ICF;/DEBUG:FULL>"
+    )
+endif()
+
+# ---- Post build ----
+if(COPY_BUILD)
+    if(DEFINED SkyrimPath)
+        add_custom_command(
+            TARGET ${PROJECT_NAME}
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${SkyrimPath}/${NAME}/SKSE/Plugins/
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PDB_FILE:${PROJECT_NAME}> ${SkyrimPath}/${NAME}/SKSE/Plugins/
+        )
+    else()
+        message(
+            WARNING
+            "Variable ${SkyrimPath} is not defined. Skipping post-build copy command."
+        )
+    endif()
 endif()
