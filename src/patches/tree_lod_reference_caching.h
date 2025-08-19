@@ -22,6 +22,11 @@ namespace Patches::TreeLodReferenceCaching
             g_treeReferenceCache.erase(a_baseId);
         }
 
+        inline void ClearCache()
+        {
+            g_treeReferenceCache.clear();
+        }
+
         inline void Install()
         {
             REL::Relocation updateBlockVisibility { REL::ID(31660) };

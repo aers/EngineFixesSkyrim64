@@ -25,7 +25,7 @@ namespace Patches::TreeLodReferenceCaching
                     // new flag in later AE versions that indicates to not scan all files, hidden is no longer a bool
                     if ((static_cast<std::uint8_t>(instance.hidden) & 2) != 0)
                     {
-                        if (RE::TESForm* form = FormCaching::detail::TESDataHandler_GetForm(instance.id))
+                        if (RE::TESForm* form = FormCaching::detail::TESForm_GetFormByNumericId(instance.id))
                             objectReference = form->AsReference();
                         if (objectReference)
                         {
@@ -56,7 +56,7 @@ namespace Patches::TreeLodReferenceCaching
                             const auto dataHandler = RE::TESDataHandler::GetSingleton();
                             for (std::uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
                             {
-                                if (RE::TESForm* form = FormCaching::detail::TESDataHandler_GetForm(i << 24 | baseId))
+                                if (RE::TESForm* form = FormCaching::detail::TESForm_GetFormByNumericId(i << 24 | baseId))
                                     objectReference = form->AsReference();
                                 if (objectReference)
                                 {

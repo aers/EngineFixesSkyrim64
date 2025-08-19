@@ -3,7 +3,6 @@ set(sources ${sources}
 	src/fixes/fixes.cpp
 	src/main.cpp
 	src/patches/allocators.cpp
-	src/patches/form_caching.cpp
 	src/patches/patches.cpp
 	src/patches/save_added_sound_categories.cpp
 	src/patches/tree_lod_reference_caching.cpp
