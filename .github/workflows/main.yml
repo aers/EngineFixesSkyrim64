@@ -1,0 +1,29 @@
+name: Main
+
+on:
+  push:
+    branches: '**'
+    tags: '*'
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run:
+    uses: adya/pack-skse-mod/.github/workflows/pack.yml@main
+    with:
+      CMAKE_AE_BUILD_PRESET: 'release-tbb'
+      CMAKE_AE_CONFIG_PRESET: 'vs2022-windows-vcpkg-release-tbb'
+      CMAKE_AE_BINARY_DIR: 'build/release_tbb'
+      CMAKE_SE_CONFIG_PRESET: ''
+      CMAKE_SE_BUILD_PRESET: ''
+      CMAKE_VR_CONFIG_PRESET: ''
+      CMAKE_VR_BUILD_PRESET: ''
+      FOMOD_INCLUDE_PDB: true
+      FOMOD_MOD_NAME: "Engine Fixes"
+      FOMOD_MOD_AUTHOR: "aers"
+      FOMOD_MOD_NEXUS_ID: "17230"
+      FOMOD_REQUIRED_INSTALLATION_DIR: "Skyrim/Data"
+      PUBLISH_ARCHIVE_TYPE: '7z'
+      VCPKG_COMMIT_ID: '4bb07a326d9b9bce3703272a509e5bc25dd9cfd5'
