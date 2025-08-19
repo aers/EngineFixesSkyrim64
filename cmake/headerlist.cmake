@@ -27,7 +27,7 @@ set(headers ${headers}
 	src/fixes/null_process_crash.h
 	src/fixes/perk_fragment_is_running.h
 	src/fixes/removed_spellbook.h
-    src/fixes/save_screenshots.h
+	src/fixes/save_screenshots.h
 	src/fixes/shadowscenenode_nullptr_crash.h
 	src/fixes/torch_landscape.h
 	src/fixes/tree_reflections.h
@@ -49,4 +49,5 @@ set(headers ${headers}
 	src/patches/waterflow_animation.h
 	src/pch.h
 	src/settings.h
+	src/warnings/warnings.h
 )

@@ -2,11 +2,14 @@
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/spdlog.h>
 
-#include "settings.h"
-#include "clean_cosaves.h"
-#include "fixes/fixes.h"
 #include "Patches/patches.h"
 #include "Patches/save_added_sound_categories.h"
+#include "clean_cosaves.h"
+#include "fixes/fixes.h"
+#include "fixes/save_screenshots.h"
+#include "fixes/tree_reflections.h"
+#include "settings.h"
+#include "warnings/warnings.h"
 
 bool g_isPreloaded = false;
 
@@ -20,9 +23,26 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
             Util::CoSaves::Clean();
         if (Settings::Patches::bSaveAddedSoundCategories.GetValue())
             Patches::SaveAddedSoundCategories::LoadVolumes();
+        // need ini settings
+        if (Settings::Fixes::bSaveScreenshots.GetValue())
+            Fixes::SaveScreenshots::Install();
+        // need to make sure enb dll has loaded
+        if (Settings::Fixes::bTreeReflections.GetValue())
+            Fixes::TreeReflections::Install();
+        if (Settings::Warnings::bRefHandleLimit.GetValue()) {
+            Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrMainMenuLimit.GetValue());
+        }
+
         auto timeElapsed = std::chrono::high_resolution_clock::now() - start;
-        logger::info("time to load {}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
+        logger::info("time to main menu{}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
+
         break;
+    }
+    case SKSE::MessagingInterface::kPostLoadGame:
+    {
+        if (Settings::Warnings::bRefHandleLimit.GetValue()) {
+            Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrLoadedGameLimit.GetValue());
+        }
     }
     default:
         break;

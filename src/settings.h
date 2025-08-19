@@ -71,6 +71,13 @@ namespace Settings
         static REX::TOML::Bool bOverrideScaleformAllocator( "MemoryManager", "bOverrideScaleformAllocator", true);
 	}
 
+    namespace Warnings
+    {
+        static REX::TOML::Bool bRefHandleLimit("Warnings", "bRefHandleLimit", true);
+        static REX::TOML::U32 uRefrMainMenuLimit("Warnings", "bRefrMainMenuLimit", 800000);
+        static REX::TOML::U32 uRefrLoadedGameLimit("Warnings", "bRefrLoadedGameLimit", 1000000);
+    }
+
 	static void Load()
 	{
 		const auto toml = REX::TOML::SettingStore::GetSingleton();

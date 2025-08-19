@@ -115,17 +115,11 @@ namespace Fixes
         if (Settings::Fixes::bRemovedSpellBook.GetValue())
             RemovedSpellBook::Install();
 
-        if (Settings::Fixes::bSaveScreenshots.GetValue())
-            SaveScreenshots::Install();
-
         if (Settings::Fixes::bShadowSceneNodeNullPtrCrash.GetValue())
             ShadowSceneNodeNullPtrCrash::Install();
 
         if (Settings::Fixes::bTorchLandscape.GetValue())
             TorchLandscape::Install();
-
-        if (Settings::Fixes::bTreeReflections.GetValue())
-            TreeReflections::Install();
 
         if (Settings::Fixes::bVerticalLookSensitivity.GetValue())
             VerticalLookSensitivity::Install();
