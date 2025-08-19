@@ -25,5 +25,7 @@ jobs:
       FOMOD_MOD_AUTHOR: "aers"
       FOMOD_MOD_NEXUS_ID: "17230"
       FOMOD_REQUIRED_INSTALLATION_DIR: "Skyrim/Data"
+      FOMOD_AE_MIN_GAME_VERSION: "1.6.1170"
+      FOMOD_AE_DESCR: 'For Skyrim AE 1.6.1170 (latest Steam version)'
       PUBLISH_ARCHIVE_TYPE: '7z'
       VCPKG_COMMIT_ID: '4bb07a326d9b9bce3703272a509e5bc25dd9cfd5'
