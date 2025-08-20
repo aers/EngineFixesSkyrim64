@@ -74,7 +74,7 @@ namespace Patches::FormCaching
 
         inline std::uint64_t FormMap_RemoveAt(RE::BSTHashMap<RE::FormID, RE::TESForm*>* a_self, RE::FormID* a_formIdPtr, void* a_prevValueFunctor)
         {
-            const std::uint64_t result = g_hk_RemoveAt.call<std::uint64_t>(a_self, a_formIdPtr, a_prevValueFunctor);
+            const auto result = g_hk_RemoveAt.call<std::uint64_t>(a_self, a_formIdPtr, a_prevValueFunctor);
 
             const std::uint8_t  masterId = (*a_formIdPtr & 0xFF000000) >> 24;
             const std::uint32_t baseId = (*a_formIdPtr & 0x00FFFFFF);
@@ -110,7 +110,7 @@ namespace Patches::FormCaching
                         v.second = formPointer; }, formPointer);
 #endif
 
-                TreeLodReferenceCaching::detail::CheckAndRemoveForm(baseId, formPointer);
+                TreeLodReferenceCaching::detail::RemoveCachedForm(baseId);
             }
 
             return _FormScatterTable_SetAt(a_self, a_formIdPtr, a_valueFunctor, a_unk);
@@ -122,7 +122,7 @@ namespace Patches::FormCaching
         // maybe fix later if it causes issues
         inline void TESDataHandler_ClearData(RE::TESDataHandler* a_self)
         {
-            for (auto & map : g_formCache)
+            for (auto& map : g_formCache)
                 map.clear();
 
             TreeLodReferenceCaching::detail::ClearCache();
@@ -134,7 +134,7 @@ namespace Patches::FormCaching
 
         inline void TESForm_InitializeFormDataStructures()
         {
-            for (auto & map : g_formCache)
+            for (auto& map : g_formCache)
                 map.clear();
 
             TreeLodReferenceCaching::detail::ClearCache();
@@ -158,7 +158,7 @@ namespace Patches::FormCaching
             };
 
             for (auto& [id, offset] : todoSetAt) {
-                REL::Relocation target { REL::ID(id), offset };
+                REL::Relocation target{ REL::ID(id), offset };
                 _FormScatterTable_SetAt = target.write_call<5>(FormScatterTable_SetAt);
             }
 
