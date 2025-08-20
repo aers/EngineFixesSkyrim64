@@ -36,7 +36,7 @@ namespace Patches {
         if (Settings::Patches::bFormCaching.GetValue())
             FormCaching::Install();
 
-        if (Settings::Patches::iMaxStdIO.GetValue() > 512)
+        if (Settings::Patches::bMaxStdIO.GetValue())
             MaxStdIO::Install();
 
         if (Settings::Patches::bRegularQuicksaves.GetValue())

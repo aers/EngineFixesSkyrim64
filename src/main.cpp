@@ -34,7 +34,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
         }
 
         auto timeElapsed = std::chrono::high_resolution_clock::now() - start;
-        logger::info("time to main menu{}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
+        logger::info("time to main menu {}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
 
         break;
     }
@@ -80,17 +80,17 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     start = std::chrono::high_resolution_clock::now();
 	OpenLog();
 
-    logger::info("EngineFixes PreLoad"sv);
+    logger::info("EngineFixes v{}.{}.{} PreLoad"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
     const auto ver = REL::Module::get().version();
-    if (ver != SKSE::RUNTIME_SSE_1_6_1170)
+    if (ver < SKSE::RUNTIME_SSE_1_6_1170)
     {
         logger::error("Unsupported runtime version {}"sv, ver);
         return;
     }
 
     auto& trampoline = SKSE::GetTrampoline();
-    trampoline.create(1 << 11);
+    trampoline.create(1 << 10);
 
     Settings::Load();
 
@@ -132,7 +132,7 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
 
 	SKSE::Init(a_skse, false);
 
-	logger::info("EngineFixes v{} SKSE Load"sv, SKSE::GetPluginVersion());
+	logger::info("EngineFixes SKSE Load"sv, SKSE::GetPluginVersion());
 
     const auto messaging = SKSE::GetMessagingInterface();
     if (!messaging->RegisterListener("SKSE", MessageHandler))
