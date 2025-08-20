@@ -8,23 +8,18 @@ namespace Patches::TreeLodReferenceCaching
     {
         void UpdateBlockVisibility(RE::BGSDistantTreeBlock* data)
         {
-            for (auto& group : data->treeGroups)
-            {
-                for (auto& instance : group->instances)
-                {
+            for (auto& group : data->treeGroups) {
+                for (auto& instance : group->instances) {
                     const std::uint32_t baseId = instance.id & 0x00FFFFFF;
 
                     RE::TESObjectREFR* objectReference = nullptr;
 
                     // new flag in later AE versions that indicates to not scan all files, hidden is no longer a bool
-                    if ((static_cast<std::uint8_t>(instance.hidden) & 2) != 0)
-                    {
+                    if ((static_cast<std::uint8_t>(instance.hidden) & 2) != 0) {
                         if (RE::TESForm* form = FormCaching::detail::TESForm_GetFormByNumericId(instance.id))
                             objectReference = form->AsReference();
-                        if (objectReference)
-                        {
-                            if (const auto baseObj = objectReference->GetBaseObject())
-                            {
+                        if (objectReference) {
+                            if (const auto baseObj = objectReference->GetBaseObject()) {
                                 // if this isn't a tree then fail
                                 if (!HasTreeLod(baseObj))
                                     objectReference = nullptr;
@@ -32,30 +27,28 @@ namespace Patches::TreeLodReferenceCaching
                         }
                     }
                     // otherwise try cache then scan all files
-                    else
-                    {
+                    else {
+                        bool found = false;
 #ifdef USE_TBB
                         {
                             HashMap::const_accessor a;
 
                             if (g_treeReferenceCache.find(a, baseId)) {
                                 objectReference = a->second;
+                                found = true;
                             }
                         }
 #else
-                        g_treeReferenceCache.if_contains(baseId, [&objectReference](const HashMap::value_type& v) { objectReference = v.second; });
+                        g_treeReferenceCache.if_contains(baseId, [&objectReference, &found](const HashMap::value_type& v) { objectReference = v.second; found = true; });
 #endif
-                        if (!objectReference) {
+                        if (!found) {
                             // Find first valid tree object by ESP/ESM load order
                             const auto dataHandler = RE::TESDataHandler::GetSingleton();
-                            for (std::uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++)
-                            {
+                            for (std::uint32_t i = 0; i < dataHandler->compiledFileCollection.files.size(); i++) {
                                 if (RE::TESForm* form = FormCaching::detail::TESForm_GetFormByNumericId(i << 24 | baseId))
                                     objectReference = form->AsReference();
-                                if (objectReference)
-                                {
-                                    if (const auto baseObj = objectReference->GetBaseObject())
-                                    {
+                                if (objectReference) {
+                                    if (const auto baseObj = objectReference->GetBaseObject()) {
                                         // if object is a tree we found a valid reference
                                         if (HasTreeLod(baseObj))
                                             break;
@@ -75,28 +68,22 @@ namespace Patches::TreeLodReferenceCaching
                     }
 
                     // update visibility
-                    bool fullyHidden = false;
+                    bool  fullyHidden = false;
                     float alpha = 1.0f;
 
-                    if (objectReference)
-                    {
+                    if (objectReference) {
                         const auto object3D = objectReference->Get3D();
                         const auto parentCell = objectReference->GetParentCell();
-                        if (object3D && !object3D->GetAppCulled() && parentCell->IsAttached())
-                        {
+                        if (object3D && !object3D->GetAppCulled() && parentCell->IsAttached()) {
                             static auto bEnableStippleFade = RE::GetINISetting("bEnableStippleFade:Display");  // ini settings are kept in a linked list, so we'll cache it
-                            if (bEnableStippleFade->GetBool())
-                            {
+                            if (bEnableStippleFade->GetBool()) {
                                 const auto objectFadeNode = object3D->AsFadeNode();
-                                if (objectFadeNode)
-                                {
+                                if (objectFadeNode) {
                                     alpha = 1.0f - objectFadeNode->currentFade;
                                     if (alpha <= 0.0f)
                                         fullyHidden = true;
                                 }
-                            }
-                            else
-                            {
+                            } else {
                                 // No alpha fade - LOD trees will instantly appear or disappear
                                 fullyHidden = true;
                             }
@@ -108,14 +95,12 @@ namespace Patches::TreeLodReferenceCaching
 
                     const std::uint16_t halfFloat = Float2Half(alpha);
 
-                    if (instance.alpha != halfFloat)
-                    {
+                    if (instance.alpha != halfFloat) {
                         instance.alpha = halfFloat;
                         group->shaderPropertyUpToDate = false;
                     }
 
-                    if (instance.hidden != fullyHidden)
-                    {
+                    if (instance.hidden != fullyHidden) {
                         instance.hidden = fullyHidden;
                         group->shaderPropertyUpToDate = false;
                     }
