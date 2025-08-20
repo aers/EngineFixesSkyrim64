@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 set(NAME "EngineFixes" CACHE STRING "")
-set(VERSION 7.0.4 CACHE STRING "")
+set(VERSION 7.0.5 CACHE STRING "")
 
 # ---- Options ----
 option(USE_TBB "Use TBB allocator and container." FALSE)

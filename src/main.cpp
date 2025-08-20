@@ -90,7 +90,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     }
 
     auto& trampoline = SKSE::GetTrampoline();
-    trampoline.create(1 << 10);
+    trampoline.create(1 << 11);
 
     Settings::Load();
 
