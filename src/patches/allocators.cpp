@@ -6,63 +6,50 @@ namespace Patches::Allocators
 {
     namespace detail
     {
-        namespace AutoScrapBuffer
-        {
-            struct Patch final :
-                Xbyak::CodeGenerator
-            {
-                Patch()
-                {
-                    xor_(rax, rax);
-                    cmp(rbx, rax);
-                }
-            };
-
-            inline void Ctor()
-            {
-                REL::Relocation target{ REL::ID(68108), 0x1D };
-                constexpr std::size_t size = 0x32 - 0x1D;
-                target.write_fill(REL::NOP, size);
-            }
-
-            inline void Dtor()
-            {
-                REL::Relocation baseStart{ REL::ID(68109), 0x12 };
-                REL::Relocation baseEnd{ REL::ID(68109), 0x2F };
-
-                {
-                    constexpr std::size_t size = 0x2F - 0x12;
-                    baseStart.write_fill(REL::NOP, size);
-
-                    Patch p;
-                    p.ready();
-                    assert(p.getSize() <= size);
-                    baseStart.write(std::span{ p.getCode<const std::byte*>(), p.getSize() });
-                }
-
-                {
-                    baseEnd.write<std::uint8_t>(std::uint8_t{ 0x74 });  // jnz -> jz
-                }
-            }
-
-            inline void Install()
-            {
-                Ctor();
-                Dtor();
-            }
-        }
-
-        namespace GlobalMemoryManager
+        namespace MemoryManager
         {
             // when the global memory manager has a zero-size allocation it returns scratch memory
             // replicate this behavior
-            std::byte* g_Trash{ nullptr };
+            std::byte* g_ZeroAddress{ nullptr };
+
+            // MemoryManager::AutoScrapBuffer impl
+            // ScrapHeap RAII wrapper
+            struct AutoScrapBuffer
+            {
+                static void Ctor(AutoScrapBuffer* a_self, std::size_t a_size, std::size_t a_alignment)
+                {
+                    if (a_size == 0) {
+                        a_self->p_Memory = g_ZeroAddress;
+                    }
+                    else {
+                        a_self->p_Memory = RE::MemoryManager::GetSingleton()->GetThreadScrapHeap()->Allocate(a_size, a_alignment);
+                    }
+                }
+
+                static void Dtor(AutoScrapBuffer* a_self)
+                {
+                    if (a_self->p_Memory != g_ZeroAddress) {
+                        RE::MemoryManager::GetSingleton()->GetThreadScrapHeap()->Deallocate(a_self->p_Memory);
+                    }
+                }
+
+                static void Install()
+                {
+                    REL::Relocation ctor { REL::ID(68108) };
+                    REL::Relocation dtor { REL::ID(68109) };
+
+                    ctor.replace_func(0x7B, Ctor);
+                    dtor.replace_func(0x54, Dtor);
+                }
+
+                void* p_Memory;
+            };
 
             void* Allocate(RE::MemoryManager*, std::size_t a_size, std::uint32_t a_alignment, bool a_alignmentRequired)
             {
                 if (a_size == 0) {
                     //logger::info("alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
-                    return g_Trash;
+                    return g_ZeroAddress;
                 }
 #ifdef USE_TBB
                 void* mem = a_alignmentRequired ? scalable_aligned_malloc(a_size, a_alignment) : scalable_malloc(a_size);
@@ -83,7 +70,7 @@ namespace Patches::Allocators
                 // if (a_newSize == 0) {
                 //     logger::info("alloc of size {} detected, caller address {:x}", a_newSize, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                 // }
-                if (a_oldMem == g_Trash)
+                if (a_oldMem == g_ZeroAddress)
                     return Allocate(a_self, a_newSize, a_alignment, a_alignmentRequired);
 #ifdef USE_TBB
                 void* mem = a_alignmentRequired ? scalable_aligned_realloc(a_oldMem, a_newSize, a_alignment) : scalable_realloc(a_oldMem, a_newSize);
@@ -101,7 +88,7 @@ namespace Patches::Allocators
 
             void Deallocate(RE::MemoryManager*, void* a_mem, bool a_alignmentRequired)
             {
-                if (a_mem != g_Trash) {
+                if (a_mem != g_ZeroAddress) {
                     if (a_alignmentRequired)
 #ifdef USE_TBB
                         scalable_aligned_free(a_mem);
@@ -117,15 +104,29 @@ namespace Patches::Allocators
                 }
             }
 
+            std::size_t Size(RE::MemoryManager*, void* a_mem)
+            {
+                if (a_mem == g_ZeroAddress)
+                    return 0;
+
+#ifdef USE_TBB
+                return scalable_msize(a_mem);
+#else
+                return _msize(a_mem);
+#endif
+            }
+
             void ReplaceAllocRoutines()
             {
                 REL::Relocation allocate{ REL::ID(68115) };
                 REL::Relocation reallocate{ REL::ID(68116) };
                 REL::Relocation deallocate{ REL::ID(68117) };
+                REL::Relocation size{ REL::ID(68100) };
 
                 allocate.replace_func(0x248, Allocate);
                 reallocate.replace_func(0x1F6, Reallocate);
                 deallocate.replace_func(0x114, Deallocate);
+                size.replace_func(0x156, Size);
             }
 
             void StubInit()
@@ -141,7 +142,7 @@ namespace Patches::Allocators
 
             void Install()
             {
-                g_Trash = new std::byte[1u << 10]{ static_cast<std::byte>(0) };
+                g_ZeroAddress = new std::byte[1u << 10]{ static_cast<std::byte>(0) };
 
                 StubInit();
                 ReplaceAllocRoutines();
@@ -154,7 +155,6 @@ namespace Patches::Allocators
         {
             // the scrapheap allocator will never allocate less than 0x10 bytes or less than 0x8 alignment
             // this prevents any zero-allocs as in the global memory manager
-            // alternatively we could handle this the same way as the global memory manager
             void* Allocate(RE::ScrapHeap*, std::size_t a_size, std::size_t a_alignment)
             {
                 if (a_size < 0x10) {
@@ -338,17 +338,17 @@ namespace Patches::Allocators
 
         void Install()
         {
-            if (Settings::MemoryManager::bOverrideScrapHeap.GetValue())
+            if (Settings::MemoryManager::bOverrideMemoryManager.GetValue())
             {
-                AutoScrapBuffer::Install();
-                ScrapHeap::Install();
-                logger::info("installed scrapheap patch"sv);
+                MemoryManager::Install();
+                MemoryManager::AutoScrapBuffer::Install();
+                logger::info("installed global memory manager patch"sv);
             }
 
-            if (Settings::MemoryManager::bOverrideGlobalMemoryManager.GetValue())
+            if (Settings::MemoryManager::bOverrideScrapHeap.GetValue())
             {
-                GlobalMemoryManager::Install();
-                logger::info("installed global memory manager patch"sv);
+                ScrapHeap::Install();
+                logger::info("installed scrapheap patch"sv);
             }
 
             if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())

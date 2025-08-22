@@ -44,7 +44,6 @@ bDisableChargenPrecache = false                 # disables pre-caching of charge
 bEnableAchievementsWithMods = true              # enables achievements with mods active
 bFormCaching = true                             # attempts to speedup form lookups
 bMaxStdIO = true                                # sets the maximum number of open file handles to the maximum available on your system (8192 in most cases, 2048 for older versions of windows)
-bMemoryManager = true                           # enables MemoryManager patches below
 bRegularQuicksaves = false                      # makes quicksaves into regular saves
 bSafeExit = true                                # prevent the game from hanging when shutting down
 bSaveAddedSoundCategories = true                # save the volume of sound categories added by mods
@@ -56,14 +55,14 @@ bTreeLodReferenceCaching = true                 # requires form caching to be en
 bWaterflowAnimation = true                      # decouple waterflow speed from in-game timescale
 fWaterflowSpeed = 20.0                          # 20.0 = default, smaller = slower, larger = faster
 
-# this section is only enabled if bMemoryManager in Patches is enabled
+# patches to replace Skyrim's allocators with tbbmalloc
 [MemoryManager]
-bOverrideCRTAllocator = true                    # overrides default CRT allocator with mimalloc
-bOverrideGlobalMemoryManager = true             # overrides Skyrim's global memory manager with direct malloc/free calls
+bOverrideCRTAllocator = true                    # overrides default CRT allocator
+bOverrideMemoryManager = true                   # overrides Skyrim's memory manager with direct malloc/free calls
 bOverrideScrapHeap = true                       # overrides Skyrim's scrap heap with direct malloc/free calls
 bOverrideScaleformAllocator = true              # overrides Skyrim's scaleform allocator with calls to the global memory manager
 
 [Warnings]
-bRefHandleLimit = true                           # Warns when you are close to the reference handle limit at main menu and weaafter loading a save
+bRefHandleLimit = true                           # Warns when you are close to the reference handle limit at main menu and after loading a save
 uRefrMainMenuLimit = 800000                      # Handle count to warn at on main menu
 uRefrLoadedGameLimit = 1000000                   # Handle count to warn at after loading a save game

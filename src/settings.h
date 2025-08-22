@@ -50,7 +50,6 @@ namespace Settings
         static REX::TOML::Bool bEnableAchievementsWithMods("Patches", "bEnableAchievementsWithMods", true);
         static REX::TOML::Bool bFormCaching("Patches", "bFormCaching", true);
         static REX::TOML::Bool bMaxStdIO("Patches", "iMaxStdIO", true);
-        static REX::TOML::Bool bMemoryManager("Patches", "bMemoryManager", true);
         static REX::TOML::Bool bRegularQuicksaves("Patches", "bRegularQuicksaves", false);
         static REX::TOML::Bool bSafeExit("Patches", "bSafeExit", true);
         static REX::TOML::Bool bSaveAddedSoundCategories("Patches", "bSaveAddedSoundCategories", true);
@@ -66,7 +65,7 @@ namespace Settings
 	namespace MemoryManager
     {
 		static REX::TOML::Bool bOverrideCRTAllocator( "MemoryManager", "bOverrideCRTAllocator", true);
-		static REX::TOML::Bool bOverrideGlobalMemoryManager( "MemoryManager", "bOverrideGlobalMemoryManager", true);
+		static REX::TOML::Bool bOverrideMemoryManager( "MemoryManager", "bOverrideMemoryManager", true);
         static REX::TOML::Bool bOverrideScrapHeap("MemoryManager", "bOverrideScrapHeap", true);
         static REX::TOML::Bool bOverrideScaleformAllocator( "MemoryManager", "bOverrideScaleformAllocator", true);
 	}

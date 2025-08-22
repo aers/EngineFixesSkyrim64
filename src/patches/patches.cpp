@@ -16,10 +16,7 @@
 
 namespace Patches {
     void PreLoad() {
-        if (Settings::Patches::bMemoryManager.GetValue())
-        {
-            Allocators::Install();
-        }
+        Allocators::Install();
 
         if (Settings::Patches::bSafeExit.GetValue())
             SafeExit::Install();
