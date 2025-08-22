@@ -16,12 +16,11 @@ namespace Patches::Allocators
             // ScrapHeap RAII wrapper
             struct AutoScrapBuffer
             {
-                static void Ctor(AutoScrapBuffer* a_self, std::size_t a_size, std::size_t a_alignment)
+                static void Ctor(AutoScrapBuffer* a_self, const std::size_t a_size, const std::size_t a_alignment)
                 {
                     if (a_size == 0) {
                         a_self->p_Memory = g_ZeroAddress;
-                    }
-                    else {
+                    } else {
                         a_self->p_Memory = RE::MemoryManager::GetSingleton()->GetThreadScrapHeap()->Allocate(a_size, a_alignment);
                     }
                 }
@@ -31,12 +30,13 @@ namespace Patches::Allocators
                     if (a_self->p_Memory != g_ZeroAddress) {
                         RE::MemoryManager::GetSingleton()->GetThreadScrapHeap()->Deallocate(a_self->p_Memory);
                     }
+                    a_self->p_Memory = nullptr;
                 }
 
                 static void Install()
                 {
-                    REL::Relocation ctor { REL::ID(68108) };
-                    REL::Relocation dtor { REL::ID(68109) };
+                    REL::Relocation ctor{ REL::ID(68108) };
+                    REL::Relocation dtor{ REL::ID(68109) };
 
                     ctor.replace_func(0x7B, Ctor);
                     dtor.replace_func(0x54, Dtor);
@@ -45,7 +45,7 @@ namespace Patches::Allocators
                 void* p_Memory;
             };
 
-            void* Allocate(RE::MemoryManager*, std::size_t a_size, std::uint32_t a_alignment, bool a_alignmentRequired)
+            void* Allocate(RE::MemoryManager*, const std::size_t a_size, const std::uint32_t a_alignment, const bool a_alignmentRequired)
             {
                 if (a_size == 0) {
                     //logger::info("alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
@@ -59,13 +59,13 @@ namespace Patches::Allocators
 
 #ifndef NDEBUG
                 if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                 }
 #endif
                 return mem;
             }
 
-            void* Reallocate(RE::MemoryManager* a_self, void* a_oldMem, std::size_t a_newSize, std::uint32_t a_alignment, bool a_alignmentRequired)
+            void* Reallocate(RE::MemoryManager* a_self, void* a_oldMem, const std::size_t a_newSize, const std::uint32_t a_alignment, const bool a_alignmentRequired)
             {
                 // if (a_newSize == 0) {
                 //     logger::info("alloc of size {} detected, caller address {:x}", a_newSize, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
@@ -80,13 +80,13 @@ namespace Patches::Allocators
 
 #ifndef NDEBUG
                 if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                 }
 #endif
                 return mem;
             }
 
-            void Deallocate(RE::MemoryManager*, void* a_mem, bool a_alignmentRequired)
+            void Deallocate(RE::MemoryManager*, void* a_mem, const bool a_alignmentRequired)
             {
                 if (a_mem != g_ZeroAddress) {
                     if (a_alignmentRequired)
@@ -172,7 +172,7 @@ namespace Patches::Allocators
 #endif
 #ifndef NDEBUG
                 if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base() );
+                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                 }
 #endif
                 return mem;
@@ -206,8 +206,7 @@ namespace Patches::Allocators
                     tuple_t{ REL::ID(68143), 0x32 },   // dtor
                 };
 
-                for (const auto& [offset, size] : todo)
-                {
+                for (const auto& [offset, size] : todo) {
                     REL::Relocation target{ offset };
                     target.write_fill(REL::INT3, size);
                     target.write(REL::RET);
@@ -223,8 +222,7 @@ namespace Patches::Allocators
                     tuple_t{ REL::ID(68142), 0x13A, &Ctor },
                 };
 
-                for (const auto& [offset, size, func] : todo)
-                {
+                for (const auto& [offset, size, func] : todo) {
                     REL::Relocation target{ offset };
                     target.replace_func(size, func);
                 }
@@ -274,8 +272,8 @@ namespace Patches::Allocators
                 }
 
                 void* AllocSysDirect(
-                    std::size_t a_size,
-                    std::size_t a_alignment,
+                    std::size_t  a_size,
+                    std::size_t  a_alignment,
                     std::size_t* a_actualSize,
                     std::size_t* a_actualAlign) override
                 {
@@ -321,48 +319,27 @@ namespace Patches::Allocators
             }
         }
 
-        namespace CRTAllocator
-        {
-            void Install() {
-#ifdef USE_TBB
-                SKSE::PatchIAT(scalable_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
-                SKSE::PatchIAT(scalable_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free");
-                SKSE::PatchIAT(scalable_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
-                SKSE::PatchIAT(scalable_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
-                SKSE::PatchIAT(scalable_aligned_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
-                SKSE::PatchIAT(scalable_aligned_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
-#endif
-
-            }
-        }
 
         void Install()
         {
-            if (Settings::MemoryManager::bOverrideMemoryManager.GetValue())
-            {
+            if (Settings::MemoryManager::bOverrideMemoryManager.GetValue()) {
                 MemoryManager::Install();
                 MemoryManager::AutoScrapBuffer::Install();
                 logger::info("installed global memory manager patch"sv);
             }
 
-            if (Settings::MemoryManager::bOverrideScrapHeap.GetValue())
-            {
+            if (Settings::MemoryManager::bOverrideScrapHeap.GetValue()) {
                 ScrapHeap::Install();
                 logger::info("installed scrapheap patch"sv);
             }
 
-            if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())
-            {
+            if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue()) {
                 ScaleformAllocator::Install();
                 logger::info("installed scaleform allocator patch"sv);
             }
-
-            if (Settings::MemoryManager::bOverrideCRTAllocator.GetValue()) {
-                CRTAllocator::Install();
-                logger::info("installed crt allocator patch"sv);
-            }
         }
     }
+
     void Install()
     {
         detail::Install();

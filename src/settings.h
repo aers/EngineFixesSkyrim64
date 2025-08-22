@@ -64,7 +64,6 @@ namespace Settings
 
 	namespace MemoryManager
     {
-		static REX::TOML::Bool bOverrideCRTAllocator( "MemoryManager", "bOverrideCRTAllocator", true);
 		static REX::TOML::Bool bOverrideMemoryManager( "MemoryManager", "bOverrideMemoryManager", true);
         static REX::TOML::Bool bOverrideScrapHeap("MemoryManager", "bOverrideScrapHeap", true);
         static REX::TOML::Bool bOverrideScaleformAllocator( "MemoryManager", "bOverrideScaleformAllocator", true);
