@@ -7,6 +7,8 @@ vcpkg_from_github(
     REF "v${VERSION}"
     SHA512 d87c67514ca17c9769910194a8fac912e183952ad5c408dbceb48edc8aef13375df3d4c9120a7366206c8ab72699ed953df65c11c261e19d8e9d273c73d073f3
     HEAD_REF master
+    PATCHES
+        "export-safer-funcs.diff"
 )
 
 vcpkg_check_features(

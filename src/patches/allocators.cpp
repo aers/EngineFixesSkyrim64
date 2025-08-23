@@ -6,6 +6,20 @@ namespace Patches::Allocators
 {
     namespace detail
     {
+#ifdef USE_TBB
+        void log_crt_free(void* a_mem)
+        {
+            logger::info("tbb_safe_free called original free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
+            free(a_mem);
+        }
+
+        void log_crt_aligned_free(void* a_mem)
+        {
+            logger::info("tbb_safe_free called original aligned free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
+            _aligned_free(a_mem);
+        }
+#endif
+
         namespace MemoryManager
         {
             // when the global memory manager has a zero-size allocation it returns scratch memory
@@ -91,13 +105,15 @@ namespace Patches::Allocators
                 if (a_mem != g_ZeroAddress) {
                     if (a_alignmentRequired)
 #ifdef USE_TBB
-                        scalable_aligned_free(a_mem);
+                        //scalable_aligned_free(a_mem);
+                        __TBB_malloc_safer_free(a_mem, log_crt_aligned_free);
 #else
                         _aligned_free(a_mem);
 #endif
                     else
 #ifdef USE_TBB
-                        scalable_free(a_mem);
+                        //scalable_free(a_mem);
+                        __TBB_malloc_safer_free(a_mem, log_crt_free);
 #else
                         free(a_mem);
 #endif
@@ -188,7 +204,8 @@ namespace Patches::Allocators
             void Deallocate(RE::ScrapHeap*, void* a_mem)
             {
 #ifdef USE_TBB
-                scalable_aligned_free(a_mem);
+                // scalable_aligned_free(a_mem);
+                __TBB_malloc_safer_free(a_mem, log_crt_aligned_free);
 #else
                 _aligned_free(a_mem);
 #endif
