@@ -87,7 +87,12 @@
 
             inline void Install()
             {
-                detail::Install();
-                logger::info("installed scaleform allocator patch"sv);
+                if (!Settings::MemoryManager::bOverrideMemoryManager.GetValue()) {
+                    logger::info("skipping scaleform allocator patch as it requires the memory manager patch"sv);
+                }
+                else {
+                    detail::Install();
+                    logger::info("installed scaleform allocator patch"sv);
+                }
             }
         }

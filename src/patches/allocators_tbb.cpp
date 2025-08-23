@@ -240,6 +240,7 @@ namespace Patches::AllocatorsTBB
     void Install()
     {
         detail::Install();
-        logger::info("installed memory manager patches using TBB"sv);
+        if (Settings::MemoryManager::bOverrideMemoryManager.GetValue() || Settings::MemoryManager::bOverrideScrapHeap.GetValue())
+            logger::info("installed memory manager patches using TBB"sv);
     }
 }

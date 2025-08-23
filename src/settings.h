@@ -49,7 +49,7 @@ namespace Settings
         static REX::TOML::Bool bDisableChargenPrecache("Patches", "bDisableChargenPrecache", false);
         static REX::TOML::Bool bEnableAchievementsWithMods("Patches", "bEnableAchievementsWithMods", true);
         static REX::TOML::Bool bFormCaching("Patches", "bFormCaching", true);
-        static REX::TOML::Bool bMaxStdIO("Patches", "iMaxStdIO", true);
+        static REX::TOML::Bool bMaxStdIO("Patches", "bMaxStdIO", true);
         static REX::TOML::Bool bRegularQuicksaves("Patches", "bRegularQuicksaves", false);
         static REX::TOML::Bool bSafeExit("Patches", "bSafeExit", true);
         static REX::TOML::Bool bSaveAddedSoundCategories("Patches", "bSaveAddedSoundCategories", true);

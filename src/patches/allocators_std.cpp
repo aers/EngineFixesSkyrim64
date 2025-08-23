@@ -227,6 +227,7 @@ namespace Patches::AllocatorsStd
     void Install()
     {
         detail::Install();
-        logger::info("installed memory manager patches using CRT"sv);
+        if (Settings::MemoryManager::bOverrideMemoryManager.GetValue() || Settings::MemoryManager::bOverrideScrapHeap.GetValue())
+            logger::info("installed memory manager patches using CRT"sv);
     }
 }

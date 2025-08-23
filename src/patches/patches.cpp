@@ -10,20 +10,23 @@
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
 #include "save_game_max_size.h"
-#include  "scaleform_allocator.h"
+#include "scaleform_allocator.h"
 #include "scrolling_doesnt_switch_pov.h"
 #include "sleep_wait_time.h"
 #include "tree_lod_reference_caching.h"
 #include "waterflow_animation.h"
 
-namespace Patches {
-    void PreLoad() {
+namespace Patches
+{
+    void PreLoad()
+    {
         if (Settings::MemoryManager::bDisableTBB.GetValue())
             AllocatorsStd::Install();
         else
             AllocatorsTBB::Install();
 
-        ScaleformAllocator::Install();
+        if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())
+            ScaleformAllocator::Install();
 
         if (Settings::Patches::bSafeExit.GetValue())
             SafeExit::Install();

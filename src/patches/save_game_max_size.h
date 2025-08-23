@@ -5,6 +5,11 @@ namespace Patches::SaveGameMaxSize
 {
     inline void Install()
     {
+        if (!Settings::MemoryManager::bOverrideScrapHeap.GetValue()) {
+            logger::info("skipping save game max size patch as it requires scrap heap override patch"sv);
+            return;
+        }
+
         constexpr std::array todo = {
             std::pair(109378, 0x17),
             std::pair(109355, 0x20B),
