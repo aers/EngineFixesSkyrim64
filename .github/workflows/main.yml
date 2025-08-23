@@ -13,9 +13,9 @@ jobs:
   run:
     uses: adya/pack-skse-mod/.github/workflows/pack.yml@main
     with:
-      CMAKE_AE_BUILD_PRESET: 'release-tbb'
-      CMAKE_AE_CONFIG_PRESET: 'vs2022-windows-vcpkg-release-tbb'
-      CMAKE_AE_BINARY_DIR: 'build/release_tbb'
+      CMAKE_AE_BUILD_PRESET: 'release'
+      CMAKE_AE_CONFIG_PRESET: 'vs2022-windows-vcpkg-release'
+      CMAKE_AE_BINARY_DIR: 'build/release'
       CMAKE_SE_CONFIG_PRESET: ''
       CMAKE_SE_BUILD_PRESET: ''
       CMAKE_VR_CONFIG_PRESET: ''
