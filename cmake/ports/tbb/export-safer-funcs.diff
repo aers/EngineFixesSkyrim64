@@ -1,0 +1,20 @@
+diff --git a/include/oneapi/tbb/scalable_allocator.h b/include/oneapi/tbb/scalable_allocator.h
+index 31650a0a..aa0930b8 100644
+--- a/include/oneapi/tbb/scalable_allocator.h
++++ b/include/oneapi/tbb/scalable_allocator.h
+@@ -84,6 +84,15 @@ TBBMALLOC_EXPORT void __TBB_EXPORTED_FUNC scalable_aligned_free(void* ptr);
+     @ingroup memory_allocation */
+ TBBMALLOC_EXPORT size_t __TBB_EXPORTED_FUNC scalable_msize(void* ptr);
+ 
++// make safer calls accessible
++TBBMALLOC_EXPORT void __TBB_EXPORTED_FUNC __TBB_malloc_safer_free(void *object, void (*original_free)(void*));
++
++TBBMALLOC_EXPORT void* __TBB_EXPORTED_FUNC __TBB_malloc_safer_realloc(void* ptr, size_t sz, void* original_realloc);
++
++TBBMALLOC_EXPORT void * __TBB_EXPORTED_FUNC __TBB_malloc_safer_aligned_realloc(void *ptr, size_t size, size_t alignment, void* orig_function);
++
++TBBMALLOC_EXPORT size_t __TBB_EXPORTED_FUNC __TBB_malloc_safer_msize(void *object, size_t (*original_msize)(void*));
++
+ /* Results for scalable_allocation_* functions */
+ typedef enum {
+     TBBMALLOC_OK,
