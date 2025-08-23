@@ -1,6 +1,6 @@
 {
   "name": "enginefixes",
-  "version-string": "7.0.9",
+  "version-string": "7.0.10",
   "description": "Engine Fixes for Skyrim AE (1.6.1170)",
   "homepage": "https://github.com/aers/EngineFixesSkyrim64/",
   "license": "MIT",
@@ -12,7 +12,6 @@
     "toml11",
     "safetyhook",
     "boost-regex",
-    "gtl",
     "tbb"
   ],
   "builtin-baseline": "4bb07a326d9b9bce3703272a509e5bc25dd9cfd5"

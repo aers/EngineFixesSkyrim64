@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Patches::Allocators
+namespace Patches::AllocatorsTBB
 {
     void Install();
 }

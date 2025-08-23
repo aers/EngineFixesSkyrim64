@@ -33,7 +33,8 @@ set(headers ${headers}
 	src/fixes/tree_reflections.h
 	src/fixes/vertical_look_sensitivity.h
 	src/fixes/weapon_block_scaling.h
-	src/patches/allocators.h
+	src/patches/allocators_std.h
+	src/patches/allocators_tbb.h
 	src/patches/disable_chargen_precache.h
 	src/patches/enable_achievements.h
 	src/patches/form_caching.h
@@ -43,6 +44,7 @@ set(headers ${headers}
 	src/patches/safe_exit.h
 	src/patches/save_added_sound_categories.h
 	src/patches/save_game_max_size.h
+	src/patches/scaleform_allocator.h
 	src/patches/scrolling_doesnt_switch_pov.h
 	src/patches/sleep_wait_time.h
 	src/patches/tree_lod_reference_caching.h

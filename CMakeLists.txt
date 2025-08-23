@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 set(NAME "EngineFixes" CACHE STRING "")
-set(VERSION 7.0.9 CACHE STRING "")
+set(VERSION 7.0.10 CACHE STRING "")
 
 # ---- Options ----
-option(USE_TBB "Use TBB allocator and container." FALSE)
 option(COPY_BUILD "Copy the build output to the Skyrim directory." TRUE)
 
 # ---- Cache build vars ----
@@ -39,10 +38,6 @@ set_from_environment(XSE_TES5_MODS_PATH)
 set(SkyrimPath ${XSE_TES5_MODS_PATH})
 set(SkyrimVersion "Skyrim AE")
 set(VERSION ${VERSION})
-
-if(USE_TBB)
-    add_compile_definitions(USE_TBB)
-endif()
 
 find_commonlib_path()
 message(
@@ -120,9 +115,8 @@ else()
     )
 endif()
 
-if(USE_TBB)
-    find_package(TBB CONFIG REQUIRED)
-endif()
+
+find_package(TBB CONFIG REQUIRED)
 find_package(safetyhook CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED COMPONENTS regex)
 
@@ -181,17 +175,10 @@ target_link_libraries(
     PRIVATE
     ${CommonLibName}::${CommonLibName}
     safetyhook::safetyhook
+    TBB::tbb
+    TBB::tbbmalloc
     Boost::regex
 )
-
-if(USE_TBB)
-    target_link_libraries(
-            ${PROJECT_NAME}
-            PRIVATE
-            TBB::tbb
-            TBB::tbbmalloc
-    )
-endif()
 
 target_precompile_headers(
     ${PROJECT_NAME}

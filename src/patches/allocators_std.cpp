@@ -1,25 +1,9 @@
-#include "allocators.h"
+#include "allocators_std.h"
 
-// #include <tbb/memory_pool.h>
-
-namespace Patches::Allocators
+namespace Patches::AllocatorsStd
 {
     namespace detail
     {
-#ifdef USE_TBB
-        void log_crt_free(void* a_mem)
-        {
-            logger::info("tbb_safe_free called original free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
-            free(a_mem);
-        }
-
-        void log_crt_aligned_free(void* a_mem)
-        {
-            logger::info("tbb_safe_free called original aligned free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
-            _aligned_free(a_mem);
-        }
-#endif
-
         namespace MemoryManager
         {
             // when the global memory manager has a zero-size allocation it returns scratch memory
@@ -65,11 +49,8 @@ namespace Patches::Allocators
                     //logger::info("alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                     return g_ZeroAddress;
                 }
-#ifdef USE_TBB
-                void* mem = a_alignmentRequired ? scalable_aligned_malloc(a_size, a_alignment) : scalable_malloc(a_size);
-#else
+
                 void* mem = a_alignmentRequired ? _aligned_malloc(a_size, a_alignment) : malloc(a_size);
-#endif
 
 #ifndef NDEBUG
                 if (mem == nullptr) {
@@ -86,11 +67,8 @@ namespace Patches::Allocators
                 // }
                 if (a_oldMem == g_ZeroAddress)
                     return Allocate(a_self, a_newSize, a_alignment, a_alignmentRequired);
-#ifdef USE_TBB
-                void* mem = a_alignmentRequired ? scalable_aligned_realloc(a_oldMem, a_newSize, a_alignment) : scalable_realloc(a_oldMem, a_newSize);
-#else
+
                 void* mem = a_alignmentRequired ? _aligned_realloc(a_oldMem, a_newSize, a_alignment) : realloc(a_oldMem, a_newSize);
-#endif
 
 #ifndef NDEBUG
                 if (mem == nullptr) {
@@ -104,19 +82,9 @@ namespace Patches::Allocators
             {
                 if (a_mem != g_ZeroAddress) {
                     if (a_alignmentRequired)
-#ifdef USE_TBB
-                        //scalable_aligned_free(a_mem);
-                        __TBB_malloc_safer_free(a_mem, log_crt_aligned_free);
-#else
                         _aligned_free(a_mem);
-#endif
                     else
-#ifdef USE_TBB
-                        //scalable_free(a_mem);
-                        __TBB_malloc_safer_free(a_mem, log_crt_free);
-#else
                         free(a_mem);
-#endif
                 }
             }
 
@@ -125,11 +93,7 @@ namespace Patches::Allocators
                 if (a_mem == g_ZeroAddress)
                     return 0;
 
-#ifdef USE_TBB
-                return scalable_msize(a_mem);
-#else
                 return _msize(a_mem);
-#endif
             }
 
             void ReplaceAllocRoutines()
@@ -181,11 +145,9 @@ namespace Patches::Allocators
                     // logger::info("scrapheap alignment of {} detected, caller address {:x}", a_alignment, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                     a_alignment = 0x8;
                 }
-#ifdef USE_TBB
-                void* mem = scalable_aligned_malloc(a_size, a_alignment);
-#else
+
                 void* mem = _aligned_malloc(a_size, a_alignment);
-#endif
+
 #ifndef NDEBUG
                 if (mem == nullptr) {
                     logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
@@ -203,12 +165,7 @@ namespace Patches::Allocators
 
             void Deallocate(RE::ScrapHeap*, void* a_mem)
             {
-#ifdef USE_TBB
-                // scalable_aligned_free(a_mem);
-                __TBB_malloc_safer_free(a_mem, log_crt_aligned_free);
-#else
                 _aligned_free(a_mem);
-#endif
             }
 
             void WriteStubs()
@@ -252,91 +209,6 @@ namespace Patches::Allocators
             }
         }
 
-        namespace ScaleformAllocator
-        {
-            class CustomAllocator final :
-                public RE::GSysAllocPaged
-            {
-            public:
-                [[nodiscard]] static CustomAllocator* GetSingleton()
-                {
-                    static CustomAllocator singleton;
-                    return std::addressof(singleton);
-                }
-
-            protected:
-                void GetInfo(Info* a_info) const override
-                {
-                    assert(a_info != nullptr);
-
-                    a_info->minAlign = __STDCPP_DEFAULT_NEW_ALIGNMENT__;
-                    a_info->maxAlign = 0;
-                    a_info->granularity = 1u << 16;
-                    a_info->sysDirectThreshold = 1;
-                    a_info->maxHeapGranularity = 0;
-                    a_info->hasRealloc = false;
-                }
-
-                void* Alloc(std::size_t a_size, std::size_t a_align) override
-                {
-                    return _allocator->Allocate(a_size, static_cast<std::uint32_t>(a_align), true);
-                }
-
-                bool Free(void* a_ptr, std::size_t, std::size_t) override
-                {
-                    _allocator->Deallocate(a_ptr, true);
-                    return true;
-                }
-
-                void* AllocSysDirect(
-                    std::size_t  a_size,
-                    std::size_t  a_alignment,
-                    std::size_t* a_actualSize,
-                    std::size_t* a_actualAlign) override
-                {
-                    assert(a_actualSize != nullptr);
-                    assert(a_actualAlign != nullptr);
-
-                    *a_actualSize = a_size;
-                    *a_actualAlign = a_alignment;
-                    return _allocator->Allocate(a_size, static_cast<std::uint32_t>(a_alignment), true);
-                }
-
-                bool FreeSysDirect(void* a_ptr, std::size_t, std::size_t) override
-                {
-                    _allocator->Deallocate(a_ptr, true);
-                    return true;
-                }
-
-            private:
-                CustomAllocator() = default;
-                CustomAllocator(const CustomAllocator&) = delete;
-                CustomAllocator(CustomAllocator&&) = delete;
-                ~CustomAllocator() = default;
-                CustomAllocator& operator=(const CustomAllocator&) = delete;
-                CustomAllocator& operator=(CustomAllocator&&) = delete;
-
-                RE::MemoryManager* _allocator{ RE::MemoryManager::GetSingleton() };
-            };
-
-            struct Init
-            {
-                static void thunk(const RE::GMemoryHeap::HeapDesc& a_rootHeapDesc, RE::GSysAllocBase*)
-                {
-                    return hook(a_rootHeapDesc, CustomAllocator::GetSingleton());
-                }
-
-                static inline REL::Relocation<decltype(thunk)> hook;
-            };
-
-            void Install()
-            {
-                REL::Relocation target{ REL::ID(82323), 0x170 };
-                Init::hook = target.write_call<5>(Init::thunk);
-            }
-        }
-
-
         void Install()
         {
             if (Settings::MemoryManager::bOverrideMemoryManager.GetValue()) {
@@ -349,17 +221,12 @@ namespace Patches::Allocators
                 ScrapHeap::Install();
                 logger::info("installed scrapheap patch"sv);
             }
-
-            if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue()) {
-                ScaleformAllocator::Install();
-                logger::info("installed scaleform allocator patch"sv);
-            }
         }
     }
 
     void Install()
     {
         detail::Install();
-        logger::info("installed memory manager patches"sv);
+        logger::info("installed memory manager patches using CRT"sv);
     }
 }

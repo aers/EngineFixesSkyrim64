@@ -45,13 +45,6 @@
       "toolset": "v143"
     },
     {
-      "name": "tbb",
-      "hidden": true,
-      "cacheVariables": {
-        "USE_TBB": true
-      }
-    },
-    {
       "name": "vs2022-windows-vcpkg-release",
       "binaryDir": "${sourceDir}/build/release",
       "inherits": [
@@ -70,28 +63,6 @@
         "windows",
         "vs2022"
       ]
-    },
-    {
-      "name": "vs2022-windows-vcpkg-release-tbb",
-      "binaryDir": "${sourceDir}/build/release_tbb",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows",
-        "vs2022",
-        "tbb"
-      ]
-    },
-    {
-      "name": "vs2022-windows-vcpkg-debug-tbb",
-      "binaryDir": "${sourceDir}/build/debug_tbb",
-      "inherits": [
-        "cmake-dev",
-        "vcpkg",
-        "windows",
-        "vs2022",
-        "tbb"
-      ]
     }
   ],
   "buildPresets": [
@@ -103,16 +74,6 @@
     {
       "name": "debug",
       "configurePreset": "vs2022-windows-vcpkg-debug",
-      "configuration": "Debug"
-    },
-    {
-      "name": "release-tbb",
-      "configurePreset": "vs2022-windows-vcpkg-release-tbb",
-      "configuration": "Release"
-    },
-    {
-      "name": "debug-tbb",
-      "configurePreset": "vs2022-windows-vcpkg-debug-tbb",
       "configuration": "Debug"
     }
   ]

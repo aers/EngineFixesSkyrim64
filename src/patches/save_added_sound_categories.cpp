@@ -1,7 +1,6 @@
 #include "save_added_sound_categories.h"
 
 #include <SimpleIni.h>
-#include <spdlog/logger.h>
 
 namespace Patches::SaveAddedSoundCategories
 {

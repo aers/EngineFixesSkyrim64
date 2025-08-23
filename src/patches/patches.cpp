@@ -1,6 +1,7 @@
 #include "patches.h"
 
-#include "allocators.h"
+#include "allocators_std.h"
+#include "allocators_tbb.h"
 #include "disable_chargen_precache.h"
 #include "enable_achievements.h"
 #include "form_caching.h"
@@ -9,6 +10,7 @@
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
 #include "save_game_max_size.h"
+#include  "scaleform_allocator.h"
 #include "scrolling_doesnt_switch_pov.h"
 #include "sleep_wait_time.h"
 #include "tree_lod_reference_caching.h"
@@ -16,7 +18,12 @@
 
 namespace Patches {
     void PreLoad() {
-        Allocators::Install();
+        if (Settings::MemoryManager::bDisableTBB.GetValue())
+            AllocatorsStd::Install();
+        else
+            AllocatorsTBB::Install();
+
+        ScaleformAllocator::Install();
 
         if (Settings::Patches::bSafeExit.GetValue())
             SafeExit::Install();

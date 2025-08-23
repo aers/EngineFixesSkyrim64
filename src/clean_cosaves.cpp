@@ -1,5 +1,7 @@
 #include "clean_cosaves.h"
 
+#include <boost/regex.hpp>
+
 namespace Util::CoSaves
 {
     std::optional<std::filesystem::path> GetSavesPath()

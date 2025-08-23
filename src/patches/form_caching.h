@@ -25,11 +25,7 @@ namespace Patches::FormCaching
 {
     namespace detail
     {
-#ifdef USE_TBB
         using HashMap = tbb::concurrent_hash_map<std::uint32_t, RE::TESForm*>;
-#else
-        using HashMap = gtl::parallel_flat_hash_map<std::uint32_t, RE::TESForm*>;
-#endif
 
         inline HashMap g_formCache[256];
 
@@ -41,7 +37,6 @@ namespace Patches::FormCaching
             const std::uint32_t baseId = (a_formId & 0x00FFFFFF);
 
             // lookup form in our cache first
-#ifdef USE_TBB
             {
                 HashMap::const_accessor a;
 
@@ -50,21 +45,12 @@ namespace Patches::FormCaching
                     return formPointer;
                 }
             }
-#else
-            if (g_formCache[masterId].if_contains(baseId, [&formPointer](const HashMap::value_type& v) { formPointer = v.second; })) {
-                return formPointer;
-            }
-#endif
 
             // lookup form in bethesda's map
             formPointer = RE::TESForm::LookupByID(a_formId);
 
             if (formPointer != nullptr) {
-#ifdef USE_TBB
                 g_formCache[masterId].emplace(baseId, formPointer);
-#else
-                g_formCache[masterId].try_emplace_l(baseId, [&formPointer](HashMap::value_type& v) { v.second = formPointer; }, formPointer);
-#endif
             }
 
             return formPointer;
@@ -98,17 +84,11 @@ namespace Patches::FormCaching
             RE::TESForm* formPointer = *a_valueFunctor;
 
             if (formPointer != nullptr) {
-#ifdef USE_TBB
                 HashMap::accessor a;
                 if (!g_formCache[masterId].emplace(a, baseId, formPointer)) {
                     logger::trace("replacing an existing form in form cache"sv);
                     a->second = formPointer;
                 }
-#else
-                g_formCache[masterId].try_emplace_l(baseId, [&formPointer](HashMap::value_type& v) {
-                        logger::trace("replacing an existing form in form cache"sv);
-                        v.second = formPointer; }, formPointer);
-#endif
 
                 TreeLodReferenceCaching::detail::RemoveCachedForm(baseId);
             }

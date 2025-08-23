@@ -56,14 +56,8 @@
 #include <ShlObj.h>
 
 #include <xbyak/xbyak.h>
-#ifdef USE_TBB
-    #include <tbb/scalable_allocator.h>
-    #include <tbb/concurrent_hash_map.h>
-#else
-    #include <gtl/phmap.hpp>
-#endif
+#include <tbb/concurrent_hash_map.h>
 #include <safetyhook.hpp>
-#include <boost/regex.hpp>
 
 namespace logger = SKSE::log;
 

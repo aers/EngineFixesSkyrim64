@@ -29,7 +29,7 @@ namespace Patches::TreeLodReferenceCaching
                     // otherwise try cache then scan all files
                     else {
                         bool found = false;
-#ifdef USE_TBB
+
                         {
                             HashMap::const_accessor a;
 
@@ -38,9 +38,7 @@ namespace Patches::TreeLodReferenceCaching
                                 found = true;
                             }
                         }
-#else
-                        g_treeReferenceCache.if_contains(baseId, [&objectReference, &found](const HashMap::value_type& v) { objectReference = v.second; found = true; });
-#endif
+
                         if (!found) {
                             // Find first valid tree object by ESP/ESM load order
                             const auto dataHandler = RE::TESDataHandler::GetSingleton();
@@ -59,11 +57,7 @@ namespace Patches::TreeLodReferenceCaching
                             }
 
                             // Insert even if it's a null pointer
-#ifdef USE_TBB
                             g_treeReferenceCache.emplace(baseId, objectReference);
-#else
-                            g_treeReferenceCache.try_emplace_l(baseId, [&objectReference](HashMap::value_type& v) { v.second = objectReference; }, objectReference);
-#endif
                         }
                     }
 
