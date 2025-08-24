@@ -18,7 +18,7 @@
 
 namespace Patches
 {
-    void PreLoad()
+    void Load()
     {
         if (Settings::MemoryManager::bDisableTBB.GetValue())
             AllocatorsStd::Install();
@@ -28,12 +28,6 @@ namespace Patches
         if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())
             ScaleformAllocator::Install();
 
-        if (Settings::Patches::bSafeExit.GetValue())
-            SafeExit::Install();
-    }
-
-    void Load()
-    {
         if (Settings::Patches::bDisableChargenPrecache.GetValue())
             DisableChargenPrecache::Install();
 
@@ -48,6 +42,9 @@ namespace Patches
 
         if (Settings::Patches::bRegularQuicksaves.GetValue())
             RegularQuicksaves::Install();
+
+        if (Settings::Patches::bSafeExit.GetValue())
+            SafeExit::Install();
 
         if (Settings::Patches::bSaveAddedSoundCategories.GetValue())
             SaveAddedSoundCategories::Install();

@@ -102,7 +102,8 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
         logger::trace("enabled verbose logging"sv);
     }
 
-    Patches::PreLoad();
+    Patches::Load();
+    Fixes::Load();
 
     g_isPreloaded = true;
 }
@@ -127,6 +128,15 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
         SKSE::Init(a_skse);
 
         logger::error("plugin did not preload, please install the preloader");
+
+        std::wostringstream messageBoxText;
+        messageBoxText << L"ERROR: Engine Fixes did not pre-load and fixes are not active. Please verify the installation of d3dx9_42.dll from the Part 2 archive. This file must reside in the main game folder alongside SkyrimSE.exe, or be properly installed with your mod manager's root folder functionality.\r\n"sv;
+        messageBoxText << L"Skyrim will now close.";
+        REX::W32::MessageBoxW(nullptr, messageBoxText.str().c_str(), L"Engine Fixes", MB_OK);
+
+        spdlog::default_logger()->flush();
+        ::TerminateProcess(::GetCurrentProcess(), EXIT_SUCCESS);
+
         return false;
     }
 
@@ -140,9 +150,6 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
         logger::error("Failed to register messaging interface listener"sv);
         return false;
     }
-
-    Fixes::Load();
-    Patches::Load();
 
 	return true;
 }
