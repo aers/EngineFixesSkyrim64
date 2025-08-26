@@ -13,6 +13,7 @@ namespace Settings
         static REX::TOML::Bool bArcheryDownwardAiming("Fixes", "bArcheryDownwardAiming", true);
         static REX::TOML::Bool bAnimationLoadSignedCrash("Fixes", "bAnimationLoadSignedCrash", true);
         static REX::TOML::Bool bBethesdaNetCrash("Fixes", "bBethesdaNetCrash", true);
+        static REX::TOML::Bool bBGSKeywordFormLoadCrash("Fixes", "bBGSKeywordFormLoadCrash", true);
         static REX::TOML::Bool bBSLightingAmbientSpecular("Fixes", "bBSLightingAmbientSpecular", true);
         static REX::TOML::Bool bBSLightingShaderForceAlphaTest("Fixes", "bBSLightingShaderForceAlphaTest", true);
         static REX::TOML::Bool bBSLightingShaderParallaxBug("Fixes", "bBSLightingShaderParallaxBug", true);

@@ -4,6 +4,7 @@ set(headers ${headers}
 	src/fixes/animation_load_signed_crash.h
 	src/fixes/archery_downward_aiming.h
 	src/fixes/bethesda_net_crash.h
+	src/fixes/bgskeywordform_load_crash.h
 	src/fixes/bslightingambientspecular.h
 	src/fixes/bslightingshader_force_alpha_test.h
 	src/fixes/bslightingshader_parallax_bug.h

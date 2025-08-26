@@ -8,6 +8,7 @@ bCleanSKSECoSaves = false                       # delete SKSE cosaves with no ma
 bArcheryDownwardAiming = true                   # fixes a bug where arrows don't fire properly if you're aiming downward while crouching on a ridge
 bAnimationLoadSignedCrash = true                # fixes a misplaced used of a signed value in animation loading
 bBethesdaNetCrash = true                        # fixes the game crashing on startup if you live somewhere with special characters in the name
+bBGSKeywordFormLoadCrash = true                 # fixes a crash when malformed BGSKeywordForms are loaded by the game
 bBSLightingAmbientSpecular = true               # fixes bug where light template Directional Ambient Specular & Fresnel Power are sent to BSLightingShader incorrectly
 bBSLightingShaderForceAlphaTest = true          # fixes object LOD reflections by forcing alpha test flag on when NiAlphaProperty/AlphaTest is true
 bBSLightingShaderParallaxBug = true             # fixes a bug causing the parallax technique to break if specular is not also set

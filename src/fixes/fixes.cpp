@@ -3,6 +3,7 @@
 #include "animation_load_signed_crash.h"
 #include "archery_downward_aiming.h"
 #include "bethesda_net_crash.h"
+#include "bgskeywordform_load_crash.h"
 #include "bslightingambientspecular.h"
 #include "bslightingshader_force_alpha_test.h"
 #include "bslightingshader_parallax_bug.h"
@@ -45,6 +46,9 @@ namespace Fixes
 
         if (Settings::Fixes::bBethesdaNetCrash.GetValue())
             BethesdaNetCrash::Install();
+
+        if (Settings::Fixes::bBGSKeywordFormLoadCrash.GetValue())
+            BGSKeywordFormLoadCrash::Install();
 
         if (Settings::Fixes::bBSLightingAmbientSpecular.GetValue())
             BSLightingAmbientSpecular::Install();

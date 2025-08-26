@@ -6,18 +6,6 @@ namespace Patches::Allocators
 {
     namespace detail
     {
-        void log_crt_free(void* a_mem)
-        {
-            logger::info("tbb_safe_free called original free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
-            free(a_mem);
-        }
-
-        void log_crt_aligned_free(void* a_mem)
-        {
-            logger::info("tbb_safe_free called original aligned free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
-            _aligned_free(a_mem);
-        }
-
         namespace MemoryManager
         {
             // when the global memory manager has a zero-size allocation it returns scratch memory
