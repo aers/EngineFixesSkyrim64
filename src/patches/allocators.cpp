@@ -1,8 +1,8 @@
-#include "allocators_tbb.h"
+#include "allocator/allocator.h"
 
-#include <tbb/scalable_allocator.h>
+#include "allocators.h"
 
-namespace Patches::AllocatorsTBB
+namespace Patches::Allocators
 {
     namespace detail
     {
@@ -33,14 +33,14 @@ namespace Patches::AllocatorsTBB
                     if (a_size == 0) {
                         a_self->p_Memory = g_ZeroAddress;
                     } else {
-                        a_self->p_Memory = RE::MemoryManager::GetSingleton()->GetThreadScrapHeap()->Allocate(a_size, a_alignment);
+                        a_self->p_Memory = Allocator::GetAllocator()->AllocateAligned(a_size, a_alignment);
                     }
                 }
 
                 static void Dtor(AutoScrapBuffer* a_self)
                 {
                     if (a_self->p_Memory != g_ZeroAddress) {
-                        RE::MemoryManager::GetSingleton()->GetThreadScrapHeap()->Deallocate(a_self->p_Memory);
+                        Allocator::GetAllocator()->DeallocateAligned(a_self->p_Memory);
                     }
                     a_self->p_Memory = nullptr;
                 }
@@ -59,45 +59,28 @@ namespace Patches::AllocatorsTBB
 
             void* Allocate(RE::MemoryManager*, const std::size_t a_size, const std::uint32_t a_alignment, const bool a_alignmentRequired)
             {
-                if (a_size == 0) {
-                    //logger::info("alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
-                    return g_ZeroAddress;
+                if (a_size > 0) {
+                    return a_alignmentRequired ? Allocator::GetAllocator()->AllocateAligned(a_size, a_alignment) : Allocator::GetAllocator()->Allocate(a_size);
                 }
 
-                void* mem = a_alignmentRequired ? scalable_aligned_malloc(a_size, a_alignment) : scalable_malloc(a_size);
-#ifndef NDEBUG
-                if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
-                }
-#endif
-                return mem;
+                return g_ZeroAddress;
             }
 
             void* Reallocate(RE::MemoryManager* a_self, void* a_oldMem, const std::size_t a_newSize, const std::uint32_t a_alignment, const bool a_alignmentRequired)
             {
-                // if (a_newSize == 0) {
-                //     logger::info("alloc of size {} detected, caller address {:x}", a_newSize, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
-                // }
                 if (a_oldMem == g_ZeroAddress)
                     return Allocate(a_self, a_newSize, a_alignment, a_alignmentRequired);
 
-                void* mem = a_alignmentRequired ? scalable_aligned_realloc(a_oldMem, a_newSize, a_alignment) : scalable_realloc(a_oldMem, a_newSize);
-
-#ifndef NDEBUG
-                if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
-                }
-#endif
-                return mem;
+                return a_alignmentRequired ? Allocator::GetAllocator()->ReallocateAligned(a_oldMem, a_newSize, a_alignment) : Allocator::GetAllocator()->Reallocate(a_oldMem, a_newSize);
             }
 
             void Deallocate(RE::MemoryManager*, void* a_mem, const bool a_alignmentRequired)
             {
                 if (a_mem != g_ZeroAddress) {
                     if (a_alignmentRequired)
-                        __TBB_malloc_safer_free(a_mem, log_crt_aligned_free);
+                        Allocator::GetAllocator()->DeallocateAligned(a_mem);
                     else
-                        __TBB_malloc_safer_free(a_mem, log_crt_free);
+                        Allocator::GetAllocator()->Deallocate(a_mem);
                 }
             }
 
@@ -106,7 +89,7 @@ namespace Patches::AllocatorsTBB
                 if (a_mem == g_ZeroAddress)
                     return 0;
 
-                return scalable_msize(a_mem);
+                return Allocator::GetAllocator()->Size(a_mem);
             }
 
             void ReplaceAllocRoutines()
@@ -151,22 +134,13 @@ namespace Patches::AllocatorsTBB
             void* Allocate(RE::ScrapHeap*, std::size_t a_size, std::size_t a_alignment)
             {
                 if (a_size < 0x10) {
-                    // logger::info("scrapheap alloc of size {} detected, caller address {:x}", a_size, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                     a_size = 0x10;
                 }
                 if (a_alignment < 0x8) {
-                    // logger::info("scrapheap alignment of {} detected, caller address {:x}", a_alignment, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
                     a_alignment = 0x8;
                 }
 
-                void* mem = scalable_aligned_malloc(a_size, a_alignment);
-
-#ifndef NDEBUG
-                if (mem == nullptr) {
-                    logger::info("failed to allocate memory, caller address {:x}"sv, reinterpret_cast<std::uintptr_t>(_ReturnAddress()) - REL::Module::get().base());
-                }
-#endif
-                return mem;
+                return Allocator::GetAllocator()->AllocateAligned(a_size, a_alignment);
             }
 
             RE::ScrapHeap* Ctor(RE::ScrapHeap* a_self)
@@ -178,7 +152,7 @@ namespace Patches::AllocatorsTBB
 
             void Deallocate(RE::ScrapHeap*, void* a_mem)
             {
-                __TBB_malloc_safer_free(a_mem, log_crt_aligned_free);
+                Allocator::GetAllocator()->DeallocateAligned(a_mem);
             }
 
             void WriteStubs()
@@ -240,7 +214,5 @@ namespace Patches::AllocatorsTBB
     void Install()
     {
         detail::Install();
-        if (Settings::MemoryManager::bOverrideMemoryManager.GetValue() || Settings::MemoryManager::bOverrideScrapHeap.GetValue())
-            logger::info("installed memory manager patches using TBB"sv);
     }
 }

@@ -1,4 +1,5 @@
 set(headers ${headers}
+	src/allocator/allocator.h
 	src/clean_cosaves.h
 	src/fixes/animation_load_signed_crash.h
 	src/fixes/archery_downward_aiming.h
@@ -33,8 +34,7 @@ set(headers ${headers}
 	src/fixes/tree_reflections.h
 	src/fixes/vertical_look_sensitivity.h
 	src/fixes/weapon_block_scaling.h
-	src/patches/allocators_std.h
-	src/patches/allocators_tbb.h
+	src/patches/allocators.h
 	src/patches/disable_chargen_precache.h
 	src/patches/enable_achievements.h
 	src/patches/form_caching.h

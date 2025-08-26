@@ -1,7 +1,6 @@
 #include "patches.h"
 
-#include "allocators_std.h"
-#include "allocators_tbb.h"
+#include "allocators.h"
 #include "disable_chargen_precache.h"
 #include "enable_achievements.h"
 #include "form_caching.h"
@@ -20,10 +19,7 @@ namespace Patches
 {
     void Load()
     {
-        if (Settings::MemoryManager::bDisableTBB.GetValue())
-            AllocatorsStd::Install();
-        else
-            AllocatorsTBB::Install();
+        Allocators::Install();
 
         if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())
             ScaleformAllocator::Install();
