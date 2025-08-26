@@ -2,12 +2,13 @@
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/spdlog.h>
 
-#include "Patches/patches.h"
-#include "Patches/save_added_sound_categories.h"
+#include "allocator/allocator.h"
 #include "clean_cosaves.h"
 #include "fixes/fixes.h"
 #include "fixes/save_screenshots.h"
 #include "fixes/tree_reflections.h"
+#include "patches/patches.h"
+#include "patches/save_added_sound_categories.h"
 #include "settings.h"
 #include "warnings/warnings.h"
 
@@ -93,6 +94,15 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     trampoline.create(1 << 11);
 
     Settings::Load();
+
+    if (Settings::MemoryManager::bDisableTBB.GetValue()) {
+        Allocator::SetAllocator(Allocator::CRT);
+        logger::info("set allocator to CRT"sv);
+    }
+    else {
+        Allocator::SetAllocator(Allocator::TBB);
+        logger::info("set allocator to TBB"sv);
+    }
 
     if (Settings::General::bVerboseLogging.GetValue())
     {
