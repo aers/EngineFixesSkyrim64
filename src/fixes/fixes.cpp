@@ -15,6 +15,7 @@
 #include "create_armor_node_nullptr_crash.h"
 #include "double_perk_apply.h"
 #include "equip_shout_event_spam.h"
+#include "esl_cell_loading_bug.h"
 #include "facegen_morphdatahead_nullptr_crash.h"
 #include "get_keyword_item_count.h"
 #include "gheap_leak_detection_crash.h"
@@ -27,10 +28,8 @@
 #include "null_process_crash.h"
 #include "perk_fragment_is_running.h"
 #include "removed_spellbook.h"
-#include "save_screenshots.h"
 #include "shadowscenenode_nullptr_crash.h"
 #include "torch_landscape.h"
-#include "tree_reflections.h"
 #include "vertical_look_sensitivity.h"
 #include "weapon_block_scaling.h"
 
@@ -82,6 +81,9 @@ namespace Fixes
 
         if (Settings::Fixes::bEquipShoutEventSpam.GetValue())
             EquipShoutEventSpam::Install();
+
+        if (Settings::Fixes::bESLCELLLoadBug.GetValue())
+            ESLCELLLoadingBugs::Install();
 
         if (Settings::Fixes::bFaceGenMorphDataHeadNullPtrCrash.GetValue())
             FaceGenMorphDataHeadNullPtrCrash::Install();

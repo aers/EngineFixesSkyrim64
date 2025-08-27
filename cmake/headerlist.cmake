@@ -16,6 +16,7 @@ set(headers ${headers}
 	src/fixes/create_armor_node_nullptr_crash.h
 	src/fixes/double_perk_apply.h
 	src/fixes/equip_shout_event_spam.h
+	src/fixes/esl_cell_loading_bug.h
 	src/fixes/facegen_morphdatahead_nullptr_crash.h
 	src/fixes/fixes.h
 	src/fixes/get_keyword_item_count.h

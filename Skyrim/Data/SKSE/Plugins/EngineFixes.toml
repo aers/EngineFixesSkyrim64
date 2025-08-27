@@ -19,6 +19,7 @@ bClimateLoad = true                             # fixes a bug where the game fai
 bConjurationEnchantAbsorbs = true               # fixes a bug where spell absorption triggers on enchanted items using conjuration summons
 bCreateArmorNodeNullPtrCrash = true             # fixes typo that may cause a crash somewhere in CreateArmorNode
 bDoublePerkApply = true                         # fixes NPC perks applying twice when you load a game
+bESLCELLLoadBug = true                          # fixes issues with interior cells created in ESL files
 bEquipShoutEventSpam = true                     # fixes a bug where the "equip shout" procedure will send a "shout equipped" event even if the shout fails to equip
 bFaceGenMorphDataHeadNullPtrCrash = true        # fixes a crash in face morphing, possibly related to decapitations
 bGetKeywordItemCount = true                     # fixes the condition function "GetKeywordItemCount", which returns broken results sometimes

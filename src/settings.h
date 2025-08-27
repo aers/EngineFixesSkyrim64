@@ -25,6 +25,7 @@ namespace Settings
         static REX::TOML::Bool bCreateArmorNodeNullPtrCrash("Fixes", "bCreateArmorNodeNullPtrCrash", true);
         static REX::TOML::Bool bDoublePerkApply("Fixes", "bDoublePerkApply", true);
         static REX::TOML::Bool bEquipShoutEventSpam("Fixes", "bEquipShoutEventSpam", true);
+        static REX::TOML::Bool bESLCELLLoadBug("Fixes", "bESLCELLLoadBug", true);
         static REX::TOML::Bool bFaceGenMorphDataHeadNullPtrCrash("Fixes", "bFaceGenMorphDataHeadNullPtrCrash", true);
         static REX::TOML::Bool bGetKeywordItemCount("Fixes", "bGetKeywordItemCount", true);
         static REX::TOML::Bool bGHeapLeakDetectionCrash("Fixes", "bGHeapLeakDetectionCrash", true);
