@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 set(NAME "EngineFixes" CACHE STRING "")
-set(VERSION 7.0.13 CACHE STRING "")
+set(VERSION 7.0.14 CACHE STRING "")
 
 # ---- Options ----
 option(COPY_BUILD "Copy the build output to the Skyrim directory." TRUE)
