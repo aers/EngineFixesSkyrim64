@@ -27,10 +27,9 @@ namespace Fixes::BGSKeywordFormLoadCrash
                 return;
             }
 
-            logger::warn("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
-
             // if keywords = 0 and file ends, return
             if (!a_file->SeekNextSubrecord()) {
+                logger::warn("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
                 return;
             }
 
@@ -39,8 +38,11 @@ namespace Fixes::BGSKeywordFormLoadCrash
 
             if (currentSubrecordType != 0x4144574B) // KWDA
             {
+                logger::warn("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
                 TESFile_SetOffsetChunk(a_file, currentChunkOffset);
             }
+
+            // if the next subrecord was KWDA it's ok to just return and skip it
         }
 
         inline void Install()
