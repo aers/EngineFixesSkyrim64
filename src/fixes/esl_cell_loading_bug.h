@@ -18,7 +18,7 @@ namespace Fixes::ESLCELLLoadingBugs
             }
 
             if (a_this->cellData.exterior) {
-                return (a_this->cellData.exterior->cellY >> 5) | ((a_this->cellData.exterior->cellX >> 5) << 16);
+                return (a_this->cellData.exterior->cellY >> 5) & 0x0000FFFF | (((a_this->cellData.exterior->cellX >> 5) << 16) & 0xFFFF0000);
             }
 
             return 0;
@@ -37,7 +37,7 @@ namespace Fixes::ESLCELLLoadingBugs
             }
 
             if (a_this->cellData.exterior) {
-                return (a_this->cellData.exterior->cellY >> 3) | ((a_this->cellData.exterior->cellX >> 3) << 16);
+                return (a_this->cellData.exterior->cellY >> 3) & 0x0000FFFF | (((a_this->cellData.exterior->cellX >> 3) << 16) & 0xFFFF0000);
             }
 
             return 0;
