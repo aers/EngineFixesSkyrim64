@@ -84,7 +84,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     logger::info("EngineFixes v{}.{}.{} PreLoad"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
     const auto ver = REL::Module::get().version();
-    if (ver < SKSE::RUNTIME_SSE_1_6_1170)
+    if (ver < SKSE::RUNTIME_SSE_1_5_97)
     {
         logger::error("Unsupported runtime version {}"sv, ver);
         return;
@@ -118,18 +118,6 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     g_isPreloaded = true;
 }
 
-extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version = []() {
-    SKSE::PluginVersionData v;
-    v.PluginVersion(Version::MAJOR);
-    v.PluginName(Version::PROJECT);
-    v.AuthorName("aers");
-    v.UsesAddressLibrary();
-    v.UsesUpdatedStructs();
-    v.CompatibleVersions({ SKSE::RUNTIME_SSE_1_6_1170 });
-
-    return v;
-}();
-
 extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
     if (!g_isPreloaded)
@@ -152,7 +140,7 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
 
 	SKSE::Init(a_skse, false);
 
-	logger::info("EngineFixes SKSE Load"sv, SKSE::GetPluginVersion());
+	logger::info("EngineFixes SKSE Load"sv, Version::PROJECT);
 
     const auto messaging = SKSE::GetMessagingInterface();
     if (!messaging->RegisterListener("SKSE", MessageHandler))
