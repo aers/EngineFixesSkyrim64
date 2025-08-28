@@ -36,12 +36,12 @@ namespace Fixes::BSLightingAmbientSpecular
     inline void Install()
     {
         // remove invalid code from BSLightingShader::SetupMaterial
-        REL::Relocation materialTarget { REL::ID(107298), 0x8CF };
+        REL::Relocation materialTarget { RELOCATION_ID(0, 107298), 0x8CF };
         materialTarget.write_fill(REL::NOP, 0x20);
 
         // add new code to BSLightingShader::SetupGeometry
-        const REL::Relocation geometryTarget { REL::ID(107300), 0x1271 };
-        const REL::Relocation constant { REL::ID(390997) };
+        const REL::Relocation geometryTarget { RELOCATION_ID(0, 107300), 0x1271 };
+        const REL::Relocation constant { RELOCATION_ID(0, 390997) };
 
         detail::Patch p(constant.address(), geometryTarget.address());
         p.ready();

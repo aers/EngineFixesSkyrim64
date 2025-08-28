@@ -25,7 +25,7 @@ namespace Fixes::BSLightingShaderParallaxBug
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(107300), 0xB5D };
+        REL::Relocation target { RELOCATION_ID(0, 107300), 0xB5D };
 
         detail::Patch p(target.address());
         auto& trampoline = SKSE::GetTrampoline();

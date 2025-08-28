@@ -28,7 +28,7 @@ namespace Fixes::CreateArmorNodeNullPtrCrash
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(15712), 0x51B };
+        REL::Relocation target { RELOCATION_ID(0, 15712), 0x51B };
 
         detail::Patch p(target.address());
         p.ready();

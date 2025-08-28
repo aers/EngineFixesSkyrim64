@@ -4,6 +4,7 @@ set(VERSION 7.0.14 CACHE STRING "")
 
 # ---- Options ----
 option(COPY_BUILD "Copy the build output to the Skyrim directory." TRUE)
+option(BUILD_SKYRIMAE "Build for Skyrim AE" OFF)
 
 # ---- Cache build vars ----
 macro(set_from_environment VARIABLE)
@@ -30,13 +31,18 @@ endmacro()
 
 set_from_environment(VCPKG_ROOT)
 
-# Skyrim AE (1.6.1170) only
-add_compile_definitions(SKYRIM_AE)
-add_compile_definitions(SKYRIM_SUPPORT_AE)
+if(BUILD_SKYRIMAE)
+    add_compile_definitions(SKYRIM_AE)
+    add_compile_definitions(SKYRIM_SUPPORT_AE)
+    set(SkyrimVersion "Skyrim AE")
+else()
+    set(SkyrimVersion "Skyrim SSE")
+endif()
+
 set(CommonLibName "CommonLibSSE")
-set_from_environment(XSE_TES5_MODS_PATH)
-set(SkyrimPath ${XSE_TES5_MODS_PATH})
-set(SkyrimVersion "Skyrim AE")
+set_from_environment(Skyrim64Path)
+set(SkyrimPath ${Skyrim64Path})
+
 set(VERSION ${VERSION})
 
 find_commonlib_path()
@@ -118,6 +124,11 @@ endif()
 
 find_package(TBB CONFIG REQUIRED)
 find_package(safetyhook CONFIG REQUIRED)
+
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
+
 find_package(Boost CONFIG REQUIRED COMPONENTS regex)
 
 # ---- Add source files ----
@@ -217,8 +228,8 @@ if(COPY_BUILD)
         add_custom_command(
             TARGET ${PROJECT_NAME}
             POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${SkyrimPath}/${NAME}/SKSE/Plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PDB_FILE:${PROJECT_NAME}> ${SkyrimPath}/${NAME}/SKSE/Plugins/
+                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${SkyrimPath}/${NAME}/SKSE/Plugins/
+                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_PDB_FILE:${PROJECT_NAME}> ${SkyrimPath}/${NAME}/SKSE/Plugins/
         )
     else()
         message(

@@ -11,7 +11,7 @@ namespace Fixes::LipSync
             0x126
         };
 
-        REL::Relocation targetBase { REL::ID(16267) };
+        REL::Relocation targetBase { RELOCATION_ID(0, 16267) };
 
         constexpr auto JMP = std::uint8_t { 0xEB };
 

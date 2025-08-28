@@ -36,7 +36,7 @@ namespace Fixes::EquipShoutEventSpam
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(38770), 0x13D };
+        REL::Relocation target { RELOCATION_ID(0, 38770), 0x13D };
 
         detail::Patch p(target.address());
         p.ready();

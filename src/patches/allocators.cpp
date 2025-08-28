@@ -35,8 +35,8 @@ namespace Patches::Allocators
 
                 static void Install()
                 {
-                    REL::Relocation ctor{ REL::ID(68108) };
-                    REL::Relocation dtor{ REL::ID(68109) };
+                    REL::Relocation ctor{ RELOCATION_ID(0, 68108) };
+                    REL::Relocation dtor{ RELOCATION_ID(0, 68109) };
 
                     ctor.replace_func(0x7B, Ctor);
                     dtor.replace_func(0x54, Dtor);
@@ -82,10 +82,10 @@ namespace Patches::Allocators
 
             void ReplaceAllocRoutines()
             {
-                REL::Relocation allocate{ REL::ID(68115) };
-                REL::Relocation reallocate{ REL::ID(68116) };
-                REL::Relocation deallocate{ REL::ID(68117) };
-                REL::Relocation size{ REL::ID(68100) };
+                REL::Relocation allocate{ RELOCATION_ID(0, 68115) };
+                REL::Relocation reallocate{ RELOCATION_ID(0, 68116) };
+                REL::Relocation deallocate{ RELOCATION_ID(0, 68117) };
+                REL::Relocation size{ RELOCATION_ID(0, 68100) };
 
                 allocate.replace_func(0x248, Allocate);
                 reallocate.replace_func(0x1F6, Reallocate);
@@ -95,12 +95,12 @@ namespace Patches::Allocators
 
             void StubInit()
             {
-                REL::Relocation target{ REL::ID(68121) };
+                REL::Relocation target{ RELOCATION_ID(0, 68121) };
 
                 target.write_fill(REL::INT3, 0x1A7);
                 target.write(REL::RET);
 
-                REL::Relocation<std::uint32_t*> initFence{ REL::ID(400190) };
+                REL::Relocation<std::uint32_t*> initFence{ RELOCATION_ID(0, 400190) };
                 *initFence = 2;
             }
 
@@ -147,12 +147,12 @@ namespace Patches::Allocators
             {
                 using tuple_t = std::tuple<REL::ID, std::size_t>;
                 constexpr std::array todo{
-                    tuple_t{ REL::ID(68152), 0xBA },   // Clean
-                    tuple_t{ REL::ID(68151), 0x8 },    // ClearKeepPages
-                    tuple_t{ REL::ID(68155), 0xF6 },   // InsertFreeBlock
-                    tuple_t{ REL::ID(68156), 0x185 },  // RemoveFreeBlock
-                    tuple_t{ REL::ID(68150), 0x4 },    // SetKeepPages
-                    tuple_t{ REL::ID(68143), 0x32 },   // dtor
+                    tuple_t{ RELOCATION_ID(0, 68152), 0xBA },   // Clean
+                    tuple_t{ RELOCATION_ID(0, 68151), 0x8 },    // ClearKeepPages
+                    tuple_t{ RELOCATION_ID(0, 68155), 0xF6 },   // InsertFreeBlock
+                    tuple_t{ RELOCATION_ID(0, 68156), 0x185 },  // RemoveFreeBlock
+                    tuple_t{ RELOCATION_ID(0, 68150), 0x4 },    // SetKeepPages
+                    tuple_t{ RELOCATION_ID(0, 68143), 0x32 },   // dtor
                 };
 
                 for (const auto& [offset, size] : todo) {
@@ -166,9 +166,9 @@ namespace Patches::Allocators
             {
                 using tuple_t = std::tuple<REL::ID, std::size_t, void*>;
                 constexpr std::array todo{
-                    tuple_t{ REL::ID(68144), 0x5E7, &Allocate },
-                    tuple_t{ REL::ID(68146), 0x13E, &Deallocate },
-                    tuple_t{ REL::ID(68142), 0x13A, &Ctor },
+                    tuple_t{ RELOCATION_ID(0, 68144), 0x5E7, &Allocate },
+                    tuple_t{ RELOCATION_ID(0, 68146), 0x13E, &Deallocate },
+                    tuple_t{ RELOCATION_ID(0, 68142), 0x13A, &Ctor },
                 };
 
                 for (const auto& [offset, size, func] : todo) {

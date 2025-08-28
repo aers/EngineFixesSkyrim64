@@ -17,7 +17,7 @@ namespace Fixes::GlobalTime
         for (const auto& [id, offset] : todo)
         {
             REL::Relocation target{ REL::ID(id), offset };
-            const REL::Relocation secondsSinceLastFrameRealTime{ REL::ID(410200) };
+            const REL::Relocation secondsSinceLastFrameRealTime{ RELOCATION_ID(0, 410200) };
             // offset = loc - addr - bytes til end of instruction
             const auto timerOffset = static_cast<std::int32_t>(secondsSinceLastFrameRealTime.address() - target.address() - 0x4);
             target.write(timerOffset);

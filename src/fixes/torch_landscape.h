@@ -40,7 +40,7 @@ namespace Fixes::TorchLandscape
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(17610), 0x530 };
+        REL::Relocation target { RELOCATION_ID(0, 17610), 0x530 };
 
         detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::ShadowSceneNode::AddLight));
         p.ready();

@@ -25,7 +25,7 @@ namespace Fixes::ArcheryDownwardAiming
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(44027), 0x434 };
+        REL::Relocation target { RELOCATION_ID(0, 44027), 0x434 };
         detail::Projectile::_Move = target.write_call<5>(detail::Projectile::Move);
 
         logger::info("installed archery downward aiming fix"sv);

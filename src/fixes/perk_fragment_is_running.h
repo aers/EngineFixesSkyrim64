@@ -12,7 +12,7 @@ namespace Fixes::PerkFragmentIsRunning
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(21571), 0x22 };
+        REL::Relocation target { RELOCATION_ID(0, 21571), 0x22 };
         target.write_call<5>(detail::IsRunning);
 
         logger::info("installed perk fragment is running fix"sv);

@@ -11,13 +11,13 @@ namespace Fixes::SaveScreenshots
 
         inline void Install()
         {
-            REL::Relocation BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ REL::ID(35772), 0x1C6 };
-            REL::Relocation MenuSave_RequestScreenshot{ REL::ID(36555), 0x5D5 };
-            REL::Relocation SaveScreenshotRequestedDword{ REL::ID(403755) };
-            REL::Relocation ScreenshotJnz{ REL::ID(105674), 0x17D };
-            REL::Relocation RenderTargetHook_1{ REL::ID(105674), 0x294 };
-            REL::Relocation RenderTargetHook_2{ REL::ID(105674), 0x307 };
-            REL::Relocation ScreenshotRenderOrigJnz{ REL::ID(105674), 0x3B1 };
+            REL::Relocation BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ RELOCATION_ID(0, 35772), 0x1C6 };
+            REL::Relocation MenuSave_RequestScreenshot{ RELOCATION_ID(0, 36555), 0x5D5 };
+            REL::Relocation SaveScreenshotRequestedDword{ RELOCATION_ID(0, 403755) };
+            REL::Relocation ScreenshotJnz{ RELOCATION_ID(0, 105674), 0x17D };
+            REL::Relocation RenderTargetHook_1{ RELOCATION_ID(0, 105674), 0x294 };
+            REL::Relocation RenderTargetHook_2{ RELOCATION_ID(0, 105674), 0x307 };
+            REL::Relocation ScreenshotRenderOrigJnz{ RELOCATION_ID(0, 105674), 0x3B1 };
 
             if (RE::GetINISetting("bUseTAA:Display")->GetBool()) {
                 return;

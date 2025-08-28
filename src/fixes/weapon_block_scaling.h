@@ -62,7 +62,7 @@ namespace Fixes::WeaponBlockScaling
 
     inline void Install()
     {
-        REL::Relocation target {REL::ID(44014), 0x3A2};
+        REL::Relocation target {RELOCATION_ID(0, 44014), 0x3A2};
 
         detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
         p.ready();

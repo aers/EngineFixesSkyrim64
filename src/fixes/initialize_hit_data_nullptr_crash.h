@@ -28,7 +28,7 @@ namespace Fixes::InitializeHitDataNullPtrCrash
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(44001), 0x10 };
+        REL::Relocation target { RELOCATION_ID(0, 44001), 0x10 };
 
         detail::Patch p(target.address());
         p.ready();

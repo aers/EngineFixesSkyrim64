@@ -124,10 +124,10 @@ namespace Patches::FormCaching
 
         inline void ReplaceFormMapFunctions()
         {
-            REL::Relocation getForm{ REL::ID(14617) };
+            REL::Relocation getForm{ RELOCATION_ID(0, 14617) };
             getForm.replace_func(0x9E, TESForm_GetFormByNumericId);
 
-            const REL::Relocation RemoveAt{ REL::ID(14710) };
+            const REL::Relocation RemoveAt{ RELOCATION_ID(0, 14710) };
             g_hk_RemoveAt = safetyhook::create_inline(RemoveAt.address(), FormMap_RemoveAt);
 
             // there is one call that is not the form table so we will callsite hook
@@ -142,10 +142,10 @@ namespace Patches::FormCaching
                 _FormScatterTable_SetAt = target.write_call<5>(FormScatterTable_SetAt);
             }
 
-            const REL::Relocation ClearData{ REL::ID(13754) };
+            const REL::Relocation ClearData{ RELOCATION_ID(0, 13754) };
             g_hk_ClearData = safetyhook::create_inline(ClearData.address(), TESDataHandler_ClearData);
 
-            const REL::Relocation InitializeFormDataStructures{ REL::ID(14669) };
+            const REL::Relocation InitializeFormDataStructures{ RELOCATION_ID(0, 14669) };
             g_hk_InitializeFormDataStructures = safetyhook::create_inline(InitializeFormDataStructures.address(), TESForm_InitializeFormDataStructures);
         }
     }

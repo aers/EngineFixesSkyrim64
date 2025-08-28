@@ -4,9 +4,8 @@ namespace Patches::ScrollingDoesntSwitchPOV
 {
     inline void Install()
     {
-        REL::Relocation firstPersonState { REL::ID(50730), 0x43 };
-        REL::Relocation thirdPersonState { REL::ID(50906), 0x1F7 };
-
+        REL::Relocation firstPersonState { RELOCATION_ID(0, 50730), 0x43 };
+        REL::Relocation thirdPersonState { RELOCATION_ID(0, 50906), 0x1F7 };
 
         constexpr std::uint8_t BYTE { 0xEB };
         // replace conditional jump with unconditional jump
