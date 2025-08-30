@@ -21,8 +21,8 @@ namespace Fixes::ClimateLoad
     inline void Install()
     {
         constexpr auto todo = std::array{
-            std::make_pair(26218, 0x1A0),
-            std::make_pair(35642, 0x241)
+            std::make_pair(25675, 0x124),
+            std::make_pair(34736, 0x100)
         };
 
         for (const auto& [id, offset] : todo)

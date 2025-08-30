@@ -10,7 +10,7 @@ namespace Fixes::TorchLandscape
             {
                 Xbyak::Label f;
 
-                mov(r9, rsi);
+                mov(r9, rdi);
                 jmp(ptr[rip + f]);
 
                 L(f);
@@ -40,7 +40,7 @@ namespace Fixes::TorchLandscape
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(17610), 0x530 };
+        REL::Relocation target { REL::ID(17208), 0x52D };
 
         detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::ShadowSceneNode::AddLight));
         p.ready();

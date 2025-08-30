@@ -11,7 +11,7 @@ namespace Fixes::CreateArmorNodeNullPtrCrash
                 Xbyak::Label patchedJmpLbl, contLbl, zeroLbl;
 
                 // original instructions
-                mov(esi, edi);
+                mov(esi, ebx);
                 test(r12, r12);
                 jz(zeroLbl);
                 jmp(ptr[rip + contLbl]);
@@ -21,14 +21,14 @@ namespace Fixes::CreateArmorNodeNullPtrCrash
                 L(contLbl);
                 dq(a_target + 0x7);
                 L(patchedJmpLbl);
-                dq(a_target + 0x21F); // jump over code that will crash due to missing null check
+                dq(a_target + 0x219); // jump over code that will crash due to missing null check
             }
         };
     }
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(15712), 0x51B };
+        REL::Relocation target { REL::ID(15535), 0x588 };
 
         detail::Patch p(target.address());
         p.ready();

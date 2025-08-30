@@ -43,8 +43,8 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
     inline void Install()
     {
         // fix null ptr
-        REL::Relocation target { REL::ID(26918), 0x4C };
-        REL::Relocation constant { REL::ID(186426) };
+        REL::Relocation target { REL::ID(26343), 0x4C };
+        REL::Relocation constant { REL::ID(228611) };
 
         detail::Patch p(target.address(), constant.address());
         p.ready();
@@ -55,7 +55,7 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
         REL::safe_fill(target.address() + 0x5, REL::NOP, 0x5);
 
         // fix clearing rbx
-        REL::Relocation targetRbx { REL::ID(26918), 0x49 };
+        REL::Relocation targetRbx { REL::ID(26343), 0x49 };
         detail::PatchClearRbx pRbx;
         pRbx.ready();
 

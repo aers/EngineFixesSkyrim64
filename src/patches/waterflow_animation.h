@@ -4,7 +4,7 @@ namespace Patches::WaterflowAnimation
 {
     namespace detail
     {
-        inline REL::Relocation<uint32_t*> g_ApplicationRunTime{ REL::ID(410201) };
+        inline REL::Relocation<uint32_t*> g_ApplicationRunTime{ REL::ID(523662) };
 
         inline float g_Timer = 8 * 3600;  // Game timer inits to 8 AM
 

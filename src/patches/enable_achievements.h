@@ -16,9 +16,9 @@ namespace Patches::EnableAchievementsWithMods
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(441528) };
+        REL::Relocation target{ REL::ID(13647) };
 
-        target.write_fill(REL::INT3, 0x6E);
+        target.write_fill(REL::INT3, 0x73);
 
         detail::Patch p;
         p.ready();

@@ -15,7 +15,7 @@ namespace Patches::SafeExit
     inline void Install()
     {
         // Main::Shutdown called by WinMain
-        REL::Relocation target { REL::ID(36544), 0x1AE };
+        REL::Relocation target { REL::ID(35545), 0x35 };
         target.write_call<5>(detail::Shutdown);
 
         logger::info("installed safe exit patch"sv);

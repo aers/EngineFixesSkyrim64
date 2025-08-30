@@ -18,9 +18,9 @@ namespace Fixes::BSLightingAmbientSpecular
                 push(rdx);
                 mov(rax, a_ambientSpecularAndFresnel);  // xmmword_1E3403C
                 movups(xmm0, ptr[rax]);
-                mov(rax, qword[rsp + 0x2D0 - 0x260 + 0x10]);  // PixelShader
+                mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]);  // PixelShader
                 movzx(edx, byte[rax + 0x46]);                 // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
-                mov(rax, ptr[rdi + 8]);                       // m_PerGeometry buffer (copied from SetupGeometry)
+                mov(rax, ptr[r15 + 8]);                       // m_PerGeometry buffer (copied from SetupGeometry)
                 movups(ptr[rax + rdx * 4], xmm0);             // m_PerGeometry buffer offset 0x6
                 pop(rdx);
                 pop(rax);
@@ -28,7 +28,7 @@ namespace Fixes::BSLightingAmbientSpecular
                 L(jmpOut);
                 test(dword[r13 + 0x94], 0x200);
                 jmp(ptr[rip]);
-                dq(a_addAmbientSpecularToSetupGeometry + 0xB);
+                dq(a_addAmbientSpecularToSetupGeometry + 11);
             }
         };
     }
@@ -36,12 +36,12 @@ namespace Fixes::BSLightingAmbientSpecular
     inline void Install()
     {
         // remove invalid code from BSLightingShader::SetupMaterial
-        REL::Relocation materialTarget { REL::ID(107298), 0x8CF };
+        REL::Relocation materialTarget { REL::ID(100563), 0x713 };
         materialTarget.write_fill(REL::NOP, 0x20);
 
         // add new code to BSLightingShader::SetupGeometry
-        const REL::Relocation geometryTarget { REL::ID(107300), 0x1271 };
-        const REL::Relocation constant { REL::ID(390997) };
+        const REL::Relocation geometryTarget { REL::ID(100565), 0xBAD };
+        const REL::Relocation constant { REL::ID(513256) };
 
         detail::Patch p(constant.address(), geometryTarget.address());
         p.ready();

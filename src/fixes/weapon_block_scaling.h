@@ -13,7 +13,7 @@ namespace Fixes::WeaponBlockScaling
                 mov(rcx, rbx);
                 mov(rdx, a_target);
                 call(rdx);
-                movaps(xmm7, xmm0);
+                movaps(xmm8, xmm0);
             }
         };
 
@@ -62,7 +62,7 @@ namespace Fixes::WeaponBlockScaling
 
     inline void Install()
     {
-        REL::Relocation target {REL::ID(44014), 0x3A2};
+        REL::Relocation target {REL::ID(42842), 0x3BB};
 
         detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
         p.ready();
