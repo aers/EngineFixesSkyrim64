@@ -38,8 +38,8 @@ namespace Patches::Allocators
                     REL::Relocation ctor{ RELOCATION_ID(66853, 68108) };
                     REL::Relocation dtor{ RELOCATION_ID(66854, 68109) };
 
-                    ctor.replace_func(VAR_NUM(0x1D, 0x7B), Ctor);
-                    dtor.replace_func(VAR_NUM(0x2F, 0x54), Dtor);
+                    ctor.replace_func(0x1D, Ctor);
+                    dtor.replace_func(0x2F, Dtor);
                 }
 
                 void* p_Memory;
