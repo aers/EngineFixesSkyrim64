@@ -45,8 +45,8 @@ namespace Fixes::ESLCELLLoadingBugs
 
         inline void Install()
         {
-            orig_GetGroupBlockKey = safetyhook::create_inline(REL::ID(18454).address(), TESObjectCELL_GetGroupBlockKey);
-            orig_GetGroupSubBlockKey = safetyhook::create_inline(REL::ID(18455).address(), TESObjectCELL_GetGroupSubBlockKey);
+            orig_GetGroupBlockKey = safetyhook::create_inline(RELOCATION_ID(18454, 18885).address(), TESObjectCELL_GetGroupBlockKey);
+            orig_GetGroupSubBlockKey = safetyhook::create_inline(RELOCATION_ID(18455, 18886).address(), TESObjectCELL_GetGroupSubBlockKey);
         }
     }
 

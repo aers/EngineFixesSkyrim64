@@ -4,7 +4,7 @@ namespace Fixes::BGSKeywordFormLoadCrash
 {
     namespace detail
     {
-        inline REL::Relocation<bool(RE::TESFile*, std::uint32_t)> TESFile_SetOffsetChunk { REL::ID(13899) };
+        inline REL::Relocation<bool(RE::TESFile*, std::uint32_t)> TESFile_SetOffsetChunk { RELOCATION_ID(13899, 13985) };
 
         inline SafetyHookInline orig_BGSKeywordForm_Load;
 
@@ -47,7 +47,7 @@ namespace Fixes::BGSKeywordFormLoadCrash
 
         inline void Install()
         {
-            orig_BGSKeywordForm_Load = safetyhook::create_inline(REL::ID(14147).address(), BGSKeywordForm_Load);
+            orig_BGSKeywordForm_Load = safetyhook::create_inline(RELOCATION_ID(14147, 14255).address(), BGSKeywordForm_Load);
         }
     }
 

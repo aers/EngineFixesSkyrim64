@@ -26,7 +26,7 @@ namespace Fixes::CellInit
     }
     inline void Install()
     {
-        REL::Relocation target { REL::ID(18474), 0x110 };
+        REL::Relocation target { RELOCATION_ID(18474, 18905), VAR_NUM(0x110, 0x114) };
         detail::ExtraDataList::_GetLocation = target.write_call<5>(detail::ExtraDataList::GetLocation);
 
         logger::info("installed cell init fix"sv);

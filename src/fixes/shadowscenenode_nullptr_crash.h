@@ -33,7 +33,7 @@ namespace Fixes::ShadowSceneNodeNullPtrCrash
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(99708), 0x16 };
+        REL::Relocation target { RELOCATION_ID(99708, 106342), 0x16 };
 
         detail::Patch p(target.address());
         p.ready();

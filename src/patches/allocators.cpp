@@ -35,11 +35,11 @@ namespace Patches::Allocators
 
                 static void Install()
                 {
-                    REL::Relocation ctor{ REL::ID(66853) };
-                    REL::Relocation dtor{ REL::ID(66854) };
+                    REL::Relocation ctor{ RELOCATION_ID(66853, 68108) };
+                    REL::Relocation dtor{ RELOCATION_ID(66854, 68109) };
 
-                    ctor.replace_func(0x1D, Ctor);
-                    dtor.replace_func(0x2F, Dtor);
+                    ctor.replace_func(VAR_NUM(0x1D, 0x7B), Ctor);
+                    dtor.replace_func(VAR_NUM(0x2F, 0x54), Dtor);
                 }
 
                 void* p_Memory;
@@ -82,25 +82,25 @@ namespace Patches::Allocators
 
             void ReplaceAllocRoutines()
             {
-                REL::Relocation allocate{ REL::ID(66859) };
-                REL::Relocation reallocate{ REL::ID(66860) };
-                REL::Relocation deallocate{ REL::ID(66861) };
-                REL::Relocation size{ REL::ID(66849) };
+                REL::Relocation allocate{ RELOCATION_ID(66859, 68115) };
+                REL::Relocation reallocate{ RELOCATION_ID(66860, 68116) };
+                REL::Relocation deallocate{ RELOCATION_ID(66861, 68117) };
+                REL::Relocation size{ RELOCATION_ID(66849, 68100) };
 
                 allocate.replace_func(0x248, Allocate);
-                reallocate.replace_func(0xA7, Reallocate);
+                reallocate.replace_func(VAR_NUM(0xA7, 0x1F6), Reallocate);
                 deallocate.replace_func(0x114, Deallocate);
-                size.replace_func(0x12A, Size);
+                size.replace_func(VAR_NUM(0x12A, 0x156), Size);
             }
 
             void StubInit()
             {
-                REL::Relocation target{ REL::ID(66862) };
+                REL::Relocation target{ RELOCATION_ID(66862, 68121) };
 
-                target.write_fill(REL::INT3, 0x9E);
+                target.write_fill(REL::INT3, VAR_NUM(0x9E, 0x1A7));
                 target.write(REL::RET);
 
-                REL::Relocation<std::uint32_t*> initFence{ REL::ID(514112) };
+                REL::Relocation<std::uint32_t*> initFence{ RELOCATION_ID(514112, 400190) };
                 *initFence = 2;
             }
 
@@ -146,6 +146,16 @@ namespace Patches::Allocators
             void WriteStubs()
             {
                 using tuple_t = std::tuple<REL::ID, std::size_t>;
+#ifdef SKYRIM_AE
+                constexpr std::array todo{
+                    tuple_t{ REL::ID(68152), 0xBA },   // Clean
+                    tuple_t{ REL::ID(68151), 0x8 },    // ClearKeepPages
+                    tuple_t{ REL::ID(68155), 0xF6 },   // InsertFreeBlock
+                    tuple_t{ REL::ID(68156), 0x185 },  // RemoveFreeBlock
+                    tuple_t{ REL::ID(68150), 0x4 },    // SetKeepPages
+                    tuple_t{ REL::ID(68143), 0x32 },   // dtor
+                };
+#else
                 constexpr std::array todo{
                     tuple_t{ REL::ID(66891), 0xC3 },   // Clean
                     tuple_t{ REL::ID(66890), 0x8 },    // ClearKeepPages
@@ -154,6 +164,7 @@ namespace Patches::Allocators
                     tuple_t{ REL::ID(66889), 0x4 },    // SetKeepPages
                     tuple_t{ REL::ID(66883), 0x32 },   // dtor
                 };
+#endif
 
                 for (const auto& [offset, size] : todo) {
                     REL::Relocation target{ offset };
@@ -165,11 +176,19 @@ namespace Patches::Allocators
             void WriteHooks()
             {
                 using tuple_t = std::tuple<REL::ID, std::size_t, void*>;
+#ifdef SKYRIM_AE
+                constexpr std::array todo{
+                    tuple_t{ REL::ID(68144), 0x5E7, &Allocate },
+                    tuple_t{ REL::ID(68146), 0x13E, &Deallocate },
+                    tuple_t{ REL::ID(68142), 0x13A, &Ctor },
+                };
+#else
                 constexpr std::array todo{
                     tuple_t{ REL::ID(66884), 0x607, &Allocate },
                     tuple_t{ REL::ID(66885), 0x143, &Deallocate },
                     tuple_t{ REL::ID(66882), 0x128, &Ctor },
                 };
+#endif
 
                 for (const auto& [offset, size, func] : todo) {
                     REL::Relocation target{ offset };

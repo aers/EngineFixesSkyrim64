@@ -43,8 +43,8 @@ namespace Fixes::MemoryAccessErrors
             };
 
             REL::Relocation vtbl{ RE::BSLightingShaderMaterialSnow::VTABLE[0] };
-            REL::Relocation funcHook{ REL::ID(100563), 0x4E0 };
-            REL::Relocation funcExit{ REL::ID(100563), 0x5B6 };
+            REL::Relocation funcHook{ RELOCATION_ID(100563, 107298), VAR_NUM(0x4E0, 0x6A6) };
+            REL::Relocation funcExit{ RELOCATION_ID(100563, 107298), VAR_NUM(0x5B6, 0x770) };
             Patch patch(vtbl.address(), funcHook.address(), funcExit.address());
             patch.ready();
 
@@ -96,7 +96,7 @@ namespace Fixes::MemoryAccessErrors
             Patch patch;
             patch.ready();
 
-            REL::Relocation target{ REL::ID(101499), 0x1AFD };
+            REL::Relocation target{ RELOCATION_ID(101499, 108496), VAR_NUM(0x1AFD, 0x1BED) };
             target.write(std::span{ patch.getCode<const std::byte*>(), patch.getSize() });
         }
     }

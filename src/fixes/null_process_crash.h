@@ -20,13 +20,13 @@ namespace Fixes::NullProcessCrash
         auto& trampoline = SKSE::GetTrampoline();
 
         {
-            const REL::Relocation<std::uintptr_t> target{ REL::ID(37943) };
+            const REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(37943, 38899) };
             trampoline.write_call<5>(target.address() + 0x6C, detail::GetEquippedLeftHand);
             trampoline.write_call<5>(target.address() + 0x9C, detail::GetEquippedRightHand);
         }
 
         {
-            const REL::Relocation<std::uintptr_t> target{ REL::ID(46074) };
+            const REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(46074, 47338) };
             trampoline.write_call<5>(target.address() + 0x47, detail::GetEquippedLeftHand);
             trampoline.write_call<5>(target.address() + 0x56, detail::GetEquippedRightHand);
         }

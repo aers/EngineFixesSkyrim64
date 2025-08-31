@@ -9,8 +9,11 @@ namespace Fixes::TorchLandscape
             explicit Patch(std::uintptr_t a_func)
             {
                 Xbyak::Label f;
-
+#ifdef SKYRIM_AE
+                mov(r9, rsi);
+#else
                 mov(r9, rdi);
+#endif
                 jmp(ptr[rip + f]);
 
                 L(f);
@@ -40,7 +43,7 @@ namespace Fixes::TorchLandscape
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(17208), 0x52D };
+        REL::Relocation target { RELOCATION_ID(17208, 17610), VAR_NUM(0x52D, 0x530) };
 
         detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::ShadowSceneNode::AddLight));
         p.ready();

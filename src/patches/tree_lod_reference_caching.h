@@ -5,7 +5,7 @@ namespace Patches::TreeLodReferenceCaching
     namespace detail
     {
         typedef uint16_t (*Float2Half_)(float f);
-        inline REL::Relocation<Float2Half_> Float2Half{ REL::ID(76217) };
+        inline REL::Relocation<Float2Half_> Float2Half{ RELOCATION_ID(0, 76217) };
 
         using HashMap = tbb::concurrent_hash_map<std::uint32_t, RE::TESObjectREFR*>;
 
@@ -31,7 +31,7 @@ namespace Patches::TreeLodReferenceCaching
 
         inline void Install()
         {
-            REL::Relocation updateBlockVisibility { REL::ID(31660) };
+            REL::Relocation updateBlockVisibility { RELOCATION_ID(0, 31660) };
             updateBlockVisibility.replace_func(0x2C5, UpdateBlockVisibility);
         }
     }

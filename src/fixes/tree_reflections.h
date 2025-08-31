@@ -45,7 +45,7 @@ namespace Fixes::TreeReflections
             return;
         }
 
-        REL::Relocation target { REL::ID(100771), 0x37 };
+        REL::Relocation target { RELOCATION_ID(100771, 107551), VAR_NUM(0x37, 0x35) };
         detail::Patch p(target.address());
         p.ready();
 

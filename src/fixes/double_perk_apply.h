@@ -7,14 +7,14 @@ namespace Fixes::DoublePerkApply
         inline void ApplyPerk(RE::BGSPerk* a_perk, RE::Actor* a_perkOwner, std::uint8_t a_removeRank, std::uint8_t a_applyRank)
         {
             using func_t = decltype(&ApplyPerk);
-            const REL::Relocation<func_t> func{ REL::ID(23353) };
+            const REL::Relocation<func_t> func{ RELOCATION_ID(23353, 23822) };
             return func(a_perk, a_perkOwner, a_removeRank, a_applyRank);
         }
 
         inline void RemoveBasePerks(RE::Actor* a_actor)
         {
             using func_t = decltype(&RemoveBasePerks);
-            const REL::Relocation<func_t> func{ REL::ID(36695) };
+            const REL::Relocation<func_t> func{ RELOCATION_ID(36695, 37704) };
             return func(a_actor);
         }
 

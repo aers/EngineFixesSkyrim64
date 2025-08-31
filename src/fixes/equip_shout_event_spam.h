@@ -14,10 +14,17 @@ namespace Fixes::EquipShoutEventSpam
 
                 // rbp = Actor*
                 // rdi = TESShout*
-
-                cmp(ptr[r14 + 0x1E8], rdi);  // if (actor->equippedShout != shout)
+#ifdef SKYRIM_AE
+                cmp(ptr[rbp + 0x1E8], rdi);
+#else
+                cmp(ptr[r14 + 0x1E8], rdi);
+#endif
                 je(exitLbl);
-                mov(ptr[r14 + 0x1E8], rdi);  // actor->equippedShout = shout;
+#ifdef SKYRIM_AE
+                mov(ptr[rbp + 0x1E8], rdi);  // actor->equippedShout = shout;
+#else
+                mov(ptr[r14 + 0x1E8], rdi);
+#endif
                 test(rdi, rdi);                       // if (shout)
                 jz(exitLbl);
                 jmp(ptr[rip + sendEvent]);
@@ -26,17 +33,17 @@ namespace Fixes::EquipShoutEventSpam
                 jmp(ptr[rip + exitIP]);
 
                 L(exitIP);
-                dq(a_target + 0xBC); // SendEvent end
+                dq(a_target + VAR_NUM(0xBC, 0x8A)); // SendEvent end
 
                 L(sendEvent);
-                dq(a_target + 0x10); // SendEvent begin
+                dq(a_target +VAR_NUM(0x10, 0xC)); // SendEvent begin
             }
         };
     }
 
     inline void Install()
     {
-        REL::Relocation target { REL::ID(37821), 0x17A };
+        REL::Relocation target { RELOCATION_ID(37821, 38770), VAR_NUM(0x17A, 0x13D) };
 
         detail::Patch p(target.address());
         p.ready();
@@ -44,7 +51,7 @@ namespace Fixes::EquipShoutEventSpam
         auto& trampoline = SKSE::GetTrampoline();
         target.write_branch<5>(trampoline.allocate(p));
 
-        REL::safe_fill(target.address() + 5, REL::NOP, 11);
+        REL::safe_fill(target.address() + 5, REL::NOP, VAR_NUM(11, 7));
 
         logger::info("installed equip shout event spam fix"sv);
     }

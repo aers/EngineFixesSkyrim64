@@ -13,7 +13,11 @@ namespace Fixes::WeaponBlockScaling
                 mov(rcx, rbx);
                 mov(rdx, a_target);
                 call(rdx);
-                movaps(xmm8, xmm0);
+#fdef SKYRIM_AE
+                movaps(xmm7, xmm0);
+#else
+movaps(xmm8, xmm0);
+#endif
             }
         };
 
@@ -62,9 +66,9 @@ namespace Fixes::WeaponBlockScaling
 
     inline void Install()
     {
-        REL::Relocation target {REL::ID(42842), 0x3BB};
+        REL::Relocation target {RELOCATION_ID(42842, 44014), VAR_NUM(0x3BB, 0x3A2)};
 
-        detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
+        detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>_STRING_VIEW_(detail::Actor::CalcWeaponDamage));
         p.ready();
 
         target.write(std::span { p.getCode<const std::byte*>(), p.getSize()} );

@@ -80,7 +80,7 @@
 
                 inline void Install()
                 {
-                    REL::Relocation target{ REL::ID(80300), 0xED };
+                    REL::Relocation target{ RELOCATION_ID(80300, 82323), VAR_NUM(0xED, 0x170) };
                     Init::hook = target.write_call<5>(Init::thunk);
                 }
             }
