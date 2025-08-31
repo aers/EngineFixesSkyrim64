@@ -62,14 +62,14 @@ namespace Fixes::WeaponBlockScaling
 
     inline void Install()
     {
-        REL::Relocation target{ RELOCATION_ID(42842, 44014), VAR_NUM(0x3BB, 0x3A2) };
+        REL::Relocation target{ RELOCATION_ID(42842, 44014), VAR_NUM(0x3B8, 0x3A2) };
 
         detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
         p.ready();
 
         target.write(std::span{ p.getCode<const std::byte*>(), p.getSize() });
 
-        REL::safe_fill(target.address() + p.getSize(), REL::NOP, 0x17 - p.getSize());
+        REL::safe_fill(target.address() + p.getSize(), REL::NOP, VAR_NUM(0x19, 0x17) - p.getSize());
 
         logger::info("installed weapon block scaling fix"sv);
     }
