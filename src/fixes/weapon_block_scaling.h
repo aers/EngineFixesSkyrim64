@@ -13,10 +13,10 @@ namespace Fixes::WeaponBlockScaling
                 mov(rcx, rbx);
                 mov(rdx, a_target);
                 call(rdx);
-#fdef SKYRIM_AE
+#ifdef SKYRIM_AE
                 movaps(xmm7, xmm0);
 #else
-movaps(xmm8, xmm0);
+                movaps(xmm8, xmm0);
 #endif
             }
         };
