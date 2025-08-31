@@ -13,11 +13,12 @@ jobs:
   run:
     uses: adya/pack-skse-mod/.github/workflows/pack.yml@main
     with:
-      CMAKE_AE_BUILD_PRESET: 'release'
-      CMAKE_AE_CONFIG_PRESET: 'vs2022-windows-vcpkg-release'
-      CMAKE_AE_BINARY_DIR: 'build/release'
-      CMAKE_SE_CONFIG_PRESET: ''
-      CMAKE_SE_BUILD_PRESET: ''
+      CMAKE_AE_BUILD_PRESET: 'release-ae'
+      CMAKE_AE_CONFIG_PRESET: 'vs2022-windows-vcpkg-release-ae'
+      CMAKE_AE_BINARY_DIR: 'buildae/release'
+      CMAKE_SE_CONFIG_PRESET: 'release-se'
+      CMAKE_SE_BUILD_PRESET: 'vs2022-windows-vcpkg-release-se'
+      CMAKE_SE_BINARY_DIR: 'buildse/release'
       CMAKE_VR_CONFIG_PRESET: ''
       CMAKE_VR_BUILD_PRESET: ''
       FOMOD_INCLUDE_PDB: true
@@ -26,7 +27,10 @@ jobs:
       FOMOD_MOD_NEXUS_ID: "17230"
       FOMOD_REQUIRED_INSTALLATION_DIR: "Skyrim/Data"
       FOMOD_AE_MIN_GAME_VERSION: "1.6.1170"
-      FOMOD_AE_DESCR: 'For Skyrim AE 1.6.1170 (latest Steam version)'
+      FOMOD_AE_DESCR: 'For Skyrim AE 1.6.1170 (latest version)'
       FOMOD_AE_NAME: 'SSE v1.6.1170 ("Anniversary Edition")'
+      FOMOD_SE_MIN_GAME_VERSION: "1.5.97"
+      FOMOD_SE_DESCR: 'For Skyrim SE 1.5.97 (last pre-AE version'
+      FOMOD_SE_NAME: 'SSE v1.5.97 ("Special Edition")'
       PUBLISH_ARCHIVE_TYPE: '7z'
       VCPKG_COMMIT_ID: '4bb07a326d9b9bce3703272a509e5bc25dd9cfd5'

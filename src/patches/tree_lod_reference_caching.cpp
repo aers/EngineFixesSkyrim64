@@ -14,6 +14,7 @@ namespace Patches::TreeLodReferenceCaching
 
                     RE::TESObjectREFR* objectReference = nullptr;
 
+#ifdef SKYRIM_AE
                     // new flag in later AE versions that indicates to not scan all files, hidden is no longer a bool
                     if ((static_cast<std::uint8_t>(instance.hidden) & 2) != 0) {
                         if (RE::TESForm* form = FormCaching::detail::TESForm_GetFormByNumericId(instance.id))
@@ -28,6 +29,7 @@ namespace Patches::TreeLodReferenceCaching
                     }
                     // otherwise try cache then scan all files
                     else {
+#endif
                         bool found = false;
 
                         {
@@ -59,7 +61,9 @@ namespace Patches::TreeLodReferenceCaching
                             // Insert even if it's a null pointer
                             g_treeReferenceCache.emplace(baseId, objectReference);
                         }
+#ifdef SKYRIM_AE
                     }
+#endif
 
                     // update visibility
                     bool  fullyHidden = false;

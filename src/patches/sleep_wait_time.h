@@ -24,7 +24,7 @@ namespace Patches::SleepWaitTime
 
         inline void Install()
         {
-            REL::Relocation target{ RELOCATION_ID(0, 52486), 0x1D0 };
+            REL::Relocation target{ RELOCATION_ID(51614, 52486), VAR_NUM(0x1CE, 0x1D0) };
 
             Patch p(target.address(), Settings::Patches::fSleepWaitTimeModifier.GetValue());
             p.ready();

@@ -11,9 +11,9 @@ namespace Patches::SaveGameMaxSize
         }
 
         constexpr std::array todo = {
-            std::pair(109378, 0x17),
-            std::pair(109355, 0x20B),
-            std::pair(36095, 0x1)
+            std::pair(101985, 0x11),
+            std::pair(101962, 0x14B),
+            std::pair(35203, 0x1)
         };
 
         if (Settings::Patches::iSaveGameMaxSize.GetValue() > 4095)

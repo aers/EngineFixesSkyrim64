@@ -4,20 +4,21 @@ namespace Fixes::SaveScreenshots
 {
     namespace detail
     {
-        inline std::uint32_t esi_saved;
+        inline std::uint32_t saved_register;
 
         // 0 = none, 1 = BGSSaveManager::ProcessEvents, 2 = open menu
         inline std::uint8_t screenshot_requested_location = 0;
 
         inline void Install()
         {
-            REL::Relocation BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ RELOCATION_ID(0, 35772), 0x1C6 };
-            REL::Relocation MenuSave_RequestScreenshot{ RELOCATION_ID(0, 36555), 0x5D5 };
-            REL::Relocation SaveScreenshotRequestedDword{ RELOCATION_ID(0, 403755) };
-            REL::Relocation ScreenshotJnz{ RELOCATION_ID(0, 105674), 0x17D };
-            REL::Relocation RenderTargetHook_1{ RELOCATION_ID(0, 105674), 0x294 };
-            REL::Relocation RenderTargetHook_2{ RELOCATION_ID(0, 105674), 0x307 };
-            REL::Relocation ScreenshotRenderOrigJnz{ RELOCATION_ID(0, 105674), 0x3B1 };
+
+            REL::Relocation BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ RELOCATION_ID(34682, 35772), VAR_NUM(0x163, 0x1C6) };
+            REL::Relocation MenuSave_RequestScreenshot{ RELOCATION_ID(35556, 36555), VAR_NUM(0x56A, 0x5D5) };
+            REL::Relocation SaveScreenshotRequestedDword{ RELOCATION_ID(517224, 403755) };
+            REL::Relocation ScreenshotJnz{ RELOCATION_ID(99023, 105674), VAR_NUM(0x23A, 0x17D) };
+            REL::Relocation RenderTargetHook_1{ RELOCATION_ID(99023, 105674), VAR_NUM(0x365, 0x294) };
+            REL::Relocation RenderTargetHook_2{ RELOCATION_ID(99023, 105674), VAR_NUM(0x3EA, 0x307) };
+            REL::Relocation ScreenshotRenderOrigJnz{ RELOCATION_ID(99023, 105674), VAR_NUM(0x4D5, 0x3B1) };
 
             if (RE::GetINISetting("bUseTAA:Display")->GetBool()) {
                 return;
@@ -43,7 +44,7 @@ namespace Fixes::SaveScreenshots
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(a_target + 0xA);
+                        dq(a_target + VAR_NUM(0xD, 0xA));
                     }
                 };
 
@@ -68,7 +69,7 @@ namespace Fixes::SaveScreenshots
                         pop(rax);
                         // we're replacing some nops here so we dont need to worry about original code...
                         jmp(ptr[rip]);
-                        dq(a_target + 0xA);
+                        dq(a_target + VAR_NUM(0xD, 0xA));
                     }
                 };
 
@@ -137,9 +138,15 @@ namespace Fixes::SaveScreenshots
                         test(dil, dil);
                         jnz("ORIG_JNZ");
                         L("SKIP_JNZ");
+#ifdef SKYRIM_AE
                         mov(rcx, ptr[rbx + 0x1F0]);
                         mov(esi, 0x2A);
                         cmp(byte[rcx + 0x18], dil);
+#else
+                        mov(edi, 0x2A);
+                        mov(rax, ptr[rbp + 0x1F0]);
+                        cmp(byte[rax + 0x18], 0);
+#endif
                         jmp("JMP_OUT");
 
                         L("FROM_MENU");  // use flicker version of fix here, all we need to do is skip jnz and rely on other patches
@@ -149,9 +156,14 @@ namespace Fixes::SaveScreenshots
                         L("FROM_PROCESSEVENT");  // use menu version of fix here
                         mov(byte[rax], 0);       // screenshot request processed disable code for future iterations
                         pop(rax);
+#ifdef SKYRIM_AE
                         mov(rcx, ptr[rbx + 0x1F0]);
                         mov(esi, 0x2A);  // menu version of fix
                         cmp(byte[rbx + 0x211], 0);
+#else
+                        mov(edi, 0x2A);  // menu version of fix
+                        cmp(byte[rbp + 0x211], 0);
+#endif
                         jmp("JMP_OUT");
 
                         L("JMP_OUT");
@@ -184,18 +196,28 @@ namespace Fixes::SaveScreenshots
                         mov(rax, (uintptr_t)&screenshot_requested_location);
                         cmp(byte[rax], 2);
                         jne("ORIG");
-                        mov(rax, (uintptr_t)&esi_saved);
+                        mov(rax, (uintptr_t)&saved_register);
+#ifdef SKYRIM_AE
                         mov(dword[rax], esi);
                         mov(esi, 1);
+#else
+                        mov(dword[rax], edi);
+                        mov(edi, 1);
+#endif
 
                         L("ORIG");
                         pop(rax);
+#ifdef SKYRIM_AE
                         mov(r8d, esi);
                         mov(rcx, rbx);
+#else
+                        mov(r9d, 0x4B);
+                        mov(r8d, edi);
+#endif
 
                         jmp(ptr[rip]);
                         // .text:00000001413BD93A                 lea     edx, [r9-29h]
-                        dq(a_target + 0x6);
+                        dq(a_target + VAR_NUM(0x9, 0x6));
                     }
                 };
 
@@ -211,14 +233,22 @@ namespace Fixes::SaveScreenshots
                     explicit RenderTargetHook_2_Code(std::uintptr_t a_target)
                     {
                         // .text:00000001413BD9A7                 mov     [rbx+218h], rax
+#ifdef SKYRIM_AE
                         mov(ptr[rbx + 0x218], rax);
+#else
+                        mov(ptr[rbp + 0x218], rax);
+#endif
                         push(rax);
                         mov(rax, (uintptr_t)&screenshot_requested_location);
                         cmp(byte[rax], 2);
                         jne("ORIG");
                         mov(byte[rax], 0);
-                        mov(rax, (uintptr_t)&esi_saved);
+                        mov(rax, (uintptr_t)&saved_register);
+#ifdef SKYRIM_AE
                         mov(esi, dword[rax]);
+#else
+                        mov(edi, dword[rax]);
+#endif
 
                         L("ORIG");
                         pop(rax);
