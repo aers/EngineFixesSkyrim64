@@ -35,25 +35,21 @@ namespace Fixes::WeaponBlockScaling
             static RE::TESObjectWEAP* GetWeaponData(RE::Actor* a_actor)
             {
                 const auto proc = a_actor->currentProcess;
-                if (!proc || !proc->middleHigh)
-                {
+                if (!proc || !proc->middleHigh) {
                     return nullptr;
                 }
 
-                const auto middleProc = proc->middleHigh;
+                const auto       middleProc = proc->middleHigh;
                 const std::array entries{
                     middleProc->bothHands,
                     middleProc->rightHand,
                     middleProc->leftHand
                 };
 
-                for (const auto& entry : entries)
-                {
-                    if (entry)
-                    {
+                for (const auto& entry : entries) {
+                    if (entry) {
                         const auto obj = entry->GetObject();
-                        if (obj && obj->Is(RE::FormType::Weapon))
-                        {
+                        if (obj && obj->Is(RE::FormType::Weapon)) {
                             return static_cast<RE::TESObjectWEAP*>(obj);
                         }
                     }
@@ -66,12 +62,12 @@ namespace Fixes::WeaponBlockScaling
 
     inline void Install()
     {
-        REL::Relocation target {RELOCATION_ID(42842, 44014), VAR_NUM(0x3BB, 0x3A2)};
+        REL::Relocation target{ RELOCATION_ID(42842, 44014), VAR_NUM(0x3BB, 0x3A2) };
 
-        detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>_STRING_VIEW_(detail::Actor::CalcWeaponDamage));
+        detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
         p.ready();
 
-        target.write(std::span { p.getCode<const std::byte*>(), p.getSize()} );
+        target.write(std::span{ p.getCode<const std::byte*>(), p.getSize() });
 
         REL::safe_fill(target.address() + p.getSize(), REL::NOP, 0x17 - p.getSize());
 

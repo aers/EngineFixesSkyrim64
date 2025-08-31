@@ -84,7 +84,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     logger::info("EngineFixes v{}.{}.{} PreLoad"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
     const auto ver = REL::Module::get().version();
-    if (ver < SKSE::RUNTIME_SSE_1_5_97)
+    if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_6_1170))
     {
         logger::error("Unsupported runtime version {}"sv, ver);
         return;
@@ -117,6 +117,45 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
 
     g_isPreloaded = true;
 }
+
+#ifdef SKYRIM_AE
+extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version = []() {
+    SKSE::PluginVersionData v;
+    v.PluginVersion(Version::MAJOR);
+    v.PluginName(Version::PROJECT);
+    v.AuthorName("aers");
+    v.UsesAddressLibrary();
+    v.UsesUpdatedStructs();
+    v.CompatibleVersions({ SKSE::RUNTIME_SSE_1_6_1170 });
+
+    return v;
+}();
+#else
+extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* a_info)
+{
+    if (!g_isPreloaded)
+    {
+        OpenLog();
+        logger::error("plugin did not preload, please install the preloader");
+
+        std::wostringstream messageBoxText;
+        messageBoxText << L"ERROR: Engine Fixes did not pre-load and fixes are not active. Please verify the installation of d3dx9_42.dll from the Part 2 archive. This file must reside in the main game folder alongside SkyrimSE.exe, or be properly installed with your mod manager's root folder functionality.\r\n"sv;
+        messageBoxText << L"Skyrim will now close.";
+        REX::W32::MessageBoxW(nullptr, messageBoxText.str().c_str(), L"Engine Fixes", MB_OK);
+
+        spdlog::default_logger()->flush();
+        ::TerminateProcess(::GetCurrentProcess(), EXIT_SUCCESS);
+
+        return false;
+    }
+
+    a_info->infoVersion = SKSE::PluginInfo::kVersion;
+    a_info->name = Version::PROJECT.data();
+    a_info->version = Version::MAJOR;
+
+    return true;
+}
+#endif
 
 extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {

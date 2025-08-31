@@ -196,12 +196,11 @@ namespace Fixes::SaveScreenshots
                         mov(rax, (uintptr_t)&screenshot_requested_location);
                         cmp(byte[rax], 2);
                         jne("ORIG");
-#ifdef SKYRIM_AE
                         mov(rax, (uintptr_t)&saved_register);
+#ifdef SKYRIM_AE
                         mov(dword[rax], esi);
                         mov(esi, 1);
 #else
-                        mov(rax, (uintptr_t)&edi_saved);
                         mov(dword[rax], edi);
                         mov(edi, 1);
 #endif
