@@ -38,8 +38,8 @@ namespace Patches::Allocators
                     REL::Relocation ctor{ RELOCATION_ID(66853, 68108) };
                     REL::Relocation dtor{ RELOCATION_ID(66854, 68109) };
 
-                    ctor.replace_func(VAR_NUM(0x1D, 0x7B), Ctor);
-                    dtor.replace_func(VAR_NUM(0x2F, 0x54), Dtor);
+                    ctor.replace_func(0x7B, Ctor);
+                    dtor.replace_func(VAR_NUM(0x58, 0x54), Dtor);
                 }
 
                 void* p_Memory;
@@ -97,7 +97,7 @@ namespace Patches::Allocators
             {
                 REL::Relocation target{ RELOCATION_ID(66862, 68121) };
 
-                target.write_fill(REL::INT3, VAR_NUM(0x9E, 0x1A7));
+                target.write_fill(REL::INT3, VAR_NUM(0x9F, 0x1A7));
                 target.write(REL::RET);
 
                 REL::Relocation<std::uint32_t*> initFence{ RELOCATION_ID(514112, 400190) };

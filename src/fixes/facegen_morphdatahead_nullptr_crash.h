@@ -55,7 +55,7 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
         REL::safe_fill(target.address() + 0x5, REL::NOP, 0x5);
 
         // fix clearing rbx
-        REL::Relocation targetRbx { RELOCATION_ID(36343, 26918), 0x49 };
+        REL::Relocation targetRbx { RELOCATION_ID(26343, 26918), 0x49 };
         detail::PatchClearRbx pRbx;
         pRbx.ready();
 
