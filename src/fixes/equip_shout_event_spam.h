@@ -17,13 +17,13 @@ namespace Fixes::EquipShoutEventSpam
 #ifdef SKYRIM_AE
                 cmp(ptr[rbp + 0x1E8], rdi);
 #else
-                cmp(ptr[r14 + 0x1E8], rdi);
+                cmp(ptr[r14 + 0x1E0], rdi);
 #endif
                 je(exitLbl);
 #ifdef SKYRIM_AE
                 mov(ptr[rbp + 0x1E8], rdi);  // actor->equippedShout = shout;
 #else
-                mov(ptr[r14 + 0x1E8], rdi);
+                mov(ptr[r14 + 0x1E0], rdi);
 #endif
                 test(rdi, rdi);                       // if (shout)
                 jz(exitLbl);
@@ -51,7 +51,7 @@ namespace Fixes::EquipShoutEventSpam
         auto& trampoline = SKSE::GetTrampoline();
         target.write_branch<5>(trampoline.allocate(p));
 
-        REL::safe_fill(target.address() + 5, REL::NOP, VAR_NUM(11, 7));
+        REL::safe_fill(target.address() + 5, REL::NOP, 7);
 
         logger::info("installed equip shout event spam fix"sv);
     }
