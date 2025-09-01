@@ -10,8 +10,11 @@ namespace Fixes::VerticalLookSensitivity
             {
                 Xbyak::Label retnLabel;
                 Xbyak::Label magicLabel;
-
+#ifdef SKYRIM_AE
+                movss(xmm3, dword[rip + magicLabel]);
+#else
                 movss(xmm4, dword[rip + magicLabel]);
+#endif
                 jmp(ptr[rip + retnLabel]);
 
                 L(retnLabel);
@@ -26,11 +29,19 @@ namespace Fixes::VerticalLookSensitivity
 
     inline void Install()
     {
+#ifdef SKYRIM_AE
+        constexpr std::array todo = {
+            std::pair(50914, 0x65),
+            std::pair(33119, 0x53),
+            std::pair(50770, 0x53)
+        };
+#else
         constexpr std::array todo = {
             std::pair(49978, 0x71),
             std::pair(32370, 0x5F),
             std::pair(49839, 0x5F)
         };
+#endif
 
         auto& trampoline = SKSE::GetTrampoline();
 

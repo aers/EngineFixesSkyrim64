@@ -9,12 +9,19 @@ namespace Patches::SaveGameMaxSize
             logger::info("skipping save game max size patch as it requires scrap heap override patch"sv);
             return;
         }
-
+#ifdef SKYRIM_AE
+        constexpr std::array todo = {
+            std::pair(109378, 0x17),
+            std::pair(109355, 0x20B),
+            std::pair(36095, 0x1)
+        };
+#else
         constexpr std::array todo = {
             std::pair(101985, 0x11),
             std::pair(101962, 0x14B),
             std::pair(35203, 0x1)
         };
+#endif
 
         if (Settings::Patches::iSaveGameMaxSize.GetValue() > 4095)
         {

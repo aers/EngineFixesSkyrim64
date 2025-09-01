@@ -1,4 +1,4 @@
-# Engine Fixes for Skyrim Special Edition 1.6.1170 (Anniversary Edition, newest)
+# Engine Fixes 7.0 for SSE 1.5.97/1.6.1170
 [General]
 bVerboseLogging = false                         # enable extra log levels
 bCleanSKSECoSaves = false                       # delete SKSE cosaves with no matching saves
@@ -12,6 +12,7 @@ bBGSKeywordFormLoadCrash = true                 # fixes a crash when malformed B
 bBSLightingAmbientSpecular = true               # fixes bug where light template Directional Ambient Specular & Fresnel Power are sent to BSLightingShader incorrectly
 bBSLightingShaderForceAlphaTest = true          # fixes object LOD reflections by forcing alpha test flag on when NiAlphaProperty/AlphaTest is true
 bBSLightingShaderParallaxBug = true             # fixes a bug causing the parallax technique to break if specular is not also set
+bBSLightingShaderPropertyShadowMap = true       # fixes re-use of render passes when a light has multiple shadow map passes
 bBSTempEffectNiRTTI = true                      # fixes a bug where the NiRTTI for this object is not set properly
 bCalendarSkipping = true                        # fixes a bug where the game calendar effectively skips a year if you fast travel too far between 20:00 and 23:99 in-game
 bCellInit = true                                # fixes a rare crash where a form field does not get converted from an id to a pointer

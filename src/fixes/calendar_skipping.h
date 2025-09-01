@@ -30,6 +30,15 @@ namespace Fixes::CalendarSkipping
     inline void Install()
     {
         // these are all the callsites for ID 36291
+#ifdef SKYRIM_AE
+        constexpr std::array todo = {
+            std::make_pair(13328, 0xE2),
+            std::make_pair(36564, 0x266),
+            std::make_pair(36566, 0x3A),
+            std::make_pair(40445, 0x282),
+            std::make_pair(40485, 0x78),
+        };
+#else
         constexpr std::array todo = {
             std::make_pair(13183, 0xE2),
             std::make_pair(35565, 0x24D),
@@ -37,6 +46,7 @@ namespace Fixes::CalendarSkipping
             std::make_pair(39373, 0x2B1),
             std::make_pair(39410, 0x78),
         };
+#endif
 
         for (const auto& [id, offset] : todo)
         {

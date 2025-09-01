@@ -8,6 +8,7 @@ set(headers ${headers}
 	src/fixes/bslightingambientspecular.h
 	src/fixes/bslightingshader_force_alpha_test.h
 	src/fixes/bslightingshader_parallax_bug.h
+	src/fixes/bslightingshaderproperty_shadowmap.h
 	src/fixes/bstempeffect_nirtti.h
 	src/fixes/calendar_skipping.h
 	src/fixes/cell_init.h

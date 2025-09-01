@@ -17,6 +17,7 @@ namespace Settings
         static REX::TOML::Bool bBSLightingAmbientSpecular("Fixes", "bBSLightingAmbientSpecular", true);
         static REX::TOML::Bool bBSLightingShaderForceAlphaTest("Fixes", "bBSLightingShaderForceAlphaTest", true);
         static REX::TOML::Bool bBSLightingShaderParallaxBug("Fixes", "bBSLightingShaderParallaxBug", true);
+        static REX::TOML::Bool bBSLightingShaderPropertyShadowMap("Fixes", "bBSLightingShaderPropertyShadowMap", true);
         static REX::TOML::Bool bBSTempEffectNiRTTI("Fixes", "bBSTempEffectNiRTTI", true);
         static REX::TOML::Bool bCalendarSkipping("Fixes", "bCalendarSkipping", true);
         static REX::TOML::Bool bCellInit("Fixes", "bCellInit", true);

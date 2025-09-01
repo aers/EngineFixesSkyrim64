@@ -7,6 +7,7 @@
 #include "bslightingambientspecular.h"
 #include "bslightingshader_force_alpha_test.h"
 #include "bslightingshader_parallax_bug.h"
+#include "bslightingshaderproperty_shadowmap.h"
 #include "bstempeffect_nirtti.h"
 #include "calendar_skipping.h"
 #include "cell_init.h"
@@ -57,6 +58,9 @@ namespace Fixes
 
         if (Settings::Fixes::bBSLightingShaderParallaxBug.GetValue())
             BSLightingShaderParallaxBug::Install();
+
+        if (Settings::Fixes::bBSLightingShaderPropertyShadowMap.GetValue())
+            BSLightingShaderPropertyShadowMap::Install();
 
         if (Settings::Fixes::bBSTempEffectNiRTTI.GetValue())
             BSTempEffectNiRTTI::Install();
