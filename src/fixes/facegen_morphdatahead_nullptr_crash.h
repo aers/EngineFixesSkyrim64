@@ -15,18 +15,18 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
                 jz(zeroLbl);
 
                 // original code
-                mov(eax, ptr[rbx+ 0x24]);
+                mov(eax, ptr[rbx + 0x24]);
                 push(rbx);
-                mov (rbx, a_constant);
+                mov(rbx, a_constant);
                 comiss(xmm6, ptr[rbx]);
                 pop(rbx);
 
                 jmp(ptr[rip]);
-                dq(a_target + 0xA); // return to regular execution
+                dq(a_target + 0xA);  // return to regular execution
 
                 L(zeroLbl);
                 jmp(ptr[rip]);
-                dq(a_target + 0x3F3); // skip code
+                dq(a_target + 0x3F3);  // skip code
             }
         };
 
@@ -34,8 +34,8 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
         {
             PatchClearRbx()
             {
-                xor_(ebx, ebx); // 2 bytes
-                nop();          // 1 byte
+                xor_(ebx, ebx);  // 2 bytes
+                nop();           // 1 byte
             }
         };
     }
@@ -43,8 +43,8 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
     inline void Install()
     {
         // fix null ptr
-        REL::Relocation target { RELOCATION_ID(26343, 26918), 0x4C };
-        REL::Relocation constant { RELOCATION_ID(228611, 186426) };
+        REL::Relocation target{ RELOCATION_ID(26343, 26918), 0x4C };
+        REL::Relocation constant{ RELOCATION_ID(228611, 186426) };
 
         detail::Patch p(target.address(), constant.address());
         p.ready();
@@ -55,11 +55,11 @@ namespace Fixes::FaceGenMorphDataHeadNullPtrCrash
         REL::safe_fill(target.address() + 0x5, REL::NOP, 0x5);
 
         // fix clearing rbx
-        REL::Relocation targetRbx { RELOCATION_ID(26343, 26918), 0x49 };
+        REL::Relocation       targetRbx{ RELOCATION_ID(26343, 26918), 0x49 };
         detail::PatchClearRbx pRbx;
         pRbx.ready();
 
-        targetRbx.write(std::span {pRbx.getCode<const std::byte*>(), pRbx.getSize()});
+        targetRbx.write(std::span{ pRbx.getCode<const std::byte*>(), pRbx.getSize() });
 
         logger::info("installed facegen morphdatahead nullptr crash fix"sv);
     }

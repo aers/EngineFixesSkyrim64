@@ -45,14 +45,13 @@ namespace Fixes::MemoryAccessErrors
             REL::Relocation vtbl{ RE::BSLightingShaderMaterialSnow::VTABLE[0] };
             REL::Relocation funcHook{ RELOCATION_ID(100563, 107298), VAR_NUM(0x4E0, 0x6A6) };
             REL::Relocation funcExit{ RELOCATION_ID(100563, 107298), VAR_NUM(0x5B6, 0x770) };
-            Patch patch(vtbl.address(), funcHook.address(), funcExit.address());
+            Patch           patch(vtbl.address(), funcHook.address(), funcExit.address());
             patch.ready();
 
             auto& trampoline = SKSE::GetTrampoline();
             trampoline.write_branch<6>(
                 funcHook.address(),
                 trampoline.allocate(patch));
-
         }
 
         inline static REL::Relocation<decltype(&RE::BGSShaderParticleGeometryData::Load)> origLoad;
@@ -63,8 +62,7 @@ namespace Fixes::MemoryAccessErrors
             const bool retVal = origLoad(a_this, a_file);
 
             // the game doesn't allow more than 10 here
-            if (a_this->data.size() >= 12)
-            {
+            if (a_this->data.size() >= 12) {
                 const auto particleDensity = a_this->data[11];
                 if (particleDensity.f > 10.0)
                     a_this->data[11].f = 10.0f;

@@ -23,17 +23,15 @@ namespace Patches::SaveGameMaxSize
         };
 #endif
 
-        if (Settings::Patches::iSaveGameMaxSize.GetValue() > 4095)
-        {
+        if (Settings::Patches::iSaveGameMaxSize.GetValue() > 4095) {
             logger::error("iSaveGameMaxSize of {} is too large"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
             return;
         }
 
         std::uint32_t sizeBytes = Settings::Patches::iSaveGameMaxSize.GetValue() * 1024 * 1024;
 
-        for (auto& [id, offset] : todo)
-        {
-            REL::Relocation target { REL::ID(id), offset };
+        for (auto& [id, offset] : todo) {
+            REL::Relocation target{ REL::ID(id), offset };
             target.write(sizeBytes);
         }
 

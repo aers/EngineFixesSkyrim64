@@ -9,15 +9,12 @@ namespace Fixes::BethesdaNetCrash
             const auto numChars = WideCharToMultiByte(CP_UTF8, 0, *a_src, static_cast<int>(a_len), nullptr, 0, nullptr, nullptr);
 
             std::string str;
-            char* dst = nullptr;
-            rsize_t dstsz = 0;
-            if (a_dst)
-            {
+            char*       dst = nullptr;
+            rsize_t     dstsz = 0;
+            if (a_dst) {
                 dst = a_dst;
                 dstsz = a_dstsz;
-            }
-            else
-            {
+            } else {
                 str.resize(numChars);
                 dst = str.data();
                 dstsz = str.max_size();
@@ -29,8 +26,7 @@ namespace Fixes::BethesdaNetCrash
             else
                 err = true;
 
-            if (err)
-            {
+            if (err) {
                 if (a_retval)
                     *a_retval = static_cast<std::size_t>(-1);
                 if (a_dst && a_dstsz != 0 && a_dstsz <= (std::numeric_limits<rsize_t>::max)())

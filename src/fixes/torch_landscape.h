@@ -24,13 +24,12 @@ namespace Fixes::TorchLandscape
         struct ShadowSceneNode
         {
             static RE::BSLight* AddLight(
-                RE::ShadowSceneNode* a_this,
-                RE::NiLight* a_list,
+                RE::ShadowSceneNode*                      a_this,
+                RE::NiLight*                              a_list,
                 RE::ShadowSceneNode::LIGHT_CREATE_PARAMS& a_params,
-                const RE::TESObjectREFR* a_requester)
+                const RE::TESObjectREFR*                  a_requester)
             {
-                if (a_requester->Is(RE::FormType::ActorCharacter))
-                {
+                if (a_requester->Is(RE::FormType::ActorCharacter)) {
                     a_params.affectLand = true;
                 }
 
@@ -43,7 +42,7 @@ namespace Fixes::TorchLandscape
 
     inline void Install()
     {
-        REL::Relocation target { RELOCATION_ID(17208, 17610), VAR_NUM(0x52D, 0x530) };
+        REL::Relocation target{ RELOCATION_ID(17208, 17610), VAR_NUM(0x52D, 0x530) };
 
         detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::ShadowSceneNode::AddLight));
         p.ready();

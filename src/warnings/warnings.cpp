@@ -8,13 +8,12 @@ namespace Warnings
 
         std::uint32_t activeHandleCount = 0;
 
-        for (auto & val : refrArray) {
+        for (auto& val : refrArray) {
             if ((val.handleEntryBits & (1 << 26)) != 0)
                 activeHandleCount++;
         }
 
-        if (activeHandleCount > warnCount)
-        {
+        if (activeHandleCount > warnCount) {
             logger::warn(FMT_STRING("your active refr handle count is currently {} which is higher than the warning level of {}"), activeHandleCount, warnCount);
             if (warnCount == Settings::Warnings::uRefrMainMenuLimit.GetValue())
                 logger::warn("this is your main menu limit"sv);

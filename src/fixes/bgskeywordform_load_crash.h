@@ -4,7 +4,7 @@ namespace Fixes::BGSKeywordFormLoadCrash
 {
     namespace detail
     {
-        inline REL::Relocation<bool(RE::TESFile*, std::uint32_t)> TESFile_SetOffsetChunk { RELOCATION_ID(13899, 13985) };
+        inline REL::Relocation<bool(RE::TESFile*, std::uint32_t)> TESFile_SetOffsetChunk{ RELOCATION_ID(13899, 13985) };
 
         inline SafetyHookInline orig_BGSKeywordForm_Load;
 
@@ -36,7 +36,7 @@ namespace Fixes::BGSKeywordFormLoadCrash
             // if this new record is not KWDA, return to the previous subrecord before returning to normal execution
             auto currentSubrecordType = a_file->GetCurrentSubRecordType();
 
-            if (currentSubrecordType != 0x4144574B) // KWDA
+            if (currentSubrecordType != 0x4144574B)  // KWDA
             {
                 logger::warn("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
                 TESFile_SetOffsetChunk(a_file, currentChunkOffset);

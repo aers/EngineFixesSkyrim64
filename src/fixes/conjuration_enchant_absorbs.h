@@ -9,10 +9,8 @@ namespace Fixes::ConjurationEnchantAbsorbs
             static bool GetNoAbsorb(RE::EnchantmentItem* a_this)
             {
                 using Archetype = RE::EffectArchetypes::ArchetypeID;
-                for (const auto& effect : a_this->effects)
-                {
-                    if (effect->baseEffect->HasArchetype(Archetype::kSummonCreature))
-                    {
+                for (const auto& effect : a_this->effects) {
+                    if (effect->baseEffect->HasArchetype(Archetype::kSummonCreature)) {
                         return true;
                     }
                 }
@@ -25,7 +23,7 @@ namespace Fixes::ConjurationEnchantAbsorbs
 
     inline void Install()
     {
-        REL::Relocation targetVtbl { RE::EnchantmentItem::VTABLE[0] };
+        REL::Relocation targetVtbl{ RE::EnchantmentItem::VTABLE[0] };
         detail::EnchantmentItem::_GetNoAbsorb = targetVtbl.write_vfunc(0x5E, detail::EnchantmentItem::GetNoAbsorb);
     }
 }

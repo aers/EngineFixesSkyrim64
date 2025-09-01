@@ -11,10 +11,8 @@ namespace Fixes::CalendarSkipping
                 _Update(a_this, a_seconds);
 
                 float hoursPassed = (a_seconds * a_this->timeScale->value / (60.0F * 60.0F)) + a_this->gameHour->value - 24.0F;
-                if (hoursPassed > 24.0)
-                {
-                    do
-                    {
+                if (hoursPassed > 24.0) {
+                    do {
                         a_this->midnightsPassed += 1;
                         a_this->rawDaysPassed += 1.0F;
                         hoursPassed -= 24.0F;
@@ -48,9 +46,8 @@ namespace Fixes::CalendarSkipping
         };
 #endif
 
-        for (const auto& [id, offset] : todo)
-        {
-            REL::Relocation target { REL::ID(id), offset };
+        for (const auto& [id, offset] : todo) {
+            REL::Relocation target{ REL::ID(id), offset };
             detail::Calendar::_Update = target.write_call<5>(detail::Calendar::Update);
         }
 

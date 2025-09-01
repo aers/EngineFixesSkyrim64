@@ -3,11 +3,11 @@
 #include <string_view>
 
 #include <RE/Skyrim.h>
-#include <SKSE/SKSE.h>
 #include <REX/REX/INI.h>
 #include <REX/REX/TOML.h>
-#include <REX/W32/SHELL32.h>
 #include <REX/W32/OLE32.h>
+#include <REX/W32/SHELL32.h>
+#include <SKSE/SKSE.h>
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -55,9 +55,9 @@
 
 #include <ShlObj.h>
 
-#include <xbyak/xbyak.h>
-#include <tbb/concurrent_hash_map.h>
 #include <safetyhook.hpp>
+#include <tbb/concurrent_hash_map.h>
+#include <xbyak/xbyak.h>
 
 namespace logger = SKSE::log;
 
@@ -68,7 +68,7 @@ using namespace std::literals;
 #include "Version.h"
 
 #ifdef SKYRIM_AE
-#define VAR_NUM(se, ae) ae
+#    define VAR_NUM(se, ae) ae
 #else
-#define VAR_NUM(se, ae) se
+#    define VAR_NUM(se, ae) se
 #endif

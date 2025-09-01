@@ -19,73 +19,75 @@ std::chrono::high_resolution_clock::time_point start;
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
     switch (a_msg->type) {
-    case SKSE::MessagingInterface::kDataLoaded: {
-        if (Settings::General::bCleanSKSECoSaves.GetValue())
-            Util::CoSaves::Clean();
-        if (Settings::Patches::bSaveAddedSoundCategories.GetValue())
-            Patches::SaveAddedSoundCategories::LoadVolumes();
-        // need ini settings
-        if (Settings::Fixes::bSaveScreenshots.GetValue())
-            Fixes::SaveScreenshots::Install();
-        // need to make sure enb dll has loaded
-        if (Settings::Fixes::bTreeReflections.GetValue())
-            Fixes::TreeReflections::Install();
-        if (Settings::Warnings::bRefHandleLimit.GetValue()) {
-            Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrMainMenuLimit.GetValue());
+    case SKSE::MessagingInterface::kDataLoaded:
+        {
+            if (Settings::General::bCleanSKSECoSaves.GetValue())
+                Util::CoSaves::Clean();
+            if (Settings::Patches::bSaveAddedSoundCategories.GetValue())
+                Patches::SaveAddedSoundCategories::LoadVolumes();
+            // need ini settings
+            if (Settings::Fixes::bSaveScreenshots.GetValue())
+                Fixes::SaveScreenshots::Install();
+            // need to make sure enb dll has loaded
+            if (Settings::Fixes::bTreeReflections.GetValue())
+                Fixes::TreeReflections::Install();
+            if (Settings::Warnings::bRefHandleLimit.GetValue()) {
+                Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrMainMenuLimit.GetValue());
+            }
+
+            auto timeElapsed = std::chrono::high_resolution_clock::now() - start;
+            logger::info("time to main menu {}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
+
+            break;
         }
-
-        auto timeElapsed = std::chrono::high_resolution_clock::now() - start;
-        logger::info("time to main menu {}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
-
-        break;
-    }
     case SKSE::MessagingInterface::kPostLoadGame:
-    {
-        if (Settings::Warnings::bRefHandleLimit.GetValue()) {
-            Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrLoadedGameLimit.GetValue());
+        {
+            if (Settings::Warnings::bRefHandleLimit.GetValue()) {
+                Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrLoadedGameLimit.GetValue());
+            }
         }
-    }
     default:
         break;
     }
 }
 
-void OpenLog() {
-	auto path = SKSE::log::log_directory();
+void OpenLog()
+{
+    auto path = SKSE::log::log_directory();
 
-	if (!path)
-		return;
+    if (!path)
+        return;
 
-	*path /= "EngineFixes.log";
+    *path /= "EngineFixes.log";
 
-	std::vector<spdlog::sink_ptr> sinks{
-		std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true),
-		std::make_shared<spdlog::sinks::msvc_sink_mt>()
-	};
+    std::vector<spdlog::sink_ptr> sinks{
+        std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(), true),
+        std::make_shared<spdlog::sinks::msvc_sink_mt>()
+    };
 
-	auto logger = std::make_shared<spdlog::logger>("global", sinks.begin(), sinks.end());
+    auto logger = std::make_shared<spdlog::logger>("global", sinks.begin(), sinks.end());
 
 #ifndef NDEBUG
-	logger->set_level(spdlog::level::debug);
-	logger->flush_on(spdlog::level::debug);
+    logger->set_level(spdlog::level::debug);
+    logger->flush_on(spdlog::level::debug);
 #else
-	logger->set_level(spdlog::level::info);
-	logger->flush_on(spdlog::level::info);
+    logger->set_level(spdlog::level::info);
+    logger->flush_on(spdlog::level::info);
 #endif
 
-	spdlog::set_default_logger(std::move(logger));
-	spdlog::set_pattern("[%Y-%m-%d %T.%e][%-16s:%-4#][%L]: %v");
+    spdlog::set_default_logger(std::move(logger));
+    spdlog::set_pattern("[%Y-%m-%d %T.%e][%-16s:%-4#][%L]: %v");
 }
 
-extern "C" __declspec(dllexport) void __stdcall Initialize() {
+extern "C" __declspec(dllexport) void __stdcall Initialize()
+{
     start = std::chrono::high_resolution_clock::now();
-	OpenLog();
+    OpenLog();
 
     logger::info("EngineFixes v{}.{}.{} PreLoad"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
     const auto ver = REL::Module::get().version();
-    if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_6_1170))
-    {
+    if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_6_1170)) {
         logger::error("Unsupported runtime version {}"sv, ver);
         return;
     }
@@ -98,14 +100,12 @@ extern "C" __declspec(dllexport) void __stdcall Initialize() {
     if (Settings::MemoryManager::bDisableTBB.GetValue()) {
         Allocator::SetAllocator(Allocator::CRT);
         logger::info("set allocator to CRT"sv);
-    }
-    else {
+    } else {
         Allocator::SetAllocator(Allocator::TBB);
         logger::info("set allocator to TBB"sv);
     }
 
-    if (Settings::General::bVerboseLogging.GetValue())
-    {
+    if (Settings::General::bVerboseLogging.GetValue()) {
         spdlog::set_level(spdlog::level::trace);
         spdlog::flush_on(spdlog::level::trace);
 
@@ -133,8 +133,7 @@ extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version = []() {
 #else
 extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* a_info)
 {
-    if (!g_isPreloaded)
-    {
+    if (!g_isPreloaded) {
         OpenLog();
         logger::error("plugin did not preload, please install the preloader");
 
@@ -159,8 +158,7 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Query(const SKSE::Query
 
 extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
 {
-    if (!g_isPreloaded)
-    {
+    if (!g_isPreloaded) {
         // init with log
         SKSE::Init(a_skse);
 
@@ -177,16 +175,15 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
         return false;
     }
 
-	SKSE::Init(a_skse, false);
+    SKSE::Init(a_skse, false);
 
-	logger::info("EngineFixes SKSE Load"sv, Version::PROJECT);
+    logger::info("EngineFixes SKSE Load"sv, Version::PROJECT);
 
     const auto messaging = SKSE::GetMessagingInterface();
-    if (!messaging->RegisterListener("SKSE", MessageHandler))
-    {
+    if (!messaging->RegisterListener("SKSE", MessageHandler)) {
         logger::error("Failed to register messaging interface listener"sv);
         return false;
     }
 
-	return true;
+    return true;
 }

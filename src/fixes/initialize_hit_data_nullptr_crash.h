@@ -19,15 +19,15 @@ namespace Fixes::InitializeHitDataNullPtrCrash
 #endif
                 test(r9, r9);
                 jz(out);
-                mov(rbx, qword[r9]); // rbx is free to clobber at this point
+                mov(rbx, qword[r9]);  // rbx is free to clobber at this point
                 test(rbx, rbx);
 #ifdef SKYRIM_AE
-                cmovnz(rdi, r9); // keep weapon only if weapon->object != NULL
+                cmovnz(rdi, r9);  // keep weapon only if weapon->object != NULL
 #else
                 cmovnz(r15, r9);
 #endif
                 L(out);
-                mov(rbp, r8); // Restore this from where the trampoline jump was placed
+                mov(rbp, r8);  // Restore this from where the trampoline jump was placed
                 jmp(ptr[rip]);
                 dq(a_target + 0x6);
             }
@@ -36,7 +36,7 @@ namespace Fixes::InitializeHitDataNullPtrCrash
 
     inline void Install()
     {
-        REL::Relocation target { RELOCATION_ID(44001, 44001), VAR_NUM(0xE, 0x10) };
+        REL::Relocation target{ RELOCATION_ID(44001, 44001), VAR_NUM(0xE, 0x10) };
 
         detail::Patch p(target.address());
         p.ready();

@@ -25,7 +25,7 @@ namespace Fixes::EquipShoutEventSpam
 #else
                 mov(ptr[r14 + 0x1E0], rdi);
 #endif
-                test(rdi, rdi);                       // if (shout)
+                test(rdi, rdi);  // if (shout)
                 jz(exitLbl);
                 jmp(ptr[rip + sendEvent]);
 
@@ -33,17 +33,17 @@ namespace Fixes::EquipShoutEventSpam
                 jmp(ptr[rip + exitIP]);
 
                 L(exitIP);
-                dq(a_target + VAR_NUM(0xBC, 0x8A)); // SendEvent end
+                dq(a_target + VAR_NUM(0xBC, 0x8A));  // SendEvent end
 
                 L(sendEvent);
-                dq(a_target +VAR_NUM(0x10, 0xC)); // SendEvent begin
+                dq(a_target + VAR_NUM(0x10, 0xC));  // SendEvent begin
             }
         };
     }
 
     inline void Install()
     {
-        REL::Relocation target { RELOCATION_ID(37821, 38770), VAR_NUM(0x17A, 0x13D) };
+        REL::Relocation target{ RELOCATION_ID(37821, 38770), VAR_NUM(0x17A, 0x13D) };
 
         detail::Patch p(target.address());
         p.ready();

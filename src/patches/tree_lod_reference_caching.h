@@ -31,7 +31,7 @@ namespace Patches::TreeLodReferenceCaching
 
         inline void Install()
         {
-            REL::Relocation updateBlockVisibility { RELOCATION_ID(30839, 31660) };
+            REL::Relocation updateBlockVisibility{ RELOCATION_ID(30839, 31660) };
             updateBlockVisibility.replace_func(VAR_NUM(0x241, 0x2C5), UpdateBlockVisibility);
         }
     }

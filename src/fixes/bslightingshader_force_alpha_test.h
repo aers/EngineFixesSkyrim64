@@ -16,12 +16,10 @@ namespace Fixes::BSLightingShaderForceAlphaTest
 
         inline void BSBatchRenderer_SetupAndDrawPass(RE::BSRenderPass* a_self, std::uint32_t a_technique, bool a_alphaTest, std::uint32_t a_renderFlags)
         {
-            if (*SKSE::stl::unrestricted_cast<std::uintptr_t*>(a_self->shader) == RE::VTABLE_BSLightingShader[0].address() && a_alphaTest)
-            {
+            if (*SKSE::stl::unrestricted_cast<std::uintptr_t*>(a_self->shader) == RE::VTABLE_BSLightingShader[0].address() && a_alphaTest) {
                 const auto rawTechnique = a_technique - 0x4800002D;
                 const auto subIndex = (rawTechnique >> 24) & 0x3F;
-                if (subIndex != RAW_TECHNIQUE_EYE && subIndex != RAW_TECHNIQUE_ENVMAP && subIndex != RAW_TECHNIQUE_MULTILAYERPARALLAX && subIndex != RAW_TECHNIQUE_PARALLAX)
-                {
+                if (subIndex != RAW_TECHNIQUE_EYE && subIndex != RAW_TECHNIQUE_ENVMAP && subIndex != RAW_TECHNIQUE_MULTILAYERPARALLAX && subIndex != RAW_TECHNIQUE_PARALLAX) {
                     a_technique = a_technique | RAW_FLAG_DO_ALPHA_TEST;
                     a_self->passEnum = a_technique;
                 }
@@ -33,7 +31,7 @@ namespace Fixes::BSLightingShaderForceAlphaTest
 
     inline void Install()
     {
-        REL::Relocation target { RELOCATION_ID(100854, 107644) };
+        REL::Relocation target{ RELOCATION_ID(100854, 107644) };
         detail::g_hk_BSBatchRenderer_SetupAndDrawPass = safetyhook::create_inline(target.address(), detail::BSBatchRenderer_SetupAndDrawPass);
 
         logger::info("installed bslightingshader force alpha test fix"sv);

@@ -15,7 +15,7 @@ namespace Fixes::ShadowSceneNodeNullPtrCrash
                 jz(zeroLbl);
 
                 // original instructions
-                call(ptr[rax+0x18]);
+                call(ptr[rax + 0x18]);
                 test(al, al);
 
                 jz(zeroLbl);
@@ -33,7 +33,7 @@ namespace Fixes::ShadowSceneNodeNullPtrCrash
 
     inline void Install()
     {
-        REL::Relocation target { RELOCATION_ID(99708, 106342), 0x16 };
+        REL::Relocation target{ RELOCATION_ID(99708, 106342), 0x16 };
 
         detail::Patch p(target.address());
         p.ready();

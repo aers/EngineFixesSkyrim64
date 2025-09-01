@@ -7,16 +7,13 @@ namespace Fixes::GetKeywordItemCount
         inline bool Eval(RE::TESObjectREFR* a_thisObj, void* a_param1, [[maybe_unused]] void* a_param2, double& a_result)
         {
             a_result = 0.0;
-            if (!a_thisObj || !a_param1)
-            {
+            if (!a_thisObj || !a_param1) {
                 return true;
             }
 
             const auto log = RE::ConsoleLog::GetSingleton();
-            if (!a_thisObj->GetContainer())
-            {
-                if (log && log->IsConsoleMode())
-                {
+            if (!a_thisObj->GetContainer()) {
+                if (log && log->IsConsoleMode()) {
                     log->Print("Calling Reference is not a Container Object");
                 }
                 return true;
@@ -28,14 +25,11 @@ namespace Fixes::GetKeywordItemCount
                 return keywordForm && keywordForm->HasKeyword(keyword);
             });
 
-            for (const auto& val : inv | std::views::values)
-            {
+            for (const auto& val : inv | std::views::values) {
                 a_result += val;
             }
 
-
-            if (log && log->IsConsoleMode())
-            {
+            if (log && log->IsConsoleMode()) {
                 log->Print("GetKeywordItemCount >> %0.2f", a_result);
             }
 
@@ -44,14 +38,12 @@ namespace Fixes::GetKeywordItemCount
 
         inline bool Execute(const RE::SCRIPT_PARAMETER*, RE::SCRIPT_FUNCTION::ScriptData*, RE::TESObjectREFR* a_thisObj, RE::TESObjectREFR*, RE::Script* a_scriptObj, RE::ScriptLocals*, double& a_result, std::uint32_t&)
         {
-            if (!a_scriptObj || a_scriptObj->refObjects.empty())
-            {
+            if (!a_scriptObj || a_scriptObj->refObjects.empty()) {
                 return false;
             }
 
             auto param = a_scriptObj->refObjects.front();
-            if (!param->form || param->form->IsNot(RE::FormType::Keyword))
-            {
+            if (!param->form || param->form->IsNot(RE::FormType::Keyword)) {
                 return false;
             }
 
@@ -63,8 +55,7 @@ namespace Fixes::GetKeywordItemCount
 
     inline void Install()
     {
-        if (const auto command = RE::SCRIPT_FUNCTION::LocateScriptCommand(detail::LONG_NAME))
-        {
+        if (const auto command = RE::SCRIPT_FUNCTION::LocateScriptCommand(detail::LONG_NAME)) {
             command->executeFunction = detail::Execute;
             command->conditionFunction = detail::Eval;
 

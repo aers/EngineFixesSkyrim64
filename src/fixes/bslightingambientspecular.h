@@ -23,13 +23,13 @@ namespace Fixes::BSLightingAmbientSpecular
 #else
                 mov(rax, qword[rsp + 0x170 - 0x120 + 0x10]);
 #endif
-                movzx(edx, byte[rax + 0x46]);                 // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
+                movzx(edx, byte[rax + 0x46]);  // m_ConstantOffsets 0x6 (AmbientSpecularTintAndFresnelPower)
 #ifdef SKYRIM_AE
-                mov(rax, ptr[rdi + 8]);                       // m_PerGeometry buffer (copied from SetupGeometry)
+                mov(rax, ptr[rdi + 8]);  // m_PerGeometry buffer (copied from SetupGeometry)
 #else
                 mov(rax, ptr[r15 + 8]);
 #endif
-                movups(ptr[rax + rdx * 4], xmm0);             // m_PerGeometry buffer offset 0x6
+                movups(ptr[rax + rdx * 4], xmm0);  // m_PerGeometry buffer offset 0x6
                 pop(rdx);
                 pop(rax);
                 // original code
@@ -44,12 +44,12 @@ namespace Fixes::BSLightingAmbientSpecular
     inline void Install()
     {
         // remove invalid code from BSLightingShader::SetupMaterial
-        REL::Relocation materialTarget { RELOCATION_ID(100563, 107298), VAR_NUM(0x713, 0x8CF) };
+        REL::Relocation materialTarget{ RELOCATION_ID(100563, 107298), VAR_NUM(0x713, 0x8CF) };
         materialTarget.write_fill(REL::NOP, 0x20);
 
         // add new code to BSLightingShader::SetupGeometry
-        const REL::Relocation geometryTarget { RELOCATION_ID(100565, 107300), VAR_NUM(0xBAD, 0x1271) };
-        const REL::Relocation constant { RELOCATION_ID(513256, 390997) };
+        const REL::Relocation geometryTarget{ RELOCATION_ID(100565, 107300), VAR_NUM(0xBAD, 0x1271) };
+        const REL::Relocation constant{ RELOCATION_ID(513256, 390997) };
 
         detail::Patch p(constant.address(), geometryTarget.address());
         p.ready();
@@ -58,6 +58,5 @@ namespace Fixes::BSLightingAmbientSpecular
         trampoline.write_branch<5>(geometryTarget.address(), trampoline.allocate(p));
 
         logger::info("installed BSLightingAmbientSpecular fix"sv);
-
     }
 }

@@ -32,9 +32,8 @@ namespace Fixes::ClimateLoad
         };
 #endif
 
-        for (const auto& [id, offset] : todo)
-        {
-            REL::Relocation target { REL::ID(id), offset };
+        for (const auto& [id, offset] : todo) {
+            REL::Relocation target{ REL::ID(id), offset };
             detail::Sky::_LoadGame = target.write_call<5>(detail::Sky::LoadGame);
         }
 

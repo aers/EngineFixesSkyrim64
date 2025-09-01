@@ -1,5 +1,6 @@
 #pragma once
 
-namespace Patches {
+namespace Patches
+{
     void Load();
 }

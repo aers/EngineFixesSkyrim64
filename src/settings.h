@@ -56,36 +56,36 @@ namespace Settings
         static REX::TOML::Bool bRegularQuicksaves("Patches", "bRegularQuicksaves", false);
         static REX::TOML::Bool bSafeExit("Patches", "bSafeExit", true);
         static REX::TOML::Bool bSaveAddedSoundCategories("Patches", "bSaveAddedSoundCategories", true);
-        static REX::TOML::I32 iSaveGameMaxSize("Patches", "iSaveGameMaxSize", 128);
+        static REX::TOML::I32  iSaveGameMaxSize("Patches", "iSaveGameMaxSize", 128);
         static REX::TOML::Bool bScrollingDoesntSwitchPOV("Patches", "bScrollingDoesntSwitchPOV", false);
         static REX::TOML::Bool bSleepWaitTime("Patches", "bSleepWaitTime", false);
-        static REX::TOML::F32 fSleepWaitTimeModifier("Patches", "fSleepWaitTimeModifier", 0.3f);
+        static REX::TOML::F32  fSleepWaitTimeModifier("Patches", "fSleepWaitTimeModifier", 0.3f);
         static REX::TOML::Bool bTreeLodReferenceCaching("Patches", "bTreeLodReferenceCaching", true);
         static REX::TOML::Bool bWaterflowAnimation("Patches", "bWaterflowAnimation", true);
-        static REX::TOML::F32 fWaterflowSpeed("Patches", "fWaterflowSpeed", 20.0f);
+        static REX::TOML::F32  fWaterflowSpeed("Patches", "fWaterflowSpeed", 20.0f);
     }
 
-	namespace MemoryManager
+    namespace MemoryManager
     {
-		static REX::TOML::Bool bOverrideMemoryManager( "MemoryManager", "bOverrideMemoryManager", true);
+        static REX::TOML::Bool bOverrideMemoryManager("MemoryManager", "bOverrideMemoryManager", true);
         static REX::TOML::Bool bOverrideScrapHeap("MemoryManager", "bOverrideScrapHeap", true);
-        static REX::TOML::Bool bOverrideScaleformAllocator( "MemoryManager", "bOverrideScaleformAllocator", true);
+        static REX::TOML::Bool bOverrideScaleformAllocator("MemoryManager", "bOverrideScaleformAllocator", true);
         static REX::TOML::Bool bDisableTBB("MemoryManager", "bDisableTBB", false);
-	}
+    }
 
     namespace Warnings
     {
         static REX::TOML::Bool bRefHandleLimit("Warnings", "bRefHandleLimit", true);
-        static REX::TOML::U32 uRefrMainMenuLimit("Warnings", "bRefrMainMenuLimit", 800000);
-        static REX::TOML::U32 uRefrLoadedGameLimit("Warnings", "bRefrLoadedGameLimit", 1000000);
+        static REX::TOML::U32  uRefrMainMenuLimit("Warnings", "bRefrMainMenuLimit", 800000);
+        static REX::TOML::U32  uRefrLoadedGameLimit("Warnings", "bRefrLoadedGameLimit", 1000000);
     }
 
-	static void Load()
-	{
-		const auto toml = REX::TOML::SettingStore::GetSingleton();
-		toml->Init(
-			"Data/skse/plugins/EngineFixes.toml",
-			"Data/skse/plugins/EngineFixesCustom.toml");
-		toml->Load();
-	}
+    static void Load()
+    {
+        const auto toml = REX::TOML::SettingStore::GetSingleton();
+        toml->Init(
+            "Data/skse/plugins/EngineFixes.toml",
+            "Data/skse/plugins/EngineFixesCustom.toml");
+        toml->Load();
+    }
 }

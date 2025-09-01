@@ -14,8 +14,8 @@ namespace Fixes::BSLightingShaderParallaxBug
                 cmovnz(ecx, r9d);
 
                 // new code
-                cmp(dword[rbp+0x1D0-0x210], 0x3);     // technique ID = PARALLAX
-                cmovz(ecx, r9d);  // set eye update true
+                cmp(dword[rbp + 0x1D0 - 0x210], 0x3);  // technique ID = PARALLAX
+                cmovz(ecx, r9d);                       // set eye update true
 
                 // jmp out
                 jmp(ptr[rip]);
@@ -45,10 +45,10 @@ namespace Fixes::BSLightingShaderParallaxBug
 
     inline void Install()
     {
-        REL::Relocation target { RELOCATION_ID(100565, 107300), VAR_NUM(0x577, 0xB5D) };
+        REL::Relocation target{ RELOCATION_ID(100565, 107300), VAR_NUM(0x577, 0xB5D) };
 
         detail::Patch p(target.address());
-        auto& trampoline = SKSE::GetTrampoline();
+        auto&         trampoline = SKSE::GetTrampoline();
         trampoline.write_branch<6>(target.address(), trampoline.allocate(p));
 
         logger::info("installed bslightingshader parallax bug fix"sv);

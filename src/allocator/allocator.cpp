@@ -50,6 +50,7 @@ namespace Allocator
             logger::info("tbb_safe_free called original aligned free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
             _aligned_free(a_mem);
         }
+
     public:
         [[nodiscard]] void* Allocate(std::size_t a_size) override
         {

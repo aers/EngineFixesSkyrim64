@@ -20,12 +20,11 @@ namespace Fixes::LipSync
         };
 #endif
 
-        REL::Relocation targetBase { RELOCATION_ID(16023, 16267) };
+        REL::Relocation targetBase{ RELOCATION_ID(16023, 16267) };
 
-        constexpr auto JMP = std::uint8_t { 0xEB };
+        constexpr auto JMP = std::uint8_t{ 0xEB };
 
-        for (auto& offset : offsets)
-        {
+        for (auto& offset : offsets) {
             REL::safe_write(targetBase.address() + offset, JMP);
         }
 

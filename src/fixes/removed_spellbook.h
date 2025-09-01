@@ -12,15 +12,12 @@ namespace Fixes::RemovedSpellBook
 
                 _LoadGame(a_this, a_buf);
 
-                if (a_this->data.teaches.actorValueToAdvance == RE::ActorValue::kNone)
-                {
-                    if (a_this->TeachesSkill())
-                    {
+                if (a_this->data.teaches.actorValueToAdvance == RE::ActorValue::kNone) {
+                    if (a_this->TeachesSkill()) {
                         a_this->data.flags.reset(Flag::kAdvancesActorValue);
                     }
 
-                    if (a_this->TeachesSpell())
-                    {
+                    if (a_this->TeachesSpell()) {
                         a_this->data.flags.reset(Flag::kTeachesSpell);
                     }
                 }
@@ -31,7 +28,7 @@ namespace Fixes::RemovedSpellBook
     }
     inline void Install()
     {
-        REL::Relocation vtbl { RE::TESObjectBOOK::VTABLE[0] };
+        REL::Relocation vtbl{ RE::TESObjectBOOK::VTABLE[0] };
         detail::TESObjectBOOK::_LoadGame = vtbl.write_vfunc(0xF, detail::TESObjectBOOK::LoadGame);
 
         logger::info("installed removed spell book fix"sv);

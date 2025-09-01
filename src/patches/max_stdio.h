@@ -12,7 +12,7 @@ namespace Patches::MaxStdIO
         if (proc != nullptr) {
             const auto get = reinterpret_cast<decltype(&_getmaxstdio)>(REX::W32::GetProcAddress(handle, "_getmaxstdio"));
             const auto old = get();
-            auto result = proc(8192);
+            auto       result = proc(8192);
             if (result != -1) {
                 if (get)
                     logger::info("set max stdio to {} from {}"sv, result, old);

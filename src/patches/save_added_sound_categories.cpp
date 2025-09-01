@@ -14,22 +14,18 @@ namespace Patches::SaveAddedSoundCategories
 
         bool INIPrefSettingCollection_Unlock(RE::INIPrefSettingCollection* a_self)
         {
-            if (const auto dataHandler = RE::TESDataHandler::GetSingleton())
-            {
+            if (const auto dataHandler = RE::TESDataHandler::GetSingleton()) {
                 auto& store = get_store();
 
-                for (const auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
-                {
-                    if (soundCategory->IsMenuCategory())
-                    {
+                for (const auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>()) {
+                    if (soundCategory->IsMenuCategory()) {
                         auto fullName = soundCategory->GetFullName();
                         fullName = fullName ? fullName : "";
                         logger::trace("processing {}"sv, fullName);
                         logger::trace("menu flag set, saving"sv);
                         auto localFormID = soundCategory->formID & 0x00FFFFFF;
                         // esl
-                        if ((soundCategory->formID & 0xFF000000) == 0xFE000000)
-                        {
+                        if ((soundCategory->formID & 0xFF000000) == 0xFE000000) {
                             localFormID = localFormID & 0x00000FFF;
                         }
                         const auto srcFile = soundCategory->GetDescriptionOwnerFile();
@@ -42,13 +38,11 @@ namespace Patches::SaveAddedSoundCategories
                     }
                 }
 
-               auto ret = store.SaveFile(FILE_NAME.data());
+                auto ret = store.SaveFile(FILE_NAME.data());
 
-                if (ret < 0)
-                {
+                if (ret < 0) {
                     logger::trace("warning: unable to save SNCT ini");
-                }
-                else
+                } else
                     logger::trace("saved SNCT volumes to ini");
             }
             return g_hk_INIPrefSettingCollection_Unlock.call<bool>(a_self);
@@ -60,22 +54,18 @@ namespace Patches::SaveAddedSoundCategories
 
             const auto dataHandler = RE::TESDataHandler::GetSingleton();
 
-            if (dataHandler)
-            {
+            if (dataHandler) {
                 auto& store = get_store();
-                auto ret = store.LoadFile(FILE_NAME.data());
-                if (ret < 0)
-                {
+                auto  ret = store.LoadFile(FILE_NAME.data());
+                if (ret < 0) {
                     logger::error("unable to load SNCT volume ini");
                     return;
                 }
 
-                for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>())
-                {
+                for (auto& soundCategory : dataHandler->GetFormArray<RE::BGSSoundCategory>()) {
                     auto localFormID = soundCategory->formID & 0x00FFFFFF;
                     // esl
-                    if ((soundCategory->formID & 0xFF000000) == 0xFE000000)
-                    {
+                    if ((soundCategory->formID & 0xFF000000) == 0xFE000000) {
                         localFormID = localFormID & 0x00000FFF;
                     }
                     char localFormIDHex[] = "DEADBEEF";
@@ -84,8 +74,7 @@ namespace Patches::SaveAddedSoundCategories
                     auto srcFile = soundCategory->GetDescriptionOwnerFile();
                     auto vol = store.GetDoubleValue(srcFile->fileName, localFormIDHex, DBL_MAX);
 
-                    if (vol != DBL_MAX)
-                    {
+                    if (vol != DBL_MAX) {
                         logger::trace("setting volume for formid {:08X} to {}"sv, soundCategory->formID, vol);
                         soundCategory->SetCategoryVolume(static_cast<float>(vol));
                     }

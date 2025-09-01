@@ -1,5 +1,6 @@
 #pragma once
 
-namespace Fixes {
+namespace Fixes
+{
     void Load();
 }

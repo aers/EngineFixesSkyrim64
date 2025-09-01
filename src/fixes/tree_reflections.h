@@ -39,14 +39,13 @@ namespace Fixes::TreeReflections
     {
         const auto handle = REX::W32::GetModuleHandleA("d3dcompiler_46e.dll");
 
-        if (handle)
-        {
+        if (handle) {
             logger::trace("enb detected - disabling fix, please use ENB's tree reflection fix instead"sv);
             return;
         }
 
-        REL::Relocation target { RELOCATION_ID(100771, 107551), VAR_NUM(0x37, 0x35) };
-        detail::Patch p(target.address());
+        REL::Relocation target{ RELOCATION_ID(100771, 107551), VAR_NUM(0x37, 0x35) };
+        detail::Patch   p(target.address());
         p.ready();
 
         auto& trampoline = SKSE::GetTrampoline();

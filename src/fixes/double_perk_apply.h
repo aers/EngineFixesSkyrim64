@@ -23,30 +23,25 @@ namespace Fixes::DoublePerkApply
             RemoveBasePerks(a_actor);
 
             auto* currentProcess = a_actor->currentProcess;
-            if (!currentProcess)
-            {
+            if (!currentProcess) {
                 return;
             }
 
             auto* middleHighProcessData = currentProcess->middleHigh;
-            if (!middleHighProcessData)
-            {
+            if (!middleHighProcessData) {
                 return;
             }
 
             auto* npc = a_actor->GetActorBase();
-            if (!npc)
-            {
+            if (!npc) {
                 return;
             }
 
             const auto* perkRankArray = static_cast<RE::BGSPerkRankArray*>(npc);
 
-            for (std::uint32_t i = 0; i < perkRankArray->perkCount; i++)
-            {
+            for (std::uint32_t i = 0; i < perkRankArray->perkCount; i++) {
                 auto* perk = perkRankArray->perks[i].perk;
-                if (!perk)
-                {
+                if (!perk) {
                     continue;
                 }
 
@@ -62,8 +57,7 @@ namespace Fixes::DoublePerkApply
                 [actorHandle]() {
                     auto* actor = actorHandle.get().get();
 
-                    if (!actor)
-                    {
+                    if (!actor) {
                         return;
                     }
 
@@ -75,12 +69,10 @@ namespace Fixes::DoublePerkApply
         {
             ApplyBasePerksActorImplementation(a_player);
 
-            for (auto* addedPerkRank : a_player->addedPerks)
-            {
+            for (auto* addedPerkRank : a_player->addedPerks) {
                 auto* perk = addedPerkRank->perk;
 
-                if (!perk)
-                {
+                if (!perk) {
                     continue;
                 }
 
@@ -96,8 +88,7 @@ namespace Fixes::DoublePerkApply
                 [playerHandle]() {
                     auto* player = playerHandle.get().get();
 
-                    if (!player)
-                    {
+                    if (!player) {
                         return;
                     }
 
@@ -108,9 +99,9 @@ namespace Fixes::DoublePerkApply
 
     inline void Install()
     {
-        REL::Relocation actorVtbl { RE::Actor::VTABLE[0] };
-        REL::Relocation characterVtbl { RE::Character::VTABLE[0] };
-        REL::Relocation playerCharacterVtbl { RE::PlayerCharacter::VTABLE[0] };
+        REL::Relocation actorVtbl{ RE::Actor::VTABLE[0] };
+        REL::Relocation characterVtbl{ RE::Character::VTABLE[0] };
+        REL::Relocation playerCharacterVtbl{ RE::PlayerCharacter::VTABLE[0] };
 
         actorVtbl.write_vfunc(0x101, detail::ApplyBasePerksActor);
         characterVtbl.write_vfunc(0x101, detail::ApplyBasePerksActor);

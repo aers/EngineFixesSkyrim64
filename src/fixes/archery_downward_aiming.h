@@ -9,9 +9,8 @@ namespace Fixes::ArcheryDownwardAiming
             static void Move(RE::Projectile* a_self, RE::NiPoint3& a_from, const RE::NiPoint3& a_to)
             {
                 const auto refShooter = a_self->shooter.get();
-                if (refShooter && refShooter->Is(RE::FormType::ActorCharacter))
-                {
-                    const auto akShooter = static_cast<RE::Actor*>(refShooter.get()); // NOLINT(*-pro-type-static-cast-downcast)
+                if (refShooter && refShooter->Is(RE::FormType::ActorCharacter)) {
+                    const auto                    akShooter = static_cast<RE::Actor*>(refShooter.get());  // NOLINT(*-pro-type-static-cast-downcast)
                     [[maybe_unused]] RE::NiPoint3 direction;
                     akShooter->GetEyeVector(a_from, direction, true);
                 }
@@ -25,7 +24,7 @@ namespace Fixes::ArcheryDownwardAiming
 
     inline void Install()
     {
-        REL::Relocation target { RELOCATION_ID(42852, 44027), VAR_NUM(0x3E9, 0x434) };
+        REL::Relocation target{ RELOCATION_ID(42852, 44027), VAR_NUM(0x3E9, 0x434) };
         detail::Projectile::_Move = target.write_call<5>(detail::Projectile::Move);
 
         logger::info("installed archery downward aiming fix"sv);

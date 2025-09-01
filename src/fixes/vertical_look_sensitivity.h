@@ -45,9 +45,8 @@ namespace Fixes::VerticalLookSensitivity
 
         auto& trampoline = SKSE::GetTrampoline();
 
-        for (auto& [id, offset] : todo)
-        {
-            REL::Relocation target {REL::ID(id), offset};
+        for (auto& [id, offset] : todo) {
+            REL::Relocation target{ REL::ID(id), offset };
 
             detail::Patch p(target.address());
             p.ready();
