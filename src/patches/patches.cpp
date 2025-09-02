@@ -6,6 +6,7 @@
 #include "form_caching.h"
 #include "max_stdio.h"
 #include "regular_quicksaves.h"
+#include "renderpass_cache.h"
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
 #include "save_game_max_size.h"
@@ -23,6 +24,12 @@ namespace Patches
 
         if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())
             ScaleformAllocator::Install();
+
+        if (Settings::MemoryManager::bOverrideRenderPassCache.GetValue())
+            RenderPassCache::Install();
+
+        if (Settings::MemoryManager::bReplaceImports.GetValue())
+            Allocator::GetAllocator()->ReplaceImports();
 
         if (Settings::Patches::bDisableChargenPrecache.GetValue())
             DisableChargenPrecache::Install();

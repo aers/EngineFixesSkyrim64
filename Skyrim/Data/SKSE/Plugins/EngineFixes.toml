@@ -63,6 +63,8 @@ fWaterflowSpeed = 20.0                          # 20.0 = default, smaller = slow
 bOverrideMemoryManager = true                   # overrides Skyrim's memory manager with direct malloc/free calls
 bOverrideScrapHeap = true                       # overrides Skyrim's scrap heap with direct malloc/free calls
 bOverrideScaleformAllocator = true              # overrides Skyrim's scaleform allocator with calls to the global memory manager
+bOverrideRenderPassCache = false                # overrides Skyrim's render pass cache with direct malloc/free calls
+bReplaceImports = false                         # replace imported CRT memory functions with selected allocator
 bDisableTBB = false                             # DEBUG OPTION - use CRT allocator instead of tbb - this can and will cause crashes with broken plugins
 
 [Warnings]

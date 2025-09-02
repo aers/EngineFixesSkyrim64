@@ -13,6 +13,7 @@ namespace Allocator
         virtual size_t              Size(void* a_mem) = 0;
         virtual void                Deallocate(void* a_mem) = 0;
         virtual void                DeallocateAligned(void* a_mem) = 0;
+        virtual void                ReplaceImports() = 0;
     };
 
     enum AllocatorKind : std::uint8_t

@@ -45,6 +45,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
             if (Settings::Warnings::bRefHandleLimit.GetValue()) {
                 Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrLoadedGameLimit.GetValue());
             }
+
+            REX::W32::MessageBoxW(nullptr, L"Game loaded", L"Engine Fixes for Skyrim Special Edition", MB_OK);
         }
     default:
         break;

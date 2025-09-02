@@ -35,22 +35,14 @@ namespace Allocator
         {
             _aligned_free(a_mem);
         }
+        void ReplaceImports() override
+        {
+            logger::info("imports not replaced as they already use the CRT allocator"sv);
+        }
     };
 
     class TBBAllocator final : public IAllocator
     {
-        static void log_crt_free(void* a_mem)
-        {
-            logger::info("tbb_safe_free called original free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
-            free(a_mem);
-        }
-
-        static void log_crt_aligned_free(void* a_mem)
-        {
-            logger::info("tbb_safe_free called original aligned free on memory {:X}"sv, reinterpret_cast<std::uintptr_t>(a_mem));
-            _aligned_free(a_mem);
-        }
-
     public:
         [[nodiscard]] void* Allocate(std::size_t a_size) override
         {
@@ -74,11 +66,21 @@ namespace Allocator
         }
         void Deallocate(void* a_mem) override
         {
-            return __TBB_malloc_safer_free(a_mem, log_crt_free);
+            return scalable_free(a_mem);
         }
         void DeallocateAligned(void* a_mem) override
         {
-            return __TBB_malloc_safer_free(a_mem, log_crt_aligned_free);
+            return scalable_aligned_free(a_mem);
+        }
+        void ReplaceImports() override
+        {
+            SKSE::PatchIAT(scalable_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
+            SKSE::PatchIAT(scalable_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free");
+            SKSE::PatchIAT(scalable_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
+            SKSE::PatchIAT(scalable_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
+            SKSE::PatchIAT(scalable_aligned_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
+            SKSE::PatchIAT(scalable_aligned_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
+            logger::info("imports replaced with tbb allocator functions");
         }
     };
 

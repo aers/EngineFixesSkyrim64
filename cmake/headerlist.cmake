@@ -44,6 +44,7 @@ set(headers ${headers}
 	src/patches/max_stdio.h
 	src/patches/patches.h
 	src/patches/regular_quicksaves.h
+	src/patches/renderpass_cache.h
 	src/patches/safe_exit.h
 	src/patches/save_added_sound_categories.h
 	src/patches/save_game_max_size.h
