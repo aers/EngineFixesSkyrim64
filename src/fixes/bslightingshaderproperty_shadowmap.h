@@ -75,9 +75,7 @@ namespace BSLightingShaderPropertyShadowMap
             orig_BSShadowDirectionalLight_14F0920.call(a_self, a_data, a_unk3, a_unk4);
         }
 
-        inline SafetyHookInline orig_BSLightingShaderProperty_ClearRenderPassArrays;
-
-        inline void BSLightingShaderProperty_ClearRenderPassArrays(RE::BSLightingShaderProperty* a_self)
+        inline void CleanAllocatedArrays(RE::BSLightingShaderProperty* a_self)
         {
             if (a_self->unk0D8.unk08 == 0xDEADBEEF) {
                 auto** passArray = reinterpret_cast<RE::BSRenderPass**>(a_self->unk0D8.head);
@@ -91,8 +89,33 @@ namespace BSLightingShaderPropertyShadowMap
                 a_self->unk0D8.head = nullptr;
                 a_self->unk0D8.unk08 = 0x0;
             }
+        }
+
+        inline SafetyHookInline orig_BSLightingShaderProperty_ClearRenderPassArrays;
+
+        inline void BSLightingShaderProperty_ClearRenderPassArrays(RE::BSLightingShaderProperty* a_self)
+        {
+            CleanAllocatedArrays(a_self);
             orig_BSLightingShaderProperty_ClearRenderPassArrays.call(a_self);
         }
+
+        inline SafetyHookInline orig_BSLightingShaderProperty_dtor;
+
+        inline void BSLightingShaderProperty_Dtor(RE::BSLightingShaderProperty* a_self)
+        {
+            CleanAllocatedArrays(a_self);
+            orig_BSLightingShaderProperty_dtor.call(a_self);
+        }
+
+#ifdef SKYRIM_AE
+        inline SafetyHookInline orig_BSLightingShaderProperty_deleting_dtor;
+
+        inline void BSLightingShaderProperty_Deleting_Dtor(RE::BSLightingShaderProperty* a_self, byte* a_flags)
+        {
+            CleanAllocatedArrays(a_self);
+            orig_BSLightingShaderProperty_deleting_dtor.call(a_self, a_flags);
+        }
+#endif
 
         inline void Install()
         {
@@ -107,6 +130,14 @@ namespace BSLightingShaderPropertyShadowMap
 
             const REL::Relocation ClearArrays{ RELOCATION_ID(99881, 106526) };
             orig_BSLightingShaderProperty_ClearRenderPassArrays = safetyhook::create_inline(ClearArrays.address(), BSLightingShaderProperty_ClearRenderPassArrays);
+
+            const REL::Relocation dtor{ RELOCATION_ID(99855, 106500) };
+            orig_BSLightingShaderProperty_dtor = safetyhook::create_inline(dtor.address(), BSLightingShaderProperty_Dtor);
+
+#ifdef SKYRIM_AE
+            const REL::Relocation deleting_dtor{ REL::ID(106534) };
+            orig_BSLightingShaderProperty_deleting_dtor = safetyhook::create_inline(deleting_dtor.address(), BSLightingShaderProperty_Deleting_Dtor);
+#endif
         }
     }
 
