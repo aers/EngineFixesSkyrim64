@@ -110,7 +110,7 @@ namespace BSLightingShaderPropertyShadowMap
 #ifdef SKYRIM_AE
         inline SafetyHookInline orig_BSLightingShaderProperty_deleting_dtor;
 
-        inline void BSLightingShaderProperty_Deleting_Dtor(RE::BSLightingShaderProperty* a_self, byte* a_flags)
+        inline void BSLightingShaderProperty_Deleting_Dtor(RE::BSLightingShaderProperty* a_self, byte a_flags)
         {
             CleanAllocatedArrays(a_self);
             orig_BSLightingShaderProperty_deleting_dtor.call(a_self, a_flags);
