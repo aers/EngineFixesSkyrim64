@@ -11,7 +11,7 @@ namespace Fixes::SaveScreenshots
 
         inline void Install()
         {
-            REL::Relocation BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ RELOCATION_ID(34682, 35772), VAR_NUM(0x163, 0x1C6) };
+            REL::Relocation BGSSaveLoadManager_ProcessEvents_RequestScreenshot{ RELOCATION_ID(34862, 35772), VAR_NUM(0x163, 0x1C6) };
             REL::Relocation MenuSave_RequestScreenshot{ RELOCATION_ID(35556, 36555), VAR_NUM(0x56A, 0x5D5) };
             REL::Relocation SaveScreenshotRequestedDword{ RELOCATION_ID(517224, 403755) };
             REL::Relocation ScreenshotJnz{ RELOCATION_ID(99023, 105674), VAR_NUM(0x23A, 0x17D) };
