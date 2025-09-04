@@ -41,6 +41,7 @@ namespace Settings
         static REX::TOML::Bool bRemovedSpellBook("Fixes", "bRemovedSpellBook", true);
         static REX::TOML::Bool bSaveScreenshots("Fixes", "bSaveScreenshots", true);
         static REX::TOML::Bool bShadowSceneNodeNullPtrCrash("Fixes", "bShadowSceneNodeNullPtrCrash", true);
+        static REX::TOML::Bool bTextureLoadCrash("Fixes", "bTextureLoadCrash", true);
         static REX::TOML::Bool bTorchLandscape("Fixes", "bTorchLandscape", true);
         static REX::TOML::Bool bTreeReflections("Fixes", "bTreeReflections", true);
         static REX::TOML::Bool bVerticalLookSensitivity("Fixes", "bVerticalLookSensitivity", true);

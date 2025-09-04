@@ -30,6 +30,7 @@
 #include "perk_fragment_is_running.h"
 #include "removed_spellbook.h"
 #include "shadowscenenode_nullptr_crash.h"
+#include "texture_load_crash.h"
 #include "torch_landscape.h"
 #include "vertical_look_sensitivity.h"
 #include "weapon_block_scaling.h"
@@ -127,6 +128,9 @@ namespace Fixes
 
         if (Settings::Fixes::bShadowSceneNodeNullPtrCrash.GetValue())
             ShadowSceneNodeNullPtrCrash::Install();
+
+        if (Settings::Fixes::bTextureLoadCrash.GetValue())
+            TextureLoadCrash::Install();
 
         if (Settings::Fixes::bTorchLandscape.GetValue())
             TorchLandscape::Install();

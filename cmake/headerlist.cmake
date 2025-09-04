@@ -33,6 +33,7 @@ set(headers ${headers}
 	src/fixes/removed_spellbook.h
 	src/fixes/save_screenshots.h
 	src/fixes/shadowscenenode_nullptr_crash.h
+	src/fixes/texture_load_crash.h
 	src/fixes/torch_landscape.h
 	src/fixes/tree_reflections.h
 	src/fixes/vertical_look_sensitivity.h

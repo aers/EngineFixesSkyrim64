@@ -36,6 +36,7 @@ bPerkFragmentIsRunning = true                   # fixes a crash if the IsRunning
 bRemovedSpellBook = true                        # fixes a crash where learning a spell from a book that is later removed in another plugin causes a crash in the inventory
 bSaveScreenshots = true                         # fixes save screenshots being blank under certain configurations
 bShadowSceneNodeNullPtrCrash = true             # fixes a crash in shadowscenenode
+bTextureLoadCrash = true                        # fixes a crash in 1.5.97 when a texture load fails (D6DDDA), this behavior is built-in to 1.6.1170; also logs texture load errors
 bTorchLandscape = true                          # fixes a bug where torches sometimes don't light the landscape
 bTreeReflections = true                         # fixes tree LOD reflection alpha
 bVerticalLookSensitivity = true                 # fixes vertical look sensitivity being tied to framerate
