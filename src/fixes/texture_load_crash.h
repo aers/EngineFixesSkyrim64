@@ -4,6 +4,8 @@ namespace TextureLoadCrash
 {
     namespace detail
     {
+        inline std::uint32_t TotalLoadFails = 0;
+
         inline REL::Relocation<void(RE::BSResourceNiBinaryStream* a_self, /* RE::BSTSmartPointer<RE::BSResource::Stream> */ RE::BSResource::Stream** a_stream, bool a_fullReadHint, bool a_useOwnBuffer)> BSResourceNiBinaryStream_ctorFromResourceStream{ RELOCATION_ID(69637, 71015) };
         inline REL::Relocation<void(RE::BSResourceNiBinaryStream* a_self)>                                                                                                                                BSResourceNiBinaryStream_dtor{ RELOCATION_ID(69638, 71016) };
         inline REL::Relocation<REX::W32::HRESULT(REX::W32::ID3D11Device*, RE::BSResourceNiBinaryStream*, RE::BSGraphics::Texture**, RE::BSGraphics::DDSInfo*, std::uint32_t, std::uint32_t)>              BSGraphics_Renderer_LoadTextureFromStream{ RELOCATION_ID(75721, 77533) };
@@ -18,6 +20,7 @@ namespace TextureLoadCrash
             RE::BSGraphics::DDSInfo  ddsInfo{};
             REX::W32::HRESULT        result = BSGraphics_Renderer_LoadTextureFromStream(RE::BSGraphics::Renderer::GetDevice(), stream, &texture, &ddsInfo, 0, 0);
             if (FAILED(result)) {
+                TotalLoadFails++;
                 a_texture->rendererTexture = nullptr;
                 switch (result) {
                 case HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED):
