@@ -4,47 +4,50 @@ namespace TextureLoadCrash
 {
     namespace detail
     {
-        class UnkClass
-        {
-        public:
-            std::byte pad[0x88];
-        };
-
-        class Texture
-        {
-        public:
-            std::byte _pad[0x20];
-            int unk;
-            std::byte _pad2[0x4];
-        };
-
-        inline REL::Relocation<void(RE::BSResourceNiBinaryStream* a_self, /* RE::BSTSmartPointer<RE::BSResource::Stream> */ RE::BSResource::Stream** a_stream, bool a_fullReadHint, bool a_useOwnBuffer)> _ctor { RELOCATION_ID(69637, 71015) };
-        inline REL::Relocation<void(RE::BSResourceNiBinaryStream* a_self)> _dtor { RELOCATION_ID(69638 , 71016)};
-        inline REL::Relocation<REX::W32::HRESULT(REX::W32::ID3D11Device*, RE::BSResourceNiBinaryStream*, Texture**, UnkClass*, std::uint32_t, std::uint32_t)> _dxLoadTexture { RELOCATION_ID(75721, 77533) };
+        inline REL::Relocation<void(RE::BSResourceNiBinaryStream* a_self, /* RE::BSTSmartPointer<RE::BSResource::Stream> */ RE::BSResource::Stream** a_stream, bool a_fullReadHint, bool a_useOwnBuffer)> BSResourceNiBinaryStream_ctorFromResourceStream{ RELOCATION_ID(69637, 71015) };
+        inline REL::Relocation<void(RE::BSResourceNiBinaryStream* a_self)>                                                                                                                                BSResourceNiBinaryStream_dtor{ RELOCATION_ID(69638, 71016) };
+        inline REL::Relocation<REX::W32::HRESULT(REX::W32::ID3D11Device*, RE::BSResourceNiBinaryStream*, RE::BSGraphics::Texture**, RE::BSGraphics::DDSInfo*, std::uint32_t, std::uint32_t)>              BSGraphics_Renderer_LoadTextureFromStream{ RELOCATION_ID(75721, 77533) };
 
         inline void BSShaderResourceManager_LoadTexture(void*, RE::NiSourceTexture* a_texture)
         {
-            // cant use CLib's ctor
+            // CommmonLib's constructor is a different one, so we can't use it here
             std::byte streamBytes[sizeof(RE::BSResourceNiBinaryStream)];
-            auto* stream = reinterpret_cast<RE::BSResourceNiBinaryStream*>(&streamBytes);
-            _ctor(stream, &a_texture->unk40, 1, 0);
-            Texture* texture = nullptr;
-            UnkClass unkClass{};
-            REX::W32::HRESULT result = _dxLoadTexture(RE::BSGraphics::Renderer::GetDevice(), stream, &texture, &unkClass, 0, 0);
-            if (result != 0) {
-                logger::info("texture load failed - file path {} result {:X}"sv, a_texture->name.c_str(), result);
+            auto*     stream = reinterpret_cast<RE::BSResourceNiBinaryStream*>(&streamBytes);
+            BSResourceNiBinaryStream_ctorFromResourceStream(stream, &a_texture->unk40, 1, 0);
+            RE::BSGraphics::Texture* texture = nullptr;
+            RE::BSGraphics::DDSInfo  ddsInfo{};
+            REX::W32::HRESULT        result = BSGraphics_Renderer_LoadTextureFromStream(RE::BSGraphics::Renderer::GetDevice(), stream, &texture, &ddsInfo, 0, 0);
+            if (FAILED(result)) {
                 a_texture->rendererTexture = nullptr;
+                switch (result) {
+                case HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED):
+                    logger::warn("texture load failed due to unsupported format - file path {}"sv, a_texture->name.c_str());
+                    break;
+                case E_OUTOFMEMORY:
+                    logger::warn("texture load failed due to out of memory - file path {}"sv, a_texture->name.c_str());
+                    break;
+                case HRESULT_FROM_WIN32(ERROR_HANDLE_EOF):
+                case HRESULT_FROM_WIN32(ERROR_INVALID_DATA):
+                case E_FAIL:
+                    logger::warn("texture load failed due to invalid DDS file - file path {}"sv, a_texture->name.c_str());
+                    break;
+                case E_POINTER:
+                case E_INVALIDARG:  // shouldn't be possible unless the game is fundamentally broken
+                    logger::warn("texture load failed unexpectedly - file path {}"sv, a_texture->name.c_str());
+                    break;
+                default:
+                    logger::warn("texture load failed with unknown result code {:X} - file path {}"sv, static_cast<std::uint32_t>(result), a_texture->name.c_str());
+                }
+            } else {
+                texture->unk20 = 1;
+                a_texture->rendererTexture = texture;
             }
-            else {
-                texture->unk = 1;
-                a_texture->rendererTexture = reinterpret_cast<RE::BSGraphics::Texture*>(texture);
-            }
-            _dtor(stream);
+            BSResourceNiBinaryStream_dtor(stream);
         }
 
         inline void Install()
         {
-            REL::Relocation vtable { RE::VTABLE_BSShaderResourceManager[0] };
+            REL::Relocation vtable{ RE::VTABLE_BSShaderResourceManager[0] };
             vtable.write_vfunc(26, BSShaderResourceManager_LoadTexture);
         }
     }
