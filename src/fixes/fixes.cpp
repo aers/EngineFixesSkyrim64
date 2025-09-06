@@ -28,6 +28,7 @@
 #include "music_overlap.h"
 #include "null_process_crash.h"
 #include "perk_fragment_is_running.h"
+#include "precomputed_paths.h"
 #include "removed_spellbook.h"
 #include "shadowscenenode_nullptr_crash.h"
 #include "texture_load_crash.h"
@@ -119,6 +120,9 @@ namespace Fixes
 
         if (Settings::Fixes::bNullProcessCrash.GetValue())
             NullProcessCrash::Install();
+
+        if (Settings::Fixes::bPrecomputedPaths.GetValue())
+            PrecomputedPaths::Install();
 
         if (Settings::Fixes::bPerkFragmentIsRunning.GetValue())
             PerkFragmentIsRunning::Install();

@@ -38,6 +38,7 @@ namespace Settings
         static REX::TOML::Bool bMusicOverlap("Fixes", "bMusicOverlap", true);
         static REX::TOML::Bool bNullProcessCrash("Fixes", "bNullProcessCrash", true);
         static REX::TOML::Bool bPerkFragmentIsRunning("Fixes", "bPerkFragmentIsRunning", true);
+        static REX::TOML::Bool bPrecomputedPaths("Fixes", "bPrecomputedPaths", true);
         static REX::TOML::Bool bRemovedSpellBook("Fixes", "bRemovedSpellBook", true);
         static REX::TOML::Bool bSaveScreenshots("Fixes", "bSaveScreenshots", true);
         static REX::TOML::Bool bShadowSceneNodeNullPtrCrash("Fixes", "bShadowSceneNodeNullPtrCrash", true);
@@ -73,14 +74,21 @@ namespace Settings
         static REX::TOML::Bool bOverrideScaleformAllocator("MemoryManager", "bOverrideScaleformAllocator", true);
         static REX::TOML::Bool bOverrideRenderPassCache("MemoryManager", "bOverrideRenderPassCache", false);
         static REX::TOML::Bool bReplaceImports("MemoryManager", "bReplaceImports", false);
-        static REX::TOML::Bool bDisableTBB("MemoryManager", "bDisableTBB", false);
     }
 
     namespace Warnings
     {
+        static REX::TOML::Bool bTextureLoadFailed("Warnings", "bTextureLoadFailed", true);
+        static REX::TOML::Bool bPrecomputedPathHasErrors("Warnings", "bPrecomputedPathHasErrors", true);
         static REX::TOML::Bool bRefHandleLimit("Warnings", "bRefHandleLimit", true);
         static REX::TOML::U32  uRefrMainMenuLimit("Warnings", "bRefrMainMenuLimit", 800000);
         static REX::TOML::U32  uRefrLoadedGameLimit("Warnings", "bRefrLoadedGameLimit", 1000000);
+    }
+
+    namespace Debug
+    {
+        static REX::TOML::Bool bPrintDetailedPrecomputedPathInfo("Debug", "bPrintDetailedPrecomputedPathInfo", false);
+        static REX::TOML::Bool bDisableTBB("Debug", "bDisableTBB", false);
     }
 
     static void Load()

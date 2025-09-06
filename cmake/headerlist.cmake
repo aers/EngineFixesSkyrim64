@@ -30,6 +30,7 @@ set(headers ${headers}
 	src/fixes/music_overlap.h
 	src/fixes/null_process_crash.h
 	src/fixes/perk_fragment_is_running.h
+	src/fixes/precomputed_paths.h
 	src/fixes/removed_spellbook.h
 	src/fixes/save_screenshots.h
 	src/fixes/shadowscenenode_nullptr_crash.h

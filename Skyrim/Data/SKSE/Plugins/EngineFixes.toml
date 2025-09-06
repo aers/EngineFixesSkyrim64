@@ -31,8 +31,9 @@ bLipSync = true                                 # fixes a bug causing lip sync t
 bMemoryAccessErrors = true                      # fixes miscellaneous errors that are obscured by Skyrim's default allocator
 bMO5STypo = true                                # fixes a typo preventing the game from loading MO5S entries in ARMA forms
 bMusicOverlap = true                            # fixes a bug where multiple music tracks are playing at the same time
-bNullProcessCrash = true                        # fixes a couple cases where the game can crash when checking the equipped weapons of ana ctor without an AI process
+bNullProcessCrash = true                        # fixes a couple cases where the game can crash when checking the equipped weapons of an actor without an AI process
 bPerkFragmentIsRunning = true                   # fixes a crash if the IsRunning function of a perk fragment is called on a non-actor form
+bPrecomputedPaths = true                        # fixes a crash when NAVI precomputed paths aren't accurate for your load order and logs a warning
 bRemovedSpellBook = true                        # fixes a crash where learning a spell from a book that is later removed in another plugin causes a crash in the inventory
 bSaveScreenshots = true                         # fixes save screenshots being blank under certain configurations
 bShadowSceneNodeNullPtrCrash = true             # fixes a crash in shadowscenenode
@@ -69,6 +70,12 @@ bReplaceImports = false                         # replace imported CRT memory fu
 bDisableTBB = false                             # DEBUG OPTION - use CRT allocator instead of tbb - this can and will cause crashes with broken plugins
 
 [Warnings]
+bTextureLoadFailed = true                       # On exit, pops up a message box telling you one or more textures failed to load and have been logged
+bPrecomputedPathHasErrors = true                # On exit, pops up a message box telling you a precomputed path had an error
 bRefHandleLimit = true                          # Warns when you are close to the reference handle limit at main menu and after loading a save
 uRefrMainMenuLimit = 800000                     # Handle count to warn at on main menu
 uRefrLoadedGameLimit = 1000000                  # Handle count to warn at after loading a save game
+
+[Debug]
+bPrintDetailedPrecomputedPathInfo = false       # disables the precomputed path crash fix and prints detailed information about broken paths
+bDisableTBB = false                             # use CRT allocator instead of tbb - this can and will cause crashes with broken plugins
