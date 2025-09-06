@@ -6,8 +6,8 @@ namespace PrecomputedPaths
     {
         // hook the delete functions
         // this causes a memory leak when you shut down the game, oh no!
-        inline REL::Relocation<void(RE::NavMeshInfo*)>   orig_NavMeshInfo_dtor;
-        inline REL::Relocation<void(void*, std::size_t)> orig_Free;
+        inline REL::Relocation<void(RE::NavMeshInfo*)>    orig_NavMeshInfo_dtor;
+        inline REL::Relocation<void(void*, std::size_t)>  orig_Free;
         inline REL::Relocation<void(RE::NavMeshInfoMap*)> orig_NavMeshInfoMap_InitItemImpl;
 
         inline std::unordered_set<std::uint32_t> navmeshIdsInPaths;
@@ -51,7 +51,37 @@ namespace PrecomputedPaths
             }
 
             if (Settings::Debug::bPrintDetailedPrecomputedPathInfo.GetValue()) {
-                
+                for (std::uint32_t i = 0; i < a_self->allPaths.size(); i++) {
+                    auto* precomputedPaths = a_self->allPaths[i];
+                    bool  foundProblem = false;
+
+                    for (auto navMeshInfo : *precomputedPaths) {
+                        const auto pathingCell = reinterpret_cast<RE::PathingCell*>(navMeshInfo->pathingCell.get());
+                        if (*SKSE::stl::unrestricted_cast<std::uintptr_t*>(pathingCell) != RE::PathingCell::VTABLE[0].address()) {
+                            foundProblem = true;
+                            break;
+                        }
+                    }
+
+                    if (foundProblem) {
+                        logger::info("found problem with precomputed path index {}"sv, i);
+                        for (auto navMeshInfo : *precomputedPaths) {
+                            const auto pathingCell = reinterpret_cast<RE::PathingCell*>(navMeshInfo->pathingCell.get());
+                            bool       isFreed = *SKSE::stl::unrestricted_cast<std::uintptr_t*>(pathingCell) != RE::PathingCell::VTABLE[0].address();
+                            if (pathingCell->pathingCellInfo.worldSpaceID != 0) {
+                                if (isFreed)
+                                    logger::info("!! NAVM ID: error, pointer is freed | Worldspace ID: {:X} Cell X: {} Cell Y: {}", pathingCell->pathingCellInfo.worldSpaceID, pathingCell->pathingCellInfo.cellID.coordinates.x, pathingCell->pathingCellInfo.cellID.coordinates.y);
+                                else
+                                    logger::info("-- NAVM ID: {:X} | Worldspace ID: {:X} Cell X: {} Cell Y: {}", navMeshInfo->navMeshID, pathingCell->pathingCellInfo.worldSpaceID, pathingCell->pathingCellInfo.cellID.coordinates.x, pathingCell->pathingCellInfo.cellID.coordinates.y);
+                            } else {
+                                if (isFreed)
+                                    logger::info("-- NAVM ID: error, pointer is freed | Interior Cell ID: {:X}", pathingCell->pathingCellInfo.cellID.formID);
+                                else
+                                    logger::info("-- NAVM ID: {:X} | Interior Cell ID: {:X}", navMeshInfo->navMeshID, pathingCell->pathingCellInfo.cellID.formID);
+                            }
+                        }
+                    }
+                }
             }
         }
 

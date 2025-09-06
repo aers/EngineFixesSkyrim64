@@ -97,7 +97,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
 
     Settings::Load();
 
-    if (Settings::MemoryManager::bDisableTBB.GetValue()) {
+    if (Settings::Debug::bDisableTBB.GetValue()) {
         Allocator::SetAllocator(Allocator::CRT);
         logger::info("set allocator to CRT"sv);
     } else {
