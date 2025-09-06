@@ -1,6 +1,6 @@
 #pragma once
 
-namespace PrecomputedPaths
+namespace Fixes::PrecomputedPaths
 {
     namespace detail
     {

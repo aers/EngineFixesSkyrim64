@@ -1,6 +1,6 @@
 #pragma once
 
-namespace TextureLoadCrash
+namespace Fixes::TextureLoadCrash
 {
     namespace detail
     {

@@ -10,13 +10,13 @@ namespace Patches::SafeExit
     {
         inline void Shutdown()
         {
-            if (Settings::Warnings::bTextureLoadFailed.GetValue() && TextureLoadCrash::detail::TotalLoadFails > 0) {
-                logger::warn("a total of {} textures failed to load in this session"sv, TextureLoadCrash::detail::TotalLoadFails);
+            if (Settings::Warnings::bTextureLoadFailed.GetValue() && Fixes::TextureLoadCrash::detail::TotalLoadFails > 0) {
+                logger::warn("a total of {} textures failed to load in this session"sv, Fixes::TextureLoadCrash::detail::TotalLoadFails);
                 std::wostringstream warningString;
-                warningString << L"WARNING: " << TextureLoadCrash::detail::TotalLoadFails << L" textures failed to load during this session. Please check EngineFixes.log for more details."sv;
+                warningString << L"WARNING: " << Fixes::TextureLoadCrash::detail::TotalLoadFails << L" textures failed to load during this session. Please check EngineFixes.log for more details."sv;
                 REX::W32::MessageBoxW(nullptr, warningString.str().c_str(), L"Engine Fixes for Skyrim Special Edition", MB_OK);
             }
-            if (Settings::Warnings::bPrecomputedPathHasErrors.GetValue() && PrecomputedPaths::detail::HasIssues) {
+            if (Settings::Warnings::bPrecomputedPathHasErrors.GetValue() && Fixes::PrecomputedPaths::detail::HasIssues) {
                 std::wostringstream warningString;
                 warningString << L"WARNING: a precomputed path had issues, please check your EngineFixes.log for more details."sv;
                 REX::W32::MessageBoxW(nullptr, warningString.str().c_str(), L"Engine Fixes for Skyrim Special Edition", MB_OK);
