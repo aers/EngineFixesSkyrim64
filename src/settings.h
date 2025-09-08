@@ -53,6 +53,7 @@ namespace Settings
     namespace Patches
     {
         static REX::TOML::Bool bDisableChargenPrecache("Patches", "bDisableChargenPrecache", false);
+        static REX::TOML::Bool bDisableSnowFlag("Patches", "bDisableSnowFlag", false);
         static REX::TOML::Bool bEnableAchievementsWithMods("Patches", "bEnableAchievementsWithMods", true);
         static REX::TOML::Bool bFormCaching("Patches", "bFormCaching", true);
         static REX::TOML::Bool bMaxStdIO("Patches", "bMaxStdIO", true);

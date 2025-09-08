@@ -2,6 +2,7 @@
 
 #include "allocators.h"
 #include "disable_chargen_precache.h"
+#include "disable_snow_flag.h"
 #include "enable_achievements.h"
 #include "form_caching.h"
 #include "max_stdio.h"
@@ -33,6 +34,9 @@ namespace Patches
 
         if (Settings::Patches::bDisableChargenPrecache.GetValue())
             DisableChargenPrecache::Install();
+
+        if (Settings::Patches::bDisableSnowFlag.GetValue())
+            DisableSnowFlag::Install();
 
         if (Settings::Patches::bEnableAchievementsWithMods.GetValue())
             EnableAchievementsWithMods::Install();

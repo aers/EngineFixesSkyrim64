@@ -47,6 +47,7 @@ bWeaponBlockScaling = true                      # fixes weapon blocking so it co
 # contains optional game patches
 [Patches]
 bDisableChargenPrecache = false                 # disables pre-caching of chargen, unnecessary with RaceMenu installed
+bDisableSnowFlag = false                        # forcably removes snow flags from loaded LTEX and MATO forms
 bEnableAchievementsWithMods = true              # enables achievements with mods active
 bFormCaching = true                             # attempts to speedup form lookups
 bMaxStdIO = true                                # sets the maximum number of open file handles to the maximum available on your system (8192 in most cases, 2048 for older versions of windows)

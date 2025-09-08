@@ -42,6 +42,7 @@ set(headers ${headers}
 	src/fixes/weapon_block_scaling.h
 	src/patches/allocators.h
 	src/patches/disable_chargen_precache.h
+	src/patches/disable_snow_flag.h
 	src/patches/enable_achievements.h
 	src/patches/form_caching.h
 	src/patches/max_stdio.h
