@@ -30,6 +30,7 @@
 #include "perk_fragment_is_running.h"
 #include "precomputed_paths.h"
 #include "removed_spellbook.h"
+#include "saved_havok_data_load_init.h"
 #include "shadowscenenode_nullptr_crash.h"
 #include "texture_load_crash.h"
 #include "torch_landscape.h"
@@ -117,6 +118,9 @@ namespace Fixes
 
         if (Settings::Fixes::bMusicOverlap.GetValue())
             MusicOverlap::Install();
+
+        if (Settings::Fixes::bSavedHavokDataLoadInit.GetValue())
+            SavedHavokDataLoadInit::Install();
 
         if (Settings::Fixes::bNullProcessCrash.GetValue())
             NullProcessCrash::Install();
