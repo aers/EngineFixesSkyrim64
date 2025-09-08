@@ -9,7 +9,6 @@ namespace Patches::DisableSnowFlag
         inline bool TESLandTexture_Load(RE::TESLandTexture* a_self, RE::TESFile* a_file)
         {
             const bool retVal = orig_TESLandTexture_Load(a_self, a_file);
-            logger::info("LTEX {:X} {}", a_self->formID, a_self->shaderTextureIndex);
             if (retVal)
                 a_self->shaderTextureIndex = 0;
             return retVal;
@@ -20,7 +19,6 @@ namespace Patches::DisableSnowFlag
         inline bool BGSMaterialObject_Load(RE::BGSMaterialObject* a_self, RE::TESFile* a_file)
         {
             const bool retVal = orig_BGSMaterialObject_Load(a_self, a_file);
-            logger::info("mato {:X} {}", a_self->formID, a_self->directionalData.flags.underlying());
             if (retVal)
                 a_self->directionalData.flags.set(false, RE::BSMaterialObject::DIRECTIONAL_DATA::Flag::kSnow);
             return retVal;
