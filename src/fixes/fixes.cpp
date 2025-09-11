@@ -39,7 +39,7 @@
 
 namespace Fixes
 {
-    void Load()
+    void Install()
     {
         if (Settings::Fixes::bArcheryDownwardAiming.GetValue())
             ArcheryDownwardAiming::Install();

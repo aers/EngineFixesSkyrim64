@@ -26,7 +26,7 @@ namespace Fixes::SavedHavokDataLoadInit
 
         inline void Install()
         {
-            REL::Relocation target { RELOCATION_ID(19133, 19535), VAR_NUM(0x33F, 0x348) }; // TESObjectREFR::LoadHavokData post-load update
+            REL::Relocation target{ RELOCATION_ID(19133, 19535), VAR_NUM(0x33F, 0x348) };  // TESObjectREFR::LoadHavokData post-load update
             orig_NiAVObject_Update = target.write_call<5>(NiAVObject_Update);
         }
     }

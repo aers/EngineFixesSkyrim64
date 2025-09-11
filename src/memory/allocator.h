@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Allocator
+namespace Memory::Allocator
 {
     class IAllocator
     {

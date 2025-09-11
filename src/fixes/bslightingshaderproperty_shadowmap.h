@@ -1,5 +1,5 @@
 #pragma once
-#include "allocator/allocator.h"
+#include "memory/allocator.h"
 
 namespace BSLightingShaderPropertyShadowMap
 {
@@ -33,7 +33,7 @@ namespace BSLightingShaderPropertyShadowMap
             // create our storage, 4 max
             // re-use the RenderPassArray space here
             if (a_property->unk0D8.unk08 != 0xDEADBEEF) {
-                a_property->unk0D8.head = static_cast<RE::BSRenderPass*>(Allocator::GetAllocator()->AllocateAligned(sizeof(RE::BSRenderPass*) * 4, 8));
+                a_property->unk0D8.head = static_cast<RE::BSRenderPass*>(Memory::Allocator::GetAllocator()->AllocateAligned(sizeof(RE::BSRenderPass*) * 4, 8));
                 memset(a_property->unk0D8.head, 0, sizeof(RE::BSRenderPass*) * 4);
                 a_property->unk0D8.unk08 = 0xDEADBEEF;
             }
@@ -85,7 +85,7 @@ namespace BSLightingShaderPropertyShadowMap
                         passArray[i] = nullptr;
                     }
                 }
-                Allocator::GetAllocator()->DeallocateAligned(passArray);
+                Memory::Allocator::GetAllocator()->DeallocateAligned(passArray);
                 a_self->unk0D8.head = nullptr;
                 a_self->unk0D8.unk08 = 0x0;
             }

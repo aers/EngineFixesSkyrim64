@@ -1,5 +1,5 @@
 set(headers ${headers}
-	src/allocator/allocator.h
+	src/PCH.h
 	src/clean_cosaves.h
 	src/fixes/animation_load_signed_crash.h
 	src/fixes/archery_downward_aiming.h
@@ -40,7 +40,12 @@ set(headers ${headers}
 	src/fixes/tree_reflections.h
 	src/fixes/vertical_look_sensitivity.h
 	src/fixes/weapon_block_scaling.h
-	src/patches/allocators.h
+	src/memory/allocator.h
+	src/memory/memory.h
+	src/memory/memory_manager.h
+	src/memory/renderpass_cache.h
+	src/memory/scaleform_allocator.h
+	src/memory/scrapheap.h
 	src/patches/disable_chargen_precache.h
 	src/patches/disable_snow_flag.h
 	src/patches/enable_achievements.h
@@ -49,16 +54,13 @@ set(headers ${headers}
 	src/patches/max_stdio.h
 	src/patches/patches.h
 	src/patches/regular_quicksaves.h
-	src/patches/renderpass_cache.h
 	src/patches/safe_exit.h
 	src/patches/save_added_sound_categories.h
 	src/patches/save_game_max_size.h
-	src/patches/scaleform_allocator.h
 	src/patches/scrolling_doesnt_switch_pov.h
 	src/patches/sleep_wait_time.h
 	src/patches/tree_lod_reference_caching.h
 	src/patches/waterflow_animation.h
-	src/pch.h
 	src/settings.h
 	src/warnings/warnings.h
 )

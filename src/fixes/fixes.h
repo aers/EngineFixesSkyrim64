@@ -2,5 +2,5 @@
 
 namespace Fixes
 {
-    void Load();
+    void Install();
 }

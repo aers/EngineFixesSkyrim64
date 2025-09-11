@@ -2,7 +2,7 @@
 
 #include <tbb/scalable_allocator.h>
 
-namespace Allocator
+namespace Memory::Allocator
 {
     class CRTAllocator final : public IAllocator
     {

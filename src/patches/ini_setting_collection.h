@@ -17,7 +17,7 @@ namespace Patches::INISettingCollection
 
         inline void Install()
         {
-            REL::Relocation vtable { RE::INISettingCollection::VTABLE[0] };
+            REL::Relocation vtable{ RE::INISettingCollection::VTABLE[0] };
             vtable.write_vfunc(5, INISettingCollection_Open);
         }
     }

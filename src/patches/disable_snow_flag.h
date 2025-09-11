@@ -26,12 +26,11 @@ namespace Patches::DisableSnowFlag
 
         inline void Install()
         {
-            REL::Relocation LTEX { RE::TESLandTexture::VTABLE[0] };
-            REL::Relocation MATO { RE::BGSMaterialObject::VTABLE[0] };
+            REL::Relocation LTEX{ RE::TESLandTexture::VTABLE[0] };
+            REL::Relocation MATO{ RE::BGSMaterialObject::VTABLE[0] };
 
             orig_TESLandTexture_Load = LTEX.write_vfunc(6, TESLandTexture_Load);
             orig_BGSMaterialObject_Load = MATO.write_vfunc(6, BGSMaterialObject_Load);
-
         }
     }
 

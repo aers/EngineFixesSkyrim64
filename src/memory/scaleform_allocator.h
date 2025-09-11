@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Patches::ScaleformAllocator
+namespace Memory::ScaleformAllocator
 {
     namespace detail
     {

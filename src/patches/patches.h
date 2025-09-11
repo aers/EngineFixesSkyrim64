@@ -2,5 +2,5 @@
 
 namespace Patches
 {
-    void Load();
+    void Install();
 }

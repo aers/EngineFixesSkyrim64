@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Patches::Allocators
+namespace Memory
 {
     void Install();
 }

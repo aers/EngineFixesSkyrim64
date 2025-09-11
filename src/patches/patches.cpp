@@ -1,6 +1,5 @@
 #include "patches.h"
 
-#include "allocators.h"
 #include "disable_chargen_precache.h"
 #include "disable_snow_flag.h"
 #include "enable_achievements.h"
@@ -8,11 +7,9 @@
 #include "ini_setting_collection.h"
 #include "max_stdio.h"
 #include "regular_quicksaves.h"
-#include "renderpass_cache.h"
 #include "safe_exit.h"
 #include "save_added_sound_categories.h"
 #include "save_game_max_size.h"
-#include "scaleform_allocator.h"
 #include "scrolling_doesnt_switch_pov.h"
 #include "sleep_wait_time.h"
 #include "tree_lod_reference_caching.h"
@@ -20,19 +17,8 @@
 
 namespace Patches
 {
-    void Load()
+    void Install()
     {
-        Allocators::Install();
-
-        if (Settings::MemoryManager::bOverrideScaleformAllocator.GetValue())
-            ScaleformAllocator::Install();
-
-        if (Settings::MemoryManager::bOverrideRenderPassCache.GetValue())
-            RenderPassCache::Install();
-
-        if (Settings::MemoryManager::bReplaceImports.GetValue())
-            Allocator::GetAllocator()->ReplaceImports();
-
         if (Settings::Patches::bDisableChargenPrecache.GetValue())
             DisableChargenPrecache::Install();
 

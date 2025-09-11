@@ -35,7 +35,7 @@ namespace Fixes::VerticalLookSensitivity
                 // r8 is unused
                 //.text:0000000140850D81                 movss   xmm4, cs:frame_timer_without_slow
                 // use magic instead
-                movss(xmm4, dword[rip+magicLabel]);
+                movss(xmm4, dword[rip + magicLabel]);
                 //.text:0000000140850D89                 movaps  xmm3, xmm4
                 // use timer
                 mov(r8, ptr[rip + timerLabel]);
@@ -82,7 +82,7 @@ namespace Fixes::VerticalLookSensitivity
             detail::Patch p(target.address());
 #else
             REL::Relocation secondsSinceLastFrameRealTime{ REL::ID(523661) };
-            detail::Patch p(target.address(), secondsSinceLastFrameRealTime.address());
+            detail::Patch   p(target.address(), secondsSinceLastFrameRealTime.address());
 #endif
             p.ready();
 

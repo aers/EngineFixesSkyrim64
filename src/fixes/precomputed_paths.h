@@ -37,7 +37,7 @@ namespace Fixes::PrecomputedPaths
         {
             if (!Settings::Debug::bPrintDetailedPrecomputedPathInfo.GetValue())
                 for (const auto path : a_self->allPaths) {
-                    if (path == nullptr) // not sure how this is possible, but there was a bug report
+                    if (path == nullptr)  // not sure how this is possible, but there was a bug report
                         continue;
                     for (auto nmi : *path) {
                         navmeshIdsInPaths.insert(nmi->navMeshID);
@@ -59,7 +59,7 @@ namespace Fixes::PrecomputedPaths
                         logger::info("precomputed path index {} was unexpectedly null"sv, i);
                         continue;
                     }
-                    bool  foundProblem = false;
+                    bool foundProblem = false;
 
                     for (auto navMeshInfo : *precomputedPaths) {
                         const auto pathingCell = reinterpret_cast<RE::PathingCell*>(navMeshInfo->pathingCell.get());

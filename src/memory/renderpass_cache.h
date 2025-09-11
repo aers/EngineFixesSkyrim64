@@ -1,7 +1,7 @@
 #pragma once
-#include "allocator/allocator.h"
+#include "memory/allocator.h"
 
-namespace RenderPassCache
+namespace Memory::RenderPassCache
 {
     namespace detail
     {

@@ -2,11 +2,12 @@
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/spdlog.h>
 
-#include "allocator/allocator.h"
 #include "clean_cosaves.h"
 #include "fixes/fixes.h"
 #include "fixes/save_screenshots.h"
 #include "fixes/tree_reflections.h"
+#include "memory/allocator.h"
+#include "memory/memory.h"
 #include "patches/patches.h"
 #include "patches/save_added_sound_categories.h"
 #include "settings.h"
@@ -97,14 +98,6 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
 
     Settings::Load();
 
-    if (Settings::Debug::bDisableTBB.GetValue()) {
-        Allocator::SetAllocator(Allocator::CRT);
-        logger::info("set allocator to CRT"sv);
-    } else {
-        Allocator::SetAllocator(Allocator::TBB);
-        logger::info("set allocator to TBB"sv);
-    }
-
     if (Settings::General::bVerboseLogging.GetValue()) {
         spdlog::set_level(spdlog::level::trace);
         spdlog::flush_on(spdlog::level::trace);
@@ -112,8 +105,9 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
         logger::trace("enabled verbose logging"sv);
     }
 
-    Patches::Load();
-    Fixes::Load();
+    Memory::Install();
+    Patches::Install();
+    Fixes::Install();
 
     g_isPreloaded = true;
 }
