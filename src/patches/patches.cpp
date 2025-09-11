@@ -66,7 +66,7 @@ namespace Patches
         if (Settings::Patches::bScrollingDoesntSwitchPOV.GetValue())
             ScrollingDoesntSwitchPOV::Install();
 
-        if (Settings::Patches::bSleepWaitTime.GetValue())
+        if (Settings::Patches::fSleepWaitTimeModifier.GetValue() != 1.0f)
             SleepWaitTime::Install();
 
         if (Settings::Patches::bFormCaching.GetValue() && Settings::Patches::bTreeLodReferenceCaching.GetValue())

@@ -57,8 +57,7 @@ bSafeExit = true                                # prevent the game from hanging 
 bSaveAddedSoundCategories = true                # save the volume of sound categories added by mods
 iSaveGameMaxSize = 128                          # expands the maximum uncompressed size of a save game from 64 MB to a configurable size (MB), game default = 64 MB, only go as high as you need!
 bScrollingDoesntSwitchPOV = false               # disables swapping between 1st/3rd person when using mousewheel scroll to zoom
-bSleepWaitTime = false                          # modifies how long it takes an hour to pass when sleeping/waiting
-fSleepWaitTimeModifier = 0.3                    # 1.0 = default, smaller = faster, larger = slower
+fSleepWaitTimeModifier = 1.0                    # modifies your sleep/wait time, 1.0 = default, smaller = faster, larger = slower
 bTreeLodReferenceCaching = true                 # requires form caching to be enabled. speeds up a tree LOD function that slows down proportionate to the number of plugins loaded
 bWaterflowAnimation = true                      # decouple waterflow speed from in-game timescale
 fWaterflowSpeed = 20.0                          # 20.0 = default, smaller = slower, larger = faster
