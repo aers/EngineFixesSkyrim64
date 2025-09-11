@@ -50,6 +50,7 @@ bDisableChargenPrecache = false                 # disables pre-caching of charge
 bDisableSnowFlag = false                        # forcably removes snow flags from loaded LTEX and MATO forms
 bEnableAchievementsWithMods = true              # enables achievements with mods active
 bFormCaching = true                             # attempts to speedup form lookups
+bINISettingCollection = true                    # slightly speeds up startup time for lists with a large number of plugins
 bMaxStdIO = true                                # sets the maximum number of open file handles to the maximum available on your system (8192 in most cases, 2048 for older versions of windows)
 bRegularQuicksaves = false                      # makes quicksaves into regular saves
 bSafeExit = true                                # prevent the game from hanging when shutting down

@@ -56,6 +56,7 @@ namespace Settings
         static REX::TOML::Bool bDisableSnowFlag("Patches", "bDisableSnowFlag", false);
         static REX::TOML::Bool bEnableAchievementsWithMods("Patches", "bEnableAchievementsWithMods", true);
         static REX::TOML::Bool bFormCaching("Patches", "bFormCaching", true);
+        static REX::TOML::Bool bINISettingCollection("Patches", "bINISettingCollection", true);
         static REX::TOML::Bool bMaxStdIO("Patches", "bMaxStdIO", true);
         static REX::TOML::Bool bRegularQuicksaves("Patches", "bRegularQuicksaves", false);
         static REX::TOML::Bool bSafeExit("Patches", "bSafeExit", true);

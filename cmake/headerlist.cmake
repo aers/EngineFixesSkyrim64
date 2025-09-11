@@ -45,6 +45,7 @@ set(headers ${headers}
 	src/patches/disable_snow_flag.h
 	src/patches/enable_achievements.h
 	src/patches/form_caching.h
+	src/patches/ini_setting_collection.h
 	src/patches/max_stdio.h
 	src/patches/patches.h
 	src/patches/regular_quicksaves.h
