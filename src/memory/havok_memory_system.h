@@ -143,7 +143,7 @@ namespace Memory::HavokMemorySystem
 
         inline void Install()
         {
-            REL::Relocation target { RELOCATION_ID(76023, 77856), VAR_NUM(0x6C, 0x61) };
+            REL::Relocation target { RELOCATION_ID(76023, 77856), VAR_NUM(0x66, 0x61) };
             target.write_call<5>(hkMemorySystem::GetSingleton);
         }
     }

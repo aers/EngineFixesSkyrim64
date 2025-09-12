@@ -22,7 +22,7 @@ jobs:
       CMAKE_VR_CONFIG_PRESET: ''
       CMAKE_VR_BUILD_PRESET: ''
       FOMOD_INCLUDE_PDB: true
-      FOMOD_MOD_NAME: "Engine Fixes"
+      FOMOD_MOD_NAME: "EngineFixes"
       FOMOD_MOD_AUTHOR: "aers"
       FOMOD_MOD_NEXUS_ID: "17230"
       FOMOD_REQUIRED_INSTALLATION_DIR: "Skyrim/Data"
@@ -30,7 +30,7 @@ jobs:
       FOMOD_AE_DESCR: 'For Skyrim AE 1.6.1170 (latest version)'
       FOMOD_AE_NAME: 'SSE v1.6.1170 ("Anniversary Edition")'
       FOMOD_SE_MIN_GAME_VERSION: "1.5.97"
-      FOMOD_SE_DESCR: 'For Skyrim SE 1.5.97 (last pre-AE version'
+      FOMOD_SE_DESCR: 'For Skyrim SE 1.5.97 (last pre-AE version('
       FOMOD_SE_NAME: 'SSE v1.5.97 ("Special Edition")'
       PUBLISH_ARCHIVE_TYPE: '7z'
       VCPKG_COMMIT_ID: '4bb07a326d9b9bce3703272a509e5bc25dd9cfd5'
