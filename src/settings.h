@@ -75,6 +75,7 @@ namespace Settings
         static REX::TOML::Bool bOverrideScrapHeap("MemoryManager", "bOverrideScrapHeap", true);
         static REX::TOML::Bool bOverrideScaleformAllocator("MemoryManager", "bOverrideScaleformAllocator", true);
         static REX::TOML::Bool bOverrideRenderPassCache("MemoryManager", "bOverrideRenderPassCache", true);
+        static REX::TOML::Bool bOverrideHavokMemorySystem("MemoryManager", "bOverrideHavokMemorySystem", true);
         static REX::TOML::Bool bReplaceImports("MemoryManager", "bReplaceImports", false);
     }
 

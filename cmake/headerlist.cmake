@@ -41,6 +41,7 @@ set(headers ${headers}
 	src/fixes/vertical_look_sensitivity.h
 	src/fixes/weapon_block_scaling.h
 	src/memory/allocator.h
+	src/memory/havok_memory_system.h
 	src/memory/memory.h
 	src/memory/memory_manager.h
 	src/memory/renderpass_cache.h

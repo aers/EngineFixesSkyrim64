@@ -1,5 +1,6 @@
 #include "memory.h"
 #include "allocator.h"
+#include "havok_memory_system.h"
 #include "memory_manager.h"
 #include "renderpass_cache.h"
 #include "scaleform_allocator.h"
@@ -28,6 +29,9 @@ namespace Memory
 
         if (Settings::MemoryManager::bOverrideRenderPassCache.GetValue())
             RenderPassCache::Install();
+
+        if (Settings::MemoryManager::bOverrideHavokMemorySystem.GetValue())
+            HavokMemorySystem::Install();
 
         if (Settings::MemoryManager::bReplaceImports.GetValue())
             Allocator::GetAllocator()->ReplaceImports();

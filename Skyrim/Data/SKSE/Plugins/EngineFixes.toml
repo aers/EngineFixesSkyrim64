@@ -68,6 +68,7 @@ bOverrideMemoryManager = true                   # overrides Skyrim's memory mana
 bOverrideScrapHeap = true                       # overrides Skyrim's scrap heap with direct malloc/free calls
 bOverrideScaleformAllocator = true              # overrides Skyrim's scaleform allocator with calls to the global memory manager
 bOverrideRenderPassCache = true                 # overrides Skyrim's render pass cache with direct malloc/free calls
+bOverrideHavokMemorySystem = true               # overrides Havok's memory manager with direct malloc/free calls
 bReplaceImports = false                         # replace imported CRT memory functions with selected allocator
 
 [Warnings]
