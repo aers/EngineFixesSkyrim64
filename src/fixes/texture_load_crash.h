@@ -22,24 +22,26 @@ namespace Fixes::TextureLoadCrash
             if (FAILED(result)) {
                 TotalLoadFails++;
                 a_texture->rendererTexture = nullptr;
+                RE::BSFixedString string;
+                a_texture->unk40->DoGetName(string);
                 switch (result) {
                 case HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED):
-                    logger::warn("texture load failed due to unsupported format - file path {}"sv, a_texture->name.c_str());
+                    logger::warn("texture load failed due to unsupported format - file path {}"sv, string.c_str());
                     break;
                 case E_OUTOFMEMORY:
-                    logger::warn("texture load failed due to out of memory - file path {}"sv, a_texture->name.c_str());
+                    logger::warn("texture load failed due to out of memory - file path {}"sv, string.c_str());
                     break;
                 case HRESULT_FROM_WIN32(ERROR_HANDLE_EOF):
                 case HRESULT_FROM_WIN32(ERROR_INVALID_DATA):
                 case E_FAIL:
-                    logger::warn("texture load failed due to invalid DDS file - file path {}"sv, a_texture->name.c_str());
+                    logger::warn("texture load failed due to invalid DDS file - file path {}"sv, string.c_str());
                     break;
                 case E_POINTER:
                 case E_INVALIDARG:  // shouldn't be possible unless the game is fundamentally broken
-                    logger::warn("texture load failed unexpectedly - file path {}"sv, a_texture->name.c_str());
+                    logger::warn("texture load failed unexpectedly - file path {}"sv, string.c_str());
                     break;
                 default:
-                    logger::warn("texture load failed with unknown result code {:X} - file path {}"sv, static_cast<std::uint32_t>(result), a_texture->name.c_str());
+                    logger::warn("texture load failed with unknown result code {:X} - file path {}"sv, static_cast<std::uint32_t>(result), string.c_str());
                 }
             } else {
                 texture->unk20 = 1;
