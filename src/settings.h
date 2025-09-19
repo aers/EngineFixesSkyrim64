@@ -36,6 +36,7 @@ namespace Settings
         static REX::TOML::Bool bMemoryAccessErrors("Fixes", "bMemoryAccessErrors", true);
         static REX::TOML::Bool bMO5STypo("Fixes", "bMO5STypo", true);
         static REX::TOML::Bool bMusicOverlap("Fixes", "bMusicOverlap", true);
+        static REX::TOML::Bool bNiControllerNoTarget("Fixes", "bNiControllerNoTarget", true);
         static REX::TOML::Bool bNullProcessCrash("Fixes", "bNullProcessCrash", true);
         static REX::TOML::Bool bPerkFragmentIsRunning("Fixes", "bPerkFragmentIsRunning", true);
         static REX::TOML::Bool bPrecomputedPaths("Fixes", "bPrecomputedPaths", true);

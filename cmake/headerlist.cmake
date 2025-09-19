@@ -28,6 +28,7 @@ set(headers ${headers}
 	src/fixes/memory_access_errors.h
 	src/fixes/mo5s_typo.h
 	src/fixes/music_overlap.h
+	src/fixes/nitimecontroller_no_target.h
 	src/fixes/null_process_crash.h
 	src/fixes/perk_fragment_is_running.h
 	src/fixes/precomputed_paths.h

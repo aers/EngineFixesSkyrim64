@@ -31,6 +31,7 @@ bLipSync = true                                 # fixes a bug causing lip sync t
 bMemoryAccessErrors = true                      # fixes miscellaneous errors that are obscured by Skyrim's default allocator
 bMO5STypo = true                                # fixes a typo preventing the game from loading MO5S entries in ARMA forms
 bMusicOverlap = true                            # fixes a bug where multiple music tracks are playing at the same time
+bNiControllerNoTarget = true                    # fixes a crash if a malformed nif with a time controller that has no target is loaded, and logs a warning for the malformed nif
 bNullProcessCrash = true                        # fixes a couple cases where the game can crash when checking the equipped weapons of an actor without an AI process
 bPerkFragmentIsRunning = true                   # fixes a crash if the IsRunning function of a perk fragment is called on a non-actor form
 bPrecomputedPaths = true                        # fixes a crash when NAVI precomputed paths aren't accurate for your load order and logs a warning

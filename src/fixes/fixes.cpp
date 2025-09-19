@@ -26,6 +26,7 @@
 #include "memory_access_errors.h"
 #include "mo5s_typo.h"
 #include "music_overlap.h"
+#include "nitimecontroller_no_target.h"
 #include "null_process_crash.h"
 #include "perk_fragment_is_running.h"
 #include "precomputed_paths.h"
@@ -119,8 +120,8 @@ namespace Fixes
         if (Settings::Fixes::bMusicOverlap.GetValue())
             MusicOverlap::Install();
 
-        if (Settings::Fixes::bSavedHavokDataLoadInit.GetValue())
-            SavedHavokDataLoadInit::Install();
+        if (Settings::Fixes::bNiControllerNoTarget.GetValue())
+            NiTimeControllerNoTarget::Install();
 
         if (Settings::Fixes::bNullProcessCrash.GetValue())
             NullProcessCrash::Install();
@@ -133,6 +134,9 @@ namespace Fixes
 
         if (Settings::Fixes::bRemovedSpellBook.GetValue())
             RemovedSpellBook::Install();
+
+        if (Settings::Fixes::bSavedHavokDataLoadInit.GetValue())
+            SavedHavokDataLoadInit::Install();
 
         if (Settings::Fixes::bShadowSceneNodeNullPtrCrash.GetValue())
             ShadowSceneNodeNullPtrCrash::Install();
