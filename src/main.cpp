@@ -3,6 +3,7 @@
 #include <spdlog/spdlog.h>
 
 #include "clean_cosaves.h"
+#include "fixes/bslightingshader_parallax_bug.h"
 #include "fixes/fixes.h"
 #include "fixes/save_screenshots.h"
 #include "fixes/tree_reflections.h"
@@ -32,6 +33,9 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
             // need to make sure enb dll has loaded
             if (Settings::Fixes::bTreeReflections.GetValue())
                 Fixes::TreeReflections::Install();
+            // need to detect community shaders
+            if (Settings::Fixes::bBSLightingShaderParallaxBug.GetValue())
+                Fixes::BSLightingShaderParallaxBug::Install();
             if (Settings::Warnings::bRefHandleLimit.GetValue()) {
                 Warnings::WarnActiveRefrHandleCount(Settings::Warnings::uRefrMainMenuLimit.GetValue());
             }

@@ -45,6 +45,13 @@ namespace Fixes::BSLightingShaderParallaxBug
 
     inline void Install()
     {
+        const auto handle = REX::W32::GetModuleHandleA("CommunityShaders.dll");
+
+        if (handle) {
+            logger::info("community shaders detected - disabling bslightingshader parallax fix as it conflicts and is unecessary"sv);
+            return;
+        }
+
         REL::Relocation target{ RELOCATION_ID(100565, 107300), VAR_NUM(0x577, 0xB5D) };
 
         detail::Patch p(target.address());

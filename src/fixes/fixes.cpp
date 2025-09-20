@@ -6,7 +6,6 @@
 #include "bgskeywordform_load_crash.h"
 #include "bslightingambientspecular.h"
 #include "bslightingshader_force_alpha_test.h"
-#include "bslightingshader_parallax_bug.h"
 #include "bslightingshaderproperty_shadowmap.h"
 #include "bstempeffect_nirtti.h"
 #include "calendar_skipping.h"
@@ -59,9 +58,6 @@ namespace Fixes
 
         if (Settings::Fixes::bBSLightingShaderForceAlphaTest.GetValue())
             BSLightingShaderForceAlphaTest::Install();
-
-        if (Settings::Fixes::bBSLightingShaderParallaxBug.GetValue())
-            BSLightingShaderParallaxBug::Install();
 
         if (Settings::Fixes::bBSLightingShaderPropertyShadowMap.GetValue())
             BSLightingShaderPropertyShadowMap::Install();

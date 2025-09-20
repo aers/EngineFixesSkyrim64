@@ -40,7 +40,7 @@ namespace Fixes::TreeReflections
         const auto handle = REX::W32::GetModuleHandleA("d3dcompiler_46e.dll");
 
         if (handle) {
-            logger::trace("enb detected - disabling fix, please use ENB's tree reflection fix instead"sv);
+            logger::info("enb detected - disabling tree lod reflection fix, please use ENB's tree reflection fix instead"sv);
             return;
         }
 
