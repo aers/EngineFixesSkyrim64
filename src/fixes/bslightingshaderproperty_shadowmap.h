@@ -65,14 +65,14 @@ namespace BSLightingShaderPropertyShadowMap
             return &passArray[g_currentIndex];
         }
 
-        inline SafetyHookInline orig_BSShadowDirectionalLight_14F0920;
+        inline SafetyHookInline orig_BSShadowLight_AccumulateShadowMap;
 
-        inline void BSShadowDirectionalLight_14F0920(RE::BSShadowLight* a_self, RE::BSShadowLight::ShadowMapData* a_data, std::uint32_t* a_unk3, std::uintptr_t a_unk4)
+        inline void BSShadowLight_AccumulateShadowMap(RE::BSShadowLight* a_self, RE::BSShadowLight::ShadowMapData* a_data, std::uint32_t* a_pShadowMaskChannel, RE::BSTArray<RE::BSCullingProcess*>* a_cullingProcessArray, const std::uint32_t a_jobIndex)
         {
             // store the currently being processed light's shadowmap index
             // this is singlethreaded so it is safe
             g_currentIndex = a_data->shadowMapIndex;
-            orig_BSShadowDirectionalLight_14F0920.call(a_self, a_data, a_unk3, a_unk4);
+            orig_BSShadowLight_AccumulateShadowMap.call(a_self, a_data, a_pShadowMaskChannel, a_cullingProcessArray, a_jobIndex);
         }
 
         inline void CleanAllocatedArrays(RE::BSLightingShaderProperty* a_self)
@@ -119,8 +119,8 @@ namespace BSLightingShaderPropertyShadowMap
 
         inline void Install()
         {
-            const REL::Relocation _14F0920{ RELOCATION_ID(100818, 107602) };
-            orig_BSShadowDirectionalLight_14F0920 = safetyhook::create_inline(_14F0920.address(), BSShadowDirectionalLight_14F0920);
+            const REL::Relocation _AccumulateShadowMap{ RELOCATION_ID(100818, 107602) };
+            orig_BSShadowLight_AccumulateShadowMap = safetyhook::create_inline(_AccumulateShadowMap.address(), BSShadowLight_AccumulateShadowMap);
 
             REL::Relocation GetRenderPasses_ShadowMapOrMask{ RELOCATION_ID(99872, 106517), VAR_NUM(0x291, 0x295) };
             auto&           trampoline = SKSE::GetTrampoline();
