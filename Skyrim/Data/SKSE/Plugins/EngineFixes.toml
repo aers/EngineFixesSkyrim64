@@ -70,7 +70,7 @@ bOverrideScrapHeap = true                       # overrides Skyrim's scrap heap 
 bOverrideScaleformAllocator = true              # overrides Skyrim's scaleform allocator with calls to the global memory manager
 bOverrideRenderPassCache = true                 # overrides Skyrim's render pass cache with direct malloc/free calls
 bOverrideHavokMemorySystem = true               # overrides Havok's memory manager with direct malloc/free calls
-bReplaceImports = false                         # replace imported CRT memory functions with selected allocator
+bReplaceImports = true                          # replace imported CRT memory functions with selected allocator
 
 [Warnings]
 bTextureLoadFailed = true                       # On exit, pops up a message box telling you one or more textures failed to load and have been logged
