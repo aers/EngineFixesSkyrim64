@@ -48,7 +48,7 @@ bWeaponBlockScaling = true                      # fixes weapon blocking so it co
 # contains optional game patches
 [Patches]
 bDisableChargenPrecache = false                 # disables pre-caching of chargen, unnecessary with RaceMenu installed
-bDisableSnowFlag = false                        # forcably removes snow flags from loaded LTEX and MATO forms
+bDisableSnowFlag = false                        # forcably removes snow flags from loaded LTEX, MATO, and STAT forms
 bEnableAchievementsWithMods = true              # enables achievements with mods active
 bFormCaching = true                             # attempts to speedup form lookups
 bINISettingCollection = true                    # slightly speeds up startup time for lists with a large number of plugins

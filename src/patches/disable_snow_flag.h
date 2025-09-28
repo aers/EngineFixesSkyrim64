@@ -24,13 +24,25 @@ namespace Patches::DisableSnowFlag
             return retVal;
         }
 
+        inline REL::Relocation<bool(RE::TESObjectSTAT*, RE::TESFile*)> orig_TESObjectSTAT_Load;
+
+        inline bool TESObjectSTAT_Load(RE::TESObjectSTAT* a_self, RE::TESFile* a_file)
+        {
+            const bool retVal = orig_TESObjectSTAT_Load(a_self, a_file);
+            if (retVal)
+                a_self->data.flags.set(false, RE::TESObjectSTATData::Flag::kConsideredSnow);
+            return retVal;
+        }
+
         inline void Install()
         {
             REL::Relocation LTEX{ RE::TESLandTexture::VTABLE[0] };
             REL::Relocation MATO{ RE::BGSMaterialObject::VTABLE[0] };
+            REL::Relocation STAT{ RE::TESObjectSTAT::VTABLE[0] };
 
             orig_TESLandTexture_Load = LTEX.write_vfunc(6, TESLandTexture_Load);
             orig_BGSMaterialObject_Load = MATO.write_vfunc(6, BGSMaterialObject_Load);
+            orig_TESObjectSTAT_Load = STAT.write_vfunc(6, TESObjectSTAT_Load);
         }
     }
 
