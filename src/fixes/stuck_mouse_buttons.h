@@ -4,6 +4,13 @@ namespace Fixes::StuckMouseButtons
 {
     namespace detail
     {
+        enum MouseButtonFlags : std::uint32_t
+        {
+            kLMB = 1u << 0,
+            kRMB = 1u << 1,
+            kMMB = 1u << 2,
+        };
+
         class MenuOpenCloseEventSink : public RE::BSTEventSink<RE::MenuOpenCloseEvent>
         {
         public:
@@ -18,15 +25,23 @@ namespace Fixes::StuckMouseButtons
             MenuOpenCloseEventSink(const MenuOpenCloseEventSink&) = delete;
             MenuOpenCloseEventSink& operator=(const MenuOpenCloseEventSink&) = delete;
 
-            static void TrySendMouseUp(RE::IMenu* a_menu)
+            static void TrySendMouseUp(RE::IMenu* a_menu, std::uint32_t a_buttonMask)
             {
                 auto* cursor = RE::MenuCursor::GetSingleton();
                 if (!cursor)
                     return;
 
+                constexpr std::pair<std::uint32_t, std::uint32_t> kButtonTable[] = {
+                    { kLMB, 0 },
+                    { kRMB, 1 },
+                    { kMMB, 2 },
+                };
+
+                const std::uint32_t buttonIndex = a_buttonMask - 1;
+
                 RE::GFxMouseEvent mouseUp(
                     RE::GFxEvent::EventType::kMouseUp,
-                    0,
+                    buttonIndex,
                     cursor->cursorPosX,
                     cursor->cursorPosY,
                     0.0f,
@@ -42,7 +57,7 @@ namespace Fixes::StuckMouseButtons
                 if (!a_event || !a_event->opening)
                     return RE::BSEventNotifyControl::kContinue;
 
-                SKSE::GetTaskInterface()->AddTask([menuName = std::string(a_event->menuName.c_str())]() {
+                SKSE::GetTaskInterface()->AddTask([menuName = a_event->menuName]() {
                     auto* ui = RE::UI::GetSingleton();
                     if (!ui)
                         return;
@@ -54,18 +69,18 @@ namespace Fixes::StuckMouseButtons
 
                     for (auto& menuPtr : ui->menuStack) {
                         auto* menu = menuPtr.get();
+
                         if (!menu || !menu->uiMovie || !menu->UsesCursor() || menu == openedMenu)
                             continue;
 
                         float         fx = 0.0f, fy = 0.0f;
-                        std::uint32_t fButtons = 0;
-                        menu->uiMovie->GetMouseState(0, &fx, &fy, &fButtons);
+                        std::uint32_t buttonMask = 0;
+                        menu->uiMovie->GetMouseState(0, &fx, &fy, &buttonMask);
 
-                        if (fButtons == 0)
+                        if (buttonMask == 0)
                             continue;
 
-                        TrySendMouseUp(menu);
-                        return;
+                        TrySendMouseUp(menu, buttonMask);
                     }
                 });
 
