@@ -9,7 +9,7 @@ namespace Warnings
         std::uint32_t activeHandleCount = 0;
 
         for (auto& val : refrArray) {
-            if ((val.handleEntryBits & (1 << 26)) != 0)
+            if (val.IsInUse())
                 activeHandleCount++;
         }
 

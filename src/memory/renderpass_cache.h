@@ -50,7 +50,7 @@ namespace Memory::RenderPassCache
             renderPass->extraParam = 0;
             renderPass->LODMode.index = 3;
             renderPass->LODMode.singleLevel = false;
-            renderPass->unk20 = 0;
+            renderPass->shadowLightCount = 0;
             renderPass->next = nullptr;
             renderPass->passGroupNext = nullptr;
             renderPass->cachePoolId = 0xFEFEDEAD;
