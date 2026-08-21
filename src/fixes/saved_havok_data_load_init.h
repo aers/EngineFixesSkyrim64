@@ -34,6 +34,6 @@ namespace Fixes::SavedHavokDataLoadInit
     inline void Install()
     {
         detail::Install();
-        logger::info("installed saved havok data load init fix"sv);
+        REX::INFO("installed saved havok data load init fix"sv);
     }
 }

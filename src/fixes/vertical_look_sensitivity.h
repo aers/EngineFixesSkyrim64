@@ -74,7 +74,7 @@ namespace Fixes::VerticalLookSensitivity
         };
 #endif
 
-        auto& trampoline = SKSE::GetTrampoline();
+        auto& trampoline = REL::GetTrampoline();
 
         for (auto& [id, offset] : todo) {
             REL::Relocation target{ REL::ID(id), offset };
@@ -86,11 +86,11 @@ namespace Fixes::VerticalLookSensitivity
 #endif
             p.ready();
 
-            target.write_branch<6>(trampoline.allocate(p));
+            target.write_jmp<6>(trampoline.allocate(p));
 
-            REL::safe_fill(target.address() + 0x6, REL::NOP, VAR_NUM(0x5, 0x2));
+            REL::WriteSafeFill(target.address() + 0x6, REL::NOP, VAR_NUM(0x5, 0x2));
         }
 
-        logger::info("installed vertical look sensitivity fix"sv);
+        REX::INFO("installed vertical look sensitivity fix"sv);
     }
 }

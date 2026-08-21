@@ -44,7 +44,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
             }
 
             auto timeElapsed = std::chrono::high_resolution_clock::now() - start;
-            logger::info("time to main menu {}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
+            REX::INFO("time to main menu {}"sv, std::chrono::duration_cast<std::chrono::milliseconds>(timeElapsed).count());
 
             break;
         }
@@ -92,15 +92,15 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
     start = std::chrono::high_resolution_clock::now();
     OpenLog();
 
-    logger::info("EngineFixes v{}.{}.{} PreLoad"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
+    REX::INFO("EngineFixes v{}.{}.{} PreLoad"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
-    const auto ver = REL::Module::get().version();
-    if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_6_1170)) {
-        logger::error("Unsupported runtime version {}"sv, ver);
+    const auto ver = REX::FModule::GetExecutingModule().GetFileVersion();
+    if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_7_99)) {
+        REX::ERROR("Unsupported runtime version {}"sv, ver);
         return;
     }
 
-    auto& trampoline = SKSE::GetTrampoline();
+    auto& trampoline = REL::GetTrampoline();
     trampoline.create(1 << 11);
 
     Settings::Load();
@@ -109,7 +109,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
         spdlog::set_level(spdlog::level::trace);
         spdlog::flush_on(spdlog::level::trace);
 
-        logger::trace("enabled verbose logging"sv);
+        REX::TRACE("enabled verbose logging"sv);
     }
 
     Memory::Install();
@@ -136,7 +136,7 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Query(const SKSE::Query
 {
     if (!g_isPreloaded) {
         OpenLog();
-        logger::error("plugin did not preload, please install the preloader");
+        REX::ERROR("plugin did not preload, please install the preloader");
 
         std::wostringstream messageBoxText;
         messageBoxText << L"ERROR: Engine Fixes did not pre-load and fixes are not active. Please verify the installation of d3dx9_42.dll from the Part 2 archive. This file must reside in the main game folder alongside SkyrimSE.exe, or be properly installed with your mod manager's root folder functionality.\r\n"sv;
@@ -163,7 +163,7 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
         // init with log
         SKSE::Init(a_skse);
 
-        logger::error("plugin did not preload, please install the preloader");
+        REX::ERROR("plugin did not preload, please install the preloader");
 
         std::wostringstream messageBoxText;
         messageBoxText << L"ERROR: Engine Fixes did not pre-load and fixes are not active. Please verify the installation of d3dx9_42.dll from the Part 2 archive. This file must reside in the main game folder alongside SkyrimSE.exe, or be properly installed with your mod manager's root folder functionality.\r\n"sv;
@@ -176,13 +176,13 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadIn
         return false;
     }
 
-    SKSE::Init(a_skse, false);
+    SKSE::Init(a_skse, { .log = false });
 
-    logger::info("EngineFixes SKSE Load"sv, Version::PROJECT);
+    REX::INFO("EngineFixes SKSE Load"sv, Version::PROJECT);
 
     const auto messaging = SKSE::GetMessagingInterface();
     if (!messaging->RegisterListener("SKSE", MessageHandler)) {
-        logger::error("Failed to register messaging interface listener"sv);
+        REX::ERROR("Failed to register messaging interface listener"sv);
         return false;
     }
 

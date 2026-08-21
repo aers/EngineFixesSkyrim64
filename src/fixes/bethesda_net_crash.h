@@ -43,8 +43,8 @@ namespace Fixes::BethesdaNetCrash
 
     inline void Install()
     {
-        SKSE::PatchIAT(detail::hk_wcsrtombs_s, "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", "wcsrtombs_s");
+        REX::FModule::GetExecutingModule().SetImportFunctionAddress("wcsrtombs_s", "API-MS-WIN-CRT-CONVERT-L1-1-0.dll", reinterpret_cast<std::uintptr_t>(detail::hk_wcsrtombs_s));
 
-        logger::info("installed bethesda net crash fix"sv);
+        REX::INFO("installed bethesda net crash fix"sv);
     }
 }

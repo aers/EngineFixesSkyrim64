@@ -115,6 +115,6 @@ namespace Memory::MemoryManager
     {
         detail::Install();
         detail::AutoScrapBuffer::Install();
-        logger::info("installed global memory manager patch"sv);
+        REX::INFO("installed global memory manager patch"sv);
     }
 }

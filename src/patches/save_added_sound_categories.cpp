@@ -21,15 +21,15 @@ namespace Patches::SaveAddedSoundCategories
                     if (soundCategory->IsMenuCategory()) {
                         auto fullName = soundCategory->GetFullName();
                         fullName = fullName ? fullName : "";
-                        logger::trace("processing {}"sv, fullName);
-                        logger::trace("menu flag set, saving"sv);
+                        REX::TRACE("processing {}"sv, fullName);
+                        REX::TRACE("menu flag set, saving"sv);
                         auto localFormID = soundCategory->formID & 0x00FFFFFF;
                         // esl
                         if ((soundCategory->formID & 0xFF000000) == 0xFE000000) {
                             localFormID = localFormID & 0x00000FFF;
                         }
                         const auto srcFile = soundCategory->GetDescriptionOwnerFile();
-                        logger::trace("plugin: {} form id: {:08X} volume: {}"sv, srcFile->fileName, localFormID, soundCategory->volumeMult);
+                        REX::TRACE("plugin: {} form id: {:08X} volume: {}"sv, srcFile->fileName, localFormID, soundCategory->volumeMult);
 
                         char localFormIDHex[] = "DEADBEEF";
                         sprintf_s(localFormIDHex, std::extent_v<decltype(localFormIDHex)>, "%08X", localFormID);
@@ -41,16 +41,16 @@ namespace Patches::SaveAddedSoundCategories
                 auto ret = store.SaveFile(FILE_NAME.data());
 
                 if (ret < 0) {
-                    logger::trace("warning: unable to save SNCT ini");
+                    REX::TRACE("warning: unable to save SNCT ini");
                 } else
-                    logger::trace("saved SNCT volumes to ini");
+                    REX::TRACE("saved SNCT volumes to ini");
             }
             return g_hk_INIPrefSettingCollection_Unlock.call<bool>(a_self);
         }
 
         void LoadVolumes()
         {
-            logger::trace("loading SNCT volumes");
+            REX::TRACE("loading SNCT volumes");
 
             const auto dataHandler = RE::TESDataHandler::GetSingleton();
 
@@ -58,7 +58,7 @@ namespace Patches::SaveAddedSoundCategories
                 auto& store = get_store();
                 auto  ret = store.LoadFile(FILE_NAME.data());
                 if (ret < 0) {
-                    logger::error("unable to load SNCT volume ini");
+                    REX::ERROR("unable to load SNCT volume ini");
                     return;
                 }
 
@@ -75,7 +75,7 @@ namespace Patches::SaveAddedSoundCategories
                     auto vol = store.GetDoubleValue(srcFile->fileName, localFormIDHex, DBL_MAX);
 
                     if (vol != DBL_MAX) {
-                        logger::trace("setting volume for formid {:08X} to {}"sv, soundCategory->formID, vol);
+                        REX::TRACE("setting volume for formid {:08X} to {}"sv, soundCategory->formID, vol);
                         soundCategory->SetCategoryVolume(static_cast<float>(vol));
                     }
                 }

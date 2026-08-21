@@ -31,6 +31,6 @@ namespace Fixes::RemovedSpellBook
         REL::Relocation vtbl{ RE::TESObjectBOOK::VTABLE[0] };
         detail::TESObjectBOOK::_LoadGame = vtbl.write_vfunc(0xF, detail::TESObjectBOOK::LoadGame);
 
-        logger::info("installed removed spell book fix"sv);
+        REX::INFO("installed removed spell book fix"sv);
     }
 }

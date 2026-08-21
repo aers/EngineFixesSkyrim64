@@ -8,6 +8,6 @@ namespace Fixes::BSTempEffectNiRTTI
         const REL::Relocation<RE::NiRTTI*> rttiNiObject{ RE::NiObject::Ni_RTTI };
         rttiBSTempEffect->baseRTTI = rttiNiObject.get();
 
-        logger::info("installed bstempeffect nirtti fix"sv);
+        REX::INFO("installed bstempeffect nirtti fix"sv);
     }
 }

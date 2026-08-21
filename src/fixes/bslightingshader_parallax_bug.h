@@ -48,16 +48,16 @@ namespace Fixes::BSLightingShaderParallaxBug
         const auto handle = REX::W32::GetModuleHandleA("CommunityShaders.dll");
 
         if (handle) {
-            logger::info("community shaders detected - disabling bslightingshader parallax fix as it conflicts and is unecessary"sv);
+            REX::INFO("community shaders detected - disabling bslightingshader parallax fix as it conflicts and is unecessary"sv);
             return;
         }
 
         REL::Relocation target{ RELOCATION_ID(100565, 107300), VAR_NUM(0x577, 0xB5D) };
 
         detail::Patch p(target.address());
-        auto&         trampoline = SKSE::GetTrampoline();
-        trampoline.write_branch<6>(target.address(), trampoline.allocate(p));
+        auto&         trampoline = REL::GetTrampoline();
+        trampoline.write_jmp6(target.address(), reinterpret_cast<std::uintptr_t>(trampoline.allocate(p)));
 
-        logger::info("installed bslightingshader parallax bug fix"sv);
+        REX::INFO("installed bslightingshader parallax bug fix"sv);
     }
 }

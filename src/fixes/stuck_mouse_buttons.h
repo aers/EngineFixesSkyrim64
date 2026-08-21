@@ -77,6 +77,6 @@ namespace Fixes::StuckMouseButtons
     inline void Install()
     {
         RE::UI::GetSingleton()->AddEventSink(detail::MenuOpenCloseEventSink::GetSingleton());
-        logger::info("installed stuck mouse buttons fix"sv);
+        REX::INFO("installed stuck mouse buttons fix"sv);
     }
 }

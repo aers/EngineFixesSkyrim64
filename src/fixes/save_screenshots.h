@@ -23,7 +23,7 @@ namespace Fixes::SaveScreenshots
                 return;
             }
 
-            auto& trampoline = SKSE::GetTrampoline();
+            auto& trampoline = REL::GetTrampoline();
 
             // have one fix that causes flicker during quicksave and one fix that causes blank journal menus
             // so just combine both
@@ -50,7 +50,7 @@ namespace Fixes::SaveScreenshots
                 IsSaveRequest_Code code(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address());
                 code.ready();
 
-                BGSSaveLoadManager_ProcessEvents_RequestScreenshot.write_branch<6>(trampoline.allocate(code));
+                BGSSaveLoadManager_ProcessEvents_RequestScreenshot.write_jmp<6>(trampoline.allocate(code));
             }
             // use menu fix for DoF+TAA Disabled ingame requests
             else {
@@ -75,7 +75,7 @@ namespace Fixes::SaveScreenshots
                 IsSaveRequest_Code code(BGSSaveLoadManager_ProcessEvents_RequestScreenshot.address());
                 code.ready();
 
-                BGSSaveLoadManager_ProcessEvents_RequestScreenshot.write_branch<6>(trampoline.allocate(code));
+                BGSSaveLoadManager_ProcessEvents_RequestScreenshot.write_jmp<6>(trampoline.allocate(code));
             }
 
             // flicker fix for open menu screenshot requests
@@ -109,7 +109,7 @@ namespace Fixes::SaveScreenshots
                 code.ready();
 
                 // warning: 5 byte branch instead of 6 byte branch
-                MenuSave_RequestScreenshot.write_branch<5>(trampoline.allocate(code));
+                MenuSave_RequestScreenshot.write_jmp<5>(trampoline.allocate(code));
             }
 
             {
@@ -178,7 +178,7 @@ namespace Fixes::SaveScreenshots
                 ScreenshotRender_Code code(ScreenshotJnz.address(), ScreenshotRenderOrigJnz.address());
                 code.ready();
 
-                ScreenshotJnz.write_branch<6>(trampoline.allocate(code));
+                ScreenshotJnz.write_jmp<6>(trampoline.allocate(code));
             }
 
             // flicker version of fix, checks for screenshot requested from open menu
@@ -223,7 +223,7 @@ namespace Fixes::SaveScreenshots
                 RenderTargetHook_1_Code code(RenderTargetHook_1.address());
                 code.ready();
 
-                RenderTargetHook_1.write_branch<6>(trampoline.allocate(code));
+                RenderTargetHook_1.write_jmp<6>(trampoline.allocate(code));
             }
 
             {
@@ -259,7 +259,7 @@ namespace Fixes::SaveScreenshots
                 RenderTargetHook_2_Code code(RenderTargetHook_2.address());
                 code.ready();
 
-                RenderTargetHook_2.write_branch<6>(trampoline.allocate(code));
+                RenderTargetHook_2.write_jmp<6>(trampoline.allocate(code));
             }
         }
     }
@@ -267,6 +267,6 @@ namespace Fixes::SaveScreenshots
     inline void Install()
     {
         detail::Install();
-        logger::info("installed save screenshots fix"sv);
+        REX::INFO("installed save screenshots fix"sv);
     }
 }

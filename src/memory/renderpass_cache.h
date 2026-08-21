@@ -98,6 +98,6 @@ namespace Memory::RenderPassCache
     inline void Install()
     {
         detail::Install();
-        logger::info("installed render pass cache patch"sv);
+        REX::INFO("installed render pass cache patch"sv);
     }
 }

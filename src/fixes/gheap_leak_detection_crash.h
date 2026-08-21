@@ -7,6 +7,6 @@ namespace Fixes::GHeapLeakDetectionCrash
         REL::Relocation target{ RELOCATION_ID(85757, 87837), 0x4B };
         target.write_fill(REL::NOP, 0x11);
 
-        logger::info("installed gheap leak detection crash fix"sv);
+        REX::INFO("installed gheap leak detection crash fix"sv);
     }
 }

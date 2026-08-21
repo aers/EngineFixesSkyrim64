@@ -1,18 +1,25 @@
 {
   "name": "enginefixes",
-  "version-string": "7.0.20",
-  "description": "Engine Fixes for Skyrim SE (1.5.97, 1.6.1170)",
+  "version-string": "7.0.21",
+  "description": "Engine Fixes for Skyrim SE (1.5.97, 1.7.99)",
   "homepage": "https://github.com/aers/EngineFixesSkyrim64/",
   "license": "MIT",
   "dependencies": [
-    "rsm-binary-io",
     "spdlog",
     "xbyak",
     "simpleini",
     "toml11",
+	{
+      "name": "commonlib-shared",
+      "features": [
+        "xbyak",
+        "toml",
+        "ini"
+      ]
+    },
     "safetyhook",
     "boost-regex",
     "tbb"
   ],
-  "builtin-baseline": "4bb07a326d9b9bce3703272a509e5bc25dd9cfd5"
+  "builtin-baseline": "7f3781e19cc7d4e4882a4caec01668c6f7b5c163"
 }

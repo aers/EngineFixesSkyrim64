@@ -89,10 +89,10 @@ namespace Memory::ScaleformAllocator
     inline void Install()
     {
         if (!Settings::MemoryManager::bOverrideMemoryManager.GetValue()) {
-            logger::info("skipping scaleform allocator patch as it requires the memory manager patch"sv);
+            REX::INFO("skipping scaleform allocator patch as it requires the memory manager patch"sv);
         } else {
             detail::Install();
-            logger::info("installed scaleform allocator patch"sv);
+            REX::INFO("installed scaleform allocator patch"sv);
         }
     }
 }

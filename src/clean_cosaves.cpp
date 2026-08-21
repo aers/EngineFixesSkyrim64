@@ -20,15 +20,15 @@ namespace Util::CoSaves
         if (sLocalSavePath)
             path /= sLocalSavePath->GetString();
         else {
-            logger::error("Failed to get local save path ini setting"sv);
+            REX::ERROR("Failed to get local save path ini setting"sv);
             return std::nullopt;
         }
 
         std::error_code ec;
         if (!std::filesystem::exists(path, ec) || ec) {
-            logger::error("Path \"{}\" does not exist"sv, path.string());
+            REX::ERROR("Path \"{}\" does not exist"sv, path.string());
             if (ec)
-                logger::error("Error message: {}"sv, ec.message());
+                REX::ERROR("Error message: {}"sv, ec.message());
 
             return std::nullopt;
         } else
@@ -41,7 +41,7 @@ namespace Util::CoSaves
         if (!savesPath)
             return false;
 
-        logger::trace("cleaning cosaves in path {}"sv, savesPath->string());
+        REX::TRACE("cleaning cosaves in path {}"sv, savesPath->string());
 
         constexpr auto                     REGEX_CONSTANTS = boost::regex_constants::ECMAScript | boost::regex_constants::icase;
         const boost::regex                 cosavePattern(R"(.*\.skse$)", REGEX_CONSTANTS);
@@ -58,18 +58,18 @@ namespace Util::CoSaves
                         if (!ec)
                             matches.push_back(cosave);
                         else
-                            logger::error("Error while checking if \"{}\" exists: {}"sv, save.string(), ec.message());
+                            REX::ERROR("Error while checking if \"{}\" exists: {}"sv, save.string(), ec.message());
                     }
                 }
             }
         }
 
         for (const auto& match : matches) {
-            logger::trace("removing \"{}\""sv, match.string());
+            REX::TRACE("removing \"{}\""sv, match.string());
             if (!std::filesystem::remove(match, ec) || ec) {
-                logger::error("Failed to remove \"{}\""sv, match.string());
+                REX::ERROR("Failed to remove \"{}\""sv, match.string());
                 if (ec)
-                    logger::error("Error message: {}"sv, ec.message());
+                    REX::ERROR("Error message: {}"sv, ec.message());
             }
         }
 

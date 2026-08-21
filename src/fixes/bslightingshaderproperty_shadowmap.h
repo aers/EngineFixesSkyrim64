@@ -123,10 +123,10 @@ namespace BSLightingShaderPropertyShadowMap
             orig_BSShadowLight_AccumulateShadowMap = safetyhook::create_inline(_AccumulateShadowMap.address(), BSShadowLight_AccumulateShadowMap);
 
             REL::Relocation GetRenderPasses_ShadowMapOrMask{ RELOCATION_ID(99872, 106517), VAR_NUM(0x291, 0x295) };
-            auto&           trampoline = SKSE::GetTrampoline();
-            Patch           p(GetRenderPasses_ShadowMapOrMask.address(), SKSE::stl::unrestricted_cast<std::uintptr_t>(BSLightingShaderProperty_GetRenderPasses_ShadowMapOrMask_Detour));
+            auto&           trampoline = REL::GetTrampoline();
+            Patch           p(GetRenderPasses_ShadowMapOrMask.address(), REX::UNRESTRICTED_CAST<std::uintptr_t>(BSLightingShaderProperty_GetRenderPasses_ShadowMapOrMask_Detour));
             p.ready();
-            GetRenderPasses_ShadowMapOrMask.write_branch<5>(trampoline.allocate(p));
+            GetRenderPasses_ShadowMapOrMask.write_jmp<5>(trampoline.allocate(p));
 
             const REL::Relocation ClearArrays{ RELOCATION_ID(99881, 106526) };
             orig_BSLightingShaderProperty_ClearRenderPassArrays = safetyhook::create_inline(ClearArrays.address(), BSLightingShaderProperty_ClearRenderPassArrays);
@@ -144,6 +144,6 @@ namespace BSLightingShaderPropertyShadowMap
     inline void Install()
     {
         detail::Install();
-        logger::info("installed bslightingshaderproperty shadowmap fix"sv);
+        REX::INFO("installed bslightingshaderproperty shadowmap fix"sv);
     }
 }

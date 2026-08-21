@@ -151,6 +151,6 @@ namespace Memory::HavokMemorySystem
     inline void Install()
     {
         detail::Install();
-        logger::info("installed havok memory system patch"sv);
+        REX::INFO("installed havok memory system patch"sv);
     }
 }

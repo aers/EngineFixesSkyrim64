@@ -25,6 +25,6 @@ namespace Patches::INISettingCollection
     inline void Install()
     {
         detail::Install();
-        logger::info("installed INISettingCollection patch"sv);
+        REX::INFO("installed INISettingCollection patch"sv);
     }
 }

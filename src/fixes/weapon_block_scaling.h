@@ -64,13 +64,13 @@ namespace Fixes::WeaponBlockScaling
     {
         REL::Relocation target{ RELOCATION_ID(42842, 44014), VAR_NUM(0x3B8, 0x3A2) };
 
-        detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
+        detail::Patch p(REX::UNRESTRICTED_CAST<std::uintptr_t>(detail::Actor::CalcWeaponDamage));
         p.ready();
 
         target.write(std::span{ p.getCode<const std::byte*>(), p.getSize() });
 
-        REL::safe_fill(target.address() + p.getSize(), REL::NOP, VAR_NUM(0x19, 0x17) - p.getSize());
+        REL::WriteSafeFill(target.address() + p.getSize(), REL::NOP, VAR_NUM(0x19, 0x17) - p.getSize());
 
-        logger::info("installed weapon block scaling fix"sv);
+        REX::INFO("installed weapon block scaling fix"sv);
     }
 }

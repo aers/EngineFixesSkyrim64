@@ -54,9 +54,9 @@ namespace Fixes::BSLightingAmbientSpecular
         detail::Patch p(constant.address(), geometryTarget.address());
         p.ready();
 
-        auto& trampoline = SKSE::GetTrampoline();
-        trampoline.write_branch<5>(geometryTarget.address(), trampoline.allocate(p));
+        auto& trampoline = REL::GetTrampoline();
+        trampoline.write_jmp5(geometryTarget.address(), reinterpret_cast<std::uintptr_t>(trampoline.allocate(p)));
 
-        logger::info("installed BSLightingAmbientSpecular fix"sv);
+        REX::INFO("installed BSLightingAmbientSpecular fix"sv);
     }
 }

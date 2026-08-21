@@ -40,17 +40,17 @@ namespace Fixes::TreeReflections
         const auto handle = REX::W32::GetModuleHandleA("d3dcompiler_46e.dll");
 
         if (handle) {
-            logger::info("enb detected - disabling tree lod reflection fix, please use ENB's tree reflection fix instead"sv);
+            REX::INFO("enb detected - disabling tree lod reflection fix, please use ENB's tree reflection fix instead"sv);
             return;
         }
 
-        REL::Relocation target{ RELOCATION_ID(100771, 107551), VAR_NUM(0x37, 0x35) };
+        REL::Relocation target{ RELOCATION_ID(100771, 527785), VAR_NUM(0x37, 0x35) };
         detail::Patch   p(target.address());
         p.ready();
 
-        auto& trampoline = SKSE::GetTrampoline();
-        target.write_branch<6>(trampoline.allocate(p));
+        auto& trampoline = REL::GetTrampoline();
+        target.write_jmp<6>(trampoline.allocate(p));
 
-        logger::info("installed tree lod reflection fix");
+        REX::INFO("installed tree lod reflection fix");
     }
 }

@@ -12,10 +12,10 @@ namespace Memory
     {
         if (Settings::Debug::bDisableTBB.GetValue()) {
             Allocator::SetAllocator(Allocator::CRT);
-            logger::info("set allocator to CRT"sv);
+            REX::INFO("set allocator to CRT"sv);
         } else {
             Allocator::SetAllocator(Allocator::TBB);
-            logger::info("set allocator to TBB"sv);
+            REX::INFO("set allocator to TBB"sv);
         }
 
         if (Settings::MemoryManager::bOverrideMemoryManager.GetValue())

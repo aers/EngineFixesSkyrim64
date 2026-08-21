@@ -87,7 +87,7 @@ namespace Patches::FormCaching
             if (formPointer != nullptr) {
                 HashMap::accessor a;
                 if (!g_formCache[masterId].emplace(a, baseId, formPointer)) {
-                    logger::trace("replacing an existing form in form cache"sv);
+                    REX::TRACE("replacing an existing form in form cache"sv);
                     a->second = formPointer;
                 }
 
@@ -127,7 +127,7 @@ namespace Patches::FormCaching
             if (formPointer != nullptr) {
                 HashMap::accessor a;
                 if (!g_formCache[masterId].emplace(a, baseId, formPointer)) {
-                    logger::trace("replacing an existing form in form cache"sv);
+                    REX::TRACE("replacing an existing form in form cache"sv);
                     a->second = formPointer;
                 }
 
@@ -205,6 +205,6 @@ namespace Patches::FormCaching
     {
         detail::ReplaceFormMapFunctions();
 
-        logger::info("installed form caching patch"sv);
+        REX::INFO("installed form caching patch"sv);
     }
 }

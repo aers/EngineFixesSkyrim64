@@ -23,7 +23,7 @@ namespace Memory::ScrapHeap
         inline RE::ScrapHeap* Ctor(RE::ScrapHeap* a_self)
         {
             std::memset(a_self, 0, sizeof(RE::ScrapHeap));
-            SKSE::stl::emplace_vtable(a_self);
+            REX::EMPLACE_VTABLE(a_self);
             return a_self;
         }
 
@@ -95,6 +95,6 @@ namespace Memory::ScrapHeap
     inline void Install()
     {
         detail::Install();
-        logger::info("installed scrapheap patch"sv);
+        REX::INFO("installed scrapheap patch"sv);
     }
 }

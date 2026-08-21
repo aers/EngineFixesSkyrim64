@@ -15,21 +15,21 @@ namespace Patches::MaxStdIO
             auto       result = proc(8192);
             if (result != -1) {
                 if (get)
-                    logger::info("set max stdio to {} from {}"sv, result, old);
+                    REX::INFO("set max stdio to {} from {}"sv, result, old);
                 else
-                    logger::info("set max stdio to {}"sv, result);
+                    REX::INFO("set max stdio to {}"sv, result);
 
                 return;
             }
             result = proc(2048);
             if (result != -1) {
                 if (get)
-                    logger::info("set max stdio to {} from {}"sv, result, old);
+                    REX::INFO("set max stdio to {} from {}"sv, result, old);
                 else
-                    logger::info("set max stdio to {}"sv, result);
+                    REX::INFO("set max stdio to {}"sv, result);
             }
         } else {
-            logger::error("failed to install MaxStdIO patch"sv);
+            REX::ERROR("failed to install MaxStdIO patch"sv);
         }
     }
 }

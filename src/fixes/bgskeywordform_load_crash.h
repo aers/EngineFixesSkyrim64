@@ -29,7 +29,7 @@ namespace Fixes::BGSKeywordFormLoadCrash
 
             // if keywords = 0 and file ends, return
             if (!a_file->SeekNextSubrecord()) {
-                logger::warn("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
+                REX::WARN("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
                 return;
             }
 
@@ -38,7 +38,7 @@ namespace Fixes::BGSKeywordFormLoadCrash
 
             if (currentSubrecordType != 0x4144574B)  // KWDA
             {
-                logger::warn("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
+                REX::WARN("fixing invalid keyword form detected at formID {:X} in file {}"sv, a_file->currentform.formID, a_file->fileName);
                 TESFile_SetOffsetChunk(a_file, currentChunkOffset);
             }
 
@@ -54,6 +54,6 @@ namespace Fixes::BGSKeywordFormLoadCrash
     inline void Install()
     {
         detail::Install();
-        logger::info("installed bgskeywordform load crash fix"sv);
+        REX::INFO("installed bgskeywordform load crash fix"sv);
     }
 }

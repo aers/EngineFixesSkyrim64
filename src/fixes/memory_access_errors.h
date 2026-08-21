@@ -48,10 +48,10 @@ namespace Fixes::MemoryAccessErrors
             Patch           patch(vtbl.address(), funcHook.address(), funcExit.address());
             patch.ready();
 
-            auto& trampoline = SKSE::GetTrampoline();
-            trampoline.write_branch<6>(
+            auto& trampoline = REL::GetTrampoline();
+            trampoline.write_jmp6(
                 funcHook.address(),
-                trampoline.allocate(patch));
+                reinterpret_cast<std::uintptr_t>(trampoline.allocate(patch)));
         }
 
         inline static REL::Relocation<decltype(&RE::BGSShaderParticleGeometryData::Load)> origLoad;
@@ -105,6 +105,6 @@ namespace Fixes::MemoryAccessErrors
         detail::InstallShaderParticleGeometryDataLimit();
         detail::InstallBSShadowDirectionalLightUseAfterFree();
 
-        logger::info("installed misc memory access error fixes"sv);
+        REX::INFO("installed misc memory access error fixes"sv);
     }
 }
