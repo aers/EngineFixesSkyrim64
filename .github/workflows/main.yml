@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   run:
-    uses: adya/pack-skse-mod/.github/workflows/pack.yml@main
+    uses: powerof3/pack-skse-mod/.github/workflows/pack.yml@main-vs2022
     with:
       CMAKE_AE_BUILD_PRESET: 'release-ae'
       CMAKE_AE_CONFIG_PRESET: 'vs2022-windows-vcpkg-release-ae'
