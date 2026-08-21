@@ -83,7 +83,7 @@ namespace Memory::MemoryManager
             REL::Relocation deallocate{ RELOCATION_ID(66861, 68117) };
             REL::Relocation size{ RELOCATION_ID(66849, 68100) };
 
-            allocate.replace_func(0x248, Allocate);
+            allocate.replace_func(0x247, Allocate);
             reallocate.replace_func(VAR_NUM(0xA7, 0x1F6), Reallocate);
             deallocate.replace_func(0x114, Deallocate);
             size.replace_func(VAR_NUM(0x12A, 0x156), Size);
