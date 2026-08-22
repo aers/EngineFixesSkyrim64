@@ -119,7 +119,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
 }
 
 #ifdef SKYRIM_AE
-extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version = []() {
+SKSE_PLUGIN_VERSION = []() {
     SKSE::PluginVersionData v;
     v.PluginVersion(Version::MAJOR);
     v.PluginName(Version::PROJECT);
@@ -131,7 +131,7 @@ extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version = []() {
     return v;
 }();
 #else
-extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Query(const SKSE::QueryInterface*, SKSE::PluginInfo* a_info)
+SKSE_PLUGIN_QUERY(const SKSE::QueryInterface*, SKSE::PluginInfo* a_info)
 {
     if (!g_isPreloaded) {
         OpenLog();
@@ -156,7 +156,7 @@ extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Query(const SKSE::Query
 }
 #endif
 
-extern "C" __declspec(dllexport) bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_skse)
+SKSE_PLUGIN_LOAD(const SKSE::LoadInterface* a_skse)
 {
     if (!g_isPreloaded) {
         // init with log
