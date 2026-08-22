@@ -94,7 +94,7 @@ namespace Fixes::MemoryAccessErrors
             Patch patch;
             patch.ready();
 
-            REL::Relocation target{ RELOCATION_ID(101499, 108496), VAR_NUM(0x1AFD, 0x1BED) };
+            REL::Relocation target{ RELOCATION_ID(101499, 108496), VAR_NUM(0x1AFD, 0x1BFD) };
             target.write(std::span{ patch.getCode<const std::byte*>(), patch.getSize() });
         }
     }

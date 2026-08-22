@@ -8,16 +8,15 @@
 #include "fixes/save_screenshots.h"
 #include "fixes/stuck_mouse_buttons.h"
 #include "fixes/tree_reflections.h"
-#include "memory/allocator.h"
 #include "memory/memory.h"
 #include "patches/patches.h"
 #include "patches/save_added_sound_categories.h"
 #include "settings.h"
 #include "warnings/warnings.h"
 
-bool g_isPreloaded = false;
+static bool g_isPreloaded = false;
 
-std::chrono::high_resolution_clock::time_point start;
+static std::chrono::high_resolution_clock::time_point start;
 
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {

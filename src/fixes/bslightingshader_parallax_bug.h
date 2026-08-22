@@ -52,7 +52,7 @@ namespace Fixes::BSLightingShaderParallaxBug
             return;
         }
 
-        REL::Relocation target{ RELOCATION_ID(100565, 107300), VAR_NUM(0x577, 0xB5D) };
+        REL::Relocation target{ RELOCATION_ID(100565, 107300), VAR_NUM(0x577, 0xB7F) };
 
         detail::Patch p(target.address());
         auto&         trampoline = REL::GetTrampoline();

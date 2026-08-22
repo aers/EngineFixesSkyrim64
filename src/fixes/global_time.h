@@ -6,7 +6,7 @@ namespace Fixes::GlobalTime
     {
 #ifdef SKYRIM_AE
         constexpr std::array todo = {
-            std::make_pair(51049, 0xB70 + 0x4),  // BookMenu::vf4
+            std::make_pair(51049, 0xC3E + 0x4),  // BookMenu::vf4
             std::make_pair(52486, 0x1BE + 0x4),  // SleepWaitMenu::vf4
             std::make_pair(50913, 0x3B + 0x4),   // ThirdPersonState::UpdateDelayedParameters
             std::make_pair(50913, 0x9D + 0x4),

@@ -63,8 +63,8 @@ namespace Fixes::VerticalLookSensitivity
 #ifdef SKYRIM_AE
         constexpr std::array todo = {
             std::pair(50914, 0x65),
-            std::pair(33119, 0x53),
-            std::pair(50770, 0x53)
+            std::pair(33119, 0x99),
+            std::pair(50770, 0x99)
         };
 #else
         constexpr std::array todo = {

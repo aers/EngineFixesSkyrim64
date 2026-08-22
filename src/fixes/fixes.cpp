@@ -32,7 +32,6 @@
 #include "removed_spellbook.h"
 #include "saved_havok_data_load_init.h"
 #include "shadowscenenode_nullptr_crash.h"
-#include "stuck_mouse_buttons.h"
 #include "texture_load_crash.h"
 #include "torch_landscape.h"
 #include "vertical_look_sensitivity.h"
