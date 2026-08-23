@@ -4,6 +4,13 @@ namespace Fixes::StuckMouseButtons
 {
     namespace detail
     {
+        // button mask bit -> mouse index in Scaleform
+        inline constexpr std::array<std::pair<std::uint32_t, std::uint32_t>, 3> kButtonTable{ {
+            { kLMB, 0 },
+            { kRMB, 1 },
+            { kMMB, 2 },
+        } };
+
         class MenuOpenCloseEventSink : public RE::BSTEventSink<RE::MenuOpenCloseEvent>
         {
         public:
@@ -18,28 +25,18 @@ namespace Fixes::StuckMouseButtons
             MenuOpenCloseEventSink(const MenuOpenCloseEventSink&) = delete;
             MenuOpenCloseEventSink& operator=(const MenuOpenCloseEventSink&) = delete;
 
-            static void TrySendMouseUp(RE::IMenu* a_menu, std::uint32_t a_buttonMask)
+            static void SendMouseUp(RE::IMenu& a_menu, float a_x, float a_y, std::uint32_t a_buttonMask)
             {
-                auto* cursor = RE::MenuCursor::GetSingleton();
-                if (!cursor)
-                    return;
-
-                constexpr std::pair<std::uint32_t, std::uint32_t> kButtonTable[] = {
-                    { kLMB, 0 },
-                    { kRMB, 1 },
-                    { kMMB, 2 },
-                };
-
                 for (const auto& [mask, index] : kButtonTable) {
                     if (a_buttonMask & mask) {
-                        RE::GFxMouseEvent mouseUp(
+                        const RE::GFxMouseEvent mouseUp(
                             RE::GFxEvent::EventType::kMouseUp,
                             index,
-                            cursor->cursorPosX,
-                            cursor->cursorPosY,
+                            a_x,
+                            a_y,
                             0.0f,
                             0);
-                        a_menu->uiMovie->HandleEvent(mouseUp);
+                        a_menu.uiMovie->HandleEvent(mouseUp);
                     }
                 }
             }
@@ -51,32 +48,29 @@ namespace Fixes::StuckMouseButtons
                 if (!a_event || !a_event->opening)
                     return RE::BSEventNotifyControl::kContinue;
 
-                SKSE::GetTaskInterface()->AddTask([menuName = a_event->menuName]() {
-                    auto* ui = RE::UI::GetSingleton();
-                    if (!ui)
-                        return;
+                auto* ui = RE::UI::GetSingleton();
+                if (!ui)
+                    return RE::BSEventNotifyControl::kContinue;
 
-                    RE::IMenu* openedMenu = nullptr;
-                    auto       it = ui->menuMap.find(menuName.c_str());
-                    if (it != ui->menuMap.end())
-                        openedMenu = it->second.menu.get();
+                RE::IMenu* openedMenu = nullptr;
+                if (auto it = ui->menuMap.find(a_event->menuName.c_str()); it != ui->menuMap.end())
+                    openedMenu = it->second.menu.get();
 
-                    for (auto& menuPtr : ui->menuStack) {
-                        auto* menu = menuPtr.get();
+                for (const auto& menuPtr : ui->menuStack) {
+                    auto* menu = menuPtr.get();
 
-                        if (!menu || !menu->uiMovie || !menu->UsesCursor() || menu == openedMenu)
-                            continue;
+                    if (!menu || !menu->uiMovie || !menu->UsesCursor() || menu == openedMenu)
+                        continue;
 
-                        float         fx = 0.0f, fy = 0.0f;
-                        std::uint32_t buttonMask = 0;
-                        menu->uiMovie->GetMouseState(0, &fx, &fy, &buttonMask);
+                    float         fx = 0.0f, fy = 0.0f;
+                    std::uint32_t buttonMask = 0;
+                    menu->uiMovie->GetMouseState(0, &fx, &fy, &buttonMask);
 
-                        if (buttonMask == 0)
-                            continue;
+                    if (buttonMask == 0)
+                        continue;
 
-                        TrySendMouseUp(menu, buttonMask);
-                    }
-                });
+                    SendMouseUp(*menu, fx, fy, buttonMask);
+                }
 
                 return RE::BSEventNotifyControl::kContinue;
             }
@@ -85,7 +79,13 @@ namespace Fixes::StuckMouseButtons
 
     inline void Install()
     {
-        RE::UI::GetSingleton()->AddEventSink(detail::MenuOpenCloseEventSink::GetSingleton());
+        auto* ui = RE::UI::GetSingleton();
+        if (!ui) {
+            logger::warn("failed to install stuck mouse buttons fix: UI not available"sv);
+            return;
+        }
+
+        ui->AddEventSink(detail::MenuOpenCloseEventSink::GetSingleton());
         logger::info("installed stuck mouse buttons fix"sv);
     }
 }
