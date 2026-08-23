@@ -100,7 +100,11 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
     const auto ver = REX::FModule::GetExecutingModule().GetFileVersion();
     if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_7_99)) {
         REX::ERROR("Unsupported runtime version {}"sv, ver);
+#ifdef SKYRIM_AE
         return false;
+#else
+        return;
+#endif
     }
 
     auto& trampoline = REL::GetTrampoline();
