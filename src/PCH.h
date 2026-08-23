@@ -3,8 +3,7 @@
 #include <string_view>
 
 #include <RE/Skyrim.h>
-#include <REX/REX/INI.h>
-#include <REX/REX/TOML.h>
+#include <REX/REX.h>
 #include <REX/W32/OLE32.h>
 #include <REX/W32/SHELL32.h>
 #include <SKSE/SKSE.h>
@@ -58,8 +57,6 @@
 #include <safetyhook.hpp>
 #include <tbb/concurrent_hash_map.h>
 #include <xbyak/xbyak.h>
-
-namespace logger = SKSE::log;
 
 using namespace std::literals;
 

@@ -37,7 +37,7 @@ namespace Memory::Allocator
         }
         void ReplaceImports() override
         {
-            logger::info("imports not replaced as they already use the CRT allocator"sv);
+            REX::INFO("imports not replaced as they already use the CRT allocator"sv);
         }
     };
 
@@ -74,13 +74,13 @@ namespace Memory::Allocator
         }
         void ReplaceImports() override
         {
-            SKSE::PatchIAT(scalable_calloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "calloc");
-            SKSE::PatchIAT(scalable_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "free");
-            SKSE::PatchIAT(scalable_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "malloc");
-            SKSE::PatchIAT(scalable_msize, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_msize");
-            SKSE::PatchIAT(scalable_aligned_free, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_free");
-            SKSE::PatchIAT(scalable_aligned_malloc, "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", "_aligned_malloc");
-            logger::info("imports replaced with tbb allocator functions");
+            REX::FModule::GetExecutingModule().SetImportFunctionAddress("calloc", "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", reinterpret_cast<std::uintptr_t>(scalable_calloc));
+            REX::FModule::GetExecutingModule().SetImportFunctionAddress("free", "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", reinterpret_cast<std::uintptr_t>(scalable_free));
+            REX::FModule::GetExecutingModule().SetImportFunctionAddress("malloc", "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", reinterpret_cast<std::uintptr_t>(scalable_malloc));
+            REX::FModule::GetExecutingModule().SetImportFunctionAddress("_msize", "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", reinterpret_cast<std::uintptr_t>(scalable_msize));
+            REX::FModule::GetExecutingModule().SetImportFunctionAddress("_aligned_free", "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", reinterpret_cast<std::uintptr_t>(scalable_aligned_free));
+            REX::FModule::GetExecutingModule().SetImportFunctionAddress("_aligned_malloc", "API-MS-WIN-CRT-HEAP-L1-1-0.DLL", reinterpret_cast<std::uintptr_t>(scalable_aligned_malloc));
+            REX::INFO("imports replaced with tbb allocator functions");
         }
     };
 

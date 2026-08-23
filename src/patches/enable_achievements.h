@@ -24,6 +24,6 @@ namespace Patches::EnableAchievementsWithMods
         p.ready();
         target.write(std::span{ p.getCode<const std::byte*>(), p.getSize() });
 
-        logger::info("installed enable achievements with mods patch");
+        REX::INFO("installed enable achievements with mods patch");
     }
 }

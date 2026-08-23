@@ -41,9 +41,9 @@ namespace Fixes::InitializeHitDataNullPtrCrash
         detail::Patch p(target.address());
         p.ready();
 
-        auto& trampoline = SKSE::GetTrampoline();
-        target.write_branch<6>(trampoline.allocate(p));
+        auto& trampoline = REL::GetTrampoline();
+        target.write_jmp<6>(trampoline.allocate(p));
 
-        logger::info("installed initialize hit data nullptr crash"sv);
+        REX::INFO("installed initialize hit data nullptr crash"sv);
     }
 }

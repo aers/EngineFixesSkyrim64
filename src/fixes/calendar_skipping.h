@@ -33,7 +33,7 @@ namespace Fixes::CalendarSkipping
             std::make_pair(13328, 0xE2),
             std::make_pair(36564, 0x266),
             std::make_pair(36566, 0x3A),
-            std::make_pair(40445, 0x282),
+            std::make_pair(40445, 0x268),
             std::make_pair(40485, 0x78),
         };
 #else
@@ -51,6 +51,6 @@ namespace Fixes::CalendarSkipping
             detail::Calendar::_Update = target.write_call<5>(detail::Calendar::Update);
         }
 
-        logger::info("installed calendar skipping fix"sv);
+        REX::INFO("installed calendar skipping fix"sv);
     }
 }

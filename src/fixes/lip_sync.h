@@ -25,9 +25,9 @@ namespace Fixes::LipSync
         constexpr auto JMP = std::uint8_t{ 0xEB };
 
         for (auto& offset : offsets) {
-            REL::safe_write(targetBase.address() + offset, JMP);
+            REL::WriteSafeData(reinterpret_cast<void*>(targetBase.address() + offset), JMP);
         }
 
-        logger::info("installed lip sync fix"sv);
+        REX::INFO("installed lip sync fix"sv);
     }
 }

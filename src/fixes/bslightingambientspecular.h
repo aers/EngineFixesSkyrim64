@@ -48,15 +48,15 @@ namespace Fixes::BSLightingAmbientSpecular
         materialTarget.write_fill(REL::NOP, 0x20);
 
         // add new code to BSLightingShader::SetupGeometry
-        const REL::Relocation geometryTarget{ RELOCATION_ID(100565, 107300), VAR_NUM(0xBAD, 0x1271) };
-        const REL::Relocation constant{ RELOCATION_ID(513256, 390997) };
+        const REL::Relocation geometryTarget{ RELOCATION_ID(100565, 107300), VAR_NUM(0xBAD, 0x1293) };
+        const REL::Relocation shaderManagerState_ambientSpecular{ RELOCATION_ID(513256, 390997) };
 
-        detail::Patch p(constant.address(), geometryTarget.address());
+        detail::Patch p(shaderManagerState_ambientSpecular.address(), geometryTarget.address());
         p.ready();
 
-        auto& trampoline = SKSE::GetTrampoline();
-        trampoline.write_branch<5>(geometryTarget.address(), trampoline.allocate(p));
+        auto& trampoline = REL::GetTrampoline();
+        trampoline.write_jmp5(geometryTarget.address(), reinterpret_cast<std::uintptr_t>(trampoline.allocate(p)));
 
-        logger::info("installed BSLightingAmbientSpecular fix"sv);
+        REX::INFO("installed BSLightingAmbientSpecular fix"sv);
     }
 }

@@ -44,12 +44,12 @@ namespace Fixes::TorchLandscape
     {
         REL::Relocation target{ RELOCATION_ID(17208, 17610), VAR_NUM(0x52D, 0x530) };
 
-        detail::Patch p(SKSE::stl::unrestricted_cast<std::uintptr_t>(detail::ShadowSceneNode::AddLight));
+        detail::Patch p(REX::UNRESTRICTED_CAST<std::uintptr_t>(detail::ShadowSceneNode::AddLight));
         p.ready();
 
-        auto& trampoline = SKSE::GetTrampoline();
+        auto& trampoline = REL::GetTrampoline();
         detail::ShadowSceneNode::_AddLight = target.write_call<5>(trampoline.allocate(p));
 
-        logger::info("installed torch landscape fix"sv);
+        REX::INFO("installed torch landscape fix"sv);
     }
 }

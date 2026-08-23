@@ -68,7 +68,7 @@ namespace Fixes::NiTimeControllerNoTarget
         {
             orig_LinkObject.call(a_self, a_stream);
             if (a_self->target == nullptr) {
-                logger::warn("{} - NiTimeController of type {} loaded with no target", a_stream->inputFilePath, a_self->GetRTTI()->GetName());
+                REX::WARN("{} - NiTimeController of type {} loaded with no target", a_stream->inputFilePath, a_self->GetRTTI()->GetName());
             }
         }
 
@@ -78,17 +78,17 @@ namespace Fixes::NiTimeControllerNoTarget
             orig_LinkObject = safetyhook::create_inline(timeControllerLinkObject.address(), LinkObject);
 
             REL::Relocation target{ RELOCATION_ID(70880, 72461), VAR_NUM(0x2F0, 0x2E0) };
-            auto&           trampoline = SKSE::GetTrampoline();
+            auto&           trampoline = REL::GetTrampoline();
 
-            Patch p(target.address(), SKSE::stl::unrestricted_cast<std::uintptr_t>(ShouldProcess));
+            Patch p(target.address(), REX::UNRESTRICTED_CAST<std::uintptr_t>(ShouldProcess));
             p.ready();
-            target.write_branch<5>(trampoline.allocate(p));
+            target.write_jmp<5>(trampoline.allocate(p));
         }
     }
 
     inline void Install()
     {
         detail::Install();
-        logger::info("nstalled NiTimeController with no target crash fix"sv);
+        REX::INFO("nstalled NiTimeController with no target crash fix"sv);
     }
 }

@@ -50,7 +50,7 @@ namespace Memory::RenderPassCache
             renderPass->extraParam = 0;
             renderPass->LODMode.index = 3;
             renderPass->LODMode.singleLevel = false;
-            renderPass->unk20 = 0;
+            renderPass->shadowLightCount = 0;
             renderPass->next = nullptr;
             renderPass->passGroupNext = nullptr;
             renderPass->cachePoolId = 0xFEFEDEAD;
@@ -98,6 +98,6 @@ namespace Memory::RenderPassCache
     inline void Install()
     {
         detail::Install();
-        logger::info("installed render pass cache patch"sv);
+        REX::INFO("installed render pass cache patch"sv);
     }
 }

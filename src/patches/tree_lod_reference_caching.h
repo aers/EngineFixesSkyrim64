@@ -40,6 +40,6 @@ namespace Patches::TreeLodReferenceCaching
     {
         detail::Install();
 
-        logger::info("installed tree lod reference caching patch"sv);
+        REX::INFO("installed tree lod reference caching patch"sv);
     }
 }

@@ -53,6 +53,6 @@ namespace Fixes::ESLCELLLoadingBugs
     inline void Install()
     {
         detail::Install();
-        logger::info("installed ESL CELL load bug fix"sv);
+        REX::INFO("installed ESL CELL load bug fix"sv);
     }
 }

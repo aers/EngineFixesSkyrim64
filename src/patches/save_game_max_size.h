@@ -6,7 +6,7 @@ namespace Patches::SaveGameMaxSize
     inline void Install()
     {
         if (!Settings::MemoryManager::bOverrideScrapHeap.GetValue()) {
-            logger::info("skipping save game max size patch as it requires scrap heap override patch"sv);
+            REX::INFO("skipping save game max size patch as it requires scrap heap override patch"sv);
             return;
         }
 #ifdef SKYRIM_AE
@@ -24,7 +24,7 @@ namespace Patches::SaveGameMaxSize
 #endif
 
         if (Settings::Patches::iSaveGameMaxSize.GetValue() > 4095) {
-            logger::error("iSaveGameMaxSize of {} is too large"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
+            REX::ERROR("iSaveGameMaxSize of {} is too large"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
             return;
         }
 
@@ -35,6 +35,6 @@ namespace Patches::SaveGameMaxSize
             target.write(sizeBytes);
         }
 
-        logger::info("installed save game max size patch"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
+        REX::INFO("installed save game max size patch"sv, Settings::Patches::iSaveGameMaxSize.GetValue());
     }
 }

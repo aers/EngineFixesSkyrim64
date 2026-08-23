@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 set(NAME "EngineFixes" CACHE STRING "")
-set(VERSION 7.0.20 CACHE STRING "")
+set(VERSION 7.0.21 CACHE STRING "")
 
 # ---- Options ----
 option(COPY_BUILD "Copy the build output to the Skyrim directory." TRUE)
@@ -17,7 +17,7 @@ macro(find_commonlib_path)
     if(CommonLibName AND NOT ${CommonLibName} STREQUAL "")
         # Check extern
         find_path(CommonLibPath
-            include/REL/Relocation.h
+            include/RE/Skyrim.h
             PATHS external/${CommonLibName}
             extern/${CommonLibName})
 
@@ -92,12 +92,6 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 # ---- Globals ----
-add_compile_definitions(
-    SKSE_SUPPORT_XBYAK
-    REX_OPTION_INI
-    REX_OPTION_TOML
-)
-
 if(MSVC)
     if(NOT ${CMAKE_GENERATOR} STREQUAL "Ninja")
         add_compile_options(

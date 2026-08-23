@@ -12,6 +12,6 @@ namespace Patches::ScrollingDoesntSwitchPOV
         firstPersonState.write(BYTE);
         thirdPersonState.write(BYTE);
 
-        logger::info("installed scrolling doesn't switch pov patch"sv);
+        REX::INFO("installed scrolling doesn't switch pov patch"sv);
     }
 }

@@ -11,7 +11,7 @@ namespace Patches::SafeExit
         inline void Shutdown()
         {
             if (Settings::Warnings::bTextureLoadFailed.GetValue() && Fixes::TextureLoadCrash::detail::TotalLoadFails > 0) {
-                logger::warn("a total of {} textures failed to load in this session"sv, Fixes::TextureLoadCrash::detail::TotalLoadFails);
+                REX::WARN("a total of {} textures failed to load in this session"sv, Fixes::TextureLoadCrash::detail::TotalLoadFails);
                 std::wostringstream warningString;
                 warningString << L"WARNING: " << Fixes::TextureLoadCrash::detail::TotalLoadFails << L" textures failed to load during this session. Please check EngineFixes.log for more details."sv;
                 REX::W32::MessageBoxW(nullptr, warningString.str().c_str(), L"Engine Fixes for Skyrim Special Edition", MB_OK);
@@ -32,6 +32,6 @@ namespace Patches::SafeExit
         REL::Relocation target{ RELOCATION_ID(35545, 36544), VAR_NUM(0x35, 0x1AE) };
         target.write_call<5>(detail::Shutdown);
 
-        logger::info("installed safe exit patch"sv);
+        REX::INFO("installed safe exit patch"sv);
     }
 }

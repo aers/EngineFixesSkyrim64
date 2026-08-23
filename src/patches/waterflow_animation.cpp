@@ -27,7 +27,7 @@ namespace Patches::WaterflowAnimation::detail
                     jmp(ptr[rip + retnLabel]);
 
                     L(funcLabel);
-                    dq(SKSE::stl::unrestricted_cast<uintptr_t>(update_timer));
+                    dq(REX::UNRESTRICTED_CAST<uintptr_t>(update_timer));
 
                     L(retnLabel);
                     dq(a_addr + 0x6);
@@ -40,8 +40,8 @@ namespace Patches::WaterflowAnimation::detail
             MainUpdateCode p(mainLoopTarget.address());
             p.ready();
 
-            auto& trampoline = SKSE::GetTrampoline();
-            trampoline.write_branch<6>(mainLoopTarget.address(), trampoline.allocate(p));
+            auto& trampoline = REL::GetTrampoline();
+            trampoline.write_jmp6(mainLoopTarget.address(), reinterpret_cast<std::uintptr_t>(trampoline.allocate(p)));
         }
 
         // patch the water shader to use our timer
@@ -74,15 +74,15 @@ namespace Patches::WaterflowAnimation::detail
                     dq(a_addr + 0xE);
 
                     L(timerLabel);
-                    dq(SKSE::stl::unrestricted_cast<std::uintptr_t>(&g_Timer));
+                    dq(REX::UNRESTRICTED_CAST<std::uintptr_t>(&g_Timer));
                 }
             };
 
             WaterShaderCode p(waterShaderSetupMaterialTarget.address());
             p.ready();
 
-            auto& trampoline = SKSE::GetTrampoline();
-            trampoline.write_branch<6>(waterShaderSetupMaterialTarget.address(), trampoline.allocate(p));
+            auto& trampoline = REL::GetTrampoline();
+            trampoline.write_jmp6(waterShaderSetupMaterialTarget.address(), reinterpret_cast<std::uintptr_t>(trampoline.allocate(p)));
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Fixes::TextureLoadCrash
             // CommmonLib's constructor is a different one, so we can't use it here
             std::byte streamBytes[sizeof(RE::BSResourceNiBinaryStream)];
             auto*     stream = reinterpret_cast<RE::BSResourceNiBinaryStream*>(&streamBytes);
-            BSResourceNiBinaryStream_ctorFromResourceStream(stream, &a_texture->unk40, 1, 0);
+            BSResourceNiBinaryStream_ctorFromResourceStream(stream, &a_texture->resourceStream, 1, 0);
             RE::BSGraphics::Texture* texture = nullptr;
             RE::BSGraphics::DDSInfo  ddsInfo{};
             REX::W32::HRESULT        result = BSGraphics_Renderer_LoadTextureFromStream(RE::BSGraphics::Renderer::GetDevice(), stream, &texture, &ddsInfo, 0, 0);
@@ -23,28 +23,28 @@ namespace Fixes::TextureLoadCrash
                 TotalLoadFails++;
                 a_texture->rendererTexture = nullptr;
                 RE::BSFixedString string;
-                a_texture->unk40->DoGetName(string);
+                a_texture->resourceStream->DoGetName(string);
                 switch (result) {
                 case HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED):
-                    logger::warn("texture load failed due to unsupported format - file path {}"sv, string.c_str());
+                    REX::WARN("texture load failed due to unsupported format - file path {}"sv, string.c_str());
                     break;
                 case E_OUTOFMEMORY:
-                    logger::warn("texture load failed due to out of memory - file path {}"sv, string.c_str());
+                    REX::WARN("texture load failed due to out of memory - file path {}"sv, string.c_str());
                     break;
                 case HRESULT_FROM_WIN32(ERROR_HANDLE_EOF):
                 case HRESULT_FROM_WIN32(ERROR_INVALID_DATA):
                 case E_FAIL:
-                    logger::warn("texture load failed due to invalid DDS file - file path {}"sv, string.c_str());
+                    REX::WARN("texture load failed due to invalid DDS file - file path {}"sv, string.c_str());
                     break;
                 case E_POINTER:
                 case E_INVALIDARG:  // shouldn't be possible unless the game is fundamentally broken
-                    logger::warn("texture load failed unexpectedly - file path {}"sv, string.c_str());
+                    REX::WARN("texture load failed unexpectedly - file path {}"sv, string.c_str());
                     break;
                 default:
-                    logger::warn("texture load failed with unknown result code {:X} - file path {}"sv, static_cast<std::uint32_t>(result), string.c_str());
+                    REX::WARN("texture load failed with unknown result code {:X} - file path {}"sv, static_cast<std::uint32_t>(result), string.c_str());
                 }
             } else {
-                texture->unk20 = 1;
+                texture->refCount = 1;
                 a_texture->rendererTexture = texture;
             }
             BSResourceNiBinaryStream_dtor(stream);
@@ -60,6 +60,6 @@ namespace Fixes::TextureLoadCrash
     inline void Install()
     {
         detail::Install();
-        logger::info("installed texture load crash fix"sv);
+        REX::INFO("installed texture load crash fix"sv);
     }
 }

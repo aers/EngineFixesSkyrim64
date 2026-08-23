@@ -49,6 +49,6 @@ namespace Patches::DisableSnowFlag
     inline void Install()
     {
         detail::Install();
-        logger::info("installed disable snow flag patches"sv);
+        REX::INFO("installed disable snow flag patches"sv);
     }
 }

@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   run:
-    uses: adya/pack-skse-mod/.github/workflows/pack.yml@main
+    uses: powerof3/pack-skse-mod/.github/workflows/pack.yml@main-vs2022
     with:
       CMAKE_AE_BUILD_PRESET: 'release-ae'
       CMAKE_AE_CONFIG_PRESET: 'vs2022-windows-vcpkg-release-ae'
@@ -26,11 +26,10 @@ jobs:
       FOMOD_MOD_AUTHOR: "aers"
       FOMOD_MOD_NEXUS_ID: "17230"
       FOMOD_REQUIRED_INSTALLATION_DIR: "Skyrim/Data"
-      FOMOD_AE_MIN_GAME_VERSION: "1.6.1170"
-      FOMOD_AE_DESCR: 'For Skyrim AE 1.6.1170 (latest version)'
+      FOMOD_AE_MIN_GAME_VERSION: "1.7.99"
+      FOMOD_AE_DESCR: 'For Skyrim AE 1.7.99 (latest version)'
       FOMOD_AE_NAME: 'SSE v1.6.1170 ("Anniversary Edition")'
       FOMOD_SE_MIN_GAME_VERSION: "1.5.97"
       FOMOD_SE_DESCR: 'For Skyrim SE 1.5.97 (last pre-AE version('
       FOMOD_SE_NAME: 'SSE v1.5.97 ("Special Edition")'
       PUBLISH_ARCHIVE_TYPE: '7z'
-      VCPKG_COMMIT_ID: '4bb07a326d9b9bce3703272a509e5bc25dd9cfd5'

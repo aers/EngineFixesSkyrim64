@@ -17,7 +17,7 @@ namespace Fixes::PrecomputedPaths
         inline void NavMeshInfo_Dtor(RE::NavMeshInfo* a_self)
         {
             if (navmeshIdsInPaths.contains(a_self->navMeshID)) {
-                logger::warn("navmesh form ID {:X} is used in a precomputed path but the game considers it unneeded"sv, a_self->navMeshID);
+                REX::WARN("navmesh form ID {:X} is used in a precomputed path but the game considers it unneeded"sv, a_self->navMeshID);
                 HasIssues = true;
                 return;
             }
@@ -47,43 +47,43 @@ namespace Fixes::PrecomputedPaths
             orig_NavMeshInfoMap_InitItemImpl(a_self);
 
             if (HasIssues) {
-                logger::warn("one or more issues with precomputed paths were detected at game startup"sv);
-                logger::warn("this indicates that the last plugin in your load order containing NAVI data contains a precomputed path with navmesh that had its links removed by a previous plugin"sv);
-                logger::warn("it is recommended to create a patch to resolve this inconsistency in your navmesh");
+                REX::WARN("one or more issues with precomputed paths were detected at game startup"sv);
+                REX::WARN("this indicates that the last plugin in your load order containing NAVI data contains a precomputed path with navmesh that had its links removed by a previous plugin"sv);
+                REX::WARN("it is recommended to create a patch to resolve this inconsistency in your navmesh");
             }
 
             if (Settings::Debug::bPrintDetailedPrecomputedPathInfo.GetValue()) {
                 for (std::uint32_t i = 0; i < a_self->allPaths.size(); i++) {
                     auto* precomputedPaths = a_self->allPaths[i];
                     if (precomputedPaths == nullptr) {
-                        logger::info("precomputed path index {} was unexpectedly null"sv, i);
+                        REX::INFO("precomputed path index {} was unexpectedly null"sv, i);
                         continue;
                     }
                     bool foundProblem = false;
 
                     for (auto navMeshInfo : *precomputedPaths) {
                         const auto pathingCell = reinterpret_cast<RE::PathingCell*>(navMeshInfo->pathingCell.get());
-                        if (*SKSE::stl::unrestricted_cast<std::uintptr_t*>(pathingCell) != RE::PathingCell::VTABLE[0].address()) {
+                        if (*REX::UNRESTRICTED_CAST<std::uintptr_t*>(pathingCell) != RE::PathingCell::VTABLE[0].address()) {
                             foundProblem = true;
                             break;
                         }
                     }
 
                     if (foundProblem) {
-                        logger::info("found problem with precomputed path index {}"sv, i);
+                        REX::INFO("found problem with precomputed path index {}"sv, i);
                         for (auto navMeshInfo : *precomputedPaths) {
                             const auto pathingCell = reinterpret_cast<RE::PathingCell*>(navMeshInfo->pathingCell.get());
-                            bool       isFreed = *SKSE::stl::unrestricted_cast<std::uintptr_t*>(pathingCell) != RE::PathingCell::VTABLE[0].address();
+                            bool       isFreed = *REX::UNRESTRICTED_CAST<std::uintptr_t*>(pathingCell) != RE::PathingCell::VTABLE[0].address();
                             if (pathingCell->pathingCellInfo.worldSpaceID != 0) {
                                 if (isFreed)
-                                    logger::info("!! NAVM ID: error, pointer is freed | Worldspace ID: {:X} Cell X: {} Cell Y: {}", pathingCell->pathingCellInfo.worldSpaceID, pathingCell->pathingCellInfo.cellID.coordinates.x, pathingCell->pathingCellInfo.cellID.coordinates.y);
+                                    REX::INFO("!! NAVM ID: error, pointer is freed | Worldspace ID: {:X} Cell X: {} Cell Y: {}", pathingCell->pathingCellInfo.worldSpaceID, pathingCell->pathingCellInfo.cellID.coordinates.x, pathingCell->pathingCellInfo.cellID.coordinates.y);
                                 else
-                                    logger::info("-- NAVM ID: {:X} | Worldspace ID: {:X} Cell X: {} Cell Y: {}", navMeshInfo->navMeshID, pathingCell->pathingCellInfo.worldSpaceID, pathingCell->pathingCellInfo.cellID.coordinates.x, pathingCell->pathingCellInfo.cellID.coordinates.y);
+                                    REX::INFO("-- NAVM ID: {:X} | Worldspace ID: {:X} Cell X: {} Cell Y: {}", navMeshInfo->navMeshID, pathingCell->pathingCellInfo.worldSpaceID, pathingCell->pathingCellInfo.cellID.coordinates.x, pathingCell->pathingCellInfo.cellID.coordinates.y);
                             } else {
                                 if (isFreed)
-                                    logger::info("-- NAVM ID: error, pointer is freed | Interior Cell ID: {:X}", pathingCell->pathingCellInfo.cellID.formID);
+                                    REX::INFO("-- NAVM ID: error, pointer is freed | Interior Cell ID: {:X}", pathingCell->pathingCellInfo.cellID.formID);
                                 else
-                                    logger::info("-- NAVM ID: {:X} | Interior Cell ID: {:X}", navMeshInfo->navMeshID, pathingCell->pathingCellInfo.cellID.formID);
+                                    REX::INFO("-- NAVM ID: {:X} | Interior Cell ID: {:X}", navMeshInfo->navMeshID, pathingCell->pathingCellInfo.cellID.formID);
                             }
                         }
                     }
@@ -107,6 +107,6 @@ namespace Fixes::PrecomputedPaths
     inline void Install()
     {
         detail::Install();
-        logger::info("installed precomputed paths crash fix"sv);
+        REX::INFO("installed precomputed paths crash fix"sv);
     }
 }
