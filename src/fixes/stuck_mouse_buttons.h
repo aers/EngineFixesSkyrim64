@@ -4,13 +4,6 @@ namespace Fixes::StuckMouseButtons
 {
     namespace detail
     {
-        enum MouseButtonFlags : std::uint32_t
-        {
-            kLMB = 1u << 0,
-            kRMB = 1u << 1,
-            kMMB = 1u << 2,
-        };
-
         class MenuOpenCloseEventSink : public RE::BSTEventSink<RE::MenuOpenCloseEvent>
         {
         public:
@@ -30,24 +23,25 @@ namespace Fixes::StuckMouseButtons
                 auto* cursor = RE::MenuCursor::GetSingleton();
                 if (!cursor)
                     return;
-
+            
                 constexpr std::pair<std::uint32_t, std::uint32_t> kButtonTable[] = {
                     { kLMB, 0 },
                     { kRMB, 1 },
                     { kMMB, 2 },
                 };
-
-                const std::uint32_t buttonIndex = a_buttonMask - 1;
-
-                RE::GFxMouseEvent mouseUp(
-                    RE::GFxEvent::EventType::kMouseUp,
-                    buttonIndex,
-                    cursor->cursorPosX,
-                    cursor->cursorPosY,
-                    0.0f,
-                    0);
-
-                a_menu->uiMovie->HandleEvent(mouseUp);
+            
+                for (const auto& [mask, index] : kButtonTable) {
+                    if (a_buttonMask & mask) {
+                        RE::GFxMouseEvent mouseUp(
+                            RE::GFxEvent::EventType::kMouseUp,
+                            index,
+                            cursor->cursorPosX,
+                            cursor->cursorPosY,
+                            0.0f,
+                            0);
+                        a_menu->uiMovie->HandleEvent(mouseUp);
+                    }
+                }
             }
 
             RE::BSEventNotifyControl ProcessEvent(
