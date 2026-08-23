@@ -86,7 +86,11 @@ void OpenLog()
     spdlog::set_pattern("[%Y-%m-%d %T.%e][%-16s:%-4#][%L]: %v");
 }
 
+#ifdef SKYRIM_AE
+SKSE_PLUGIN_PRELOAD(const SKSE::PreLoadInterface*)
+#else
 extern "C" __declspec(dllexport) void __stdcall Initialize()
+#endif
 {
     start = std::chrono::high_resolution_clock::now();
     OpenLog();
@@ -96,7 +100,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
     const auto ver = REX::FModule::GetExecutingModule().GetFileVersion();
     if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_7_99)) {
         REX::ERROR("Unsupported runtime version {}"sv, ver);
-        return;
+        return false;
     }
 
     auto& trampoline = REL::GetTrampoline();
@@ -116,6 +120,10 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
     Fixes::Install();
 
     g_isPreloaded = true;
+
+#ifdef SKYRIM_AE
+    return true;
+#endif
 }
 
 #ifdef SKYRIM_AE
