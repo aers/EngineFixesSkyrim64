@@ -5,6 +5,10 @@ namespace Fixes::StuckMouseButtons
     namespace detail
     {
         // button mask bit -> mouse index in Scaleform
+        inline constexpr std::uint32_t kLMB = 1u << 0;
+        inline constexpr std::uint32_t kRMB = 1u << 1;
+        inline constexpr std::uint32_t kMMB = 1u << 2;
+
         inline constexpr std::array<std::pair<std::uint32_t, std::uint32_t>, 3> kButtonTable{ {
             { kLMB, 0 },
             { kRMB, 1 },
@@ -81,11 +85,11 @@ namespace Fixes::StuckMouseButtons
     {
         auto* ui = RE::UI::GetSingleton();
         if (!ui) {
-            logger::warn("failed to install stuck mouse buttons fix: UI not available"sv);
+            REX::WARN("failed to install stuck mouse buttons fix: UI not available"sv);
             return;
         }
 
         ui->AddEventSink(detail::MenuOpenCloseEventSink::GetSingleton());
-        logger::info("installed stuck mouse buttons fix"sv);
+        REX::INFO("installed stuck mouse buttons fix"sv);
     }
 }
