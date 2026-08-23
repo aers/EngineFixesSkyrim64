@@ -23,13 +23,13 @@ namespace Fixes::StuckMouseButtons
                 auto* cursor = RE::MenuCursor::GetSingleton();
                 if (!cursor)
                     return;
-            
+
                 constexpr std::pair<std::uint32_t, std::uint32_t> kButtonTable[] = {
                     { kLMB, 0 },
                     { kRMB, 1 },
                     { kMMB, 2 },
                 };
-            
+
                 for (const auto& [mask, index] : kButtonTable) {
                     if (a_buttonMask & mask) {
                         RE::GFxMouseEvent mouseUp(
