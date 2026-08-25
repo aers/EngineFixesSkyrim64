@@ -28,7 +28,7 @@ jobs:
       FOMOD_REQUIRED_INSTALLATION_DIR: "Skyrim/Data"
       FOMOD_AE_MIN_GAME_VERSION: "1.7.99"
       FOMOD_AE_DESCR: 'For Skyrim AE 1.7.99 (latest version)'
-      FOMOD_AE_NAME: 'SSE v1.6.1170 ("Anniversary Edition")'
+      FOMOD_AE_NAME: 'SSE v1.7.99 ("Anniversary Edition")'
       FOMOD_SE_MIN_GAME_VERSION: "1.5.97"
       FOMOD_SE_DESCR: 'For Skyrim SE 1.5.97 (last pre-AE version('
       FOMOD_SE_NAME: 'SSE v1.5.97 ("Special Edition")'
