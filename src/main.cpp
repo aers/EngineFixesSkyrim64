@@ -98,7 +98,7 @@ extern "C" __declspec(dllexport) void __stdcall Initialize()
     REX::INFO("EngineFixes v{}.{}.{} PreLoad"sv, Version::MAJOR, Version::MINOR, Version::PATCH);
 
     const auto ver = REX::FModule::GetExecutingModule().GetFileVersion();
-    if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_7_99)) {
+    if (ver < VAR_NUM(SKSE::RUNTIME_SSE_1_5_97, SKSE::RUNTIME_SSE_1_7_104)) {
         REX::ERROR("Unsupported runtime version {}"sv, ver);
 #ifdef SKYRIM_AE
         return false;
@@ -138,7 +138,7 @@ SKSE_PLUGIN_VERSION = []() {
     v.AuthorName("aers");
     v.UsesAddressLibrary();
     v.UsesUpdatedStructs();
-    v.CompatibleVersions({ SKSE::RUNTIME_SSE_1_7_99 });
+    v.CompatibleVersions({ SKSE::RUNTIME_SSE_1_7_104 });
 
     return v;
 }();
