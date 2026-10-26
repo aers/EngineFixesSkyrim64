@@ -27,6 +27,7 @@ bGetKeywordItemCount = true                     # fixes the condition function "
 bGHeapLeakDetectionCrash = true                 # fixes a crash where scaleform attempts to report a memory leak but the code doesn't exist in Skyrim's build
 bGlobalTime = true                              # fixes game systems that are affected by game time instead of real time, including old slow time camera movement fix
 bInitializeHitDataNullPtrCrash = true           # fixes a crash on melee hit that unequipped the weapon at the same time
+bIsInCombatConsoleCrash = true                  # fixes a crash when the condition function "IsInCombat" prints its console result for a reference that is not an actor
 bLipSync = true                                 # fixes a bug causing lip sync to desync
 bMemoryAccessErrors = true                      # fixes miscellaneous errors that are obscured by Skyrim's default allocator
 bMO5STypo = true                                # fixes a typo preventing the game from loading MO5S entries in ARMA forms

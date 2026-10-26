@@ -32,6 +32,7 @@ namespace Settings
         static REX::TOML::Bool bGHeapLeakDetectionCrash("Fixes", "bGHeapLeakDetectionCrash", true);
         static REX::TOML::Bool bGlobalTime("Fixes", "bGlobalTime", true);
         static REX::TOML::Bool bInitializeHitDataNullPtrCrash("Fixes", "bInitializeHitDataNullPtrCrash", true);
+        static REX::TOML::Bool bIsInCombatConsoleCrash("Fixes", "bIsInCombatConsoleCrash", true);
         static REX::TOML::Bool bLipSync("Fixes", "bLipSync", true);
         static REX::TOML::Bool bMemoryAccessErrors("Fixes", "bMemoryAccessErrors", true);
         static REX::TOML::Bool bMO5STypo("Fixes", "bMO5STypo", true);

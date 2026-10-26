@@ -21,6 +21,7 @@
 #include "gheap_leak_detection_crash.h"
 #include "global_time.h"
 #include "initialize_hit_data_nullptr_crash.h"
+#include "is_in_combat_console_crash.h"
 #include "lip_sync.h"
 #include "memory_access_errors.h"
 #include "mo5s_typo.h"
@@ -103,6 +104,9 @@ namespace Fixes
 
         if (Settings::Fixes::bInitializeHitDataNullPtrCrash.GetValue())
             InitializeHitDataNullPtrCrash::Install();
+
+        if (Settings::Fixes::bIsInCombatConsoleCrash.GetValue())
+            IsInCombatConsoleCrash::Install();
 
         if (Settings::Fixes::bLipSync.GetValue())
             LipSync::Install();
