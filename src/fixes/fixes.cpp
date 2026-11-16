@@ -30,6 +30,7 @@
 #include "perk_fragment_is_running.h"
 #include "precomputed_paths.h"
 #include "removed_spellbook.h"
+#include "save_string_table_overflow.h"
 #include "saved_havok_data_load_init.h"
 #include "shadowscenenode_nullptr_crash.h"
 #include "texture_load_crash.h"
@@ -130,6 +131,9 @@ namespace Fixes
 
         if (Settings::Fixes::bRemovedSpellBook.GetValue())
             RemovedSpellBook::Install();
+
+        if (Settings::Fixes::bSaveStringTableOverflow.GetValue())
+            SaveStringTableOverflow::Install();
 
         if (Settings::Fixes::bSavedHavokDataLoadInit.GetValue())
             SavedHavokDataLoadInit::Install();

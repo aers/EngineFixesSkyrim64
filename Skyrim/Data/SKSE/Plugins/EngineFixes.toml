@@ -37,6 +37,7 @@ bPerkFragmentIsRunning = true                   # fixes a crash if the IsRunning
 bPrecomputedPaths = true                        # fixes a crash when NAVI precomputed paths aren't accurate for your load order and logs a warning
 bRemovedSpellBook = true                        # fixes a crash where learning a spell from a book that is later removed in another plugin causes a crash in the inventory
 bSaveScreenshots = true                         # fixes save screenshots being blank under certain configurations
+bSaveStringTableOverflow = true                 # fixes a crash when loading a save game that has a Papyrus string longer than 4095 bytes (AE only)
 bSavedHavokDataLoadInit = true                  # fixes motion vectors for objects with saved havok data that differs significantly from their base state
 bShadowSceneNodeNullPtrCrash = true             # fixes a crash in shadowscenenode
 bStuckMouseButtons = true                       # fixes stuck mouse buttons when a new menu opened and the old menu didn't receive MouseUp

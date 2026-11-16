@@ -42,6 +42,7 @@ namespace Settings
         static REX::TOML::Bool bPrecomputedPaths("Fixes", "bPrecomputedPaths", true);
         static REX::TOML::Bool bRemovedSpellBook("Fixes", "bRemovedSpellBook", true);
         static REX::TOML::Bool bSaveScreenshots("Fixes", "bSaveScreenshots", true);
+        static REX::TOML::Bool bSaveStringTableOverflow("Fixes", "bSaveStringTableOverflow", true);
         static REX::TOML::Bool bSavedHavokDataLoadInit("Fixes", "bSavedHavokDataLoadInit", true);
         static REX::TOML::Bool bShadowSceneNodeNullPtrCrash("Fixes", "bShadowSceneNodeNullPtrCrash", true);
         static REX::TOML::Bool bStuckMouseButtons("Fixes", "bStuckMouseButtons", true);
