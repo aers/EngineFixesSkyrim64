@@ -34,6 +34,7 @@ set(headers ${headers}
 	src/fixes/precomputed_paths.h
 	src/fixes/removed_spellbook.h
 	src/fixes/save_screenshots.h
+	src/fixes/save_string_table_overflow.h
 	src/fixes/saved_havok_data_load_init.h
 	src/fixes/shadowscenenode_nullptr_crash.h
 	src/fixes/texture_load_crash.h
