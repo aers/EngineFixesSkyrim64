@@ -6,6 +6,9 @@ namespace Fixes::BSLightingShaderForceAlphaTest
     {
         inline SafetyHookInline g_hk_BSBatchRenderer_SetupAndDrawPass;
 
+        // resolved once at install; this hook runs for every render pass, so an Address Library lookup per call adds up
+        inline std::uintptr_t g_BSLightingShaderVtbl = 0;
+
         // constants
         inline std::uint32_t RAW_FLAG_RIM_LIGHTING = 1 << 11;
         inline std::uint32_t RAW_FLAG_DO_ALPHA_TEST = 1 << 20;
@@ -16,7 +19,7 @@ namespace Fixes::BSLightingShaderForceAlphaTest
 
         inline void BSBatchRenderer_SetupAndDrawPass(RE::BSRenderPass* a_self, std::uint32_t a_technique, bool a_alphaTest, std::uint32_t a_renderFlags)
         {
-            if (*REX::UNRESTRICTED_CAST<std::uintptr_t*>(a_self->shader) == RE::VTABLE_BSLightingShader[0].address() && a_alphaTest) {
+            if (a_alphaTest && *REX::UNRESTRICTED_CAST<std::uintptr_t*>(a_self->shader) == g_BSLightingShaderVtbl) {
                 const auto rawTechnique = a_technique - 0x4800002D;
                 const auto subIndex = (rawTechnique >> 24) & 0x3F;
                 if (subIndex != RAW_TECHNIQUE_EYE && subIndex != RAW_TECHNIQUE_ENVMAP && subIndex != RAW_TECHNIQUE_MULTILAYERPARALLAX && subIndex != RAW_TECHNIQUE_PARALLAX) {
@@ -25,12 +28,15 @@ namespace Fixes::BSLightingShaderForceAlphaTest
                 }
             }
 
-            g_hk_BSBatchRenderer_SetupAndDrawPass.call(a_self, a_technique, a_alphaTest, a_renderFlags);
+            // the hook is never removed, so the hook mutex that call() takes would only serialize every draw for nothing
+            g_hk_BSBatchRenderer_SetupAndDrawPass.unsafe_call(a_self, a_technique, a_alphaTest, a_renderFlags);
         }
     }
 
     inline void Install()
     {
+        detail::g_BSLightingShaderVtbl = RE::VTABLE_BSLightingShader[0].address();
+
         REL::Relocation target{ RELOCATION_ID(100854, 107644) };
         detail::g_hk_BSBatchRenderer_SetupAndDrawPass = safetyhook::create_inline(target.address(), detail::BSBatchRenderer_SetupAndDrawPass);
 
