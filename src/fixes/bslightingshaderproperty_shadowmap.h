@@ -72,7 +72,8 @@ namespace BSLightingShaderPropertyShadowMap
             // store the currently being processed light's shadowmap index
             // this is singlethreaded so it is safe
             g_currentIndex = a_data->shadowMapIndex;
-            orig_BSShadowLight_AccumulateShadowMap.call(a_self, a_data, a_pShadowMaskChannel, a_cullingProcessArray, a_jobIndex);
+            // runs every frame for each shadow-casting light and the hook is never removed, so skip call()'s mutex
+            orig_BSShadowLight_AccumulateShadowMap.unsafe_call(a_self, a_data, a_pShadowMaskChannel, a_cullingProcessArray, a_jobIndex);
         }
 
         inline void CleanAllocatedArrays(RE::BSLightingShaderProperty* a_self)
